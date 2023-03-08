@@ -91,12 +91,36 @@ export const styles = StyleSheet.create({
   bottomImage: {
     position: 'relative',
     bottom: 0,
-    top: 122
+    top: 122,
   },
   buttonContainer: {
     marginTop: 30,
     marginLeft: 10,
     marginRight: 10,
     marginBottom: 20,
+  },
+  iconPassword: {
+    position: 'absolute',
+    top: 40,
+    left: '85%',
+  },
+  iconPasswordHide: {
+    position: 'absolute',
+    left: '85%',
+  },
+  reportPageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50,
+  },
+  reportPageRow: {
+    flexDirection: 'row',
+  },
+  reportPageButton: {
+    backgroundColor: '#ccc',
+    padding: 10,
+    margin: 5,
+    width: 150,
+    height: 150,
   },
 });
