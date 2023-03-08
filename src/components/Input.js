@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 import {styles} from './styles';
 import Icon from 'react-native-vector-icons/Feather';
 
+Icon.loadFont()
 const Input = ({lable, isPassword, setData}) => {
   const [showEye, setShowEye] = useState(false);
   return (

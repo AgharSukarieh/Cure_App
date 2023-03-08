@@ -1,10 +1,11 @@
-import {View, Text, TouchableOpacity, Image, ScrollView} from 'react-native';
-import React, {useState} from 'react';
-import {styles} from '../components/styles';
+import { View, SafeAreaView, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { styles } from '../components/styles';
 import TopView from '../components/TopView';
 import Input from '../components/Input';
 import Button from '../components/Button';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const ConfirmProfile = () => {
   const [username, setUsername] = useState('');
@@ -25,34 +26,34 @@ const ConfirmProfile = () => {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <TopView text={'Confirm your profile'} />
-        <Input lable={'USERNAME'} setData={setUsername} />
-        <Input lable={'FIRSTNAME'} setData={setFirstname} />
-        <Input lable={'LASTNAME'} setData={setLastname} />
-        <Input lable={'EMAIL'} setData={setEmail} />
-        <Input
-          lable={'NEW PASSWORD'}
-          setData={setNewPassword}
-          isPassword={true}
-        />
-        <Input
-          lable={'CONFIRM PASSWORD'}
-          setData={setConfirmPassword}
-          isPassword={true}
-        />
-        <Input lable={'PHONE'} setData={setPhone} />
-        <Input lable={'ADDRESS'} setData={setAddress} />
-        <Input lable={'STATUS'} setData={setStatus} />
+    <SafeAreaView>
+      <ScrollView>
+        <KeyboardAwareScrollView>
+          <View style={styles.container}>
+            <TopView text={'Confirm your profile'} />
+            <Input lable={'USERNAME'} setData={setUsername} />
+            <Input lable={'FIRSTNAME'} setData={setFirstname} />
+            <Input lable={'LASTNAME'} setData={setLastname} />
+            <Input lable={'EMAIL'} setData={setEmail} />
+            <Input
+              lable={'NEW PASSWORD'}
+              setData={setNewPassword}
+              isPassword={true}
+            />
+            <Input
+              lable={'CONFIRM PASSWORD'}
+              setData={setConfirmPassword}
+              isPassword={true}
+            />
+            <Input lable={'PHONE'} setData={setPhone} />
+            <Input lable={'ADDRESS'} setData={setAddress} />
+            <Input lable={'STATUS'} setData={setStatus} />
 
-        <Button text={'Confirm'} handleClick={handleConfirm} />
-
-        {/* <View style={styles.mageButton}>
-        <Image source={require('../../assets/images/bottomImage.png')} />
-      </View> */}
-      </View>
-    </ScrollView>
+            <Button text={'Confirm'} handleClick={handleConfirm} />
+          </View>
+        </KeyboardAwareScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

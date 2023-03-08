@@ -1,4 +1,4 @@
-import {View, Text, TouchableOpacity, Image} from 'react-native';
+import {View, Text, TouchableOpacity, SafeAreaView} from 'react-native';
 import React, {useState} from 'react';
 import {styles} from '../../components/styles';
 import TopView from '../../components/TopView';
@@ -18,7 +18,7 @@ const SignUpPharmacy = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TopView text={'Sgin Up To Pharmacy'} />
       <Input lable={'USERNAME'} setData={setUsername} />
       <Input lable={'EMAIL'} setData={setEmail} />
@@ -35,7 +35,7 @@ const SignUpPharmacy = () => {
           <Text style={styles.buttonText}>Sign in</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
