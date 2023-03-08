@@ -26,16 +26,19 @@ const SignIn = () => {
       <View style={styles.checkPharmacy}>
         <Text style={styles.checkPharmacyText}>Are you a pharmacy?</Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate('SignUpPharmacy')}
+          onPress={() => navigation.navigate('SignInPharmacy')}
           activeOpacity={0.7}
           style={styles.signInPharmacyStyle}>
           <Text style={styles.buttonText}>Sign in</Text>
         </TouchableOpacity>
       </View>
 
-      {/* <View style={styles.mageButton}>
-        <Image source={require('../../assets/images/bottomImage.png')} />
-      </View> */}
+      <View style={styles.imageButtonStyle}>
+        <Image
+          source={require('../../assets/images/bottomImage.png')}
+          style={styles.bottomImage}
+        />
+      </View>
     </View>
   );
 };

@@ -13,7 +13,7 @@ const SignInPharmacy = () => {
   const navigation = useNavigation();
 
   const handleSignIn = () => {
-    navigation.navigate('ConfirmProfile')
+    navigation.navigate('ConfirmProfile');
     //
   };
 
@@ -33,10 +33,6 @@ const SignInPharmacy = () => {
           <Text style={styles.buttonText}>Sign up</Text>
         </TouchableOpacity>
       </View>
-
-      {/* <View style={styles.mageButton}>
-        <Image source={require('../../assets/images/bottomImage.png')} />
-      </View> */}
     </View>
   );
 };

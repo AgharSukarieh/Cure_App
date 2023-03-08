@@ -35,10 +35,6 @@ const SignUpPharmacy = () => {
           <Text style={styles.buttonText}>Sign in</Text>
         </TouchableOpacity>
       </View>
-
-      {/* <View style={styles.mageButton}>
-        <Image source={require('../../assets/images/bottomImage.png')} />
-      </View> */}
     </View>
   );
 };

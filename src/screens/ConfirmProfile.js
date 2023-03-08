@@ -20,6 +20,7 @@ const ConfirmProfile = () => {
   const navigation = useNavigation();
 
   const handleConfirm = () => {
+    navigation.navigate("ReportPage")
     //
   };
 

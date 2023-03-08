@@ -85,20 +85,18 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#7189FF',
   },
-  imageButtonStyle: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    height: '20%',
+  imageButtonContainer: {
+    width: '100%',
   },
   bottomImage: {
-    flex: 1,
+    position: 'relative',
+    bottom: 0,
+    top: 122
   },
-
   buttonContainer: {
     marginTop: 30,
     marginLeft: 10,
     marginRight: 10,
-    marginBottom: 20
+    marginBottom: 20,
   },
 });
