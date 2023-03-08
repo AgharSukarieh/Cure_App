@@ -119,8 +119,18 @@ export const styles = StyleSheet.create({
   reportPageButton: {
     backgroundColor: '#ccc',
     padding: 10,
-    margin: 5,
-    width: 150,
+    margin: 10,
+    width: 160,
     height: 150,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#7189FF',
+    borderRadius: 10,
+  },
+
+  reportPageText: {
+    textAlign: 'center',
+    fontSize: 24,
+    color: '#ffffff',
   },
 });
