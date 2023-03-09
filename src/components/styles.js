@@ -133,4 +133,22 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     color: '#ffffff',
   },
+  nameDateContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    marginTop: 10,
+  },
+  leftText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+  rightText: {
+    fontSize: 16,
+    color: '#253274',
+  },
+  helloText: {
+    color: '#253274',
+  },
 });
