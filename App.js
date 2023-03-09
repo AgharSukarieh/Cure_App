@@ -6,6 +6,7 @@ import SignUpPharmacy from './src/screens/Pharmacy/SignUpPharmacy';
 import SignInPharmacy from './src/screens/Pharmacy/SignInPharmacy';
 import ConfirmProfile from './src/screens/ConfirmProfile';
 import ReportPage from './src/screens/ReportPage';
+import Sales from './src/screens/Sales';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -31,6 +32,10 @@ export default function App() {
 
         <Stack.Screen name="ReportPage" options={{headerShown: false}}>
           {() => <ReportPage />}
+        </Stack.Screen>
+
+        <Stack.Screen name="Sales" options={{headerShown: false}}>
+          {() => <Sales />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

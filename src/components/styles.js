@@ -15,7 +15,7 @@ export const styles = StyleSheet.create({
 
   textRightStyle: {
     textAlign: 'center',
-    width: '90%',
+    width: '80%',
     fontSize: 30,
     color: '#253274',
     fontWeight: 'bold',
@@ -150,5 +150,38 @@ export const styles = StyleSheet.create({
   },
   helloText: {
     color: '#253274',
+  },
+  arrowBack: {
+    marginLeft: 20,
+  },
+
+  filterContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30,
+  },
+  filterbutton: {
+    padding: 6,
+    borderWidth: 1,
+    width: 110,
+    borderRadius: 5,
+    borderColor: '#707070',
+  },
+  filterbuttontext: {
+    textAlign: 'center',
+  },
+  calenderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 30,
+  },
+  calenderSubContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  calenderText: {
+    fontSize: 20,
+    color: 'rgba(37, 50, 116, 0.6)',
+    marginBottom: 5,
   },
 });
