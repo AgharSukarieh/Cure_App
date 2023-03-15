@@ -26,34 +26,33 @@ const ConfirmProfile = () => {
   };
 
   return (
-    <SafeAreaView>
-      <ScrollView>
-        <KeyboardAwareScrollView>
-          <View style={styles.container}>
-            <TopView text={'Confirm your profile'} />
-            <Input lable={'USERNAME'} setData={setUsername} />
-            <Input lable={'FIRSTNAME'} setData={setFirstname} />
-            <Input lable={'LASTNAME'} setData={setLastname} />
-            <Input lable={'EMAIL'} setData={setEmail} />
-            <Input
-              lable={'NEW PASSWORD'}
-              setData={setNewPassword}
-              isPassword={true}
-            />
-            <Input
-              lable={'CONFIRM PASSWORD'}
-              setData={setConfirmPassword}
-              isPassword={true}
-            />
-            <Input lable={'PHONE'} setData={setPhone} />
-            <Input lable={'ADDRESS'} setData={setAddress} />
-            <Input lable={'STATUS'} setData={setStatus} />
+    <View style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <KeyboardAwareScrollView> 
+          <TopView text={'Confirm your profile'} />
+          <Input lable={'USERNAME'} setData={setUsername} />
+          <Input lable={'FIRSTNAME'} setData={setFirstname} />
+          <Input lable={'LASTNAME'} setData={setLastname} />
+          <Input lable={'EMAIL'} setData={setEmail} />
+          <Input
+            lable={'NEW PASSWORD'}
+            setData={setNewPassword}
+            isPassword={true}
+          />
+          <Input
+            lable={'CONFIRM PASSWORD'}
+            setData={setConfirmPassword}
+            isPassword={true}
+          />
+          <Input lable={'PHONE'} setData={setPhone} />
+          <Input lable={'ADDRESS'} setData={setAddress} />
+          <Input lable={'STATUS'} setData={setStatus} />
 
-            <Button text={'Confirm'} handleClick={handleConfirm} />
-          </View>
+          <Button text={'Confirm'} handleClick={handleConfirm} />
+
         </KeyboardAwareScrollView>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

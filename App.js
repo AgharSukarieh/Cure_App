@@ -1,43 +1,32 @@
 import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {NavigationContainer} from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
 import SignIn from './src/screens/SignIn';
 import SignUpPharmacy from './src/screens/Pharmacy/SignUpPharmacy';
 import SignInPharmacy from './src/screens/Pharmacy/SignInPharmacy';
 import ConfirmProfile from './src/screens/ConfirmProfile';
 import ReportPage from './src/screens/ReportPage';
 import Sales from './src/screens/Sales';
+import Monthly from './src/screens/Monthly';
+import Weekly from './src/screens/Weekly';
+import Daily from './src/screens/Daily';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="SignIn" options={{headerShown: false}}>
-          {() => <SignIn />}
-        </Stack.Screen>
-
-        <Stack.Screen name="SignUpPharmacy" options={{headerShown: false}}>
-          {() => <SignUpPharmacy />}
-        </Stack.Screen>
-
-        <Stack.Screen name="SignInPharmacy" options={{headerShown: false}}>
-          {() => <SignInPharmacy />}
-        </Stack.Screen>
-
-        <Stack.Screen name="ConfirmProfile" options={{headerShown: false}}>
-          {() => <ConfirmProfile />}
-        </Stack.Screen>
-
-        <Stack.Screen name="ReportPage" options={{headerShown: false}}>
-          {() => <ReportPage />}
-        </Stack.Screen>
-
-        <Stack.Screen name="Sales" options={{headerShown: false}}>
-          {() => <Sales />}
-        </Stack.Screen>
-      </Stack.Navigator>
-    </NavigationContainer>
+      <Stack.Navigator >
+        <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
+        <Stack.Screen name="SignUpPharmacy" component={SignUpPharmacy} options={{ headerShown: false }} />
+        <Stack.Screen name="SignInPharmacy" component={SignInPharmacy} options={{ headerShown: false }} />
+        <Stack.Screen name="ConfirmProfile" component={ConfirmProfile} options={{ headerShown: false }} />
+        <Stack.Screen name="ReportPage" component={ReportPage} options={{ headerShown: false }} />
+        <Stack.Screen name="Sales" component={Sales} options={{ headerShown: false }} />
+        <Stack.Screen name="Monthly" component={Monthly} options={{ headerShown: false }} />
+        <Stack.Screen name="Weekly" component={Weekly} options={{ headerShown: false }} /> 
+        <Stack.Screen name="Daily" component={Daily} options={{ headerShown: false }} /> 
+    </Stack.Navigator>
+    </NavigationContainer >
   );
 }

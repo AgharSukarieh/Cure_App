@@ -1,8 +1,13 @@
-import {StyleSheet} from 'react-native';
-
+import { StyleSheet } from 'react-native';
+import { Dimensions } from 'react-native';
+const wwidth = Dimensions.get('window').width
+const wheight = Dimensions.get('window').height
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: wwidth,
+    height: wheight,
+    backgroundColor: "#fff"
   },
 
   // Start Top Container style image with Text
@@ -52,6 +57,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'white',
     height: 60,
+    justifyContent: 'center',
   },
   text: {
     color: 'white',
@@ -141,12 +147,13 @@ export const styles = StyleSheet.create({
     marginTop: 10,
   },
   leftText: {
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: 'bold',
+    color: '#000'
   },
   rightText: {
-    fontSize: 16,
-    color: '#253274',
+    fontSize: 17,
+    color: '#7189FF',
   },
   helloText: {
     color: '#253274',
@@ -158,14 +165,16 @@ export const styles = StyleSheet.create({
   filterContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 30,
+    marginTop: 10,
+    width: '100%',
   },
   filterbutton: {
     padding: 6,
     borderWidth: 1,
-    width: 110,
+    width: '90%',
     borderRadius: 5,
-    borderColor: '#707070',
+    borderColor: '#7189FF',
+    backgroundColor: '#fff'
   },
   filterbuttontext: {
     textAlign: 'center',
@@ -173,15 +182,48 @@ export const styles = StyleSheet.create({
   calenderContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 30,
+    marginTop: 10,
   },
   calenderSubContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    width: '45%',
   },
   calenderText: {
     fontSize: 20,
     color: 'rgba(37, 50, 116, 0.6)',
-    marginBottom: 5,
+    marginBottom: 0,
   },
+
+  card: {
+    width: '32%',
+    height: 100,
+    backgroundColor: '#7189FF',
+    marginBottom: 10,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  cardtext: {
+    color: '#fff',
+    textTransform: 'capitalize',
+    fontSize: 20
+  },
+  drop: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    width: '100%',
+    borderRadius: 7,
+    borderColor: '#7189FF'
+  },
+  btn: {
+    backgroundColor: '#7189FF',
+    width: '90%',
+    alignSelf: 'center',
+    borderRadius: 7,
+    padding: 7,
+    alignItems: 'center',
+    justifyContent:'center'
+
+  }
 });

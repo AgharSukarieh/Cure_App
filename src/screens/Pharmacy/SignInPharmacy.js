@@ -1,19 +1,19 @@
-import {View, Text, TouchableOpacity, SafeAreaView} from 'react-native';
-import React, {useState} from 'react';
-import {styles} from '../../components/styles';
+import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import { styles } from '../../components/styles';
 import TopView from '../../components/TopView';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import {useNavigation} from '@react-navigation/native';
+// import { useNavigation } from '@react-navigation/native';
 
-const SignInPharmacy = () => {
+const SignInPharmacy = ({navigation}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
   const handleSignIn = () => {
-    navigation.navigate('ConfirmProfile');
+    navigation.navigate('ReportPage');
     //
   };
 
@@ -27,7 +27,7 @@ const SignInPharmacy = () => {
       <View style={styles.checkPharmacy}>
         <Text style={styles.checkPharmacyText}>New to Pharmacy?</Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate('SignUpPharmacy')}
+          onPress={() => { navigation.navigate('SignUpPharmacy') }}
           activeOpacity={0.7}
           style={styles.signInPharmacyStyle}>
           <Text style={styles.buttonText}>Sign up</Text>

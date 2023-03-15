@@ -1,8 +1,8 @@
-import {View, Text, TouchableOpacity, SafeAreaView} from 'react-native';
-import React, {useState} from 'react';
-import {styles} from '../components/styles';
+import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import { styles } from '../components/styles';
 import TopView from '../components/TopView';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const ReportPage = () => {
   const [name, setName] = useState('Mahammed Farhan');
@@ -19,10 +19,10 @@ const ReportPage = () => {
         <Text style={styles.rightText}>{date}</Text>
       </View>
       <View style={styles.nameDateContainer}>
-        <Text style={styles.leftText}>Jabale AlWeibdeh</Text>
+        <Text style={styles.leftText}>Location : Jabale AlWeibdeh</Text>
       </View>
       <View style={styles.nameDateContainer}>
-        <Text style={styles.leftText}>supervisor Waleed</Text>
+        <Text style={styles.leftText}>supervisor : Waleed</Text>
       </View>
 
       <View style={styles.reportPageContainer}>
@@ -32,7 +32,9 @@ const ReportPage = () => {
             onPress={() => navigation.navigate('Sales')}>
             <Text style={styles.reportPageText}>Sales</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.reportPageButton}>
+          <TouchableOpacity
+            style={styles.reportPageButton}
+            onPress={() => navigation.navigate('Monthly')}>
             <Text style={styles.reportPageText}>Monthly Plan</Text>
           </TouchableOpacity>
         </View>

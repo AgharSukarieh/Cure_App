@@ -4,13 +4,13 @@ import { styles } from '../components/styles';
 import TopView from '../components/TopView';
 import Input from '../components/Input';
 import Button from '../components/Button';
-import { useNavigation } from '@react-navigation/native';
+// import { useNavigation } from '@react-navigation/native';
 
-const SignIn = () => {
+const SignIn = ({navigation}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
   const handleSignIn = () => {
     //
