@@ -21,10 +21,7 @@ const Daily = ({ navigation, route }) => {
             console.log('nnnnnnnnnoooooooooooooooF');
         }
     }
-    console.log(rows);
-
-    // console.log('title  -||=>', title);
-    // console.log('date   -||=>', date);
+ 
 
     return (
         <SafeAreaView style={styles.container}>

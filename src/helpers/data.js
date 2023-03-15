@@ -212,24 +212,35 @@ export const doctors = [
     {
         id: 1,
         docname: 'test doc 1',
+        Specialty: 'Surgery',
+        class: 'Class A'
     },
     {
         id: 2,
         docname: 'test doc 2',
+        Specialty: 'Anesthesiology',
+        class: 'Class C'
     },
     {
         id: 3,
         docname: 'test doc 3',
+        Specialty: 'Dermatology',
+        class: 'Class B'
     },
     {
         id: 4,
         docname: 'test doc 4',
+        Specialty: 'Anesthesiology',
+        class: 'Class A'
     },
     {
         id: 5,
         docname: 'test doc 5',
+        Specialty: 'Neurology',
+        class: 'Class C'
     },
 ]
+
 export const Specialty = [
     {
         id: 1,
@@ -292,5 +303,38 @@ export const drugs = [
     {
         drug_id: 4,
         drug_name: 'Drug test 4',
+    },
+]
+
+export const pharams = [
+    {
+        id: 1,
+        pname: 'test 1 pharm',
+        location: 'um al summaq',
+        class: 'Class A'
+    },
+    {
+        id: 2,
+        pname: 'test 2 pharm',
+        location: 'Jabal Weibdeh',
+        class: 'Class B'
+    },
+    {
+        id: 3,
+        pname: 'test 3 pharm',
+        location: 'Khalda',
+        class: 'Class C'
+    },
+    {
+        id: 4,
+        pname: 'test 4 pharm',
+        location: 'AL gardens',
+        class: 'Class B'
+    },
+    {
+        id: 5,
+        pname: 'test 5 pharm',
+        location: 'al rabieh',
+        class: 'Class A'
     },
 ]

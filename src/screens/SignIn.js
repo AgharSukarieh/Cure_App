@@ -13,12 +13,12 @@ const SignIn = ({navigation}) => {
   // const navigation = useNavigation();
 
   const handleSignIn = () => {
-    //
+    navigation.navigate('ReportPage')
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <TopView text={'Sgin in To representative'} />
+      <TopView text={'Sgin in'} />
       <Input lable={'USERNAME'} setData={setUsername} />
       <Input lable={'PASSWORD'} setData={setPassword} isPassword={true} />
       <Button text={'Sign In'} handleClick={handleSignIn} />

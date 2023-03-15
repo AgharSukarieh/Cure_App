@@ -3,8 +3,10 @@ import React, { useState } from 'react';
 import { styles } from '../components/styles';
 import GoBack from '../components/GoBack';
 import Moment from 'moment';
+import Weeklyareaedit from '../components/Weeklyareaedit';
 
 const Weekly = ({ navigation, route }) => {
+
     const data = route.params.data
     const year = route.params.year
     const month = route.params.data.id
@@ -23,6 +25,24 @@ const Weekly = ({ navigation, route }) => {
 
     const daysInMarch20232 = getDaysInMonth();
 
+    const [modal, setModal] = useState(false)
+
+    const [dayinfo, setdayinfo] = useState([])
+
+    const edit = (item) => {
+        let year = Moment(item).format('yyyy')
+        let month = Moment(item).format('M')
+        let day = Moment(item).format('D')
+        let data = {
+            item: item,
+            year: year,
+            month: month,
+            day: day,
+        }
+
+        setModal(true)
+        setdayinfo(data)
+    }
 
 
     return (
@@ -34,7 +54,7 @@ const Weekly = ({ navigation, route }) => {
                     {daysInMarch20232?.map((item, index) => (
                         <React.Fragment key={index}>
                             {index % 7 === 0 && <View style={style.week}><Text style={style.weektext}>{'Week ' + (Math.floor(index / 7) + 1)}</Text></View>}
-                            <TouchableOpacity style={style.card} onPress={() => { navigation.navigate('Daily', { title: Moment(item).format('dd  D - M - yyyy'), date: Moment(item).format('yyyy-M-D') }) }}>
+                            <TouchableOpacity style={style.card} onLongPress={() => { edit(item) }} onPress={() => { navigation.navigate('Daily', { title: Moment(item).format('dd  D - M - yyyy'), date: Moment(item).format('yyyy-M-D') }) }}>
                                 <View style={style.header}>
                                     <Text style={style.dayt}>{Moment(item).format('dd')}</Text>
                                 </View>
@@ -49,6 +69,7 @@ const Weekly = ({ navigation, route }) => {
 
                 </View>
             </ScrollView>
+            <Weeklyareaedit show={modal} hide={() => { setModal(false) }} data={dayinfo} submit={(e) => { console.log(e) }} />
         </SafeAreaView >
     );
 };

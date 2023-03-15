@@ -1,8 +1,11 @@
-import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { styles } from '../components/styles';
 import TopView from '../components/TopView';
 import { useNavigation } from '@react-navigation/native';
+
+// doctor id is 1 and pharma 2
+const keyid = 1
 
 const ReportPage = () => {
   const [name, setName] = useState('Mahammed Farhan');
@@ -12,36 +15,44 @@ const ReportPage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TopView text={'Report Page'} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <TopView text={'Report Page'} />
 
-      <View style={styles.nameDateContainer}>
-        <Text style={styles.leftText}>{name}</Text>
-        <Text style={styles.rightText}>{date}</Text>
-      </View>
-      <View style={styles.nameDateContainer}>
-        <Text style={styles.leftText}>Location : Jabale AlWeibdeh</Text>
-      </View>
-      <View style={styles.nameDateContainer}>
-        <Text style={styles.leftText}>supervisor : Waleed</Text>
-      </View>
+        <View style={styles.nameDateContainer}>
+          <Text style={styles.leftText}>{name}</Text>
+          <Text style={styles.rightText}>{date}</Text>
+        </View>
+        <View style={styles.nameDateContainer}>
+          <Text style={styles.leftText}>Location : Jabale AlWeibdeh</Text>
+        </View>
+        <View style={styles.nameDateContainer}>
+          <Text style={styles.leftText}>supervisor : Waleed</Text>
+        </View>
 
-      <View style={styles.reportPageContainer}>
-        <View style={styles.reportPageRow}>
-          <TouchableOpacity
-            style={styles.reportPageButton}
-            onPress={() => navigation.navigate('Sales')}>
+        <View style={styles.reportPageContainer}>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => navigation.navigate('Sales')}>
             <Text style={styles.reportPageText}>Sales</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.reportPageButton}
-            onPress={() => navigation.navigate('Monthly')}>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => navigation.navigate('Monthly')}>
             <Text style={styles.reportPageText}>Monthly Plan</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => { keyid == 1 ? navigation.navigate('Clientdoctorlist') : navigation.navigate('Clientpharmalist') }}>
+            <Text style={styles.reportPageText}>Client List</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
+            <Text style={styles.reportPageText}>Test</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
+            <Text style={styles.reportPageText}>Test</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
+            <Text style={styles.reportPageText}>Test</Text>
+          </TouchableOpacity>
+          {/* <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
+            <Text style={styles.reportPageText}>Test</Text>
+          </TouchableOpacity> */}
         </View>
-        <TouchableOpacity style={styles.reportPageButton}>
-          <Text style={styles.reportPageText}>Client List</Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

@@ -115,23 +115,23 @@ export const styles = StyleSheet.create({
     left: '85%',
   },
   reportPageContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
     marginTop: 50,
-  },
-  reportPageRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    width: wwidth,
+    paddingHorizontal: '3%',
+    justifyContent: 'space-between'
   },
   reportPageButton: {
     backgroundColor: '#ccc',
     padding: 10,
-    margin: 10,
-    width: 160,
+    width: '48%',
     height: 150,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#7189FF',
     borderRadius: 10,
+    marginBottom: 10
   },
 
   reportPageText: {
@@ -193,8 +193,7 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     color: 'rgba(37, 50, 116, 0.6)',
     marginBottom: 0,
-  },
-
+  }, 
   card: {
     width: '32%',
     height: 100,
@@ -223,7 +222,6 @@ export const styles = StyleSheet.create({
     borderRadius: 7,
     padding: 7,
     alignItems: 'center',
-    justifyContent:'center'
-
+    justifyContent: 'center' 
   }
 });
