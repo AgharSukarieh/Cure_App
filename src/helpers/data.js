@@ -338,3 +338,31 @@ export const pharams = [
         class: 'Class A'
     },
 ]
+
+export const pharams222 = [
+{
+    id:1,
+    listPharmacy:"Test, Test",
+    accountPharamcy:"Test",
+    
+}
+];
+export const Offers = [
+    {
+        id:1,
+        Offer:"70%",        
+    },
+    {
+        id:2,
+        Offer:"50%",        
+    },
+    {
+        id:3,
+        Offer:"70%",        
+    },
+    {
+        id:4,
+        Offer:"50%",        
+    },
+    
+]
