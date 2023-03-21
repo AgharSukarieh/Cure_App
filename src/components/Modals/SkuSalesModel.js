@@ -5,8 +5,8 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
-const SkuModel = ({ show, hide, data, submit }) => {  
-    
+const SkuSalesModel = ({ show, hide, data, submit }) => {
+
     return (
         <Modal
             animationType="slide"
@@ -22,28 +22,20 @@ const SkuModel = ({ show, hide, data, submit }) => {
                     </TouchableOpacity>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={styles.card}>
-                            <Text style={styles.lable}>Dr. name</Text>
-                            <Text style={styles.value}>{data.docname?.docname}</Text>
+                            <Text style={styles.lable}>Pharmacy</Text>
+                            <Text style={styles.value}>{data.pharam?.pname}</Text>
                         </View>
                         <View style={styles.card}>
-                            <Text style={styles.lable}>Dr. Specialty</Text>
-                            <Text style={styles.value}>{data.docSpecialty?.sp_name}</Text>
+                            <Text style={styles.lable}>accout details</Text>
+                            <Text style={styles.value}>{data.accout}</Text>
                         </View>
                         <View style={styles.card}>
-                            <Text style={styles.lable}>Dr. classification</Text>
-                            <Text style={styles.value}>{data.docclass?.clname}</Text>
+                            <Text style={styles.lable}>last payment</Text>
+                            <Text style={styles.value}>{data.last_payment}</Text>
                         </View>
                         <View style={styles.card}>
-                            <Text style={styles.lable}>item 1</Text>
-                            <Text style={styles.value}>{data.drug1 ? data.drug1.drug_name : '___________'}</Text>
-                        </View>
-                        <View style={styles.card}>
-                            <Text style={styles.lable}>item 2</Text>
-                            <Text style={styles.value}>{data.drug2 ? data.drug2.drug_name : '___________'}</Text>
-                        </View>
-                        <View style={styles.card}>
-                            <Text style={styles.lable}>item 3</Text>
-                            <Text style={styles.value}>{data.drug3 ? data.drug3.drug_name : '___________'}</Text>
+                            <Text style={styles.lable}>date</Text>
+                            <Text style={styles.value}>{data.date}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>Note</Text>
@@ -56,7 +48,7 @@ const SkuModel = ({ show, hide, data, submit }) => {
     );
 };
 
-export default SkuModel;
+export default SkuSalesModel;
 
 const styles = StyleSheet.create({
     ModalContainer: {

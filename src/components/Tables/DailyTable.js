@@ -1,7 +1,7 @@
 import { TouchableOpacity, Text, View, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import SkuModel from './skuModel';
+import SkuModel from '../Modals/skuModel';
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
@@ -46,14 +46,14 @@ const DailyTable = ({ data }) => {
 
                             <View style={{ ...styles.filtterel, width: '25%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.docSpecialty?.sp_name}</Text>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.docSpecialty?.name}</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
 
                             <View style={{ ...styles.filtterel, width: '20%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.docclass?.clname}</Text>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.docclass?.name}</Text>
                                 </TouchableOpacity>
                             </View>
 

@@ -2,9 +2,10 @@ import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView
 import React, { useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SelectDropdown from 'react-native-select-dropdown'
-import { classification, doctors, drugs, Specialty } from '../helpers/data';
+import { classification, doctors, drugs, Specialty } from '../../helpers/data';
 import Feather from 'react-native-vector-icons/Feather';
-import { styles } from './styles';
+import { styles } from '../styles';
+import Moment from 'moment';
 
 
 const width = Dimensions.get('window').width
@@ -27,7 +28,6 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
         setTextInputHeight(height);
     };
 
-
     const submit2 = () => {
         let data = {
             docname: docname,
@@ -37,6 +37,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
             drug2: drug2,
             drug3: drug3,
             note: note,
+            date: Moment(new Date()).format('Y-M-D h:m:s a'),
         }
         submit(data)
         hide()
@@ -73,7 +74,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.docname} 
+                                                    {item.docname}
                                                 </Text>
                                             </>
                                         );
@@ -107,7 +108,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.sp_name} 
+                                                    {item.name}
                                                 </Text>
                                             </>
                                         );
@@ -116,7 +117,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.sp_name}
+                                                    {selectedItem.name}
                                                 </Text>
                                             </>
                                         );
@@ -141,7 +142,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.clname} 
+                                                    {item.name}
                                                 </Text>
                                             </>
                                         );
@@ -150,7 +151,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.clname}
+                                                    {selectedItem.name}
                                                 </Text>
                                             </>
                                         );

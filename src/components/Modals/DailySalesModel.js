@@ -2,9 +2,9 @@ import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView
 import React, { useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SelectDropdown from 'react-native-select-dropdown'
-import { classification, doctors, drugs, Specialty } from '../helpers/data';
+import { classification, doctors, drugs, Specialty } from '../../helpers/data';
 import Feather from 'react-native-vector-icons/Feather';
-import { styles } from './styles';
+import { styles } from '../styles';
 
 
 const width = Dimensions.get('window').width

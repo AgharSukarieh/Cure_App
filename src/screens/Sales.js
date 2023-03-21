@@ -5,7 +5,7 @@ import GoBack from '../components/GoBack';
 import SearchableDropdown from 'react-native-searchable-dropdown';
 import { areas, salesdata } from '../helpers/data';
 import DatePicker from 'react-native-date-picker'
-import SalesTable from '../components/salesTable';
+import SalesTable from '../components/Tables/salesTable';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const Sales = () => {

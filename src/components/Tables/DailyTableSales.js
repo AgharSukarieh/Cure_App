@@ -1,23 +1,18 @@
 import { TouchableOpacity, Text, View, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import DailySalesModel from './OrderPopup';
-import DailySales from '../screens/DailySales';
-AntDesign.loadFont();
+import SkuModel from '../Modals/skuModel';
+import SkuSalesModel from '../Modals/SkuSalesModel';
+
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
-const DailyTableSales = ({ data , idSelected , setIdSelected}) => {
+const DailySalesTable = ({ data }) => {
     const [modal, setModal] = useState(false)
     const [rowdata, setrowdata] = useState(false)
-
     const rowModal = (rowdata) => {
         setrowdata(rowdata)
         setModal(true)
-    }
-    const handleSubmit = (id) =>{
-        console.log(id);
-        setIdSelected(id);
     }
     return (
         <View style={styles.container}>
@@ -27,14 +22,14 @@ const DailyTableSales = ({ data , idSelected , setIdSelected}) => {
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
                 <View style={styles.headerel}>
-                    <Text style={styles.headerel_tetx}>Account</Text>
-                </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
-                <View style={{ ...styles.headerel }}>
-                    <Text style={styles.headerel_tetx}>Action</Text>
+                    <Text style={styles.headerel_tetx}>Accout</Text>
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
                 <View style={{ ...styles.headerel, width: '20%', }}>
+                    <Text style={styles.headerel_tetx}>last payment</Text>
+                </View>
+                <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
+                <View style={{ ...styles.headerel, width: '10%', }}>
                     <Text style={styles.headerel_tetx}>...</Text>
                 </View>
             </View>
@@ -44,22 +39,29 @@ const DailyTableSales = ({ data , idSelected , setIdSelected}) => {
                     data.map((item, index) => (
                         <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} key={index}>
                             <View style={{ ...styles.filtterel, width: '25%', }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.listPharmacy}</Text>
-                            </View>
-                            <View style={{ ...styles.filtterel, width: '25%',alignItems:"center" }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.accountPharamcy}</Text>
-                            </View>
-                            <View style={{ ...styles.filtterel, width: '30%', }}>
-                                <TouchableOpacity onPress={() => handleSubmit(data.id)} style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>Submit</Text>
+                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.pharam?.pname}</Text>
                                 </TouchableOpacity>
                             </View>
+                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
+
+                            <View style={{ ...styles.filtterel, width: '25%', }}>
+                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.accout}</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
+
                             <View style={{ ...styles.filtterel, width: '20%', }}>
-                                <TouchableOpacity onPress={() => { setModal(true) }}>
-                                    <AntDesign name="infocirlceo" color='gold' size={17} />
+                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.last_payment}</Text>
                                 </TouchableOpacity>
                             </View>
-                             
+
+                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
+                            <TouchableOpacity style={{ ...styles.filtterel, flexDirection: 'row', width: '10%', }} onPress={() => { rowModal(item) }}>
+                                <AntDesign name="infocirlceo" color='gold' size={17} />
+                            </TouchableOpacity>
                         </View>
                     ))
                     :
@@ -68,12 +70,12 @@ const DailyTableSales = ({ data , idSelected , setIdSelected}) => {
                     </View>
                 }
             </>
-            <DailySalesModel show={modal} data={rowdata} hide={() => { setModal(false) }} submit={(e) => { console.log(e) }} />
+            <SkuSalesModel show={modal} data={rowdata} hide={() => { setModal(false) }} submit={(e) => { console.log(e) }} />
         </View >
     );
 };
 
-export default DailyTableSales;
+export default DailySalesTable;
 
 const styles = StyleSheet.create({
     container: {
@@ -88,14 +90,15 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderColor: '#7189FF',
         borderBottomWidth: 1,
-        marginTop: 8,
+        marginTop: 10,
         paddingVertical: 7
     },
     headerel: {
-        width: '21%',
+        width: '24%',
         justifyContent: 'center',
         alignItems: 'center',
         // borderWidth: 0.6,
+        paddingHorizontal: 1,
         borderColor: '#7189FF',
     },
     headerel_tetx: {
@@ -128,13 +131,9 @@ const styles = StyleSheet.create({
         borderRadius: 7
     },
     filtterel: {
-        width: '21%',
+        width: '29%',
         justifyContent: 'center',
         alignItems: 'center',
-        justifyContent:"center",
-        flexDirection:"row",
-        alignSelf:"center",
-        paddingHorizontal:2,
         // borderWidth: 1, 
         paddingVertical: 10,
         paddingHorizontal: 4
@@ -164,8 +163,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#7189FF',
         marginTop: 10,
-        borderRadius: 7,
-        
+        borderRadius: 7
     },
     rowel: {
         width: '29%',

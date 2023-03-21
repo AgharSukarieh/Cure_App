@@ -244,46 +244,46 @@ export const doctors = [
 export const Specialty = [
     {
         id: 1,
-        sp_name: 'Surgery'
+        name: 'Surgery'
     },
     {
         id: 2,
-        sp_name: 'Anesthesiology'
+        name: 'Anesthesiology'
     },
     {
         id: 3,
-        sp_name: 'Dermatology'
+        name: 'Dermatology'
     },
     {
         id: 4,
-        sp_name: 'Diagnostic radiology'
+        name: 'Diagnostic radiology'
     },
     {
         id: 5,
-        sp_name: 'Neurology'
+        name: 'Neurology'
     },
     {
         id: 6,
-        sp_name: 'Pediatrics'
+        name: 'Pediatrics'
     },
 ]
 
 export const classification = [
     {
         id: 1,
-        clname: 'Class A',
+        name: 'Class A',
     },
     {
         id: 2,
-        clname: 'Class B',
+        name: 'Class B',
     },
     {
         id: 3,
-        clname: 'Class C',
+        name: 'Class C',
     },
     {
         id: 4,
-        clname: 'Class D',
+        name: 'Class D',
     },
 ]
 
@@ -339,30 +339,138 @@ export const pharams = [
     },
 ]
 
-export const pharams222 = [
-{
-    id:1,
-    listPharmacy:"Test, Test",
-    accountPharamcy:"Test",
-    
-}
-];
 export const Offers = [
     {
-        id:1,
-        Offer:"70%",        
+        id: 1,
+        Offer: "70%",
     },
     {
-        id:2,
-        Offer:"50%",        
+        id: 2,
+        Offer: "50%",
     },
     {
-        id:3,
-        Offer:"70%",        
+        id: 3,
+        Offer: "70%",
     },
     {
-        id:4,
-        Offer:"50%",        
+        id: 4,
+        Offer: "50%",
     },
-    
+
 ]
+
+export const caht = [
+    {
+        id: 1,
+        userid: 1,
+        message:"hello",
+        uname: 'test usre 1',
+        time:'2',
+        time: '1:02 Pm',
+    },
+    {
+        id: 2,
+        userid: 2,
+        message:"hey",
+        uname: 'test usre 2',
+        time:'2',
+        time: '1:04 Pm',
+    },
+    {
+        id: 3,
+        userid: 2,
+        message:"hello",
+        uname: 'test usre 2',
+        time:'2',
+        time: '1:12 Pm',
+    },
+    {
+        id: 4,
+        userid: 1,
+        message:"hello",
+        uname: 'test usre 1',
+        time:'2',
+        time: '1:30 Pm',
+    },
+    {
+        id: 5,
+        userid: 1,
+        message:"hello",
+        uname: 'test usre 1',
+        time:'2',
+        time: '2:02 Pm',
+    },
+    {
+        id: 6,
+        userid: 3,
+        message:"hello",
+        uname: 'test usre 3',
+        time:'2',
+        time: '1:02 Pm',
+    },
+    {
+        id: 3,
+        userid: 2,
+        message:"hello",
+        uname: 'test usre 2',
+        time:'2',
+        time: '1:12 Pm',
+    },
+    {
+        id: 4,
+        userid: 1,
+        message:"hello",
+        uname: 'test usre 1',
+        time:'2',
+        time: '1:30 Pm',
+    },
+    {
+        id: 5,
+        userid: 1,
+        message:"hello",
+        uname: 'test usre 1',
+        time:'2',
+        time: '2:02 Pm',
+    },
+    {
+        id: 6,
+        userid: 3,
+        message:"hello",
+        uname: 'test usre 3',
+        time:'2',
+        time: '1:02 Pm',
+    },
+    {
+        id: 3,
+        userid: 2,
+        message:"hello",
+        uname: 'test usre 2',
+        time:'2',
+        time: '1:12 Pm',
+    },
+    {
+        id: 4,
+        userid: 1,
+        message:"hello",
+        uname: 'test usre 1',
+        time:'2',
+        time: '1:30 Pm',
+    },
+    {
+        id: 5,
+        userid: 1,
+        message:"hello",
+        uname: 'test usre 1',
+        time:'2',
+        time: '2:02 Pm',
+    },
+    {
+        id: 6,
+        userid: 3,
+        message:"hello",
+        uname: 'test usre 3',
+        time:'2',
+        time: '1:02 Pm',
+    },
+]
+

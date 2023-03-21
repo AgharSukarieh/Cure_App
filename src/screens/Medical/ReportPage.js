@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import React, { useState } from 'react';
-import { styles } from '../components/styles';
-import TopView from '../components/TopView';
+import { styles } from '../../components/styles';
+import TopView from '../../components/TopView';
 import { useNavigation } from '@react-navigation/native';
 
 // doctor id is 1 and pharma 2
@@ -36,10 +36,10 @@ const ReportPage = () => {
           <TouchableOpacity style={styles.reportPageButton} onPress={() => navigation.navigate('Monthly')}>
             <Text style={styles.reportPageText}>Monthly Plan</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.reportPageButton} onPress={() => { keyid == 1 ? navigation.navigate('Clientdoctorlist') : navigation.navigate('Clientpharmalist') }}>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => { navigation.navigate('Clientlist') }}>
             <Text style={styles.reportPageText}>Client List</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.reportPageButton} onPress={() => { navigation.navigate('DailySales', { title: "Test", date: "20-11-2020" }) }}>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
             <Text style={styles.reportPageText}>Test</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>

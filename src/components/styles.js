@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Dimensions } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 const wwidth = Dimensions.get('window').width
 const wheight = Dimensions.get('window').height
 export const styles = StyleSheet.create({
@@ -193,7 +193,7 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     color: 'rgba(37, 50, 116, 0.6)',
     marginBottom: 0,
-  }, 
+  },
   card: {
     width: '32%',
     height: 100,
@@ -212,6 +212,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderWidth: 1,
     width: '100%',
+    height: 40,
     borderRadius: 7,
     borderColor: '#7189FF'
   },
@@ -222,6 +223,21 @@ export const styles = StyleSheet.create({
     borderRadius: 7,
     padding: 7,
     alignItems: 'center',
-    justifyContent: 'center' 
-  }
+    justifyContent: 'center'
+  }, 
+  search: {
+    backgroundColor: '#fff',
+    width: '100%',
+    alignSelf: 'center',
+    borderRadius: 7,
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: Platform.OS == 'ios' ? 10 : 0,
+    borderWidth: 1,
+    borderColor: '#7189FF',
+  },
+  searchinput: {
+    width: '85%',
+  },
 });

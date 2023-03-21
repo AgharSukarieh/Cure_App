@@ -1,8 +1,8 @@
 import { View, Text, TouchableOpacity, SafeAreaView ,Dimensions} from 'react-native';
 import React, { useState } from 'react';
-import { styles } from '../components/styles';
-import GoBack from '../components/GoBack';
-import { Monthes } from '../helpers/data';
+import { styles } from '../../components/styles';
+import GoBack from '../../components/GoBack';
+import { Monthes } from '../../helpers/data';
 import SelectDropdown from 'react-native-select-dropdown'
 import Feather from 'react-native-vector-icons/Feather';
 import Moment from 'moment';

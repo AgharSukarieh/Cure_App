@@ -19,8 +19,7 @@ import {
   Offers,
 } from '../helpers/data';
 import Feather from 'react-native-vector-icons/Feather';
-import {styles} from './styles';
-import QRCode from 'react-native-qrcode-svg';
+import {styles} from './styles'; 
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;

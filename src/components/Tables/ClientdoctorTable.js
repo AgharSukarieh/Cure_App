@@ -1,7 +1,7 @@
 import { TouchableOpacity, Text, View, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import SkuModel from './skuModel';
+import SkuModel from '../Modals/skuModel';
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height

@@ -1,9 +1,9 @@
 import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView } from 'react-native';
 import React, { useState } from 'react';
-import { styles } from '../components/styles';
-import GoBack from '../components/GoBack';
+import { styles } from '../../components/styles';
+import GoBack from '../../components/GoBack';
 import Moment from 'moment';
-import Weeklyareaedit from '../components/Weeklyareaedit';
+import Weeklyareaedit from '../../components/Weeklyareaedit';
 
 const Weekly = ({ navigation, route }) => {
 

@@ -1,11 +1,11 @@
 import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView } from 'react-native';
 import React, { useState } from 'react';
-import { styles } from '../components/styles';
-import GoBack from '../components/GoBack';
+import { styles } from '../../components/styles';
+import GoBack from '../../components/GoBack';
 import Moment from 'moment';
-import DailyTable from '../components/DailyTable';
-import { salesdata } from '../helpers/data';
-import DailyaddModel from '../components/DailyaddModel';
+import DailyTable from '../../components/Tables/DailyTable';
+import { salesdata } from '../../helpers/data';
+import DailyaddModel from '../../components/Modals/DailyaddModel';
 
 const Daily = ({ navigation, route }) => {
 
@@ -21,7 +21,7 @@ const Daily = ({ navigation, route }) => {
             console.log('nnnnnnnnnoooooooooooooooF');
         }
     }
- 
+
 
     return (
         <SafeAreaView style={styles.container}>
