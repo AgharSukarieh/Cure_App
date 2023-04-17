@@ -4,6 +4,12 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Moment from 'moment';
 import { areas } from '../helpers/data';
 import SearchableDropdown from 'react-native-searchable-dropdown';
+import { GET_Areas } from '../Provider/ApiRequest';
+import { useEffect } from 'react';
+import axios from 'axios';
+import SelectDropdown from 'react-native-select-dropdown';
+import Feather from 'react-native-vector-icons/Feather';
+import { styles } from './styles';
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
@@ -11,6 +17,26 @@ const height = Dimensions.get('window').height
 const Weeklyareaedit = ({ show, hide, data, submit }) => {
 
     const [filterValue, setFilterValue] = useState('');
+
+
+    const [arealist, setarealist] = useState([])
+
+    const getarea = () => {
+        axios({
+            method: "POST",
+            url: GET_Areas,
+        }).then((response) => {
+            setarealist(response.data)
+        }).catch((error) => { console.log("🚀 ~ file: Weeklyareaedit.js ~ line 27 ~ getarea ~ error", error) })
+    }
+
+    useEffect(() => {
+        getarea()
+    }, [])
+    const submit22 = () => {
+        submit(filterValue)
+        hide()
+    }
 
     return (
         <Modal
@@ -20,47 +46,49 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
             coverScreen={false}
             onSwipeComplete={() => setModalVisible2(false)}
         >
-            <View style={styles.ModalContainer}>
-                <View style={styles.ModalView}>
+            <View style={style.ModalContainer}>
+                <View style={style.ModalView}>
                     <TouchableOpacity onPress={() => { hide() }}>
                         <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
-                    <Text style={styles.title}>{Moment(data.item).format('yyyy - m - D')}</Text>
-                    < View style={styles.filterContainer}>
-                        <Text style={styles.calenderText}>Area</Text>
-                        <SearchableDropdown
-                            onItemSelect={(item) => { setFilterValue(item) }}
-                            onRemoveItem={(item, index) => {
-                                setFilterValue('')
-                            }}
-                            containerStyle={{ padding: 5, width: '100%', alignSelf: 'center' }}
-                            itemStyle={{
-                                padding: 10,
-                                backgroundColor: '#fff',
-                                borderColor: '#bbb',
-                                borderWidth: 1,
+                    <Text style={style.title}>{Moment(data.item).format('yyyy - M - D')}</Text>
+                    < View style={style.filterContainer}>
+                        <Text style={style.calenderText}>Area</Text>
 
-
+                        <SelectDropdown
+                            buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
+                            buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
+                            defaultButtonText='Select'
+                            data={arealist}
+                            onSelect={(selectedItem, index) => {
+                                setFilterValue(selectedItem)
                             }}
-                            itemTextStyle={{ color: '#000' }}
-                            itemsContainerStyle={{ maxHeight: 140, width: '100%' }}
-                            items={areas}
-                            resetValue={false}
-                            textInputProps={
-                                {
-                                    placeholder: filterValue != '' ? filterValue.name : 'Select Area',
-                                    underlineColorAndroid: "transparent",
-                                    style: {
-                                        padding: 12,
-                                        borderWidth: 1,
-                                        borderColor: filterValue != '' ? '#7189FF' : '#7189FF',
-                                        borderRadius: 5,
-                                    },
-                                }
-                            }
+                            rowTextForSelection={(item, index) => {
+                                return (
+                                    <>
+                                        <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
+                                            {item.area_name}
+                                        </Text>
+                                    </>
+                                );
+                            }}
+                            buttonTextAfterSelection={(selectedItem, index) => {
+                                return (
+                                    <>
+                                        <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
+                                            {selectedItem.area_name}
+                                        </Text>
+                                    </>
+                                );
+                            }}
+                            renderDropdownIcon={isOpened => {
+                                return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
+                            }}
+                            dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
                         />
+
                     </View>
-                    <TouchableOpacity style={styles.btn} onPress={() => { hide() }}>
+                    <TouchableOpacity style={style.btn} onPress={() => { submit22() }}>
                         <Text style={{ fontSize: 18, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>submit</Text>
                     </TouchableOpacity>
                 </View>
@@ -71,7 +99,7 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
 
 export default Weeklyareaedit;
 
-const styles = StyleSheet.create({
+const style = StyleSheet.create({
     ModalContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -82,7 +110,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         borderRadius: 10,
         width: '95%',
-        height: '45%',
+        height: '60%',
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,

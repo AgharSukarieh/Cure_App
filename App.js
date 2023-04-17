@@ -20,7 +20,7 @@ import Chat from './src/screens/chat';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
-  const Role = "Sales";
+  const Role = "Salesss";
   return (
     <NavigationContainer>
       <Stack.Navigator >

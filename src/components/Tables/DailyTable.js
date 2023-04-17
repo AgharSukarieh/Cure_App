@@ -7,6 +7,7 @@ const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
 const DailyTable = ({ data }) => {
+
     const [modal, setModal] = useState(false)
     const [rowdata, setrowdata] = useState(false)
     const rowModal = (rowdata) => {
@@ -39,21 +40,21 @@ const DailyTable = ({ data }) => {
                         <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} key={index}>
                             <View style={{ ...styles.filtterel, width: '25%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.docname.docname}</Text>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.doctor?.doc_name}</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
 
                             <View style={{ ...styles.filtterel, width: '25%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.docSpecialty?.name}</Text>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.doctor?.sp_name}</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
 
                             <View style={{ ...styles.filtterel, width: '20%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.docclass?.name}</Text>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.doctor?.classification}</Text>
                                 </TouchableOpacity>
                             </View>
 

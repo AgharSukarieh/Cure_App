@@ -1,17 +1,47 @@
 import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView, TextInput } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SelectDropdown from 'react-native-select-dropdown'
 import { classification, doctors, drugs, Specialty } from '../../helpers/data';
 import Feather from 'react-native-vector-icons/Feather';
 import { styles } from '../styles';
 import Moment from 'moment';
+import { GET_DOCTORS_LIST, GET_Products, MED_ADD_DAILY } from '../../Provider/ApiRequest';
+import axios from 'axios';
 
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
 const DailyaddModel = ({ show, hide, data, submit }) => {
+
+    const [doctorslist, setdoctorslist] = useState([])
+    const [Productslist, setdProductslist] = useState([])
+
+    const getdoctors = () => {
+        axios({
+            method: "POST",
+            url: GET_DOCTORS_LIST,
+        }).then((response) => {
+            setdoctorslist(response.data)
+        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error", error) })
+    }
+
+    const getproducts = () => {
+        axios({
+            method: "POST",
+            url: GET_Products,
+        }).then((response) => {
+            setdProductslist(response.data)
+        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error", error) })
+    }
+
+    useEffect(() => {
+        getdoctors()
+        getproducts()
+    }, [])
+
+    // ///////////////////////////
 
     const [docname, setdocname] = useState('')
     const [docSpecialty, setdocSpecialty] = useState('')
@@ -30,17 +60,25 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
 
     const submit2 = () => {
         let data = {
-            docname: docname,
-            docSpecialty: docSpecialty,
-            docclass: docclass,
-            drug1: drug1,
-            drug2: drug2,
-            drug3: drug3,
+            user_id: 120,
+            area_id: 1,
+            doctor: docname.doc_id,
+            drug1: drug1.pro_id,
+            drug2: drug2.pro_id,
+            drug3: drug3.pro_id,
             note: note,
-            date: Moment(new Date()).format('Y-M-D h:m:s a'),
         }
-        submit(data)
-        hide()
+
+        axios({
+            method: "POST",
+            url: MED_ADD_DAILY,
+            data: data
+        }).then((response) => {
+            console.log(response.data);
+        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error", error) })
+
+        // submit(data)
+        // hide()
     }
 
     return (
@@ -66,7 +104,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                     buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
                                     buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                                     defaultButtonText='Select'
-                                    data={doctors}
+                                    data={doctorslist}
                                     onSelect={(selectedItem, index) => {
                                         setdocname(selectedItem)
                                     }}
@@ -74,7 +112,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.docname}
+                                                    {item.doc_name}
                                                 </Text>
                                             </>
                                         );
@@ -83,7 +121,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.docname}
+                                                    {selectedItem.doc_name}
                                                 </Text>
                                             </>
                                         );
@@ -94,7 +132,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                     dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
                                 />
                             </View>
-                            <View style={style.card}>
+                            {/* <View style={style.card}>
                                 <Text style={style.lable}>Doctor Specialty</Text>
                                 <SelectDropdown
                                     buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
@@ -161,14 +199,14 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                     }}
                                     dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
                                 />
-                            </View>
+                            </View> */}
                             <View style={style.card}>
                                 <Text style={style.lable}>item 1</Text>
                                 <SelectDropdown
                                     buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
                                     buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                                     defaultButtonText='Select'
-                                    data={drugs}
+                                    data={Productslist}
                                     onSelect={(selectedItem, index) => {
                                         setdrug1(selectedItem)
                                     }}
@@ -176,7 +214,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.drug_name}
+                                                    {item.product_name}
                                                 </Text>
                                             </>
                                         );
@@ -185,7 +223,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.drug_name}
+                                                    {selectedItem.product_name}
                                                 </Text>
                                             </>
                                         );
@@ -202,7 +240,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                     buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
                                     buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                                     defaultButtonText='Select'
-                                    data={drugs}
+                                    data={Productslist}
                                     onSelect={(selectedItem, index) => {
                                         setdrug2(selectedItem)
                                     }}
@@ -210,7 +248,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.drug_name}
+                                                    {item.product_name}
                                                 </Text>
                                             </>
                                         );
@@ -219,7 +257,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.drug_name}
+                                                    {selectedItem.product_name}
                                                 </Text>
                                             </>
                                         );
@@ -236,7 +274,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                     buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
                                     buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                                     defaultButtonText='Select'
-                                    data={drugs}
+                                    data={Productslist}
                                     onSelect={(selectedItem, index) => {
                                         setdrug3(selectedItem)
                                     }}
@@ -244,7 +282,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.drug_name}
+                                                    {item.product_name}
                                                 </Text>
                                             </>
                                         );
@@ -253,7 +291,7 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.drug_name}
+                                                    {selectedItem.product_name}
                                                 </Text>
                                             </>
                                         );

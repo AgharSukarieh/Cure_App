@@ -12,7 +12,6 @@ const Daily = ({ navigation, route }) => {
     const title = route.params.title
     const date = route.params.date
     const [modal, setModal] = useState(false)
-
     const [rows, setrows] = useState([])
     const mainrow = (e) => {
         if (!rows.includes(e)) {
@@ -21,7 +20,6 @@ const Daily = ({ navigation, route }) => {
             console.log('nnnnnnnnnoooooooooooooooF');
         }
     }
-
 
     return (
         <SafeAreaView style={styles.container}>

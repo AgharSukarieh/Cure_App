@@ -5,8 +5,8 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
-const SkuModel = ({ show, hide, data, submit }) => {  
-    
+const SkuModel = ({ show, hide, data, submit }) => {
+
     return (
         <Modal
             animationType="slide"
@@ -23,27 +23,27 @@ const SkuModel = ({ show, hide, data, submit }) => {
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={styles.card}>
                             <Text style={styles.lable}>Dr. name</Text>
-                            <Text style={styles.value}>{data.docname?.docname}</Text>
+                            <Text style={styles.value}>{data.doctor?.doc_name}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>Dr. Specialty</Text>
-                            <Text style={styles.value}>{data.docSpecialty?.name}</Text>
+                            <Text style={styles.value}>{data.doctor?.sp_name}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>Dr. classification</Text>
-                            <Text style={styles.value}>{data.docclass?.name}</Text>
+                            <Text style={styles.value}>{data.doctor?.classification}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>item 1</Text>
-                            <Text style={styles.value}>{data.drug1 ? data.drug1.drug_name : '___________'}</Text>
+                            <Text style={styles.value}>{data.drug1 ? data.drug1.product_name : '___________'}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>item 2</Text>
-                            <Text style={styles.value}>{data.drug2 ? data.drug2.drug_name : '___________'}</Text>
+                            <Text style={styles.value}>{data.drug2 ? data.drug2.product_name : '___________'}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>item 3</Text>
-                            <Text style={styles.value}>{data.drug3 ? data.drug3.drug_name : '___________'}</Text>
+                            <Text style={styles.value}>{data.drug3 ? data.drug3.product_name : '___________'}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>date</Text>
