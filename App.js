@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import SignIn from './src/screens/SignIn';
@@ -18,17 +18,39 @@ import WeeklySales from './src/screens/Sales/WeeklySales';
 import DailySales from './src/screens/Sales/DailySales';
 import Chat from './src/screens/chat';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Firstscreen from './src/helpers/firstscreen';
+
+
 export default function App() {
+
+  const [logedin, setlogedin] = useState('')
+  // console.log(logedin);
+  const getlogs = async () => {
+    const a = await AsyncStorage.getItem('userInfo')
+    let user = (JSON.parse(a))
+    if (user) {
+      setlogedin(user)
+    }
+  }
+  useEffect(() => {
+    getlogs()
+  }, []);
+
+
   const Stack = createNativeStackNavigator();
   const Role = "Salesss";
   return (
     <NavigationContainer>
       <Stack.Navigator >
+        <Stack.Screen name="Firstscreen" component={Firstscreen} options={{ headerShown: false }} />
+
         <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
+        <Stack.Screen name="ReportPage" component={Role == "Sales" ? ReportPageSales : ReportPage} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpPharmacy" component={SignUpPharmacy} options={{ headerShown: false }} />
         <Stack.Screen name="SignInPharmacy" component={SignInPharmacy} options={{ headerShown: false }} />
         <Stack.Screen name="ConfirmProfile" component={ConfirmProfile} options={{ headerShown: false }} />
-        <Stack.Screen name="ReportPage" component={Role == "Sales" ? ReportPageSales : ReportPage} options={{ headerShown: false }} />
+
         <Stack.Screen name="Sales" component={Sales} options={{ headerShown: false }} />
         <Stack.Screen name="Monthly" component={Monthly} options={{ headerShown: false }} />
         <Stack.Screen name="Weekly" component={Weekly} options={{ headerShown: false }} />

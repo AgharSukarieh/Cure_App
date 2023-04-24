@@ -15,9 +15,7 @@ const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
 const Weeklyareaedit = ({ show, hide, data, submit }) => {
-
     const [filterValue, setFilterValue] = useState('');
-
 
     const [arealist, setarealist] = useState([])
 
@@ -51,7 +49,7 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
                     <TouchableOpacity onPress={() => { hide() }}>
                         <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
-                    <Text style={style.title}>{Moment(data.item).format('yyyy - M - D')}</Text>
+                    <Text style={style.title}>{data.item}</Text>
                     < View style={style.filterContainer}>
                         <Text style={style.calenderText}>Area</Text>
 

@@ -23,31 +23,27 @@ const SkuModel = ({ show, hide, data, submit }) => {
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={styles.card}>
                             <Text style={styles.lable}>Dr. name</Text>
-                            <Text style={styles.value}>{data.doctor?.doc_name}</Text>
+                            <Text style={styles.value}>{data.doctor_id?.doc_name}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>Dr. Specialty</Text>
-                            <Text style={styles.value}>{data.doctor?.sp_name}</Text>
+                            <Text style={styles.value}>{data.doctor_id?.speciality}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>Dr. classification</Text>
-                            <Text style={styles.value}>{data.doctor?.classification}</Text>
+                            <Text style={styles.value}>{data.doctor_id?.classification}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>item 1</Text>
-                            <Text style={styles.value}>{data.drug1 ? data.drug1.product_name : '___________'}</Text>
+                            <Text style={styles.value}>{data.product1 ? data.product1.product_name : '___________'}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>item 2</Text>
-                            <Text style={styles.value}>{data.drug2 ? data.drug2.product_name : '___________'}</Text>
+                            <Text style={styles.value}>{data.product2 ? data.product2.product_name : '___________'}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>item 3</Text>
-                            <Text style={styles.value}>{data.drug3 ? data.drug3.product_name : '___________'}</Text>
-                        </View>
-                        <View style={styles.card}>
-                            <Text style={styles.lable}>date</Text>
-                            <Text style={styles.value}>{data.date}</Text>
+                            <Text style={styles.value}>{data.product3 ? data.product3.product_name : '___________'}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>Note</Text>

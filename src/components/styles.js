@@ -224,7 +224,7 @@ export const styles = StyleSheet.create({
     padding: 7,
     alignItems: 'center',
     justifyContent: 'center'
-  }, 
+  },
   search: {
     backgroundColor: '#fff',
     width: '100%',
@@ -240,4 +240,12 @@ export const styles = StyleSheet.create({
   searchinput: {
     width: '85%',
   },
+  logoutbtn: {
+    backgroundColor: '#db2323',
+    width: '90%',
+    alignSelf: 'center',
+    marginTop: 20,
+    padding: 10,
+    borderRadius: 7
+  }
 });

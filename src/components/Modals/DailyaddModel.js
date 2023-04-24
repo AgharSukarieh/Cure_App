@@ -8,12 +8,23 @@ import { styles } from '../styles';
 import Moment from 'moment';
 import { GET_DOCTORS_LIST, GET_Products, MED_ADD_DAILY } from '../../Provider/ApiRequest';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
-const DailyaddModel = ({ show, hide, data, submit }) => {
+const DailyaddModel = ({ show, hide, data, submit, date }) => {
+    const [user, setuser] = useState('');
+    const getlogs = async () => {
+        const a = await AsyncStorage.getItem('userInfo')
+        setuser(JSON.parse(a))
+    }
+    useEffect(() => {
+        getlogs()
+    }, []);
+
+
 
     const [doctorslist, setdoctorslist] = useState([])
     const [Productslist, setdProductslist] = useState([])
@@ -57,16 +68,17 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
         const { height } = event.nativeEvent.contentSize;
         setTextInputHeight(height);
     };
-
+    const currentTime = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false });
     const submit2 = () => {
         let data = {
-            user_id: 120,
+            user_id: user.id,
             area_id: 1,
             doctor: docname.doc_id,
             drug1: drug1.pro_id,
             drug2: drug2.pro_id,
             drug3: drug3.pro_id,
             note: note,
+            date: date + ' ' + currentTime
         }
 
         axios({
@@ -75,10 +87,13 @@ const DailyaddModel = ({ show, hide, data, submit }) => {
             data: data
         }).then((response) => {
             console.log(response.data);
+            if (response.data.message == 'done') {
+                submit(data)
+                hide()
+            }
         }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error", error) })
 
-        // submit(data)
-        // hide()
+
     }
 
     return (
