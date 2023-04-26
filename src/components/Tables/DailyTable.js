@@ -2,34 +2,43 @@ import { TouchableOpacity, Text, View, StyleSheet, Dimensions, ScrollView } from
 import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SkuModel from '../Modals/skuModel';
+import moment from 'moment';
+import SkueditModel from '../Modals/skueditModel';
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
-const DailyTable = ({ data }) => {
+const DailyTable = ({ data, refresh }) => {
 
     const [modal, setModal] = useState(false)
+    const [editmodal, seteditmodal] = useState(false)
     const [rowdata, setrowdata] = useState(false)
+
     const rowModal = (rowdata) => {
         setrowdata(rowdata)
         setModal(true)
     }
+    const editrowModal = (rowdata) => {
+        setrowdata(rowdata)
+        seteditmodal(true)
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <View style={styles.headerel}>
+                <View style={{ ...styles.headerel, width: '40%', }}>
                     <Text style={styles.headerel_tetx}>Dr. name</Text>
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
-                <View style={styles.headerel}>
+                <View style={{ ...styles.headerel, width: '23%', }}>
                     <Text style={styles.headerel_tetx}>Specialty</Text>
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
-                <View style={{ ...styles.headerel, width: '20%', }}>
-                    <Text style={styles.headerel_tetx}>class</Text>
+                <View style={{ ...styles.headerel, width: '22%', }}>
+                    <Text style={styles.headerel_tetx}>Time</Text>
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
-                <View style={{ ...styles.headerel, width: '10%', }}>
+                <View style={{ ...styles.headerel, width: '15%', }}>
                     <Text style={styles.headerel_tetx}>...</Text>
                 </View>
             </View>
@@ -38,30 +47,37 @@ const DailyTable = ({ data }) => {
                 {data ?
                     data.map((item, index) => (
                         <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} key={index}>
-                            <View style={{ ...styles.filtterel, width: '25%', }}>
+                            <View style={{ ...styles.filtterel, width: '40%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
                                     <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.doctor_id?.doc_name}</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
 
-                            <View style={{ ...styles.filtterel, width: '25%', }}>
+                            <View style={{ ...styles.filtterel, width: '23%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.doctor_id?.speciality}</Text>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF', textTransform: 'uppercase' }}>{item.doctor_id?.sp_abbr}</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
 
-                            <View style={{ ...styles.filtterel, width: '20%', }}>
+                            <View style={{ ...styles.filtterel, width: '22%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.doctor_id?.classification}</Text>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{moment(item.time_of_visit).format('h:m A')}</Text>
                                 </TouchableOpacity>
                             </View>
 
                             <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
-                            <TouchableOpacity style={{ ...styles.filtterel, flexDirection: 'row', width: '10%', }} onPress={() => { rowModal(item) }}>
-                                <AntDesign name="infocirlceo" color='gold' size={17} />
-                            </TouchableOpacity>
+                            <View style={{ ...styles.filtterel, flexDirection: 'row', width: '15%', justifyContent: 'space-between' }} >
+                                <TouchableOpacity style={{ marginHorizontal: 0 }} onPress={() => { rowModal(item) }}>
+                                    <AntDesign name="infocirlceo" color='gold' size={17} />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => { editrowModal(item) }}>
+                                    <AntDesign name="edit" color={index % 2 == 0 ? '#fff' : '#7189FF'} size={17} />
+                                </TouchableOpacity>
+                            </View>
+
+
                         </View>
                     ))
                     :
@@ -71,6 +87,7 @@ const DailyTable = ({ data }) => {
                 }
             </>
             <SkuModel show={modal} data={rowdata} hide={() => { setModal(false) }} submit={(e) => { console.log(e) }} />
+            <SkueditModel show={editmodal} data={rowdata} hide={() => { seteditmodal(false) }} submit={(e) => { refresh() }} />
         </View >
     );
 };

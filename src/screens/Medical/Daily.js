@@ -25,11 +25,11 @@ const Daily = ({ navigation, route }) => {
 
     const title = route.params.title
     const date = route.params.date
+    const area = route.params.area
     const [modal, setModal] = useState(false)
     const [alert, setalert] = useState(false)
     const [rows, setrows] = useState([])
     const [Productslist, setdProductslist] = useState([])
-
     const getdata = () => {
         let data = {
             userid: user.id,
@@ -58,13 +58,16 @@ const Daily = ({ navigation, route }) => {
             <ScrollView showsVerticalScrollIndicator={false}>
                 <GoBack text={title} />
                 <View style={{ marginVertical: 30 }}>
-                    <TouchableOpacity style={style.newbtn} onPress={() => { setModal(true) }}>
-                        <Text style={{ color: '#fff', fontSize: 18 }}>Add new</Text>
-                    </TouchableOpacity>
-                    <DailyTable data={rows} />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', alignSelf: 'center' }}>
+                        <Text style={{ fontSize: 25, color: '#253274', fontWeight: '600', }}>{area?.area_name}</Text>
+                        <TouchableOpacity style={style.newbtn} onPress={() => { setModal(true) }}>
+                            <Text style={{ color: '#fff', fontSize: 18 }}>Add new</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <DailyTable data={rows} refresh={() => { getdata() }} />
                 </View>
             </ScrollView>
-            <DailyaddModel show={modal} hide={() => { setModal(false) }} submit={(e) => { mainrow(e) }} date={date} />
+            <DailyaddModel show={modal} hide={() => { setModal(false) }} submit={(e) => { mainrow(e) }} date={date} areaid={area.areaid} />
             <Sweetalert show={alert} hide={() => { setalert(false) }} title='Record added successfully' />
         </SafeAreaView >
     );
@@ -86,6 +89,6 @@ export const style = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'flex-end',
-        marginHorizontal: 15
+        // marginHorizontal: 15
     }
 })

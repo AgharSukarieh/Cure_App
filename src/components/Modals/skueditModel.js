@@ -6,7 +6,7 @@ import { classification, doctors, drugs, Specialty } from '../../helpers/data';
 import Feather from 'react-native-vector-icons/Feather';
 import { styles } from '../styles';
 import Moment from 'moment';
-import { GET_DOCTORS_LIST, GET_Products, MED_ADD_DAILY } from '../../Provider/ApiRequest';
+import { GET_DOCTORS_LIST, GET_Products, MED_ADD_DAILY, MED_EDIT_DAILY } from '../../Provider/ApiRequest';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GetLocation from 'react-native-get-location'
@@ -15,7 +15,13 @@ import GetLocation from 'react-native-get-location'
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
-const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
+const SkueditModel = ({ show, hide, submit, data }) => {
+
+    const [docname, setdocname] = useState('')
+    const [drug1, setdrug1] = useState('')
+    const [drug2, setdrug2] = useState('')
+    const [drug3, setdrug3] = useState('')
+    const [note, setnote] = useState('')
     const [user, setuser] = useState('');
     const getlogs = async () => {
         const a = await AsyncStorage.getItem('userInfo')
@@ -23,6 +29,7 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
     }
     useEffect(() => {
         getlogs()
+        setnote(data.note)
     }, []);
 
 
@@ -55,13 +62,11 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
 
     // ///////////////////////////
 
-    const [docname, setdocname] = useState('')
-    const [docSpecialty, setdocSpecialty] = useState('')
-    const [docclass, setdocclass] = useState('')
-    const [drug1, setdrug1] = useState('')
-    const [drug2, setdrug2] = useState('')
-    const [drug3, setdrug3] = useState('')
-    const [note, setnote] = useState('')
+
+    const doctorindex = doctorslist?.findIndex(item => item?.doc_id === data?.doctor_id?.doc_id);
+    const peoduct1index = Productslist?.findIndex(item => item?.pro_id === data?.product1?.pro_id);
+    const peoduct2index = Productslist?.findIndex(item => item?.pro_id === data?.product2?.pro_id);
+    const peoduct3index = Productslist?.findIndex(item => item?.pro_id === data?.product3?.pro_id);
 
     const [textInputHeight, setTextInputHeight] = useState(40);
 
@@ -70,42 +75,24 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
         setTextInputHeight(height);
     };
     const currentTime = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false });
+
     const submit2 = () => {
-        const latitude = ''
-        const longitude = ''
-        GetLocation.getCurrentPosition({
-            enableHighAccuracy: true,
-            timeout: 60000,
-        })
-            .then(location => {
-                submit3(location.latitude, location.longitude)
-            })
-            .catch(error => {
-                const { code, message } = error;
-                console.warn(code, message);
-            })
 
-    }
-
-    const submit3 = (latitude, longitude) => {
-        let data = {
+        let nwedata = {
+            report_id: data.report_id,
             user_id: user.id,
-            area_id: areaid,
-            doctor: docname.doc_id,
-            drug1: drug1.pro_id,
-            drug2: drug2.pro_id,
-            drug3: drug3.pro_id,
-            note: note,
-            date: date + ' ' + currentTime,
-            latitude: latitude,
-            longitude: longitude
+            doctor: data?.doctor_id?.doc_id,
+            drug1: data?.product1?.pro_id,
+            drug2: data?.product2?.pro_id,
+            drug3: data?.product3.pro_id,
+            note: note ? note : data.note,
         }
+        // console.log('nwedata', nwedata);
         axios({
             method: "POST",
-            url: MED_ADD_DAILY,
-            data: data
+            url: MED_EDIT_DAILY,
+            data: nwedata
         }).then((response) => {
-            console.log(response.data);
             if (response.data.message == 'done') {
                 submit(data)
                 hide()
@@ -133,6 +120,7 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
                             <View style={style.card}>
                                 <Text style={style.lable}>Doctor name</Text>
                                 <SelectDropdown
+                                    disabled
                                     buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
                                     buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                                     defaultButtonText='Select'
@@ -162,79 +150,13 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
                                         return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
                                     }}
                                     dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
+                                    defaultValueByIndex={doctorindex}
                                 />
                             </View>
-                            {/* <View style={style.card}>
-                                <Text style={style.lable}>Doctor Specialty</Text>
-                                <SelectDropdown
-                                    buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-                                    buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-                                    defaultButtonText='Select'
-                                    data={Specialty}
-                                    onSelect={(selectedItem, index) => {
-                                        setdocSpecialty(selectedItem)
-                                    }}
-                                    rowTextForSelection={(item, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    buttonTextAfterSelection={(selectedItem, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    renderDropdownIcon={isOpened => {
-                                        return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-                                    }}
-                                    dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
-                                />
-                            </View>
-                            <View style={style.card}>
-                                <Text style={style.lable}>Doctor classification</Text>
-                                <SelectDropdown
-                                    buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-                                    buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-                                    defaultButtonText='Select'
-                                    data={classification}
-                                    onSelect={(selectedItem, index) => {
-                                        setdocclass(selectedItem)
-                                    }}
-                                    rowTextForSelection={(item, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    buttonTextAfterSelection={(selectedItem, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    renderDropdownIcon={isOpened => {
-                                        return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-                                    }}
-                                    dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
-                                />
-                            </View> */}
                             <View style={style.card}>
                                 <Text style={style.lable}>item 1</Text>
                                 <SelectDropdown
+                                    disabled
                                     buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
                                     buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                                     defaultButtonText='Select'
@@ -264,11 +186,13 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
                                         return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
                                     }}
                                     dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
+                                    defaultValueByIndex={peoduct1index}
                                 />
                             </View>
                             <View style={style.card}>
                                 <Text style={style.lable}>item 2</Text>
                                 <SelectDropdown
+                                    disabled
                                     buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
                                     buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                                     defaultButtonText='Select'
@@ -298,11 +222,13 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
                                         return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
                                     }}
                                     dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
+                                    defaultValueByIndex={peoduct2index}
                                 />
                             </View>
                             <View style={style.card}>
                                 <Text style={style.lable}>item 3</Text>
                                 <SelectDropdown
+                                    disabled
                                     buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
                                     buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                                     defaultButtonText='Select'
@@ -332,13 +258,15 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
                                         return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
                                     }}
                                     dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
+                                    defaultValueByIndex={peoduct3index}
                                 />
                             </View>
                             <View style={style.card}>
                                 <Text style={style.lable}>note</Text>
                                 <TextInput
-                                    onChangeText={(text) => { setnote(text) }}
                                     placeholder='Note'
+                                    value={note}
+                                    onChangeText={(text) => { setnote(text) }}
                                     style={{ ...styles.drop, height: textInputHeight, paddingHorizontal: 10 }}
                                     maxLength={300}
                                     multiline
@@ -360,7 +288,7 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
     );
 };
 
-export default DailyaddModel;
+export default SkueditModel;
 
 const style = StyleSheet.create({
     ModalContainer: {

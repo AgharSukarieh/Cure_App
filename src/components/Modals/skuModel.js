@@ -1,6 +1,7 @@
 import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import moment from 'moment';
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
@@ -20,18 +21,19 @@ const SkuModel = ({ show, hide, data, submit }) => {
                     <TouchableOpacity onPress={() => { hide() }}>
                         <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
-                    <ScrollView showsVerticalScrollIndicator={false}>
+                    <ScrollView showsVertical
+                    ScrollIndicator={false}>
                         <View style={styles.card}>
                             <Text style={styles.lable}>Dr. name</Text>
                             <Text style={styles.value}>{data.doctor_id?.doc_name}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>Dr. Specialty</Text>
-                            <Text style={styles.value}>{data.doctor_id?.speciality}</Text>
+                            <Text style={styles.value}>{data.doctor_id?.sp_name}</Text>
                         </View>
                         <View style={styles.card}>
-                            <Text style={styles.lable}>Dr. classification</Text>
-                            <Text style={styles.value}>{data.doctor_id?.classification}</Text>
+                            <Text style={styles.lable}>Time of Visit</Text>
+                            <Text style={styles.value}>{moment(data.time_of_visit).format('h:m A')}</Text>
                         </View>
                         <View style={styles.card}>
                             <Text style={styles.lable}>item 1</Text>

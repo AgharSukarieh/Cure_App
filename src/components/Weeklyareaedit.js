@@ -4,7 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Moment from 'moment';
 import { areas } from '../helpers/data';
 import SearchableDropdown from 'react-native-searchable-dropdown';
-import { GET_Areas } from '../Provider/ApiRequest';
+import { GET_Areas, GET_CITY } from '../Provider/ApiRequest';
 import { useEffect } from 'react';
 import axios from 'axios';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -15,14 +15,31 @@ const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
 const Weeklyareaedit = ({ show, hide, data, submit }) => {
-    const [filterValue, setFilterValue] = useState('');
 
+
+
+    const [cityValue, setcityValue] = useState();
+    const [filterValue, setFilterValue] = useState('');
+    const [citylist, setcitylist] = useState([])
     const [arealist, setarealist] = useState([])
 
+    const getcity = () => {
+        axios({
+            method: "POST",
+            url: GET_CITY,
+        }).then((response) => {
+            setcitylist(response.data);
+        }).catch((error) => { console.log("🚀 ~ file: Weeklyareaedit.js ~ line 27 ~ getarea ~ error", error) })
+    }
+
     const getarea = () => {
+        let data = {
+            city_id: cityValue
+        }
         axios({
             method: "POST",
             url: GET_Areas,
+            data: data
         }).then((response) => {
             setarealist(response.data)
         }).catch((error) => { console.log("🚀 ~ file: Weeklyareaedit.js ~ line 27 ~ getarea ~ error", error) })
@@ -30,11 +47,17 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
 
     useEffect(() => {
         getarea()
-    }, [])
+        getcity()
+    }, [cityValue])
     const submit22 = () => {
         submit(filterValue)
         hide()
     }
+
+
+    const doctorindex = citylist?.findIndex(item => item?.city_id === data?.city_id);
+
+    console.log('data', doctorindex);
 
     return (
         <Modal
@@ -51,21 +74,20 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
                     </TouchableOpacity>
                     <Text style={style.title}>{data.item}</Text>
                     < View style={style.filterContainer}>
-                        <Text style={style.calenderText}>Area</Text>
-
+                        <Text style={style.calenderText}>City</Text>
                         <SelectDropdown
                             buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
                             buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                             defaultButtonText='Select'
-                            data={arealist}
+                            data={citylist}
                             onSelect={(selectedItem, index) => {
-                                setFilterValue(selectedItem)
+                                setcityValue(selectedItem.city_id)
                             }}
                             rowTextForSelection={(item, index) => {
                                 return (
                                     <>
                                         <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                            {item.area_name}
+                                            {item.city_name}
                                         </Text>
                                     </>
                                 );
@@ -74,7 +96,7 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
                                 return (
                                     <>
                                         <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                            {selectedItem.area_name}
+                                            {selectedItem.city_name}
                                         </Text>
                                     </>
                                 );
@@ -84,7 +106,42 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
                             }}
                             dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
                         />
+                        {cityValue &&
+                            <>
 
+                                < Text style={style.calenderText}>Area</Text>
+                                <SelectDropdown
+                                    buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
+                                    buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
+                                    defaultButtonText='Select'
+                                    data={arealist}
+                                    onSelect={(selectedItem, index) => {
+                                        setFilterValue(selectedItem)
+                                    }}
+                                    rowTextForSelection={(item, index) => {
+                                        return (
+                                            <>
+                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
+                                                    {item.area_name}
+                                                </Text>
+                                            </>
+                                        );
+                                    }}
+                                    buttonTextAfterSelection={(selectedItem, index) => {
+                                        return (
+                                            <>
+                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
+                                                    {selectedItem.area_name}
+                                                </Text>
+                                            </>
+                                        );
+                                    }}
+                                    renderDropdownIcon={isOpened => {
+                                        return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
+                                    }}
+                                    dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
+                                />
+                            </>}
                     </View>
                     <TouchableOpacity style={style.btn} onPress={() => { submit22() }}>
                         <Text style={{ fontSize: 18, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>submit</Text>
@@ -128,7 +185,9 @@ const style = StyleSheet.create({
     calenderText: {
         fontSize: 17,
         color: 'rgba(37, 50, 116, 0.6)',
-        marginHorizontal: 15
+        marginHorizontal: 7,
+        marginBottom: 4,
+        marginTop: 10
     },
     btn: {
         backgroundColor: '#7189FF',

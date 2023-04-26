@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { styles } from '../../components/styles';
 import GoBack from '../../components/GoBack';
@@ -92,17 +92,20 @@ const Weekly = ({ navigation, route }) => {
             date: dayinfo.item,
             userid: user.id
         }
-        console.log(newdata);
-        // axios({
-        //     method: "POST",
-        //     url: MED_ADD_DAILYSCHEDULE,
-        //     data: newdata
-        // }).then((response) => {
-        //     getdata()
-        //     console.log(response.data)
-        // }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 43 ~ getdoctors ~ error", error) })
+        axios({
+            method: "POST",
+            url: MED_ADD_DAILYSCHEDULE,
+            data: newdata
+        }).then((response) => {
+            getdata()
+            console.log(response.data)
+        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 43 ~ getdoctors ~ error", error) })
     }
 
+
+    const alertarea = () => {
+        Alert.alert('Please Make Sure that you select an area for that day')
+    }
 
 
 
@@ -118,14 +121,23 @@ const Weekly = ({ navigation, route }) => {
                         const matchingData = weeklyscdata.find(data => Moment(data.date).isSame(item, 'day'));
                         // Get the area_name from the matching object, or use a default value if it's not found
                         const areaName = matchingData ? matchingData.area_name : 'No Area';
+                        const areaid = matchingData?.area_id
                         return (
                             <React.Fragment key={index}>
                                 {index % 7 === 0 && <View style={style.week}><Text style={style.weektext}>{'Week ' + (Math.floor(index / 7) + 1)}</Text></View>}
-                                <TouchableOpacity style={style.card} onLongPress={() => { edit(item) }} onPress={() => { navigation.navigate('Daily', { title: Moment(item).format('dd  D - M - yyyy'), date: Moment(item).format('yyyy-M-D') }) }}>
+                                <TouchableOpacity
+                                    // disabled={!weeklyscdata.find(sc => Moment(sc.date).format('yyyy-M-D') === Moment(item).format('yyyy-M-D'))}
+                                    style={style.card}
+                                    onLongPress={() => { edit(item) }}
+                                    onPress={() => {
+                                        !weeklyscdata.find(sc => Moment(sc.date).format('yyyy-M-D') === Moment(item).format('yyyy-M-D'))
+                                            ? alertarea()
+                                            : navigation.navigate('Daily', { title: Moment(item).format('dd  D - M - yyyy'), date: Moment(item).format('yyyy-M-D'), area: matchingData })
+                                    }}>
                                     <View style={style.header}>
                                         <Text style={style.dayt}>{Moment(item).format('dd')}</Text>
                                     </View>
-                                    <View style={style.day}>
+                                    <View style={{ ...style.day, backgroundColor: !weeklyscdata.find(sc => Moment(sc.date).format('yyyy-M-D') === Moment(item).format('yyyy-M-D')) ? '#7383d1' : '#7189FF' }}>
                                         <Text style={style.dayd}>{Moment(item).format('D')}</Text>
                                         <Text style={style.dayn}>{areaName}</Text>
                                     </View>

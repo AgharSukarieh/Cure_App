@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
+
 import SignIn from './src/screens/SignIn';
 import SignUpPharmacy from './src/screens/Pharmacy/SignUpPharmacy';
 import SignInPharmacy from './src/screens/Pharmacy/SignInPharmacy';
@@ -20,6 +21,7 @@ import Chat from './src/screens/chat';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Firstscreen from './src/helpers/firstscreen';
+import Locationupdate from './src/Provider/Locationupdate';
 
 
 export default function App() {
@@ -33,6 +35,10 @@ export default function App() {
       setlogedin(user)
     }
   }
+
+  Locationupdate()
+
+
   useEffect(() => {
     getlogs()
   }, []);
