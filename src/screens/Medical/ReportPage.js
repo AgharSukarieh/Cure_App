@@ -71,9 +71,6 @@ const ReportPage = () => {
           <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
             <Text style={styles.reportPageText}>Test</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
-            <Text style={styles.reportPageText}>Test</Text>
-          </TouchableOpacity> */}
         </View>
         <TouchableOpacity style={styles.logoutbtn} onPress={() => { logout() }}>
           <Text style={styles.reportPageText}>Logout</Text>

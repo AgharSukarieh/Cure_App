@@ -17,15 +17,15 @@ const ClientdoctorTable = ({ data }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <View style={styles.headerel}>
+                <View style={{ ...styles.headerel, width: '38%', }}>
                     <Text style={styles.headerel_tetx}>name</Text>
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
-                <View style={styles.headerel}>
+                <View style={{ ...styles.headerel, width: '24%', }}>
                     <Text style={styles.headerel_tetx}>Specialty</Text>
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
-                <View style={{ ...styles.headerel, }}>
+                <View style={{ ...styles.headerel, width: '38%', }}>
                     <Text style={styles.headerel_tetx}>class</Text>
                 </View>
             </View>
@@ -34,23 +34,23 @@ const ClientdoctorTable = ({ data }) => {
                 {data ?
                     data.map((item, index) => (
                         <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} key={index}>
-                            <View style={{ ...styles.filtterel, }}>
+                            <View style={{ ...styles.filtterel, width: '38%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.docname}</Text>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.doc_name}</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
 
-                            <View style={{ ...styles.filtterel, }}>
+                            <View style={{ ...styles.filtterel, width: '24%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.Specialty}</Text>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.sp_abbr}</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
 
-                            <View style={{ ...styles.filtterel, }}>
+                            <View style={{ ...styles.filtterel, width: '38%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.class}</Text>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.area_name}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

@@ -7,9 +7,12 @@ import { UPDATE_LOCATION } from './ApiRequest';
 import axios from 'axios';
 
 
-const Locationupdate = () => {
+const Locationupdate = async () => {
 
     const [location, setLocation] = useState(false);
+
+    const a = await AsyncStorage.getItem('userInfo')
+    let user = (JSON.parse(a))
     const requestLocationPermission = async () => {
         try {
             const granted = await PermissionsAndroid.request(
@@ -56,8 +59,7 @@ const Locationupdate = () => {
     }
 
     const updatelocation = async (position) => {
-        const a = await AsyncStorage.getItem('userInfo')
-        let user = (JSON.parse(a))
+
         let data = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -70,10 +72,15 @@ const Locationupdate = () => {
         }).then((response) => {
             // console.log('response', response.data)
         }).catch((error) => { console.log("🚀 ~ file: Locationupdate.js ~ line 72 ~ updatelocation ~ error", error) })
+
     }
 
     setInterval(() => {
-        watchPosition()
+        if (user) {
+            watchPosition()
+        } else {
+            console.log('no user');
+        }
     }, 20000);
 }
 

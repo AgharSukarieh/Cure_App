@@ -26,17 +26,18 @@ import Locationupdate from './src/Provider/Locationupdate';
 
 export default function App() {
 
-  const [logedin, setlogedin] = useState('')
+  const [logedin, setlogedin] = useState(false)
   // console.log(logedin);
   const getlogs = async () => {
     const a = await AsyncStorage.getItem('userInfo')
     let user = (JSON.parse(a))
     if (user) {
-      setlogedin(user)
+      setlogedin(true)
     }
   }
 
-  Locationupdate()
+
+  // Locationupdate()
 
 
   useEffect(() => {
@@ -52,7 +53,8 @@ export default function App() {
         <Stack.Screen name="Firstscreen" component={Firstscreen} options={{ headerShown: false }} />
 
         <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
-        <Stack.Screen name="ReportPage" component={Role == "Sales" ? ReportPageSales : ReportPage} options={{ headerShown: false }} />
+        {/* <Stack.Screen name="ReportPage" component={Role == "Sales" ? ReportPageSales : ReportPage} options={{ headerShown: false }} /> */}
+        <Stack.Screen name="ReportPage" component={ReportPage} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpPharmacy" component={SignUpPharmacy} options={{ headerShown: false }} />
         <Stack.Screen name="SignInPharmacy" component={SignInPharmacy} options={{ headerShown: false }} />
         <Stack.Screen name="ConfirmProfile" component={ConfirmProfile} options={{ headerShown: false }} />

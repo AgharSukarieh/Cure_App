@@ -13,3 +13,5 @@ export const MED_GET_DAILY = `${Api}med_getdailyreport`;
 export const MED_ADD_DAILYSCHEDULE = `${Api}med_add_dailyschedule`;
 export const MED_GET_DAILYSCHEDULE = `${Api}med_get_dailyschedule`;
 export const UPDATE_LOCATION = `${Api}updatelocation`;
+export const GET_SPECIALTIES = `${Api}getspecialties`; 
+export const GET_MED_CLIENT = `${Api}get_med_client`;
