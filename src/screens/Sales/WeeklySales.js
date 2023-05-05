@@ -1,16 +1,32 @@
-import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { styles } from '../../components/styles';
 import GoBack from '../../components/GoBack';
 import Moment from 'moment';
 import Weeklyareaedit from '../../components/Weeklyareaedit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MED_ADD_DAILYSCHEDULE, MED_GET_DAILYSCHEDULE } from '../../Provider/ApiRequest';
+import axios from 'axios';
 
 const WeeklySales = ({ navigation, route }) => {
+
+
+    const [user, setuser] = useState('');
+    const getlogs = async () => {
+        const a = await AsyncStorage.getItem('userInfo')
+        setuser(JSON.parse(a))
+    }
+    useEffect(() => {
+        getlogs()
+    }, []);
+
+    // //////////////////////////////////////////////
+    // //////////////////////////////////////////////
+    // //////////////////////////////////////////////
 
     const data = route.params.data
     const year = route.params.year
     const month = route.params.data.id
-
 
     function getDaysInMonth() {
         const daysInMonth = new Date(year, month, 0).getDate();
@@ -25,24 +41,73 @@ const WeeklySales = ({ navigation, route }) => {
 
     const daysInMarch20232 = getDaysInMonth();
 
+    // //////////////////////////////////////////////
+    // //////////////////////////////////////////////
+    // //////////////////////////////////////////////
+
+    const [weeklyscdata, setweeklyscdata] = useState([]);
+
+    const getdata = () => {
+        let newdata = {
+            userid: user.id,
+            date: year + '-' + month
+        }
+        axios({
+            method: "POST",
+            url: MED_GET_DAILYSCHEDULE,
+            data: newdata
+        }).then((response) => {
+            console.log(response.data)
+            // setweeklyscdata(response.data)
+        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 43 ~ getdoctors ~ error", error) })
+    }
+    useEffect(() => {
+        getdata()
+    }, [user])
+
+
+    // //////////////////////////////////////////////
+    // //////////////////////////////////////////////
+    // //////////////////////////////////////////////
+
+
+
+
     const [modal, setModal] = useState(false)
 
     const [dayinfo, setdayinfo] = useState([])
 
     const edit = (item) => {
-        let year = Moment(item).format('yyyy')
-        let month = Moment(item).format('M')
-        let day = Moment(item).format('D')
         let data = {
-            item: item,
-            year: year,
-            month: month,
-            day: day,
+            item: Moment(item).format('yyyy-M-D'),
         }
-
-        setModal(true)
         setdayinfo(data)
+        setModal(true)
+
     }
+
+    const submitedit = (data) => {
+        let newdata = {
+            area_id: data.area_id,
+            date: dayinfo.item,
+            userid: user.id
+        }
+        axios({
+            method: "POST",
+            url: MED_ADD_DAILYSCHEDULE,
+            data: newdata
+        }).then((response) => {
+            getdata()
+            console.log(response.data)
+        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 43 ~ getdoctors ~ error", error) })
+    }
+
+
+    const alertarea = () => {
+        Alert.alert('Please Make Sure that you select an area for that day')
+    }
+
+
 
 
     return (
@@ -51,25 +116,39 @@ const WeeklySales = ({ navigation, route }) => {
                 <GoBack text={'Weekly Plan'} />
                 <Text style={style.lale}>{data.name}</Text>
                 <View style={{ width: '95%', alignSelf: 'center', marginVertical: 8, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-                    {daysInMarch20232?.map((item, index) => (
-                        <React.Fragment key={index}>
-                            {index % 7 === 0 && <View style={style.week}><Text style={style.weektext}>{'Week ' + (Math.floor(index / 7) + 1)}</Text></View>}
-                            <TouchableOpacity style={style.card} onLongPress={() => { edit(item) }} onPress={() => { navigation.navigate('Daily', { title: Moment(item).format('dd  D - M - yyyy'), date: Moment(item).format('yyyy-M-D') }) }}>
-                                <View style={style.header}>
-                                    <Text style={style.dayt}>{Moment(item).format('dd')}</Text>
-                                </View>
-                                <View style={style.day}>
-                                    <Text style={style.dayd}>{Moment(item).format('D')}</Text>
-                                    <Text style={style.dayn}>Area Name</Text>
-                                </View>
-                            </TouchableOpacity>
-
-                        </React.Fragment>
-                    ))}
+                    {daysInMarch20232?.map((item, index) => {
+                        // Find the object in weeklyscdata with the same date as the current item
+                        const matchingData = weeklyscdata.find(data => Moment(data.date).isSame(item, 'day'));
+                        // Get the area_name from the matching object, or use a default value if it's not found
+                        const areaName = matchingData ? matchingData.area_name : 'No Area';
+                        const areaid = matchingData?.area_id
+                        return (
+                            <React.Fragment key={index}>
+                                {index % 7 === 0 && <View style={style.week}><Text style={style.weektext}>{'Week ' + (Math.floor(index / 7) + 1)}</Text></View>}
+                                <TouchableOpacity
+                                    // disabled={!weeklyscdata.find(sc => Moment(sc.date).format('yyyy-M-D') === Moment(item).format('yyyy-M-D'))}
+                                    style={style.card}
+                                    onLongPress={() => { edit(item) }}
+                                    onPress={() => {
+                                        !weeklyscdata.find(sc => Moment(sc.date).format('yyyy-M-D') === Moment(item).format('yyyy-M-D'))
+                                            ? alertarea()
+                                            : navigation.navigate('Daily', { title: Moment(item).format('dd  D - M - yyyy'), date: Moment(item).format('yyyy-M-D'), area: matchingData })
+                                    }}>
+                                    <View style={style.header}>
+                                        <Text style={style.dayt}>{Moment(item).format('dd')}</Text>
+                                    </View>
+                                    <View style={{ ...style.day, backgroundColor: !weeklyscdata.find(sc => Moment(sc.date).format('yyyy-M-D') === Moment(item).format('yyyy-M-D')) ? '#7383d1' : '#7189FF' }}>
+                                        <Text style={style.dayd}>{Moment(item).format('D')}</Text>
+                                        <Text style={style.dayn}>{areaName}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </React.Fragment>
+                        );
+                    })}
 
                 </View>
             </ScrollView>
-            <Weeklyareaedit show={modal} hide={() => { setModal(false) }} data={dayinfo} submit={(e) => { console.log(e) }} />
+            <Weeklyareaedit show={modal} hide={() => { setModal(false) }} data={dayinfo} submit={(e) => { submitedit(e) }} />
         </SafeAreaView >
     );
 };

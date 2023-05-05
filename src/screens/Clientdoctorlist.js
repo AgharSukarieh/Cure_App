@@ -82,22 +82,22 @@ const Clientdoctorlist = () => {
         let data = {
             userid: userinfo.id,
             specialty_id: selectedspecialty,
+            city_id: selectedcity,
             area_id: selectedarea
         }
-        console.log(data);
         axios({
             method: "POST",
             url: GET_MED_CLIENT,
             data: data
         }).then((response) => {
             setclientslist(response.data)
-            console.log('response', response.data.length);
+            console.log('response', GET_MED_CLIENT);
         }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error", error) })
     }
 
     useEffect(() => {
         get_med_client()
-    }, [userinfo, selectedspecialty, selectedarea])
+    }, [userinfo, selectedspecialty, selectedarea, selectedcity])
 
     // //////////////////////////////////////////////////////////
     // //////////////////////////////////////////////////////////

@@ -22,6 +22,7 @@ import Chat from './src/screens/chat';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Firstscreen from './src/helpers/firstscreen';
 import Locationupdate from './src/Provider/Locationupdate';
+import Sal_rep_pharm from './src/screens/Sales/sal_rep_pharm';
 
 
 export default function App() {
@@ -46,7 +47,7 @@ export default function App() {
 
 
   const Stack = createNativeStackNavigator();
-  const Role = "Salesss";
+  const Role = "Sales";
   return (
     <NavigationContainer>
       <Stack.Navigator >
@@ -62,9 +63,11 @@ export default function App() {
         <Stack.Screen name="Sales" component={Sales} options={{ headerShown: false }} />
         <Stack.Screen name="Monthly" component={Monthly} options={{ headerShown: false }} />
         <Stack.Screen name="Weekly" component={Weekly} options={{ headerShown: false }} />
+        {/* <Stack.Screen name="Weekly" component={Role == "Sales" ? WeeklySales : Weekly} options={{ headerShown: false }} /> */}
         <Stack.Screen name="Daily" component={Role == "Sales" ? DailySales : Daily} options={{ headerShown: false }} />
         <Stack.Screen name="Clientlist" component={Role == "Sales" ? Clientpharmalist : Clientdoctorlist} options={{ headerShown: false }} />
         <Stack.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
+        <Stack.Screen name="Sal_rep_pharm" component={Sal_rep_pharm} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer >
   );

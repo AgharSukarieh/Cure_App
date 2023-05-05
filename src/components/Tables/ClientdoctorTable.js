@@ -26,7 +26,7 @@ const ClientdoctorTable = ({ data }) => {
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
                 <View style={{ ...styles.headerel, width: '38%', }}>
-                    <Text style={styles.headerel_tetx}>class</Text>
+                    <Text style={styles.headerel_tetx}>Area</Text>
                 </View>
             </View>
 
