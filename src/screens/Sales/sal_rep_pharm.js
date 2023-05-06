@@ -61,8 +61,8 @@ const Sal_rep_pharm = ({navigation, route}) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={{height:'100%', flex:1, flexDirection: 'column',alignContent:'space-around' }}>
+      {/* <ScrollView showsVerticalScrollIndicator={false}> */}
         <GoBack text={item?.pharm_id?.pharmacy_name} />
         {/* <View style={{ marginVertical: 30 }}>
                     <View style={style.mune}>
@@ -89,7 +89,7 @@ const Sal_rep_pharm = ({navigation, route}) => {
                     </View>
 
                 </View> */}
-        <View style={styles.containerSignIn}>
+        <View style={{...styles.containerSignIn}}>
           <TouchableOpacity
             style={styles.Sal_rep_pharmButton}
             onPress={() => navigation.navigate('Sales')}>
@@ -105,11 +105,10 @@ const Sal_rep_pharm = ({navigation, route}) => {
             onPress={() => {
               navigation.navigate('Order');
             }}>
-            <Text style={styles.reportPageText}>Order</Text>
+            <Text style={styles.reportPageText}>Orders</Text>
           </TouchableOpacity>
         </View>
-
-      </ScrollView>
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };

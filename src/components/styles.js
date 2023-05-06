@@ -47,6 +47,13 @@ export const styles = StyleSheet.create({
     paddingLeft: 10,
     borderRadius: 5,
   },
+  inputModel: {
+    height: 40,
+    borderColor: '#7189FF',
+    borderWidth: 1,
+    paddingLeft: 10,
+    borderRadius: 5,
+  },
   inputError: {
     height: 60,
     borderColor: 'red',

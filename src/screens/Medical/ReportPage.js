@@ -14,6 +14,7 @@ const ReportPage = () => {
   const date = new Date().toLocaleDateString();
   const navigation = useNavigation();
   const [user, setuser] = useState('');
+
   const getlogs = async () => {
     const a = await AsyncStorage.getItem('userInfo')
     setuser(JSON.parse(a))
@@ -34,6 +35,9 @@ const ReportPage = () => {
     } catch (error) {
       console.log(`Error removing item with key userInfo from storage: ${error}`);
     }
+  }
+  const scan = async () => {
+    
   }
 
   return (
@@ -77,7 +81,7 @@ const ReportPage = () => {
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
-  );
+  )
 };
 
 export default ReportPage;

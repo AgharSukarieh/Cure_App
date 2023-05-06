@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView, TextInput } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView, TextInput, Platform, } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SelectDropdown from 'react-native-select-dropdown'
@@ -11,6 +11,7 @@ import { GET_PHARMACY, SAL_ADD_REPORT } from '../../Provider/ApiRequest';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Input from '../Input';
+import ScanBarcodeAndQRModel from './ScanBarcodeAndQRModel';
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
@@ -20,6 +21,9 @@ const AddNewInventoryModel = ({ show, hide, submit }) => {
     const [availability, setAvailability] = useState('')
     const [expired, setExpired] = useState('');
     const [batchNumber, setBatchNumber] = useState('');
+    const [modal, setModal] = useState(false)
+    const [dataForScan, setDataForScan] = useState('');
+
     const data = {item,availability,expired,batchNumber}
 
     const submitBtn = () => {
@@ -32,10 +36,44 @@ const AddNewInventoryModel = ({ show, hide, submit }) => {
             setBatchNumber('')
         }
     }
+    const submitAfterGetBarcode = (dataforscan) => {
+        setDataForScan(dataforscan)
+        console.log(`Api for: ${dataforscan}`)
+    }
 
     const scan = () => {
-
-    }
+        // To Start Scanning
+        if (Platform.OS === 'android') {
+          async function requestCameraPermission() {
+            try {
+              const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.CAMERA,
+                {
+                  title: 'Camera Permission',
+                  message: 'App needs permission for camera access',
+                },
+              );
+              if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                // If CAMERA Permission is granted
+                setCode('');
+                // setOpneScanner(true);
+                setModal(true);
+              } else {
+                alert('CAMERA permission denied');
+              }
+            } catch (err) {
+              alert('Camera permission err', err);
+              console.warn(err);
+            }
+          }
+          // Calling the camera permission function
+          requestCameraPermission();
+        } else {
+            setDataForScan('');
+            // setOpneScanner(true);
+            setModal(true);
+        }
+      };
 
 
     return (
@@ -58,13 +96,13 @@ const AddNewInventoryModel = ({ show, hide, submit }) => {
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={{ marginVertical: 0 }}>
                             <View style={style.card}>
-                            <Input lable={'Item'} setData={setItem} style= {item ? styles.input : styles.inputError}/>
-                            <Input lable={'Availability'} setData={setAvailability} style= {availability ? styles.input : styles.inputError} />
-                            <Input lable={'Expired'} setData={setExpired} style= {expired ? styles.input : styles.inputError} />
-                            <Input lable={'BatchNumber'} setData={setBatchNumber} />
+                            <Input lable={'Item'} setData={setItem} style= { styles.inputModel /* {item ? styles.input : styles.inputError} */} />
+                            <Input lable={'Availability'} setData={setAvailability} style= {styles.inputModel /*availability ? styles.input : styles.inputError} */} />
+                            <Input lable={'Expired'} setData={setExpired} style= {styles.inputModel /*expired ? styles.input : styles.inputError} */} />
+                            <Input lable={'BatchNumber'} setData={setBatchNumber} style= {styles.inputModel}/>
                             </View>
                             <View style={style.card}>
-                                <TouchableOpacity style={{ ...styles.btn, backgroundColor: '#7189FF' }} onPress={() => { submitBtn() }}>
+                                <TouchableOpacity style={{ ...styles.btn, backgroundColor: '#7189FF', height: 45 }} onPress={() => { submitBtn() }}>
                                     <Text style={{ fontSize: 18, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>submit</Text>
                                 </TouchableOpacity>
                             </View>
@@ -72,6 +110,8 @@ const AddNewInventoryModel = ({ show, hide, submit }) => {
                     </ScrollView>
                 </View>
             </View>
+            <></>
+            <ScanBarcodeAndQRModel show={modal} hide={() => { setModal(false) }} submit={(e) => { submitAfterGetBarcode(e) }} />
         </Modal>
     );
 };

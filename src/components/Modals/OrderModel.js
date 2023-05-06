@@ -32,6 +32,10 @@ const OrderModel = ({ show, hide, data }) => {
                                     <Text style={styles.item_name}>{item.item_name}</Text>
                                     <View style={{ width: '99%', height: 0.5, backgroundColor: '#7189FF', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 15 }}>
+                                    <View style={styles.item_info}>
+                                            <Text style={styles.item_itemtitle}>Bonus</Text>
+                                            <Text style={styles.item_item}>{item.bonus}</Text>
+                                        </View>
                                         <View style={styles.item_info}>
                                             <Text style={styles.item_itemtitle}>Offers</Text>
                                             <Text style={styles.item_item}>{item.items_sum}</Text>

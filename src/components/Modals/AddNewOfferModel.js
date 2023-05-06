@@ -15,24 +15,12 @@ import Input from '../Input';
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
-const AddNewOrderModel = ({ show, hide, submit }) => {
-    const [item, setItem] = useState('');
-    const [unit, setUnit] = useState('')
-    const [bonns, setBonns] = useState('');
-    const [offers, setOffers] = useState('');
-    const [expiredDate, setExpiredDate] = useState('');
-    const data = {item,unit,bonns,offers,expiredDate}
-
+const AddNewOfferModel = ({ show, hide, submit, item }) => {
+    const [data, setData] = useState();
+console.log(item);
     const submitBtn = () => {
-        if (item != '' && unit != '' && expiredDate != ''){
-            submit(data)
-            hide()
-            setItem('')
-            setUnit('')
-            setBonns('')
-            setOffers('')
-            setExpiredDate('')
-        }
+        // submit(data)
+        hide()
     }
 
     return (
@@ -49,18 +37,14 @@ const AddNewOrderModel = ({ show, hide, submit }) => {
                         <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
                     
-                    <Text style={style.maintitle}>Add new </Text>
+                    <Text style={style.maintitle}>Add new Offer</Text>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={{ marginVertical: 0 }}>
                             <View style={style.card}>
-                            <Input lable={'Item'} setData={setItem} style= {styles.inputModel}/>
-                            <Input lable={'Unit'} setData={setUnit} style= {styles.inputModel} />
-                            <Input lable={'Expired Date'} setData={setExpiredDate}  style= {styles.inputModel} />
-                            <Input lable={'Bonns'} setData={setBonns} style= {styles.inputModel}/>
-                            <Input lable={'Offers'} setData={setOffers} style= {styles.inputModel}/>
+                            {/* Components */}
                             </View>
                             <View style={style.card}>
-                                <TouchableOpacity style={{ ...styles.btn, backgroundColor: '#7189FF', height: 45 }} onPress={() => { submitBtn() }}>
+                                <TouchableOpacity style={{ ...styles.btn, backgroundColor: '#7189FF' }} onPress={() => { submitBtn() }}>
                                     <Text style={{ fontSize: 18, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>submit</Text>
                                 </TouchableOpacity>
                             </View>
@@ -72,7 +56,7 @@ const AddNewOrderModel = ({ show, hide, submit }) => {
     );
 };
 
-export default AddNewOrderModel;
+export default AddNewOfferModel;
 
 const style = StyleSheet.create({
     ModalContainer: {
