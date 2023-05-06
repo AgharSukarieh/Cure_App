@@ -47,6 +47,13 @@ export const styles = StyleSheet.create({
     paddingLeft: 10,
     borderRadius: 5,
   },
+  inputError: {
+    height: 60,
+    borderColor: 'red',
+    borderWidth: 1,
+    paddingLeft: 10,
+    borderRadius: 5,
+  },
   // End input controllers style
 
   // Button Style
@@ -133,7 +140,17 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10
   },
-
+  Sal_rep_pharmButton: {
+    backgroundColor: '#ccc',
+    padding: 10,
+    width: '90%',
+    height: 150,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#7189FF',
+    borderRadius: 10,
+    marginBottom: 20
+  },
   reportPageText: {
     textAlign: 'center',
     fontSize: 24,

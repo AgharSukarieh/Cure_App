@@ -1,12 +1,12 @@
 import { TouchableOpacity, Text, View, StyleSheet, Dimensions } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import SalesModel from '../Modals/SalesModel';
+import OrderModel from '../Modals/OrderModel';
 AntDesign.loadFont();
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
-const SalesTable = ({ data }) => {
+const OrderTable = ({ data }) => {
 
     const [modal, setModal] = useState(false)
     const [rowdata, setrowdata] = useState('')
@@ -17,17 +17,18 @@ const SalesTable = ({ data }) => {
 
     return (
         <View style={styles.container}>
+
             <View style={styles.header}>
                 <View style={{ ...styles.headerel, width: '30%', }}>
-                    <Text style={styles.headerel_tetx}>Name</Text>
+                    <Text style={styles.headerel_tetx}>Items</Text>
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
                 <View style={styles.headerel}>
-                    <Text style={styles.headerel_tetx}>Item</Text>
+                    <Text style={styles.headerel_tetx}>Unit</Text>
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
                 <View style={styles.headerel}>
-                    <Text style={styles.headerel_tetx}>units</Text>
+                    <Text style={styles.headerel_tetx}>Bonns</Text>
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
                 <View style={{ ...styles.headerel, width: '12%', }}>
@@ -65,12 +66,12 @@ const SalesTable = ({ data }) => {
                     <Text style={{ textTransform: 'capitalize', fontSize: 25 }}>no available data</Text>
                 </View>
             }
-            <SalesModel show={modal} hide={() => { setModal(false) }} data={rowdata} />
+            <OrderModel show={modal} hide={() => { setModal(false) }} data={rowdata} />
         </View >
     );
 };
 
-export default SalesTable;
+export default OrderTable;
 
 const styles = StyleSheet.create({
     container: {

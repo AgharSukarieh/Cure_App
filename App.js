@@ -17,6 +17,8 @@ import ReportPageSales from './src/screens/Sales/ReportPageSales';
 import MonthlySales from './src/screens/Sales/MonthlyPlanSales';
 import WeeklySales from './src/screens/Sales/WeeklySales';
 import DailySales from './src/screens/Sales/DailySales';
+import Inventory from './src/screens/Sales/Inventory';
+import Order from './src/screens/Sales/Order';
 import Chat from './src/screens/chat';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -68,6 +70,8 @@ export default function App() {
         <Stack.Screen name="Clientlist" component={Role == "Sales" ? Clientpharmalist : Clientdoctorlist} options={{ headerShown: false }} />
         <Stack.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
         <Stack.Screen name="Sal_rep_pharm" component={Sal_rep_pharm} options={{ headerShown: false }} />
+        <Stack.Screen name="Inventory" component={Inventory} options={{ headerShown: false }} />
+        <Stack.Screen name="Order" component={Order} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer >
   );

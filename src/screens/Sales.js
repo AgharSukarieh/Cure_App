@@ -10,6 +10,7 @@ import SelectDropdown from 'react-native-select-dropdown'
 import axios from 'axios';
 import { GET_Areas, GET_CITY } from '../Provider/ApiRequest';
 import Feather from 'react-native-vector-icons/Feather';
+Feather.loadFont();
 
 const Sales = () => {
 

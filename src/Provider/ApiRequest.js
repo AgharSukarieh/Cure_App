@@ -1,4 +1,4 @@
-export const Api = "http://pharmaceuticals.ncitsolutions.com/api/"
+export const Api = "https://pharmaceuticals.ncitsolutions.com/api/"
 
 
 export const LOGIN = `${Api}login`;
