@@ -1,67 +1,142 @@
-import { View, Text, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { styles } from '../components/styles';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {styles} from '../components/styles';
 import GoBack from '../components/GoBack';
 import SearchableDropdown from 'react-native-searchable-dropdown';
-import { salesdata } from '../helpers/data';
-import DatePicker from 'react-native-date-picker'
+import {salesdata} from '../helpers/data';
+import DatePicker from 'react-native-date-picker';
 import SalesTable from '../components/Tables/salesTable';
-import SelectDropdown from 'react-native-select-dropdown'
+import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';
-import { GET_Areas, GET_CITY } from '../Provider/ApiRequest';
+import {GET_Areas, GET_CITY} from '../Provider/ApiRequest';
 import Feather from 'react-native-vector-icons/Feather';
+import {Dropdown} from 'react-native-element-dropdown';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 Feather.loadFont();
 
 const Sales = () => {
+  //
+  const [citiesData, setCitiesData] = useState([]);
+  const [areasData, setAreasData] = useState([]);
 
-  const [citylist, setcitylist] = useState([])
-  const [selectedcity, setselectedcity] = useState('');
-  const [arealist, setarealist] = useState([])
-  const [selectedarea, setselectedarea] = useState()
- 
-  const getdoctors = () => {
+  const [cityValue, setCityValue] = useState(null);
+  const [isCityFocus, setIsCityFocus] = useState(false);
+
+  const [areaValue, setAreaValue] = useState(null);
+  const [isAreaFocus, setIsAreaFocus] = useState(false);
+
+  const afterSelectCityAndArea = area_id => {
+    console.log(cityValue, area_id);
+  };
+
+  const getCities = () => {
     axios({
-      method: "POST",
+      method: 'POST',
       url: GET_CITY,
-    }).then((response) => {
-      setcitylist(response.data)
-    }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error", error) })
-  }
+    })
+      .then(response => {
+        var count = Object.keys(response.data).length;
+        let cityArray = [];
+        for (var i = 0; i < count; i++) {
+          cityArray.push({
+            value: response.data[i].city_id,
+            label: response.data[i].city_name,
+          });
+        }
+        setCitiesData(cityArray);
+      })
+      .catch(error => {
+        console.log(
+          '🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error',
+          error,
+        );
+      });
+  };
 
-  const getarea = () => {
+  const getareas = city_id => {
     let data = {
-      city_id: selectedcity
-    }
+      city_id: city_id,
+    };
     axios({
-      method: "POST",
+      method: 'POST',
       url: GET_Areas,
-      data: data
-    }).then((response) => {
-      setarealist(response.data)
-    }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 39 ~ getarea ~ error", error) })
-  }
-
-
+      data: data,
+    })
+      .then(response => {
+        var count = Object.keys(response.data).length;
+        let areaArray = [];
+        for (var i = 0; i < count; i++) {
+          areaArray.push({
+            value: response.data[i].area_id,
+            label: response.data[i].area_name,
+          });
+        }
+        setAreasData(areaArray);
+      })
+      .catch(error => {
+        console.log('🚀 ~ file: Sales.js ~ line 39 ~ getarea ~ error', error);
+      });
+  };
   useEffect(() => {
-    getdoctors()
-    getarea()
-  }, [selectedcity])
+    getCities();
+  }, []);
+  //
+
+  // const [citylist, setcitylist] = useState([])
+  // const [selectedcity, setselectedcity] = useState('');
+  // const [arealist, setarealist] = useState([])
+  // const [selectedarea, setselectedarea] = useState()
+
+  // const getdoctors = () => {
+  //   axios({
+  //     method: "POST",
+  //     url: GET_CITY,
+  //   }).then((response) => {
+  //     // console.log(response);
+  //     setcitylist(response.data)
+  //   }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error", error) })
+  // }
+
+  // const getarea = () => {
+  //   let data = {
+  //     city_id: selectedcity
+  //   }
+  //   axios({
+  //     method: "POST",
+  //     url: GET_Areas,
+  //     data: data
+  //   }).then((response) => {
+  //     // console.log(response.data);
+  //     setarealist(response.data)
+  //   }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 39 ~ getarea ~ error", error) })
+  // }
+
+  // useEffect(() => {
+  //   getdoctors()
+  //   getarea()
+  // }, [selectedcity])
 
   // //////////////////////////////////////////////////////////
   // //////////////////////////////////////////////////////////
   // //////////////////////////////////////////////////////////
 
-  const [open, setOpen] = useState(false)
-  const [date, setDate] = useState(new Date())
+  const [open, setOpen] = useState(false);
+  const [date, setDate] = useState(new Date());
   const [calenderFrom, setCalenderFrom] = useState('');
 
-  const [open2, setOpen2] = useState(false)
-  const [date2, setDate2] = useState(new Date())
+  const [open2, setOpen2] = useState(false);
+  const [date2, setDate2] = useState(new Date());
   const [calenderTo, setCalenderTo] = useState('');
 
   return (
     <SafeAreaView style={styles.container}>
-
       {/* <KeyboardAwareScrollView> */}
       <GoBack text={'Sales'} />
 
@@ -99,7 +174,83 @@ const Sales = () => {
         />
       </View> */}
 
-      <View style={styles.calenderContainer}>
+      {/* test */}
+      <View
+          style={{
+            width: '90%',
+            flexDirection: 'row',
+            alignSelf: 'center',
+            justifyContent: 'space-between',
+            marginBottom:10
+          }}>
+          <View style={style.container}>
+            <Dropdown
+              style={style.dropdown}
+              placeholderStyle={style.placeholderStyle}
+              selectedTextStyle={style.selectedTextStyle}
+              inputSearchStyle={style.inputSearchStyle}
+              iconStyle={style.iconStyle}
+              data={citiesData}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!isCityFocus ? 'Select City' : '...'}
+              searchPlaceholder="Search..."
+              value={cityValue}
+              onFocus={() => setIsCityFocus(true)}
+              onBlur={() => setIsCityFocus(false)}
+              onChange={item => {
+                setCityValue(item.value);
+                setIsCityFocus(false);
+                getareas(item.value)
+              }}
+              renderLeftIcon={() => (
+                <AntDesign
+                  style={styles.icon}
+                  color={isCityFocus ? 'blue' : 'black'}
+                  name="Safety"
+                  size={20}
+                />
+              )}
+            />
+          </View>
+
+          <View style={style.container}>
+            <Dropdown
+              style={style.dropdown}
+              placeholderStyle={style.placeholderStyle}
+              selectedTextStyle={style.selectedTextStyle}
+              inputSearchStyle={style.inputSearchStyle}
+              iconStyle={style.iconStyle}
+              data={areasData}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!isAreaFocus ? 'Select Area' : '...'}
+              searchPlaceholder="Search..."
+              value={areaValue}
+              onFocus={() => setIsAreaFocus(true)}
+              onBlur={() => setIsAreaFocus(false)}
+              onChange={item => {
+                setIsAreaFocus(false);
+                afterSelectCityAndArea(item.value)
+              }}
+              renderLeftIcon={() => (
+                <AntDesign
+                  style={styles.icon}
+                  color={isAreaFocus ? 'blue' : 'black'}
+                  name="Safety"
+                  size={20}
+                />
+              )}
+            />
+          </View>
+        </View>
+      {/* test */}
+
+      {/* <View style={styles.calenderContainer}>
         <View style={styles.calenderSubContainer}>
           <Text style={{ ...styles.calenderText, marginBottom: 5 }}>City</Text>
           <SelectDropdown
@@ -171,13 +322,25 @@ const Sales = () => {
           />
         </View>
 
-      </View>
+      </View> */}
 
-      <View style={styles.calenderContainer}>
-        <View style={styles.calenderSubContainer}>
-          <Text style={{ ...styles.calenderText, marginBottom: 5 }}>From</Text>
-          <TouchableOpacity style={styles.filterbutton} onPress={() => { setOpen(true) }}>
-            <Text style={styles.filterbuttontext}>{calenderFrom != '' ? calenderFrom : '-- -- -- -- --'}</Text>
+      <View style={{
+            width: '90%',
+            flexDirection: 'row',
+            alignSelf: 'center',
+            justifyContent: 'space-between',
+            marginBottom:6,
+          }}>
+        <View style={{...style.container, marginTop: 0}}>
+          <Text style={{...styles.calenderText, marginBottom: 5}}>From</Text>
+          <TouchableOpacity
+            style={styles.filterbutton}
+            onPress={() => {
+              setOpen(true);
+            }}>
+            <Text style={styles.filterbuttontext}>
+              {calenderFrom != '' ? calenderFrom : '-- -- -- -- --'}
+            </Text>
           </TouchableOpacity>
           <DatePicker
             modal
@@ -185,23 +348,33 @@ const Sales = () => {
             format="YYYY-MM-DD"
             open={open}
             date={date}
-            onConfirm={(data) => {
-              setOpen(false)
-              setDate(data)
-              const formattedDate = data.getFullYear() + "-" + (data.getMonth() + 1) + "-" + data.getDate()
-              setCalenderFrom(formattedDate)
+            onConfirm={data => {
+              setOpen(false);
+              setDate(data);
+              const formattedDate =
+                data.getFullYear() +
+                '-' +
+                (data.getMonth() + 1) +
+                '-' +
+                data.getDate();
+              setCalenderFrom(formattedDate);
             }}
-
             onCancel={() => {
-              setOpen(false)
+              setOpen(false);
             }}
           />
         </View>
 
-        <View style={styles.calenderSubContainer}>
-          <Text style={{ ...styles.calenderText, marginBottom: 5 }}>To</Text>
-          <TouchableOpacity style={styles.filterbutton} onPress={() => { setOpen2(true) }}>
-            <Text style={styles.filterbuttontext}>{calenderTo != '' ? calenderTo : '-- -- -- -- --'}</Text>
+        <View style={{...style.container, marginTop: 0}}>
+          <Text style={{...styles.calenderText, marginBottom: 5}}>To</Text>
+          <TouchableOpacity
+            style={styles.filterbutton}
+            onPress={() => {
+              setOpen2(true);
+            }}>
+            <Text style={styles.filterbuttontext}>
+              {calenderTo != '' ? calenderTo : '-- -- -- -- --'}
+            </Text>
           </TouchableOpacity>
           <DatePicker
             modal
@@ -210,22 +383,25 @@ const Sales = () => {
             open={open2}
             date={date2}
             minimumDate={date}
-            onConfirm={(data) => {
-              setOpen2(false)
-              setDate2(data)
-              const formattedDate = data.getFullYear() + "-" + (data.getMonth() + 1) + "-" + data.getDate()
-              setCalenderTo(formattedDate)
+            onConfirm={data => {
+              setOpen2(false);
+              setDate2(data);
+              const formattedDate =
+                data.getFullYear() +
+                '-' +
+                (data.getMonth() + 1) +
+                '-' +
+                data.getDate();
+              setCalenderTo(formattedDate);
             }}
-
             onCancel={() => {
-              setOpen(false)
+              setOpen(false);
             }}
           />
         </View>
-
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{ marginVertical: 30 }}>
+        <View >
           <SalesTable data={salesdata} />
         </View>
       </ScrollView>
@@ -234,3 +410,43 @@ const Sales = () => {
 };
 
 export default Sales;
+export const style = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    width: '48%',
+    marginTop: 15
+  },
+  dropdown: {
+    height: 50,
+    borderColor: '#7189FF',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+});

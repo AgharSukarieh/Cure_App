@@ -195,10 +195,13 @@ export const styles = StyleSheet.create({
   filterbutton: {
     padding: 6,
     borderWidth: 1,
-    width: '90%',
+    // width: '90%',
     borderRadius: 5,
     borderColor: '#7189FF',
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    height:40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   filterbuttontext: {
     textAlign: 'center',
@@ -207,6 +210,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 10,
+
   },
   calenderSubContainer: {
     justifyContent: 'center',
