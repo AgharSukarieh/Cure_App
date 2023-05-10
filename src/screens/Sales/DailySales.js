@@ -56,7 +56,8 @@ const DailySales = ({ navigation, route }) => {
                     </TouchableOpacity>
                     <View style={style.div}>
                         {rows && rows.map((item, index) => (
-                            <TouchableOpacity key={index} style={style.card} onPress={() => { navigation.navigate('Sal_rep_pharm', { item: item, area: area }) }}>
+                            <TouchableOpacity key={index} style={style.card} onPress={() => { navigation.navigate('Sal_rep_pharm', { item: item, area: area });
+                             }}>
                                 <Text style={{ color: "#fff", fontSize: 17, fontWeight: '700' }}>{item?.pharm_id?.pharmacy_name}</Text>
                             </TouchableOpacity>
 

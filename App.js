@@ -49,7 +49,7 @@ export default function App() {
 
 
   const Stack = createNativeStackNavigator();
-  const Role = "Sales";
+  const Role = "Sales";//"Sales"; 
   return (
     <NavigationContainer>
       <Stack.Navigator >

@@ -22,3 +22,6 @@ export const MED_GET_DAILYSCHEDULE = `${Api}med_get_dailyschedule`;
 
 export const SAL_ADD_REPORT = `${Api}sal_add_report`;
 export const SAL_GET_REPORT = `${Api}sal_get_report`;
+export const SAL_ADD_IINVENTORY = `${Api}sal_add_inventory`;
+export const SAL_GET_IINVENTORY = `${Api}sal_get_inventory`;
+export const SAL_GET_LAST_ORDER = `${Api}sal_get_last_order`;

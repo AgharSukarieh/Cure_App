@@ -246,12 +246,13 @@ export const styles = StyleSheet.create({
   },
   btn: {
     backgroundColor: '#7189FF',
-    width: '90%',
+    width: '95%',
     alignSelf: 'center',
     borderRadius: 7,
     padding: 7,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginTop:40
   },
   search: {
     backgroundColor: '#fff',

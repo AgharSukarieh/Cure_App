@@ -10,9 +10,14 @@ const InventoryTable = ({ data }) => {
 
     const [modal, setModal] = useState(false)
     const [rowdata, setrowdata] = useState('')
+    const [lastOrder, setLastOrder] = useState({})
+
     const DDD = (row) => {
-        setModal(true)
+        
         setrowdata(row)
+        setLastOrder({})
+        setModal(true)
+        // console.log('----',row);
     }
 
     return (
@@ -39,22 +44,21 @@ const InventoryTable = ({ data }) => {
                 data.map((item, index) => (
                     <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} key={index}>
                         <View style={{ ...styles.rowel, width: '30.1%', }}>
-                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item.pharm_name}</Text>
+                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item.item_id.product_name}</Text>
                         </View>
                         <View style={styles.rowel}>
-                            {item?.items?.slice(0, 3).map((row, index2) => (
+                            {/* {item?.items?.slice(0, 3).map((row, index2) => (
                                 <Text key={index2} style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{row.item_name}</Text>
-                            ))}
-
+                            ))} */}
+                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item.availability}</Text>
                         </View>
                         <View style={styles.rowel}>
-                            {item?.items?.slice(0, 3).map((row, index2) => (
+                            {/* {item?.items?.slice(0, 3).map((row, index2) => (
                                 <Text key={index2} style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{row.items_sum} / {row.bonus}</Text>
-                            ))}
-
+                            ))} */}
+                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item.expired_date}</Text>
                         </View>
                         <View style={{ ...styles.rowel, width: '12%', }}>
-
                             <TouchableOpacity onPress={() => { DDD(item) }}>
                                 <AntDesign name="infocirlceo" color='gold' size={17} />
                             </TouchableOpacity>
@@ -66,7 +70,7 @@ const InventoryTable = ({ data }) => {
                     <Text style={{ textTransform: 'capitalize', fontSize: 25 }}>no available data</Text>
                 </View>
             }
-            <InventoryModel show={modal} hide={() => { setModal(false) }} data={rowdata} />
+            {modal && <InventoryModel show={modal} hide={() => { setModal(false) }} data={rowdata} lastOrder={lastOrder}/>}
         </View >
     );
 };

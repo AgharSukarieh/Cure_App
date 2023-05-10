@@ -16,6 +16,7 @@ import {SAL_GET_REPORT} from '../../Provider/ApiRequest';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Sal_rep_pharm = ({navigation, route}) => {
+  
   const [user, setuser] = useState('');
   const getlogs = async () => {
     const a = await AsyncStorage.getItem('userInfo');
@@ -62,8 +63,8 @@ const Sal_rep_pharm = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={{height:'100%', flex:1, flexDirection: 'column',alignContent:'space-around' }}>
-      {/* <ScrollView showsVerticalScrollIndicator={false}> */}
-        <GoBack text={item?.pharm_id?.pharmacy_name} />
+      <GoBack text={item?.pharm_id?.pharmacy_name} />
+      <ScrollView showsVerticalScrollIndicator={false} style={{ marginVertical: 30 }}>
         {/* <View style={{ marginVertical: 30 }}>
                     <View style={style.mune}>
                         <TouchableOpacity style={active == 1 ? [style.munebtn2] : [style.munebtn]} onPress={() => { setactive(1) }}>
@@ -97,7 +98,7 @@ const Sal_rep_pharm = ({navigation, route}) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.Sal_rep_pharmButton}
-            onPress={() => navigation.navigate('Inventory')}>
+            onPress={() => navigation.navigate('Inventory', { item: item, area: area })}>
             <Text style={styles.reportPageText}>Inventory</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -107,8 +108,15 @@ const Sal_rep_pharm = ({navigation, route}) => {
             }}>
             <Text style={styles.reportPageText}>Orders</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.Sal_rep_pharmButton}
+            onPress={() => {
+              navigation.navigate('Order');
+            }}>
+            <Text style={styles.reportPageText}>Returns</Text>
+          </TouchableOpacity>
         </View>
-      {/* </ScrollView> */}
+      </ScrollView>
     </SafeAreaView>
   );
 };

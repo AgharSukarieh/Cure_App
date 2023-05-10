@@ -45,6 +45,7 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
             url: GET_Products,
         }).then((response) => {
             setdProductslist(response.data)
+            // console.log(response.data);
         }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error", error) })
     }
 
