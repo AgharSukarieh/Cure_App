@@ -32,24 +32,38 @@ const OrderModel = ({ show, hide, data }) => {
                                     <Text style={styles.item_name}>{item.item_name}</Text>
                                     <View style={{ width: '99%', height: 0.5, backgroundColor: '#7189FF', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 15 }}>
-                                    <View style={styles.item_info}>
-                                            <Text style={styles.item_itemtitle}>Bonus</Text>
+                                        <View style={styles.item_info}>
+                                            <Text style={styles.item_itemtitle}>Unit</Text>
                                             <Text style={styles.item_item}>{item.bonus}</Text>
                                         </View>
                                         <View style={styles.item_info}>
-                                            <Text style={styles.item_itemtitle}>Offers</Text>
+                                            <Text style={styles.item_itemtitle}>Bouns</Text>
                                             <Text style={styles.item_item}>{item.items_sum}</Text>
                                         </View>
                                         <View style={styles.item_info}>
-                                            <Text style={styles.item_itemtitle}>Expired Date</Text>
+                                            <Text style={styles.item_itemtitle}>Cost Price</Text>
                                             <Text style={styles.item_item}>{item.bonus}</Text>
-                                        </View>
-                                        
+                                        </View>   
+                                        <View style={styles.item_info}>
+                                            <Text style={styles.item_itemtitle}>Public Price</Text>
+                                            <Text style={styles.item_item}>{item.bonus}</Text>
+                                        </View> 
                                     </View>
                                 </View>
                             ))}
                         </View>
                     </ScrollView>
+                    <View style={{ marginVertical: 10, marginTop: 20}}>
+                        <View style={{...styles.card, backgroundColor: '#cccccf' }}>
+                                    <Text style={{...styles.item_name, color: '#7189FF', fontWeight: 'bold'}}>Total Cost</Text>
+                                    <View style={{ width: '99%', height: 0.5, backgroundColor: 'black', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
+                                    <View style={{ flexDirection: 'row', justifyContent: 'center', paddingHorizontal: 15 }}>  
+                                        <View style={styles.item_info}>
+                                            <Text style={{fontSize: 20, fontWeight:'bold', color: 'black'}}>20.0 JOD</Text>
+                                        </View> 
+                                    </View>
+                        </View>
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -69,7 +83,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         borderRadius: 10,
         width: '95%',
-        height: '90%',
+        height: '80%',
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,

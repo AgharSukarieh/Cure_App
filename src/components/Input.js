@@ -4,15 +4,19 @@ import {styles} from './styles';
 import Icon from 'react-native-vector-icons/Feather';
 
 Icon.loadFont()
-const Input = ({lable, isPassword, setData, style = styles.input}) => {
+const Input = ({lable, placeholder,isPassword, setData, labelStyle=styles.label ,viewStyle= styles.inbutContainer,style = styles.input, value = null, multiline = false, numberOfLines=0 }) => {
   const [showEye, setShowEye] = useState(false);
   return (
-    <View style={styles.inbutContainer}>
-      <Text style={styles.label}>{lable}</Text>
+    <View style={{...styles.inbutContainer, ...viewStyle}}>
+      <Text style={{...styles.label, ...labelStyle}}>{lable}</Text>
       <TextInput
         style={style}
         onChangeText={text => setData(text)}
         secureTextEntry={isPassword && !showEye}
+        value={value}
+        multiline={multiline}
+        numberOfLines={numberOfLines}
+        placeholder={placeholder}
       />
 
       {isPassword && (

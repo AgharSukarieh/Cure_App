@@ -93,7 +93,7 @@ const Sal_rep_pharm = ({navigation, route}) => {
         <View style={{...styles.containerSignIn}}>
           <TouchableOpacity
             style={styles.Sal_rep_pharmButton}
-            onPress={() => navigation.navigate('Sales')}>
+            onPress={() => navigation.navigate('AccountInfo')}>
             <Text style={styles.reportPageText}>Account info</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -111,7 +111,7 @@ const Sal_rep_pharm = ({navigation, route}) => {
           <TouchableOpacity
             style={styles.Sal_rep_pharmButton}
             onPress={() => {
-              navigation.navigate('Order');
+              navigation.navigate('Return');
             }}>
             <Text style={styles.reportPageText}>Returns</Text>
           </TouchableOpacity>

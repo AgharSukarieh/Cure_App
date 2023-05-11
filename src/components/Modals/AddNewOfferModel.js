@@ -17,7 +17,7 @@ const height = Dimensions.get('window').height
 
 const AddNewOfferModel = ({ show, hide, submit, item }) => {
     const [data, setData] = useState();
-console.log(item);
+    console.log(item);
     const submitBtn = () => {
         // submit(data)
         hide()
