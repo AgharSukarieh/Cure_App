@@ -5,38 +5,46 @@ import {
   StyleSheet,
   Dimensions,
   Modal,
-  ScrollView,
+  AppRegistry,
   TextInput,
   Linking,
   TouchableHighlight,
   PermissionsAndroid,
   Platform,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SelectDropdown from 'react-native-select-dropdown';
-import {pharams} from '../../helpers/data';
+import { pharams } from '../../helpers/data';
 import Feather from 'react-native-vector-icons/Feather';
-import {styles} from '../styles';
+import { styles } from '../styles';
 import Moment from 'moment';
 import DatePicker from 'react-native-date-picker';
-import {GET_PHARMACY, SAL_ADD_REPORT} from '../../Provider/ApiRequest';
+import { GET_PHARMACY, SAL_ADD_REPORT } from '../../Provider/ApiRequest';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Input from '../Input';
-
-import {CameraScreen} from 'react-native-camera-kit';
+import QRCodeScanner from 'react-native-qrcode-scanner';
+import { RNCamera } from 'react-native-camera';
+// import {CameraScreen} from 'react-native-camera-kit';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
-const ScanBarcodeAndQRModel = ({show, hide, submit}) => {
+const ScanBarcodeAndQRModel = ({ show, hide, submit }) => {
 
   const onBarcodeScan = (qrvalue) => {
     // Called after te successful scanning of QRCode/Barcode
     submit(qrvalue)
     hide()
   };
+
+  const onSuccess = (e) => {
+    // Handle the scanned QR code data
+    console.log(e.data);
+    submit(e.data)
+    hide()
+  }
 
   return (
     <Modal
@@ -47,11 +55,11 @@ const ScanBarcodeAndQRModel = ({show, hide, submit}) => {
       onSwipeComplete={() => setModalVisible2(false)}>
       <View style={style.ModalContainer}>
         <View style={style.ModalView}>
-            <TouchableOpacity onPress={() => { hide() }}>
-                <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
-                </TouchableOpacity>
-            <View style={{flex: 1}}>
-            <CameraScreen
+          <TouchableOpacity onPress={() => { hide() }}>
+            <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
+          </TouchableOpacity>
+          <View style={{ width: '90%', height: '60%', alignSelf: 'flex-start' }}>
+            {/* <CameraScreen
               showFrame={false}
               // Show/hide scan frame
               scanBarcode={true}
@@ -64,6 +72,22 @@ const ScanBarcodeAndQRModel = ({show, hide, submit}) => {
               // Scanner Frame color
               onReadCode={event =>
                 onBarcodeScan(event.nativeEvent.codeStringValue)
+              }
+            /> */}
+            <QRCodeScanner
+              onRead={onSuccess}
+              flashMode={RNCamera.Constants.FlashMode.torch}
+              topContent={
+                <Text style={style.centerText}>
+                  Go to{' '}
+                  <Text style={style.textBold}>wikipedia.org/wiki/QR_code</Text> on
+                  your computer and scan the QR code.
+                </Text>
+              }
+              bottomContent={
+                <TouchableOpacity style={styles.buttonTouchable}>
+                  <Text style={style.buttonText}>OK. Got it!</Text>
+                </TouchableOpacity>
               }
             />
           </View>
@@ -89,10 +113,27 @@ const style = StyleSheet.create({
     width: '95%',
     height: '70%',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
     padding: 20,
   },
+  centerText: {
+    flex: 1,
+    fontSize: 18,
+    padding: 32,
+    color: '#777'
+  },
+  textBold: {
+    fontWeight: '500',
+    color: '#000'
+  },
+  buttonText: {
+    fontSize: 21,
+    color: 'rgb(0,122,255)'
+  },
+  buttonTouchable: {
+    padding: 16
+  }
 });
