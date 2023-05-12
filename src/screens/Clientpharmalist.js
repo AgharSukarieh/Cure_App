@@ -19,13 +19,13 @@ import {Dropdown} from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { GET_Areas, GET_CITY } from '../Provider/ApiRequest';
 import axios from 'axios';
+import AddNewPharmacyModel from '../components/Modals/AddNewPharmacyModel';
+import SuccessfullyModel from '../components/Modals/SuccessfullyModel';
 
 const wwidth = Dimensions.get('window').width;
 
 const Clientpharmalist = () => {
-//   const [areafilter, setarea] = useState('');
-//   const [classfilter, setclassfilter] = useState('');
-  //
+
   const [citiesData, setCitiesData] = useState([]);
   const [areasData, setAreasData] = useState([]);
 
@@ -35,10 +35,19 @@ const Clientpharmalist = () => {
   const [areaValue, setAreaValue] = useState(null);
   const [isAreaFocus, setIsAreaFocus] = useState(false);
 
+  const [modal, setModal] = useState(false);
+  const [scModal, setScModal] = useState(false);
+
+
   const afterSelectCityAndArea = (area_id) => {
     console.log(cityValue, area_id);
   }
-  
+   const submitAddPharmacy = (data) => {
+    console.log(data);
+    // API ...
+    setScModal(true)
+   }
+
   const getCities = () => {
     axios({
       method: "POST",
@@ -76,6 +85,7 @@ const Clientpharmalist = () => {
         setAreasData(areaArray)
     }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 39 ~ getarea ~ error", error) })
   }
+
   useEffect(() => {
     getCities()
   }, [])
@@ -116,38 +126,6 @@ const Clientpharmalist = () => {
             justifyContent: 'space-between',
             marginBottom:10
           }}>
-          {/* < View style={style.filterContainer}>
-                        <Text style={style.calenderText}>Area</Text>
-                        <SearchableDropdown
-                            onItemSelect={(item) => { setarea(item) }}
-                            containerStyle={{ padding: 5, width: '90%', height: 50 }}
-                            itemStyle={{
-                                padding: 10,
-                                backgroundColor: '#fff',
-                                borderColor: '#bbb',
-                                borderWidth: 1,
-
-
-                            }}
-                            itemTextStyle={{ color: '#000', }}
-                            itemsContainerStyle={{ maxHeight: 140, width: '100%' }}
-                            items={areas}
-                            resetValue={false}
-                            textInputProps={
-                                {
-                                    placeholder: areafilter != '' ? areafilter.name : 'Select Area',
-                                    underlineColorAndroid: "transparent",
-                                    style: {
-                                        padding: 12,
-                                        borderWidth: 1,
-                                        borderColor: areafilter != '' ? '#7189FF' : '#7189FF',
-                                        borderRadius: 5,
-                                    },
-                                }
-                            }
-                        />
-                    </View> */}
-          {/* test */}
           <View style={style.container}>
             <Dropdown
               style={style.dropdown}
@@ -212,7 +190,6 @@ const Clientpharmalist = () => {
               )}
             />
           </View>
-          {/* test */}
 
           {/* <View style={style.filterContainer}>
             <Text style={style.calenderText}>Classification</Text>
@@ -253,6 +230,34 @@ const Clientpharmalist = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <ClientpharmaTable data={pharams} />
       </ScrollView>
+
+      <View style={style.rButton}>
+              <TouchableOpacity
+                onPress={() => {
+                  setModal(true);
+                }}>
+                <AntDesign name="plus" size={30} color= {'#fff'} />
+              </TouchableOpacity>
+      </View>
+
+      <AddNewPharmacyModel
+        show={modal}
+        hide={() => {
+          setModal(false);
+        }}
+        submit={e => {
+          (e !== null) ? submitAddPharmacy(e) : null
+        }}
+      />
+      
+      <SuccessfullyModel
+        show={scModal}
+        hide={() => {
+          setScModal(false);
+        }}
+        message= {'The pharmacy has been added successfully.'}
+      />
+
     </SafeAreaView>
   );
 };
@@ -262,7 +267,6 @@ export default Clientpharmalist;
 export const style = StyleSheet.create({
   filterContainer: {
     justifyContent: 'center',
-    // alignItems: 'center',
     marginTop: 10,
     width: '50%',
   },
@@ -271,12 +275,29 @@ export const style = StyleSheet.create({
     color: 'rgba(37, 50, 116, 0.6)',
     marginHorizontal: 10,
   },
-  //
   container: {
     backgroundColor: 'white',
     width: '48%',
     marginTop: 15
   },
+  rButton: {
+    backgroundColor: '#7189FF', 
+    height: 50, 
+    width: 50, 
+    justifyContent:'center', 
+    alignItems:'center', 
+    borderRadius: 25, 
+    position: 'absolute',
+    bottom: 70, 
+    right: 50,
+    shadowColor: "#000000",
+    shadowOpacity: 0.8,
+    shadowRadius: 15,
+    shadowOffset: {
+    height: 1,
+    width: 1
+    }
+    },
   dropdown: {
     height: 50,
     borderColor: '#7189FF',

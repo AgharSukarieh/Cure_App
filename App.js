@@ -51,7 +51,7 @@ export default function App() {
 
 
   const Stack = createNativeStackNavigator();
-  const Role = "Sales";//"Sales"; 
+  const Role = "Saless";//"Sales"; 
   return (
     <NavigationContainer>
       <Stack.Navigator >

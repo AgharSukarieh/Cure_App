@@ -1,0 +1,282 @@
+import {
+  TouchableOpacity,
+  Text,
+  View,
+  StyleSheet,
+  Dimensions,
+  Modal,
+  ScrollView,
+} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import {Dropdown} from 'react-native-element-dropdown';
+import axios from 'axios';
+import {GET_Areas, GET_CITY} from '../../Provider/ApiRequest';
+import Input from '../Input';
+import GetLocation from 'react-native-get-location';
+
+const width = Dimensions.get('window').width;
+const height = Dimensions.get('window').height;
+
+const AddNewDoctorModel = ({show, hide, submit}) => {
+  const [doctorName, setDoctorName] = useState('');
+  const [specialty, setsSpecialty] = useState('');
+  const [classification, setClassification] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
+  const [location, setLocation] = useState('');
+
+  const submitData = () => {
+    submit({
+      doctorName,
+      specialty,
+      classification,
+      latitude,
+      longitude
+    })
+    hide();
+    setDoctorName('')
+    setsSpecialty('')
+    setClassification('')
+    setLatitude('')
+    setLongitude('')
+    setLocation('')
+  }
+
+  const getCurrentLocation = () => {
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 60000,
+    })
+      .then(location => {
+        setLatitude(location.latitude);
+        setLongitude(location.longitude);
+        setLocation(`${location.latitude}, ${location.longitude}`);
+      })
+      .catch(error => {
+        console.warn(code, message);
+      });
+  };
+
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={show}
+      coverScreen={false}
+      onSwipeComplete={() => setModalVisible2(false)}>
+      <View style={styles.ModalContainer}>
+        <View style={styles.ModalView}>
+          <TouchableOpacity
+            onPress={() => {
+              submit(null);
+              hide();
+            }}>
+            <AntDesign
+              name="close"
+              color="#7189FF"
+              size={35}
+              style={{alignSelf: 'flex-end'}}
+            />
+          </TouchableOpacity>
+          <View style={{marginVertical: 10}}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Input
+                  lable={'Doctor Name'}
+                  setData={setDoctorName}
+                  style={{...styles.inputModel, backgroundColor: 'white'}}
+                  value={doctorName}
+                  viewStyle={{width: '90%'}}
+                />
+                <Input
+                  lable={'Specialty'}
+                  setData={setsSpecialty}
+                  style={{...styles.inputModel, backgroundColor: 'white'}}
+                  value={specialty}
+                  viewStyle={{width: '90%'}}
+                />
+                <Input
+                  lable={'Classification'}
+                  setData={setClassification}
+                  style={{...styles.inputModel, backgroundColor: 'white'}}
+                  value={classification}
+                  viewStyle={{width: '90%'}}
+                />
+                <View style={{marginTop: 40, width: '90%'}}>
+                  <Text style={{marginBottom: 5, color: '#253274'}}>
+                    location
+                  </Text>
+                  <View
+                    style={{...styles.inputModel, backgroundColor: 'white'}}>
+                    <TouchableOpacity
+                      onPress={() => getCurrentLocation()}
+                      style={{...styles.iconPassword, justifyContent:'center',textAlign: 'center'}}>
+                      <AntDesign
+                        style={styles.icon}
+                        color={location ? 'black' : 'blue'}
+                        name="enviromento"
+                        size={25}
+                      />
+                    </TouchableOpacity>
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        justifyContent: 'center',
+                        marginTop: 8,
+                      }}>
+                      {location}
+                    </Text>
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    ...styles.container,
+                    justifyContent: 'center',
+                    marginTop: 30,
+                    marginBottom: 70,
+                  }}>
+                  <TouchableOpacity style={styles.newbtn} onPress={() => {
+                    submitData()
+                  }}>
+                    <Text
+                      style={{
+                        color: '#fff',
+                        fontSize: 18,
+                        paddingHorizontal: 50,
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                      }}>
+                      Submit
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+export default AddNewDoctorModel;
+
+const styles = StyleSheet.create({
+  iconPassword: {
+    position: 'absolute',
+    right: '3%',
+    height: 35,
+    width: 35
+  },
+  container: {
+    backgroundColor: 'white',
+    width: '90%',
+    marginTop: 15,
+  },
+  dropdown: {
+    height: 50,
+    borderColor: '#7189FF',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  ModalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0707078c',
+  },
+  ModalView: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    width: '95%',
+    height: '70%',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    padding: 20,
+  },
+  card: {
+    shadowColor: '#7189FF',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+    width: '99%',
+    alignSelf: 'center',
+    backgroundColor: '#fff',
+    padding: 15,
+    marginTop: 10,
+    borderRadius: 7,
+  },
+  phname: {
+    fontSize: 25,
+    textTransform: 'capitalize',
+    color: '#7189FF',
+  },
+  phlocation: {
+    marginHorizontal: 15,
+    marginVertical: 5,
+    fontSize: 16,
+  },
+  item_name: {
+    fontSize: 20,
+    textTransform: 'capitalize',
+    color: '#7189FF',
+  },
+  item_info: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  item_itemtitle: {
+    marginBottom: 5,
+    textTransform: 'capitalize',
+  },
+  newbtn: {
+    backgroundColor: '#7189FF',
+    height: 50,
+    paddingVertical: 5,
+    paddingHorizontal: 4,
+    borderRadius: 7,
+    justifyContent: 'center',
+    marginVertical: 20,
+  },
+  inputModel: {
+    height: 40,
+    borderColor: '#7189FF',
+    borderWidth: 1,
+    paddingLeft: 10,
+    borderRadius: 5,
+  },
+});

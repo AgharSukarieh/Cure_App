@@ -337,6 +337,42 @@ export const pharams = [
         location: 'al rabieh',
         class: 'Class A'
     },
+    {
+        id: 3,
+        pname: 'test 3 pharm',
+        location: 'Khalda',
+        class: 'Class C'
+    },
+    {
+        id: 4,
+        pname: 'test 4 pharm',
+        location: 'AL gardens',
+        class: 'Class B'
+    },
+    {
+        id: 5,
+        pname: 'test 5 pharm',
+        location: 'al rabieh',
+        class: 'Class A'
+    },
+    {
+        id: 3,
+        pname: 'test 3 pharm',
+        location: 'Khalda',
+        class: 'Class C'
+    },
+    {
+        id: 4,
+        pname: 'test 4 pharm',
+        location: 'AL gardens',
+        class: 'Class B'
+    },
+    {
+        id: 5,
+        pname: 'test 5 pharm',
+        location: 'al rabieh',
+        class: 'Class A'
+    },
 ]
 
 export const Offers = [

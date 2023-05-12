@@ -1,227 +1,349 @@
-import { View, Text, SafeAreaView, Dimensions, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
-import { styles } from '../components/styles';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
+import React, {useState} from 'react';
+import {styles} from '../components/styles';
 import GoBack from '../components/GoBack';
 import SearchableDropdown from 'react-native-searchable-dropdown';
-import { areas, classification, pharams, Specialty } from '../helpers/data';
+import {areas, classification, pharams, Specialty} from '../helpers/data';
 import ClientdoctorTable from '../components/Tables/ClientdoctorTable';
 import Feather from 'react-native-vector-icons/Feather';
-import { useEffect } from 'react';
+import {useEffect} from 'react';
 import axios from 'axios';
-import { GET_Areas, GET_CITY, GET_MED_CLIENT, GET_SPECIALTIES } from '../Provider/ApiRequest';
+import {
+  GET_Areas,
+  GET_CITY,
+  GET_MED_CLIENT,
+  GET_SPECIALTIES,
+} from '../Provider/ApiRequest';
 import SelectDropdown from 'react-native-select-dropdown';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import SuccessfullyModel from '../components/Modals/SuccessfullyModel';
+import AddNewDoctorModel from '../components/Modals/AddNewDoctorModel';
 
-const wwidth = Dimensions.get('window').width
+const wwidth = Dimensions.get('window').width;
+
 const Clientdoctorlist = () => {
+  const [userinfo, setuserinfo] = useState([]);
+  const getlogs = async () => {
+    const a = await AsyncStorage.getItem('userInfo');
+    setuserinfo(JSON.parse(a));
+  };
+  useEffect(() => {
+    getlogs();
+  }, []);
 
-    const [userinfo, setuserinfo] = useState([])
-    const getlogs = async () => {
-        const a = await AsyncStorage.getItem('userInfo')
-        setuserinfo(JSON.parse(a))
-    }
-    useEffect(() => {
-        getlogs()
-    }, [])
-    // ////////////////////////////////
-    // ////////////////////////////////
-    // ////////////////////////////////
+  const [citylist, setcitylist] = useState([]);
+  const [selectedcity, setselectedcity] = useState('');
+  const [arealist, setarealist] = useState([]);
+  const [selectedarea, setselectedarea] = useState();
+  const [specialtieslist, setspecialtieslist] = useState([]);
+  const [selectedspecialty, setselectedspecialty] = useState();
+  const [clientslist, setclientslist] = useState([]);
 
+  const [modal, setModal] = useState(false);
+  const [scModal, setScModal] = useState(false);
 
-    const [citylist, setcitylist] = useState([])
-    const [selectedcity, setselectedcity] = useState('');
-    const [arealist, setarealist] = useState([])
-    const [selectedarea, setselectedarea] = useState()
-    const [specialtieslist, setspecialtieslist] = useState([])
-    const [selectedspecialty, setselectedspecialty] = useState()
-    const [clientslist, setclientslist] = useState([])
+  const getdoctors = () => {
+    axios({
+      method: 'POST',
+      url: GET_CITY,
+    })
+      .then(response => {
+        setcitylist(response.data);
+      })
+      .catch(error => {
+        console.log(
+          '🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error',
+          error,
+        );
+      });
+  };
 
-    const getdoctors = () => {
-        axios({
-            method: "POST",
-            url: GET_CITY,
-        }).then((response) => {
-            setcitylist(response.data)
-        }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error", error) })
-    }
+  const getarea = () => {
+    let data = {
+      city_id: selectedcity,
+    };
+    axios({
+      method: 'POST',
+      url: GET_Areas,
+      data: data,
+    })
+      .then(response => {
+        setarealist(response.data);
+      })
+      .catch(error => {
+        console.log('🚀 ~ file: Sales.js ~ line 39 ~ getarea ~ error', error);
+      });
+  };
 
-    const getarea = () => {
-        let data = {
-            city_id: selectedcity
-        }
-        axios({
-            method: "POST",
-            url: GET_Areas,
-            data: data
-        }).then((response) => {
-            setarealist(response.data)
-        }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 39 ~ getarea ~ error", error) })
-    }
+  const getspecialties = () => {
+    axios({
+      method: 'POST',
+      url: GET_SPECIALTIES,
+    })
+      .then(response => {
+        setspecialtieslist(response.data);
+      })
+      .catch(error => {
+        console.log(
+          '🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error',
+          error,
+        );
+      });
+  };
 
-    const getspecialties = () => {
-        axios({
-            method: "POST",
-            url: GET_SPECIALTIES,
-        }).then((response) => {
-            setspecialtieslist(response.data)
-        }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error", error) })
-    }
+  const submitAddDoctor = (data) => {
+    console.log(data);
+    // API ...
+    setScModal(true)
+   }
 
+  useEffect(() => {
+    getdoctors();
+    getarea();
+    getspecialties();
+  }, [selectedcity]);
 
-    useEffect(() => {
-        getdoctors()
-        getarea()
-        getspecialties()
-    }, [selectedcity])
+  // //////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////
 
-    // //////////////////////////////////////////////////////////
-    // //////////////////////////////////////////////////////////
-    // //////////////////////////////////////////////////////////
+  const get_med_client = () => {
+    let data = {
+      userid: userinfo.id,
+      specialty_id: selectedspecialty,
+      city_id: selectedcity,
+      area_id: selectedarea,
+    };
+    axios({
+      method: 'POST',
+      url: GET_MED_CLIENT,
+      data: data,
+    })
+      .then(response => {
+        setclientslist(response.data);
+        console.log('response', GET_MED_CLIENT);
+      })
+      .catch(error => {
+        console.log(
+          '🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error',
+          error,
+        );
+      });
+  };
 
-    const get_med_client = () => {
-        let data = {
-            userid: userinfo.id,
-            specialty_id: selectedspecialty,
-            city_id: selectedcity,
-            area_id: selectedarea
-        }
-        axios({
-            method: "POST",
-            url: GET_MED_CLIENT,
-            data: data
-        }).then((response) => {
-            setclientslist(response.data)
-            console.log('response', GET_MED_CLIENT);
-        }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error", error) })
-    }
+  useEffect(() => {
+    get_med_client();
+  }, [userinfo, selectedspecialty, selectedarea, selectedcity]);
 
-    useEffect(() => {
-        get_med_client()
-    }, [userinfo, selectedspecialty, selectedarea, selectedcity])
+  // //////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////
+  const [filterValue, setFilterValue] = useState('');
 
-    // //////////////////////////////////////////////////////////
-    // //////////////////////////////////////////////////////////
-    // //////////////////////////////////////////////////////////
-    const [filterValue, setFilterValue] = useState('');
+  const [Specialtyfilter, setSpecialtyfilter] = useState('');
+  const [classfilter, setclassfilter] = useState('');
 
-    const [Specialtyfilter, setSpecialtyfilter] = useState('');
-    const [classfilter, setclassfilter] = useState('');
-
-
-    return (
-        <SafeAreaView style={styles.container}>
-            <GoBack text={'Client List'} />
-            <View style={{ width: '90%', alignSelf: 'center' }}>
-                <View style={styles.calenderContainer}>
-                    <View style={styles.calenderSubContainer}>
-                        <Text style={{ ...styles.calenderText, marginBottom: 5 }}>City</Text>
-                        <SelectDropdown
-                            buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-                            buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-                            defaultButtonText='Select'
-                            data={citylist}
-                            onSelect={(selectedItem, index) => {
-                                setselectedcity(selectedItem.city_id)
-                            }}
-                            rowTextForSelection={(item, index) => {
-                                return (
-                                    <>
-                                        <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                            {item.city_name}
-                                        </Text>
-                                    </>
-                                );
-                            }}
-                            buttonTextAfterSelection={(selectedItem, index) => {
-                                return (
-                                    <>
-                                        <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                            {selectedItem.city_name}
-                                        </Text>
-                                    </>
-                                );
-                            }}
-                            renderDropdownIcon={isOpened => {
-                                return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-                            }}
-                            dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
-                        />
-                    </View>
-                    <View style={styles.calenderSubContainer}>
-                        <Text style={{ ...styles.calenderText, marginBottom: 5 }}>Area</Text>
-                        <SelectDropdown
-                            disabled={selectedcity ? false : true}
-                            buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-                            buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-                            defaultButtonText='Select'
-                            data={arealist}
-                            onSelect={(selectedItem, index) => {
-                                setselectedarea(selectedItem.area_id)
-                            }}
-                            rowTextForSelection={(item, index) => {
-                                return (
-                                    <>
-                                        <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                            {item.area_name}
-                                        </Text>
-                                    </>
-                                );
-                            }}
-                            buttonTextAfterSelection={(selectedItem, index) => {
-                                return (
-                                    <>
-                                        <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                            {selectedItem.area_name}
-                                        </Text>
-                                    </>
-                                );
-                            }}
-                            renderDropdownIcon={isOpened => {
-                                return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-                            }}
-                            dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
-                        />
-                    </View>
-
-                </View>
-                <View style={styles.calenderContainer}>
-                    <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ ...styles.calenderText, marginBottom: 5 }}>Specialty</Text>
-                        <SelectDropdown
-                            buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-                            buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-                            defaultButtonText='Select'
-                            data={specialtieslist}
-                            onSelect={(selectedItem, index) => {
-                                setselectedspecialty(selectedItem.sp_id)
-                            }}
-                            rowTextForSelection={(item, index) => {
-                                return (
-                                    <>
-                                        <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                            {item.sp_name}
-                                        </Text>
-                                    </>
-                                );
-                            }}
-                            buttonTextAfterSelection={(selectedItem, index) => {
-                                return (
-                                    <>
-                                        <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                            {selectedItem.sp_name}
-                                        </Text>
-                                    </>
-                                );
-                            }}
-                            renderDropdownIcon={isOpened => {
-                                return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-                            }}
-                            dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
-                        />
-                    </View>
-
-                </View>
-                {/* <View style={{ width: '100%', flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-between' }}>
+  return (
+    <SafeAreaView style={styles.container}>
+      <GoBack text={'Client List'} />
+      <View style={{width: '90%', alignSelf: 'center'}}>
+        <View style={styles.calenderContainer}>
+          <View style={styles.calenderSubContainer}>
+            <Text style={{...styles.calenderText, marginBottom: 5}}>City</Text>
+            <SelectDropdown
+              buttonStyle={{...styles.drop, flexDirection: 'row'}}
+              buttonTextStyle={{
+                color: '#000',
+                fontSize: 15,
+                fontWeight: '600',
+                marginTop: 0,
+              }}
+              defaultButtonText="Select"
+              data={citylist}
+              onSelect={(selectedItem, index) => {
+                setselectedcity(selectedItem.city_id);
+              }}
+              rowTextForSelection={(item, index) => {
+                return (
+                  <>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        paddingHorizontal: 0,
+                        color: '#000',
+                        fontWeight: '600',
+                      }}>
+                      {item.city_name}
+                    </Text>
+                  </>
+                );
+              }}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return (
+                  <>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        paddingHorizontal: 0,
+                        color: '#000',
+                        fontWeight: '600',
+                      }}>
+                      {selectedItem.city_name}
+                    </Text>
+                  </>
+                );
+              }}
+              renderDropdownIcon={isOpened => {
+                return (
+                  <Feather
+                    name={isOpened ? 'chevron-up' : 'chevron-down'}
+                    color="#000"
+                    size={13}
+                    style={{marginLeft: 0}}
+                  />
+                );
+              }}
+              dropdownStyle={{backgroundColor: '#fff', borderRadius: 10}}
+            />
+          </View>
+          <View style={styles.calenderSubContainer}>
+            <Text style={{...styles.calenderText, marginBottom: 5}}>Area</Text>
+            <SelectDropdown
+              disabled={selectedcity ? false : true}
+              buttonStyle={{...styles.drop, flexDirection: 'row'}}
+              buttonTextStyle={{
+                color: '#000',
+                fontSize: 15,
+                fontWeight: '600',
+                marginTop: 0,
+              }}
+              defaultButtonText="Select"
+              data={arealist}
+              onSelect={(selectedItem, index) => {
+                setselectedarea(selectedItem.area_id);
+              }}
+              rowTextForSelection={(item, index) => {
+                return (
+                  <>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        paddingHorizontal: 0,
+                        color: '#000',
+                        fontWeight: '600',
+                      }}>
+                      {item.area_name}
+                    </Text>
+                  </>
+                );
+              }}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return (
+                  <>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        paddingHorizontal: 0,
+                        color: '#000',
+                        fontWeight: '600',
+                      }}>
+                      {selectedItem.area_name}
+                    </Text>
+                  </>
+                );
+              }}
+              renderDropdownIcon={isOpened => {
+                return (
+                  <Feather
+                    name={isOpened ? 'chevron-up' : 'chevron-down'}
+                    color="#000"
+                    size={13}
+                    style={{marginLeft: 0}}
+                  />
+                );
+              }}
+              dropdownStyle={{backgroundColor: '#fff', borderRadius: 10}}
+            />
+          </View>
+        </View>
+        <View style={styles.calenderContainer}>
+          <View
+            style={{
+              width: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text style={{...styles.calenderText, marginBottom: 5}}>
+              Specialty
+            </Text>
+            <SelectDropdown
+              buttonStyle={{...styles.drop, flexDirection: 'row'}}
+              buttonTextStyle={{
+                color: '#000',
+                fontSize: 15,
+                fontWeight: '600',
+                marginTop: 0,
+              }}
+              defaultButtonText="Select"
+              data={specialtieslist}
+              onSelect={(selectedItem, index) => {
+                setselectedspecialty(selectedItem.sp_id);
+              }}
+              rowTextForSelection={(item, index) => {
+                return (
+                  <>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        paddingHorizontal: 0,
+                        color: '#000',
+                        fontWeight: '600',
+                      }}>
+                      {item.sp_name}
+                    </Text>
+                  </>
+                );
+              }}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return (
+                  <>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        paddingHorizontal: 0,
+                        color: '#000',
+                        fontWeight: '600',
+                      }}>
+                      {selectedItem.sp_name}
+                    </Text>
+                  </>
+                );
+              }}
+              renderDropdownIcon={isOpened => {
+                return (
+                  <Feather
+                    name={isOpened ? 'chevron-up' : 'chevron-down'}
+                    color="#000"
+                    size={13}
+                    style={{marginLeft: 0}}
+                  />
+                );
+              }}
+              dropdownStyle={{backgroundColor: '#fff', borderRadius: 10}}
+            />
+          </View>
+        </View>
+        {/* <View style={{ width: '100%', flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-between' }}>
                     < View style={style.filterContainer}>
                         <Text style={style.calenderText}>Specialty</Text>
                         <SelectDropdown
@@ -289,27 +411,72 @@ const Clientdoctorlist = () => {
                         />
                     </View>
                 </View>   */}
-            </View>
+      </View>
 
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <ClientdoctorTable data={clientslist} />
-            </ScrollView>
-        </SafeAreaView >
-    );
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <ClientdoctorTable data={clientslist} />
+      </ScrollView>
+
+      <View style={style.rButton}>
+        <TouchableOpacity
+          onPress={() => {
+            setModal(true);
+          }}>
+          <AntDesign name="plus" size={30} color={'#fff'} />
+        </TouchableOpacity>
+      </View>
+
+      <AddNewDoctorModel
+        show={modal}
+        hide={() => {
+          setModal(false);
+        }}
+        submit={e => {
+            (e !== null) ? submitAddDoctor(e) : null
+        }}
+      />
+
+      <SuccessfullyModel
+        show={scModal}
+        hide={() => {
+          setScModal(false);
+        }}
+        message={'Doctor has been added successfully.'}
+      />
+    </SafeAreaView>
+  );
 };
 
 export default Clientdoctorlist;
 
 export const style = StyleSheet.create({
-    filterContainer: {
-        justifyContent: 'center',
-        // alignItems: 'center',
-        marginTop: 10,
-        width: '50%',
+  filterContainer: {
+    justifyContent: 'center',
+    // alignItems: 'center',
+    marginTop: 10,
+    width: '50%',
+  },
+  calenderText: {
+    fontSize: 16,
+    color: 'rgba(37, 50, 116, 0.6)',
+    marginHorizontal: 10,
+  },
+  rButton: {
+    backgroundColor: '#7189FF',
+    height: 50,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 25,
+    position: 'absolute',
+    bottom: 70,
+    right: 50,
+    shadowColor: '#000000',
+    shadowOpacity: 0.8,
+    shadowRadius: 15,
+    shadowOffset: {
+      height: 1,
+      width: 1,
     },
-    calenderText: {
-        fontSize: 16,
-        color: 'rgba(37, 50, 116, 0.6)',
-        marginHorizontal: 10
-    },
-})
+  },
+});
