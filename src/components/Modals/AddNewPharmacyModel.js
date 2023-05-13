@@ -6,6 +6,8 @@ import {
   Dimensions,
   Modal,
   ScrollView,
+  FlatList,
+  Image
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -14,7 +16,7 @@ import axios from 'axios';
 import {GET_Areas, GET_CITY} from '../../Provider/ApiRequest';
 import Input from '../Input';
 import GetLocation from 'react-native-get-location';
-import { openPicker } from '@baronha/react-native-multiple-image-picker';
+import {openPicker} from '@baronha/react-native-multiple-image-picker';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -46,18 +48,18 @@ const AddNewPharmacyModel = ({show, hide, submit}) => {
       pharmacyName,
       classification,
       latitude,
-      longitude
-    })
+      longitude,
+    });
 
     hide();
-    setCityValue(null)
-    setAreaValue(null)
-    setLatitude('')
-    setLongitude('')
-    setLocation('')
-    setPharmacyName('')
-    setClassification('')
-  }
+    setCityValue(null);
+    setAreaValue(null);
+    setLatitude('');
+    setLongitude('');
+    setLocation('');
+    setPharmacyName('');
+    setClassification('');
+  };
 
   const getCities = () => {
     axios({
@@ -265,7 +267,11 @@ const AddNewPharmacyModel = ({show, hide, submit}) => {
                     style={{...styles.inputModel, backgroundColor: 'white'}}>
                     <TouchableOpacity
                       onPress={() => getCurrentLocation()}
-                      style={{...styles.iconPassword, justifyContent:'center',textAlign: 'center'}}>
+                      style={{
+                        ...styles.iconPassword,
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                      }}>
                       <AntDesign
                         style={styles.icon}
                         color={location ? 'blue' : 'black'}
@@ -284,39 +290,68 @@ const AddNewPharmacyModel = ({show, hide, submit}) => {
                   </View>
                 </View>
 
-
                 <View
                   style={{
                     ...styles.container,
                     justifyContent: 'center',
                     marginTop: 30,
                   }}>
-                  <TouchableOpacity style={{...styles.newbtn, backgroundColor: 'white', borderColor: '#7189FF', borderWidth: 2}} onPress={() => {
-                    onPicker();
-                  }}>
-                    <View style={{ flexDirection: 'row', justifyContent:'space-between'}}>
-                    <Text
+                  <TouchableOpacity
+                    style={{
+                      ...styles.newbtn,
+                      backgroundColor: 'white',
+                      borderColor: '#7189FF',
+                      borderWidth: 2,
+                    }}
+                    onPress={() => {
+                      onPicker();
+                    }}>
+                    <View
                       style={{
-                        color: '#7189FF',
-                        fontSize: 18,
-                        paddingHorizontal: 50,
-                        textAlign: 'center',
-                        fontWeight: 'bold',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
                       }}>
-                      Attachments
-                    </Text>
-                    <AntDesign
+                      <Text
+                        style={{
+                          color: '#7189FF',
+                          fontSize: 18,
+                          paddingHorizontal: 50,
+                          textAlign: 'center',
+                          fontWeight: 'bold',
+                        }}>
+                        Attachments
+                      </Text>
+                      <AntDesign
                         style={styles.icon}
-                        color={images.length > 0 ? 'blue' : 'black' }
+                        color={images.length > 0 ? 'blue' : 'black'}
                         name="pluscircle"
                         size={25}
                       />
                     </View>
                   </TouchableOpacity>
+                  <FlatList
+                    horizontal={true}
+                    data={images}
+                    renderItem={({item}) => 
+                    <View>
+                      <Image style={{height:80, width:80,marginRight:5, borderRadius: 7}} source={{uri: item.path}}/>
+                      <TouchableOpacity style={{position: 'absolute', top: 5, right: 5}} onPress={() => {
+                        const arr = images.filter((items) => items.localIdentifier !== item.localIdentifier);
+                        setImages(arr)
+                      }}>
+                      <AntDesign
+                        style={styles.icon}
+                        color={'red'}
+                        name="minuscircle"
+                        size={25}
+                      />
+                      </TouchableOpacity>
+                    </View>
+                    
+                  }
+                    keyExtractor={item => item.id}
+                  />
                 </View>
-
-
-
                 <View
                   style={{
                     ...styles.container,
@@ -324,9 +359,11 @@ const AddNewPharmacyModel = ({show, hide, submit}) => {
                     marginTop: 30,
                     marginBottom: 70,
                   }}>
-                  <TouchableOpacity style={styles.newbtn} onPress={() => {
-                    submitData()
-                  }}>
+                  <TouchableOpacity
+                    style={styles.newbtn}
+                    onPress={() => {
+                      submitData();
+                    }}>
                     <Text
                       style={{
                         color: '#fff',
@@ -355,7 +392,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: '3%',
     height: 35,
-    width: 35
+    width: 35,
   },
   container: {
     backgroundColor: 'white',
