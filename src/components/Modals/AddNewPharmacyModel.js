@@ -14,6 +14,7 @@ import axios from 'axios';
 import {GET_Areas, GET_CITY} from '../../Provider/ApiRequest';
 import Input from '../Input';
 import GetLocation from 'react-native-get-location';
+import { openPicker } from '@baronha/react-native-multiple-image-picker';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -35,6 +36,8 @@ const AddNewPharmacyModel = ({show, hide, submit}) => {
   const [longitude, setLongitude] = useState('');
 
   const [location, setLocation] = useState('');
+
+  const [images, setImages] = useState([]);
 
   const submitData = () => {
     submit({
@@ -120,7 +123,28 @@ const AddNewPharmacyModel = ({show, hide, submit}) => {
       });
   };
 
-  
+  const onPicker = async () => {
+    try {
+      const singleSelectedMode = false;
+      const response = await openPicker({
+        useCameraButton: true,
+        selectedAssets: images,
+        isExportThumbnail: true,
+        maxVideo: 0,
+        doneTitle: 'Done',
+        singleSelectedMode,
+        isCrop: true,
+      });
+      const crop = response.crop;
+      if (crop) {
+        response.path = crop.path;
+        response.width = crop.width;
+        response.height = crop.height;
+      }
+      setImages(response);
+      console.log(response);
+    } catch (e) {}
+  };
 
   useEffect(() => {
     getCities();
@@ -244,7 +268,7 @@ const AddNewPharmacyModel = ({show, hide, submit}) => {
                       style={{...styles.iconPassword, justifyContent:'center',textAlign: 'center'}}>
                       <AntDesign
                         style={styles.icon}
-                        color={location ? 'black' : 'blue'}
+                        color={location ? 'blue' : 'black'}
                         name="enviromento"
                         size={25}
                       />
@@ -259,6 +283,39 @@ const AddNewPharmacyModel = ({show, hide, submit}) => {
                     </Text>
                   </View>
                 </View>
+
+
+                <View
+                  style={{
+                    ...styles.container,
+                    justifyContent: 'center',
+                    marginTop: 30,
+                  }}>
+                  <TouchableOpacity style={{...styles.newbtn, backgroundColor: 'white', borderColor: '#7189FF', borderWidth: 2}} onPress={() => {
+                    onPicker();
+                  }}>
+                    <View style={{ flexDirection: 'row', justifyContent:'space-between'}}>
+                    <Text
+                      style={{
+                        color: '#7189FF',
+                        fontSize: 18,
+                        paddingHorizontal: 50,
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                      }}>
+                      Attachments
+                    </Text>
+                    <AntDesign
+                        style={styles.icon}
+                        color={images.length > 0 ? 'blue' : 'black' }
+                        name="pluscircle"
+                        size={25}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+
+
 
                 <View
                   style={{

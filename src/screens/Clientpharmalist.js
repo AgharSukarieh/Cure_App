@@ -17,7 +17,7 @@ import ClientpharmaTable from '../components/Tables/ClientpharmaTable';
 import Feather from 'react-native-vector-icons/Feather';
 import {Dropdown} from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { GET_Areas, GET_CITY } from '../Provider/ApiRequest';
+import { GET_Areas, GET_CITY, SAL_GET_PHARMACY } from '../Provider/ApiRequest';
 import axios from 'axios';
 import AddNewPharmacyModel from '../components/Modals/AddNewPharmacyModel';
 import SuccessfullyModel from '../components/Modals/SuccessfullyModel';
@@ -28,25 +28,47 @@ const Clientpharmalist = () => {
 
   const [citiesData, setCitiesData] = useState([]);
   const [areasData, setAreasData] = useState([]);
-
   const [cityValue, setCityValue] = useState(null);
   const [isCityFocus, setIsCityFocus] = useState(false);
-
   const [areaValue, setAreaValue] = useState(null);
   const [isAreaFocus, setIsAreaFocus] = useState(false);
-
   const [modal, setModal] = useState(false);
   const [scModal, setScModal] = useState(false);
+  const [pharmacyArray, setPharmacyArray] = useState([])
 
+  const [pharmacyArraySearch, setPharmacyArraySearch] = useState([])
+  const [clearSearch, setClearSearch] = useState('')
 
   const afterSelectCityAndArea = (area_id) => {
     console.log(cityValue, area_id);
+    if (area_id !== null) {
+      const arr = pharmacyArray.filter((item) => item.area_code == area_id);
+      setPharmacyArraySearch(arr)
+      }else {
+        setPharmacyArraySearch([])
+      }
   }
+
    const submitAddPharmacy = (data) => {
     console.log(data);
     // API ...
     setScModal(true)
    }
+
+   const getPharmacy = () => {
+    axios({
+      method: 'GET',
+      url: SAL_GET_PHARMACY,
+      params: {},
+    })
+      .then(response => {
+        setPharmacyArray(response.data.data);
+        console.log(response.data.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    }
 
   const getCities = () => {
     axios({
@@ -86,7 +108,20 @@ const Clientpharmalist = () => {
     }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 39 ~ getarea ~ error", error) })
   }
 
+const [search, setSearch] = useState('');
+
+const updateSearch = (search) => {
+  setSearch(search);
+  if (search !== '') {
+    const arr = pharmacyArray.filter((item) => item.pharmacy_name.includes(search));
+    setPharmacyArraySearch(arr)
+    }else {
+      setPharmacyArraySearch([])
+    }
+};
+
   useEffect(() => {
+    getPharmacy()
     getCities()
   }, [])
 
@@ -100,11 +135,14 @@ const Clientpharmalist = () => {
             style={styles.searchinput}
             placeholder="Search"
             onChangeText={text => {
-              console.log(text);
+              updateSearch(text)
             }}
+            value={search}
           />
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => {
+              updateSearch('')
+            }}
             style={{
               width: '15%',
               alignItems: 'center',
@@ -228,7 +266,7 @@ const Clientpharmalist = () => {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <ClientpharmaTable data={pharams} />
+        <ClientpharmaTable data={pharmacyArraySearch.length > 0 ? pharmacyArraySearch : pharmacyArray} />
       </ScrollView>
 
       <View style={style.rButton}>
