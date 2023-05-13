@@ -43,7 +43,7 @@ const ClientdoctorTable = ({ data }) => {
 
                             <View style={{ ...styles.filtterel, width: '24%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.sp_abbr}</Text>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.speciality}</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />

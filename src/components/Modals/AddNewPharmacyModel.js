@@ -21,7 +21,7 @@ import {openPicker} from '@baronha/react-native-multiple-image-picker';
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
-const AddNewPharmacyModel = ({show, hide, submit}) => {
+const AddNewPharmacyModel = ({showM, hideM, submit}) => {
   const [citiesData, setCitiesData] = useState([]);
   const [areasData, setAreasData] = useState([]);
 
@@ -50,8 +50,7 @@ const AddNewPharmacyModel = ({show, hide, submit}) => {
       latitude,
       longitude,
     });
-
-    hide();
+    hideM();
     setCityValue(null);
     setAreaValue(null);
     setLatitude('');
@@ -156,7 +155,7 @@ const AddNewPharmacyModel = ({show, hide, submit}) => {
     <Modal
       animationType="slide"
       transparent={true}
-      visible={show}
+      visible={showM}
       coverScreen={false}
       onSwipeComplete={() => setModalVisible2(false)}>
       <View style={styles.ModalContainer}>
@@ -164,7 +163,7 @@ const AddNewPharmacyModel = ({show, hide, submit}) => {
           <TouchableOpacity
             onPress={() => {
               submit(null);
-              hide();
+              hideM();
             }}>
             <AntDesign
               name="close"

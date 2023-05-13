@@ -24,7 +24,8 @@ import SuccessfullyModel from '../components/Modals/SuccessfullyModel';
 
 const wwidth = Dimensions.get('window').width;
 
-const Clientpharmalist = () => {
+const Clientpharmalist = ({ navigation, route }) => {
+  const title = route?.params?.title
 
   const [citiesData, setCitiesData] = useState([]);
   const [areasData, setAreasData] = useState([]);
@@ -37,7 +38,7 @@ const Clientpharmalist = () => {
   const [pharmacyArray, setPharmacyArray] = useState([])
 
   const [pharmacyArraySearch, setPharmacyArraySearch] = useState([])
-  const [clearSearch, setClearSearch] = useState('')
+  // const [clearSearch, setClearSearch] = useState('')
 
   const afterSelectCityAndArea = (area_id) => {
     console.log(cityValue, area_id);
@@ -127,7 +128,7 @@ const updateSearch = (search) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoBack text={'Client List'} />
+      <GoBack text={title || 'Client List'} />
 
       <View style={{width: '90%', alignSelf: 'center', marginTop: 15}}>
         <View style={styles.search}>
@@ -228,40 +229,6 @@ const updateSearch = (search) => {
               )}
             />
           </View>
-
-          {/* <View style={style.filterContainer}>
-            <Text style={style.calenderText}>Classification</Text>
-            <SearchableDropdown
-              onItemSelect={item => {
-                setclassfilter(item);
-              }}
-              onRemoveItem={(item, index) => {
-                setclassfilter('');
-              }}
-              containerStyle={{padding: 5, width: '90%', height: 50}}
-              itemStyle={{
-                padding: 10,
-                backgroundColor: '#fff',
-                borderColor: '#bbb',
-                borderWidth: 1,
-              }}
-              itemTextStyle={{color: '#000'}}
-              itemsContainerStyle={{maxHeight: 140, width: '100%'}}
-              items={classification}
-              resetValue={false}
-              textInputProps={{
-                placeholder:
-                  classfilter != '' ? classfilter.name : 'Select Specialty',
-                underlineColorAndroid: 'transparent',
-                style: {
-                  padding: 12,
-                  borderWidth: 1,
-                  borderColor: classfilter != '' ? '#7189FF' : '#7189FF',
-                  borderRadius: 5,
-                },
-              }}
-            />
-          </View> */}
         </View>
       </View>
 
@@ -279,8 +246,8 @@ const updateSearch = (search) => {
       </View>
 
       <AddNewPharmacyModel
-        show={modal}
-        hide={() => {
+        showM={modal}
+        hideM={() => {
           setModal(false);
         }}
         submit={e => {

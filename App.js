@@ -27,6 +27,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Firstscreen from './src/helpers/firstscreen';
 import Locationupdate from './src/Provider/Locationupdate';
 import Sal_rep_pharm from './src/screens/Sales/sal_rep_pharm';
+import MainClientdoctorlist from './src/screens/MainClientdoctorlist';
+
 
 
 export default function App() {
@@ -51,7 +53,7 @@ export default function App() {
 
 
   const Stack = createNativeStackNavigator();
-  const Role = "Sales";//"Sales"; 
+  const Role = "Saless";//"Sales"; 
   return (
     <NavigationContainer>
       <Stack.Navigator >
@@ -69,15 +71,16 @@ export default function App() {
         <Stack.Screen name="Weekly" component={Weekly} options={{ headerShown: false }} />
         {/* <Stack.Screen name="Weekly" component={Role == "Sales" ? WeeklySales : Weekly} options={{ headerShown: false }} /> */}
         <Stack.Screen name="Daily" component={Role == "Sales" ? DailySales : Daily} options={{ headerShown: false }} />
-        <Stack.Screen name="Clientlist" component={Role == "Sales" ? Clientpharmalist : Clientdoctorlist} options={{ headerShown: false }} />
+        <Stack.Screen name="Clientlist" component={Role == "Sales" ? Clientpharmalist : MainClientdoctorlist} options={{ headerShown: false }} />
         <Stack.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
         <Stack.Screen name="Sal_rep_pharm" component={Sal_rep_pharm} options={{ headerShown: false }} />
         <Stack.Screen name="Inventory" component={Inventory} options={{ headerShown: false }} />
         <Stack.Screen name="Order" component={Order} options={{ headerShown: false }} />
         <Stack.Screen name="Return" component={Return} options={{ headerShown: false }} />
         <Stack.Screen name="AccountInfo" component={AccountInfo} options={{ headerShown: false }} />
-
-        
+        <Stack.Screen name="Clientdoctorlist" component={Clientdoctorlist} options={{ headerShown: false }} />
+        <Stack.Screen name="Clientpharmalist" component={Clientpharmalist} options={{ headerShown: false }} />
+        {/* Clientdoctorlist */}
       </Stack.Navigator>
     </NavigationContainer >
   );

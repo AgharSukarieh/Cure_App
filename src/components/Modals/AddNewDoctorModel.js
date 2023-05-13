@@ -19,6 +19,15 @@ const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
 const AddNewDoctorModel = ({show, hide, submit}) => {
+  const [citiesData, setCitiesData] = useState([]);
+  const [areasData, setAreasData] = useState([]);
+
+  const [cityValue, setCityValue] = useState(null);
+  const [isCityFocus, setIsCityFocus] = useState(false);
+
+  const [areaValue, setAreaValue] = useState(null);
+  const [isAreaFocus, setIsAreaFocus] = useState(false);
+
   const [doctorName, setDoctorName] = useState('');
   const [specialty, setsSpecialty] = useState('');
   const [classification, setClassification] = useState('');
@@ -35,6 +44,8 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
       longitude
     })
     hide();
+    setCityValue(null);
+    setAreaValue(null);
     setDoctorName('')
     setsSpecialty('')
     setClassification('')
@@ -58,6 +69,59 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
       });
   };
 
+  const getCities = () => {
+    axios({
+      method: 'POST',
+      url: GET_CITY,
+    })
+      .then(response => {
+        var count = Object.keys(response.data).length;
+        let cityArray = [];
+        for (var i = 0; i < count; i++) {
+          cityArray.push({
+            value: response.data[i].city_id,
+            label: response.data[i].city_name,
+          });
+        }
+        setCitiesData(cityArray);
+      })
+      .catch(error => {
+        console.log(
+          '🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error',
+          error,
+        );
+      });
+  };
+
+  const getareas = city_id => {
+    let data = {
+      city_id: city_id,
+    };
+    axios({
+      method: 'POST',
+      url: GET_Areas,
+      data: data,
+    })
+      .then(response => {
+        var count = Object.keys(response.data).length;
+        let areaArray = [];
+        for (var i = 0; i < count; i++) {
+          areaArray.push({
+            value: response.data[i].area_id,
+            label: response.data[i].area_name,
+          });
+        }
+        setAreasData(areaArray);
+      })
+      .catch(error => {
+        console.log('🚀 ~ file: Sales.js ~ line 39 ~ getarea ~ error', error);
+      });
+  };
+
+  useEffect(() => {
+    getCities();
+  }, []);
+  
   return (
     <Modal
       animationType="slide"
@@ -87,6 +151,69 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
+                  <View style={styles.container}>
+                  <Dropdown
+                    style={styles.dropdown}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={citiesData}
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!isCityFocus ? 'Select City' : '...'}
+                    searchPlaceholder="Search..."
+                    value={cityValue}
+                    onFocus={() => setIsCityFocus(true)}
+                    onBlur={() => setIsCityFocus(false)}
+                    onChange={item => {
+                      setCityValue(item.value);
+                      setIsCityFocus(false);
+                      getareas(item.value);
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color={isCityFocus ? 'blue' : 'black'}
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
+                  />
+                </View>
+                <View style={{...styles.container, marginTop: 40}}>
+                  <Dropdown
+                    style={styles.dropdown}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={areasData}
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!isAreaFocus ? 'Select Area' : '...'}
+                    searchPlaceholder="Search..."
+                    value={areaValue}
+                    onFocus={() => setIsAreaFocus(true)}
+                    onBlur={() => setIsAreaFocus(false)}
+                    onChange={item => {
+                      setIsAreaFocus(false);
+                      setAreaValue(item.value);
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color={isAreaFocus ? 'blue' : 'black'}
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
+                  />
+                </View>
                 <Input
                   lable={'Doctor Name'}
                   setData={setDoctorName}
