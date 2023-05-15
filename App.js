@@ -22,14 +22,16 @@ import Order from './src/screens/Sales/Order';
 import Return from './src/screens/Sales/Return';
 import AccountInfo from './src/screens/Sales/AccountInfo';
 import Chat from './src/screens/chat';
+import ChatPage from './src/screens/ChatPages/ChatPage';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Firstscreen from './src/helpers/firstscreen';
 import Locationupdate from './src/Provider/Locationupdate';
 import Sal_rep_pharm from './src/screens/Sales/sal_rep_pharm';
 import MainClientdoctorlist from './src/screens/MainClientdoctorlist';
-
-
+import ChatScreen from './src/screens/ChatPages/ChatScreen';
+import ContactsScreen from './src/screens/ChatPages/ContactsScreen';
+import PresentImage from './src/screens/ChatPages/PresentImage';
 
 export default function App() {
 
@@ -53,7 +55,7 @@ export default function App() {
 
 
   const Stack = createNativeStackNavigator();
-  const Role = "Saless";//"Sales"; 
+  const Role = "Sales";//"Sales"; 
   return (
     <NavigationContainer>
       <Stack.Navigator >
@@ -80,7 +82,10 @@ export default function App() {
         <Stack.Screen name="AccountInfo" component={AccountInfo} options={{ headerShown: false }} />
         <Stack.Screen name="Clientdoctorlist" component={Clientdoctorlist} options={{ headerShown: false }} />
         <Stack.Screen name="Clientpharmalist" component={Clientpharmalist} options={{ headerShown: false }} />
-        {/* Clientdoctorlist */}
+        <Stack.Screen name="ChatPage" component={ChatPage} options={{ headerShown: false }} />
+        <Stack.Screen name="ChatScreen" component={ChatScreen} />
+        <Stack.Screen name="ContactsScreen" component={ContactsScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="PresentImage" component={PresentImage} options={{ title: 'Images' }}/>
       </Stack.Navigator>
     </NavigationContainer >
   );

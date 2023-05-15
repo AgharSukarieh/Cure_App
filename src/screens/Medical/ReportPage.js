@@ -69,8 +69,8 @@ const ReportPage = () => {
           <TouchableOpacity style={styles.reportPageButton} onPress={() => { navigation.navigate('Chat') }}>
             <Text style={styles.reportPageText}>Chat</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
-            <Text style={styles.reportPageText}>Test</Text>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => {navigation.navigate('ChatPage') }}>
+            <Text style={styles.reportPageText}>ChatPage</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
             <Text style={styles.reportPageText}>Test</Text>
