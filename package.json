@@ -29,6 +29,7 @@
     "react-native-get-location": "^3.0.1",
     "react-native-image-zoom-viewer": "^3.0.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
+    "react-native-maps": "^1.7.1",
     "react-native-permissions": "^3.8.0",
     "react-native-qrcode-scanner": "^1.5.5",
     "react-native-qrcode-svg": "^6.2.0",

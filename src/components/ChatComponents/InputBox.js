@@ -1,18 +1,41 @@
 import React, {useState} from 'react';
-import {View, TextInput, StyleSheet, Image,FlatList} from 'react-native';
+import {View, TextInput, StyleSheet, Image, FlatList} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {openPicker} from '@baronha/react-native-multiple-image-picker';
+import GetLocation from 'react-native-get-location';
+import {useNavigation} from '@react-navigation/native';
+import MapMH from './Map'
 
 const InputBox = () => {
+  const navigation = useNavigation();
   const [newMessage, setNewMessage] = useState('');
   const [images, setImages] = useState([]);
+
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
 
   const onSend = () => {
     console.warn('Sending a new message: ', newMessage);
     setNewMessage('');
     setImages([]);
+    setLatitude('');
+    setLongitude('');
+  };
+
+  const onLocation = () => {
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 60000,
+    })
+      .then(location => {
+        setLatitude(location.latitude);
+        setLongitude(location.longitude);
+      })
+      .catch(error => {
+        console.warn(code, message);
+      });
   };
 
   const onPicker = async () => {
@@ -40,6 +63,22 @@ const InputBox = () => {
 
   return (
     <>
+    {latitude !== '' && longitude !== '' && (
+      <View style={{...styles.attachmentsContainer, marginBottom:5}}>
+        <MapMH lat={latitude} longitude={longitude} style={styles.selectedImage}/>
+        <MaterialIcons
+                name="highlight-remove"
+                onPress={() => {
+                  setLatitude('');
+                  setLongitude('');
+                }}
+                size={35}
+                color="gray"
+                style={{...styles.removeSelectedImage}}
+        />
+      </View>
+    )} 
+
       {images.length > 0 && (
         <FlatList
           horizontal={true}
@@ -69,7 +108,19 @@ const InputBox = () => {
         />
       )}
       <SafeAreaView edges={['bottom']} style={styles.container}>
-        <AntDesign onPress={onPicker} name="plus" size={24} color="royalblue" />
+        <AntDesign
+          onPress={onPicker}
+          name="plus"
+          size={24}
+          color="royalblue"
+          style={{marginRight: 10}}
+        />
+        <AntDesign
+          onPress={onLocation}
+          name="enviromento"
+          size={24}
+          color="royalblue"
+        />
         <TextInput
           value={newMessage}
           onChangeText={setNewMessage}

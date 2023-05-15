@@ -13,6 +13,18 @@ export const messagesListDemo = [
     },
   },
   {
+    id: 'm1',
+    coordinate: {
+      latitude: 35.6762,
+      longitude: 139.6503
+    },
+    createdAt: '2022-10-10T12:48:00.000Z',
+    user: {
+      id: 'u1',
+      name: 'Vadim',
+    },
+  },
+  {
     id: 'm2',
     text: 'I am good, good',
     images: [
