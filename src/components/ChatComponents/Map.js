@@ -5,8 +5,8 @@ import { Marker } from "react-native-maps";
 
 export default function MapMH({lat, long, style}) {
     const currentRegion = {
-        latitude: 35.6762,
-        longitude: 139.6503,
+        latitude: lat, 
+        longitude: long,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       };

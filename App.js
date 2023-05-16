@@ -33,8 +33,6 @@ import ChatScreen from './src/screens/ChatPages/ChatScreen';
 import ContactsScreen from './src/screens/ChatPages/ContactsScreen';
 import PresentImage from './src/screens/ChatPages/PresentImage';
 
-// import Map from './src/components/ChatComponents/Map';
-
 export default function App() {
 
   const [logedin, setlogedin] = useState(false)
@@ -89,7 +87,6 @@ export default function App() {
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
         <Stack.Screen name="ContactsScreen" component={ContactsScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="PresentImage" component={PresentImage} options={{ title: 'Images' }}/>
-        {/* <Stack.Screen name="Map" component={Map} /> */}
       </Stack.Navigator>
     </NavigationContainer >
   );

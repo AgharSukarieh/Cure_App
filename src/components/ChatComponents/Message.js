@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, FlatList, Image, Pressable} from 'react-native';
+import {View, Text, StyleSheet, FlatList, Image, Pressable,Linking,Platform} from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
@@ -19,23 +19,47 @@ const Message = ({message}) => {
         backgroundColor: isMyMessage() ? '#8ab7eb' : 'white', //'#DCF8C5'
         alignSelf: isMyMessage() ? 'flex-end' : 'flex-start',
       }}>
-       { message?.coordinate && 
-       <Pressable onPress={() => {}}>
-          <MapMH lat={message?.coordinate?.latitude} longitude={message?.coordinate?.longitude} style={{...styles.selectedMap, margin:0}}/>
-       </Pressable>
-       }
-      {message?.images?.length > 0 &&
-        <Pressable onPress={() => navigation.navigate('PresentImage',{arrayOfURI: message?.images})}>
-         {message.images.map((element,index) => (
+      {message?.coordinate && (
+        <Pressable
+          onPress={() => {
+              const latitude = message?.coordinate?.latitude; 
+              const longitude = message?.coordinate?.longitude; 
+              const label = 'Location'; // Replace with your desired label or address
+            
+              const url = `https://www.google.com/maps?q=${latitude},${longitude}(${label})`;
+            
+              Linking.canOpenURL(url)
+                .then((supported) => {
+                  if (supported) {
+                    Linking.openURL(url);
+                  } else {
+                    console.log("Cannot open Google Maps");
+                  }
+                })
+                .catch((error) => console.log(error));       
+          }}>
+          <MapMH
+            lat={message?.coordinate?.latitude}
+            long={message?.coordinate?.longitude}
+            style={{...styles.selectedMap, margin: 0}}
+          />
+        </Pressable>
+      )}
+      {message?.images?.length > 0 && (
+        <Pressable
+          onPress={() =>
+            navigation.navigate('PresentImage', {arrayOfURI: message?.images})
+          }>
+          {message.images.map((element, index) => (
             <Image
-            key={index}
+              key={index}
               source={{uri: element}}
               style={{...styles.selectedImage, marginBottom: 5}}
               resizeMode="contain"
             />
-         ))}
+          ))}
         </Pressable>
-      }
+      )}
       <Text>{message?.text}</Text>
       <Text style={styles.time}>{dayjs(message?.createdAt).fromNow(true)}</Text>
     </View>

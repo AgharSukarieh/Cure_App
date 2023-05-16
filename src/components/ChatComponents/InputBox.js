@@ -37,7 +37,7 @@ const InputBox = () => {
         console.warn(code, message);
       });
   };
-
+  
   const onPicker = async () => {
     try {
       const singleSelectedMode = false;
@@ -65,7 +65,7 @@ const InputBox = () => {
     <>
     {latitude !== '' && longitude !== '' && (
       <View style={{...styles.attachmentsContainer, marginBottom:5}}>
-        <MapMH lat={latitude} longitude={longitude} style={styles.selectedImage}/>
+        <MapMH lat={latitude} long={longitude} style={styles.selectedImage}/>
         <MaterialIcons
                 name="highlight-remove"
                 onPress={() => {
