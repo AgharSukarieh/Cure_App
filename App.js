@@ -58,7 +58,6 @@ export default function App() {
 
 
   const Stack = createNativeStackNavigator();
-  const Role = "Sales"; //"Sales"; 
   return (
     <NavigationContainer>
       <Stack.Navigator >
@@ -75,9 +74,9 @@ export default function App() {
         <Stack.Screen name="Sales" component={Sales} options={{ headerShown: false }} />
         <Stack.Screen name="Monthly" component={Monthly} options={{ headerShown: false }} />
         <Stack.Screen name="Weekly" component={Weekly} options={{ headerShown: false }} />
-        {/* <Stack.Screen name="Weekly" component={Role == "Sales" ? WeeklySales : Weekly} options={{ headerShown: false }} /> */}
-        <Stack.Screen name="Daily" component={Role == "Sales" ? DailySales : Daily} options={{ headerShown: false }} />
-        <Stack.Screen name="Clientlist" component={Role == "Sales" ? Clientpharmalist : MainClientdoctorlist} options={{ headerShown: false }} />
+        {/* <Stack.Screen name="Weekly" component={Role == "sales" ? WeeklySales : Weekly} options={{ headerShown: false }} /> */}
+        <Stack.Screen name="Daily" component={userData.role == "sales" ? DailySales : Daily} options={{ headerShown: false }} />
+        <Stack.Screen name="Clientlist" component={userData.role == "sales" ? Clientpharmalist : MainClientdoctorlist} options={{ headerShown: false }} />
         <Stack.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
         <Stack.Screen name="Sal_rep_pharm" component={Sal_rep_pharm} options={{ headerShown: false }} />
         <Stack.Screen name="Inventory" component={Inventory} options={{ headerShown: false }} />

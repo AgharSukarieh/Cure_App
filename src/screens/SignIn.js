@@ -43,7 +43,6 @@ const SignIn = ({ navigation }) => {
             Alert.alert('The Password you Entered is wrong')
           }
           if (response.data.message == 'done') {
-            console.log(response.data.data);
             await AsyncStorage.setItem('userInfo', JSON.stringify(response.data.data))
             navigation.navigate('ReportPage')
           }
