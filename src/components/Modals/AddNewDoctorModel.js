@@ -31,6 +31,8 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
   const [doctorName, setDoctorName] = useState('');
   const [specialty, setsSpecialty] = useState('');
   const [classification, setClassification] = useState('');
+  const [address, setAddress] = useState('');
+  
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [location, setLocation] = useState('');
@@ -49,6 +51,7 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
     setDoctorName('')
     setsSpecialty('')
     setClassification('')
+    setAddress('');
     setLatitude('')
     setLongitude('')
     setLocation('')
@@ -233,6 +236,13 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
                   setData={setClassification}
                   style={{...styles.inputModel, backgroundColor: 'white'}}
                   value={classification}
+                  viewStyle={{width: '90%'}}
+                />
+                <Input
+                  lable={'Address'}
+                  setData={setAddress}
+                  style={{...styles.inputModel, backgroundColor: 'white'}}
+                  value={address}
                   viewStyle={{width: '90%'}}
                 />
                 <View style={{marginTop: 40, width: '90%'}}>

@@ -64,6 +64,9 @@ const Clientpharmalist = ({ navigation, route }) => {
     })
       .then(response => {
         setPharmacyArray(response.data.data);
+        //
+        setPharmacyArraySearch(response.data.data);
+        //
         console.log(response.data.data);
       })
       .catch(error => {
@@ -117,7 +120,10 @@ const updateSearch = (search) => {
     const arr = pharmacyArray.filter((item) => item.pharmacy_name.includes(search));
     setPharmacyArraySearch(arr)
     }else {
-      setPharmacyArraySearch([])
+      setPharmacyArraySearch(pharmacyArray)
+      //
+      // setPharmacyArraySearch([])
+      //
     }
 };
 
@@ -233,7 +239,8 @@ const updateSearch = (search) => {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <ClientpharmaTable data={pharmacyArraySearch.length > 0 ? pharmacyArraySearch : pharmacyArray} />
+        {/* <ClientpharmaTable data={pharmacyArraySearch.length > 0 ? pharmacyArraySearch : pharmacyArray} /> */}
+        <ClientpharmaTable data={pharmacyArraySearch} />
       </ScrollView>
 
       <View style={style.rButton}>

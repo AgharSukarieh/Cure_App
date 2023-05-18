@@ -166,7 +166,10 @@ const updateSearch = (search) => {
     setDoctorArraySearch(arr)
     }
     else {
-      setDoctorArraySearch([])
+      // setDoctorArraySearch([])
+      //
+      setDoctorArraySearch(clientslist)
+      //
     }
 };
 
@@ -199,6 +202,9 @@ const updateSearch = (search) => {
     })
       .then(response => {
         setclientslist(response.data.data);
+        //
+        setDoctorArraySearch(response.data.data);
+        //
       })
       .catch(error => {
         console.log(error);
@@ -609,7 +615,8 @@ const updateSearch = (search) => {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <ClientdoctorTable data={doctorArraySearch.length > 0 ? doctorArraySearch : clientslist} />
+        {/* <ClientdoctorTable data={doctorArraySearch.length > 0 ? doctorArraySearch : clientslist} /> */}
+        <ClientdoctorTable data={doctorArraySearch} />
       </ScrollView>
 
       <View style={style.rButton}>

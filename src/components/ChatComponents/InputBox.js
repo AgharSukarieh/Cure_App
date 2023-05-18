@@ -6,9 +6,11 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {openPicker} from '@baronha/react-native-multiple-image-picker';
 import GetLocation from 'react-native-get-location';
 import {useNavigation} from '@react-navigation/native';
-import MapMH from './Map'
+import MapMH from './Map';
+import axios from 'axios';
+import {POST_ADD_MESSAGE} from '../../Provider/ApiRequest';
 
-const InputBox = () => {
+const InputBox = ({currentUserId, receiverID, submit}) => {
   const navigation = useNavigation();
   const [newMessage, setNewMessage] = useState('');
   const [images, setImages] = useState([]);
@@ -16,12 +18,66 @@ const InputBox = () => {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
+  const uploadImages = async (images) => {
+    try {
+      const formData = new FormData();
+      images.forEach(async (image, index) => {
+        formData.append(`image`, {
+          uri: image.path,
+          type: image.mime,
+          name: image.fileName,
+        });  
+        axios({
+          method: 'POST',
+          url: `${POST_ADD_MESSAGE}?sender_id=${currentUserId}&receiver_id=${receiverID}`,
+          data: formData,
+        }).then((result)=>{
+          console.log('DONE',result.data);
+          submit(result.data)
+          setImages([])
+         }).catch((err)=>{
+          console.log('NOT DONE');
+          console.log(err.response.data.message);
+         });
+   
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
   const onSend = () => {
-    console.warn('Sending a new message: ', newMessage);
-    setNewMessage('');
-    setImages([]);
-    setLatitude('');
-    setLongitude('');
+    if (images.length > 0) {
+      console.log('-----');
+      uploadImages(images);
+    } else {
+      let data = {
+        sender_id: currentUserId,
+        receiver_id: receiverID,
+        latitude:latitude,
+        longitude:longitude,
+        text: newMessage,
+      };
+      axios({
+        method: 'POST',
+        url: POST_ADD_MESSAGE,
+        data: data,
+      })
+        .then(response => {
+          submit(response.data.message)
+          setNewMessage('');
+          setImages([]);
+          setLatitude('');
+          setLongitude('');
+        })
+        .catch(error => {
+          console.log(
+            '🚀 ~ file: DailyaddModel.js ~ line 43 ~ getdoctors ~ error',
+            error,
+          );
+        });
+    }
   };
 
   const onLocation = () => {
@@ -37,7 +93,7 @@ const InputBox = () => {
         console.warn(code, message);
       });
   };
-  
+
   const onPicker = async () => {
     try {
       const singleSelectedMode = false;
@@ -63,21 +119,21 @@ const InputBox = () => {
 
   return (
     <>
-    {latitude !== '' && longitude !== '' && (
-      <View style={{...styles.attachmentsContainer, marginBottom:5}}>
-        <MapMH lat={latitude} long={longitude} style={styles.selectedImage}/>
-        <MaterialIcons
-                name="highlight-remove"
-                onPress={() => {
-                  setLatitude('');
-                  setLongitude('');
-                }}
-                size={35}
-                color="gray"
-                style={{...styles.removeSelectedImage}}
-        />
-      </View>
-    )} 
+      {latitude !== '' && longitude !== '' && (
+        <View style={{...styles.attachmentsContainer, marginBottom: 5}}>
+          <MapMH lat={latitude} long={longitude} style={styles.selectedImage} />
+          <MaterialIcons
+            name="highlight-remove"
+            onPress={() => {
+              setLatitude('');
+              setLongitude('');
+            }}
+            size={35}
+            color="gray"
+            style={{...styles.removeSelectedImage}}
+          />
+        </View>
+      )}
 
       {images.length > 0 && (
         <FlatList

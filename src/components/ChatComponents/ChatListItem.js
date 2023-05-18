@@ -4,31 +4,33 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {useNavigation} from '@react-navigation/native';
 dayjs.extend(relativeTime);
+import moment from 'moment';
 
-const ChatListItem = ({chat}) => {
+const ChatListItem = ({chat, currentUser}) => {
   const navigation = useNavigation();
+
   return (
     <Pressable
       onPress={() =>
         navigation.navigate('ChatScreen', {
-          id: chat?.id,
+          id: chat?.user?.id,
           name: chat?.user?.name,
+          currentUser
         })
       }
       style={styles.container}>
-      <Image source={{uri: chat?.user?.image}} style={styles.image} />
+      <Image source={ chat?.user?.image ? {uri: chat?.user?.image} : require('../../../assets/user.png')} style={styles.image} />
       <View style={styles.content}>
         <View style={styles.row}>
           <Text style={styles.name} numberOfLines={1}>
             {chat?.user?.name}
           </Text>
           <Text style={styles.subTitle}>
-            {dayjs(chat?.lastMessage?.createdAt).fromNow(true)}
+            {dayjs(moment.utc(chat?.last_message?.created_at).local().format()).fromNow(true)}
           </Text>
         </View>
-
         <Text numberOfLines={2} style={styles.subTitle}>
-          {chat?.lastMessage?.text}
+          {chat?.last_message?.text || 'attachments'}
         </Text>
       </View>
     </Pressable>

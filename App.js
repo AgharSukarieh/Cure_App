@@ -36,11 +36,14 @@ import PresentImage from './src/screens/ChatPages/PresentImage';
 export default function App() {
 
   const [logedin, setlogedin] = useState(false)
+  const [userData, setuserData] = useState({})
+
   // console.log(logedin);
   const getlogs = async () => {
     const a = await AsyncStorage.getItem('userInfo')
     let user = (JSON.parse(a))
     if (user) {
+      setuserData(user)
       setlogedin(true)
     }
   }
@@ -55,7 +58,7 @@ export default function App() {
 
 
   const Stack = createNativeStackNavigator();
-  const Role = "Sales";//"Sales"; 
+  const Role = "Sales"; //"Sales"; 
   return (
     <NavigationContainer>
       <Stack.Navigator >

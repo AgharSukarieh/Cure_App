@@ -66,12 +66,15 @@ const ReportPage = () => {
           <TouchableOpacity style={styles.reportPageButton} onPress={() => { navigation.navigate('Clientlist') }}>
             <Text style={styles.reportPageText}>Client List</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.reportPageButton} onPress={() => { navigation.navigate('Chat') }}>
-            <Text style={styles.reportPageText}>Chat</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.reportPageButton} onPress={() => {navigation.navigate('ChatPage') }}>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => {navigation.navigate('ChatPage', {user: user}) }}>
             <Text style={styles.reportPageText}>ChatPage</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
+            <Text style={styles.reportPageText}>Test</Text>
+          </TouchableOpacity>
+          {/* <TouchableOpacity style={styles.reportPageButton} onPress={() => { navigation.navigate('Chat') }}>
+            <Text style={styles.reportPageText}>Chat</Text>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
             <Text style={styles.reportPageText}>Test</Text>
           </TouchableOpacity>

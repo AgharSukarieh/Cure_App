@@ -4,11 +4,11 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 
 const PresentImage = ({route}) => {
   const {arrayOfURI} = route.params;
-  console.log(arrayOfURI);
-  const arr = [];
-  arrayOfURI.forEach(element => {
-    arr.push({url: element});
-  });
+  // console.log(arrayOfURI);
+  const arr = [{url: arrayOfURI}];
+  // arrayOfURI.forEach(element => {
+  //   arr.push({url: element});
+  // });
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
