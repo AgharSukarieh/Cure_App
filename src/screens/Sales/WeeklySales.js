@@ -107,8 +107,14 @@ const WeeklySales = ({ navigation, route }) => {
         Alert.alert('Please Make Sure that you select an area for that day')
     }
 
-
-
+console.log("--------");
+const goToDaily = () => {
+    if (user.role == 'sales'){
+        navigation.navigate('Daily-sales', { title: Moment(item).format('dd  D - M - yyyy'), date: Moment(item).format('yyyy-M-D'), area: matchingData })
+    } else {
+        navigation.navigate('Daily-notSales', { title: Moment(item).format('dd  D - M - yyyy'), date: Moment(item).format('yyyy-M-D'), area: matchingData })
+    } 
+}
 
     return (
         <SafeAreaView style={styles.container}>
@@ -132,7 +138,7 @@ const WeeklySales = ({ navigation, route }) => {
                                     onPress={() => {
                                         !weeklyscdata.find(sc => Moment(sc.date).format('yyyy-M-D') === Moment(item).format('yyyy-M-D'))
                                             ? alertarea()
-                                            : navigation.navigate('Daily', { title: Moment(item).format('dd  D - M - yyyy'), date: Moment(item).format('yyyy-M-D'), area: matchingData })
+                                            : goToDaily()
                                     }}>
                                     <View style={style.header}>
                                         <Text style={style.dayt}>{Moment(item).format('dd')}</Text>

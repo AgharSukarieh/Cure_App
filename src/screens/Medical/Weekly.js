@@ -27,6 +27,7 @@ const Weekly = ({ navigation, route }) => {
     const data = route.params.data
     const year = route.params.year
     const month = route.params.data.id
+    const role = route.params.role
 
     function getDaysInMonth() {
         const daysInMonth = new Date(year, month, 0).getDate();
@@ -132,7 +133,7 @@ const Weekly = ({ navigation, route }) => {
                                     onPress={() => {
                                         !weeklyscdata.find(sc => Moment(sc.date).format('yyyy-M-D') === Moment(item).format('yyyy-M-D'))
                                             ? alertarea()
-                                            : navigation.navigate('Daily', { title: Moment(item).format('dd  D - M - yyyy'), date: Moment(item).format('yyyy-M-D'), area: matchingData })
+                                            : role == 'sales' ? navigation.navigate('Daily-sales', { title: Moment(item).format('dd  D - M - yyyy'), date: Moment(item).format('yyyy-M-D'), area: matchingData }) : navigation.navigate('Daily-notSales', { title: Moment(item).format('dd  D - M - yyyy'), date: Moment(item).format('yyyy-M-D'), area: matchingData })
                                     }}>
                                     <View style={style.header}>
                                         <Text style={style.dayt}>{Moment(item).format('dd')}</Text>

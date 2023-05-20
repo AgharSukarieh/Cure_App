@@ -45,6 +45,7 @@ export default function App() {
     if (user) {
       setuserData(user)
       setlogedin(true)
+      console.log('-------',user.role);
     }
   }
 
@@ -75,8 +76,8 @@ export default function App() {
         <Stack.Screen name="Monthly" component={Monthly} options={{ headerShown: false }} />
         <Stack.Screen name="Weekly" component={Weekly} options={{ headerShown: false }} />
         {/* <Stack.Screen name="Weekly" component={Role == "sales" ? WeeklySales : Weekly} options={{ headerShown: false }} /> */}
-        <Stack.Screen name="Daily" component={userData.role == "sales" ? DailySales : Daily} options={{ headerShown: false }} />
-        <Stack.Screen name="Clientlist" component={userData.role == "sales" ? Clientpharmalist : MainClientdoctorlist} options={{ headerShown: false }} />
+        {/* <Stack.Screen name="Daily" component={userData.role == "sales" ? DailySales : Daily} options={{ headerShown: false }} /> */}
+        {/* <Stack.Screen name="Clientlist" component={userData.role !== "sales" ? MainClientdoctorlist : Clientpharmalist} options={{ headerShown: false }} /> */}
         <Stack.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
         <Stack.Screen name="Sal_rep_pharm" component={Sal_rep_pharm} options={{ headerShown: false }} />
         <Stack.Screen name="Inventory" component={Inventory} options={{ headerShown: false }} />
@@ -89,6 +90,16 @@ export default function App() {
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
         <Stack.Screen name="ContactsScreen" component={ContactsScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="PresentImage" component={PresentImage} options={{ title: 'Images' }}/>
+
+        {/*  */}
+         <Stack.Screen name="Clientlist-sales" component={Clientpharmalist} options={{ headerShown: false }} /> 
+         <Stack.Screen name="Clientlist-notSales" component={MainClientdoctorlist} options={{ headerShown: false }} />
+
+         <Stack.Screen name="Daily-sales" component={ DailySales } options={{ headerShown: false }} />
+         <Stack.Screen name="Daily-notSales" component={Daily} options={{ headerShown: false }} />
+
+         <Stack.Screen name="WeeklySales" component={ WeeklySales} options={{ headerShown: false }} />
+        {/*  */}
       </Stack.Navigator>
     </NavigationContainer >
   );

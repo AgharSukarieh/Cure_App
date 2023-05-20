@@ -17,6 +17,7 @@ const ReportPage = () => {
 
   const getlogs = async () => {
     const a = await AsyncStorage.getItem('userInfo')
+    // console.log(a);
     setuser(JSON.parse(a))
   }
   useEffect(() => {
@@ -60,10 +61,10 @@ const ReportPage = () => {
           <TouchableOpacity style={styles.reportPageButton} onPress={() => navigation.navigate('Sales')}>
             <Text style={styles.reportPageText}>Sales</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.reportPageButton} onPress={() => navigation.navigate('Monthly')}>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => navigation.navigate('Monthly',{role: user.role})}>
             <Text style={styles.reportPageText}>Monthly Plan</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.reportPageButton} onPress={() => { navigation.navigate('Clientlist') }}>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => { user.role == 'sales' ? navigation.navigate('Clientlist-sales') : navigation.navigate('Clientlist-notSales') }}>
             <Text style={styles.reportPageText}>Client List</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.reportPageButton} onPress={() => {navigation.navigate('ChatPage', {user: user}) }}>
