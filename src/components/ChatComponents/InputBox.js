@@ -1,16 +1,16 @@
-import React, {useState} from 'react';
-import {View, TextInput, StyleSheet, Image, FlatList} from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, StyleSheet, Image, FlatList } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {openPicker} from '@baronha/react-native-multiple-image-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { openPicker } from '@baronha/react-native-multiple-image-picker';
 import GetLocation from 'react-native-get-location';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import MapMH from './Map';
 import axios from 'axios';
-import {POST_ADD_MESSAGE} from '../../Provider/ApiRequest';
+import { POST_ADD_MESSAGE } from '../../Provider/ApiRequest';
 
-const InputBox = ({currentUserId, receiverID, submit}) => {
+const InputBox = ({ currentUserId, receiverID, submit }) => {
   const navigation = useNavigation();
   const [newMessage, setNewMessage] = useState('');
   const [images, setImages] = useState([]);
@@ -26,20 +26,20 @@ const InputBox = ({currentUserId, receiverID, submit}) => {
           uri: image.path,
           type: image.mime,
           name: image.fileName,
-        });  
+        });
         axios({
           method: 'POST',
           url: `${POST_ADD_MESSAGE}?sender_id=${currentUserId}&receiver_id=${receiverID}`,
           data: formData,
-        }).then((result)=>{
-          console.log('DONE',result.data);
-          submit(result.data)
+        }).then((result) => {
+          console.log('DONE', result?.data);
+          submit(result?.data)
           setImages([])
-         }).catch((err)=>{
+        }).catch((err) => {
           console.log('NOT DONE');
-          console.log(err.response.data.message);
-         });
-   
+          console.log(err?.response?.data?.message);
+        });
+
       });
     } catch (error) {
       console.error(error);
@@ -48,35 +48,37 @@ const InputBox = ({currentUserId, receiverID, submit}) => {
 
 
   const onSend = () => {
-    if (images.length > 0) {
-      console.log('-----');
-      uploadImages(images);
-    } else {
-      let data = {
-        sender_id: currentUserId,
-        receiver_id: receiverID,
-        latitude:latitude,
-        longitude:longitude,
-        text: newMessage,
-      };
-      axios({
-        method: 'POST',
-        url: POST_ADD_MESSAGE,
-        data: data,
-      })
-        .then(response => {
-          submit(response.data.message)
-          setNewMessage('');
-          setImages([]);
-          setLatitude('');
-          setLongitude('');
+    if (newMessage.length > 0 || images.length > 0 || longitude.length > 0) {
+      if (images.length > 0) {
+        console.log('-----');
+        uploadImages(images);
+      } else {
+        let data = {
+          sender_id: currentUserId,
+          receiver_id: receiverID,
+          latitude: latitude,
+          longitude: longitude,
+          text: newMessage,
+        };
+        axios({
+          method: 'POST',
+          url: POST_ADD_MESSAGE,
+          data: data,
         })
-        .catch(error => {
-          console.log(
-            '🚀 ~ file: DailyaddModel.js ~ line 43 ~ getdoctors ~ error',
-            error,
-          );
-        });
+          .then(response => {
+            submit(response.data.message)
+            setNewMessage('');
+            setImages([]);
+            setLatitude('');
+            setLongitude('');
+          })
+          .catch(error => {
+            console.log(
+              '🚀 ~ file: DailyaddModel.js ~ line 43 ~ getdoctors ~ error',
+              error,
+            );
+          });
+      }
     }
   };
 
@@ -114,13 +116,13 @@ const InputBox = ({currentUserId, receiverID, submit}) => {
       }
       setImages(response);
       console.log(response);
-    } catch (e) {}
+    } catch (e) { }
   };
 
   return (
     <>
       {latitude !== '' && longitude !== '' && (
-        <View style={{...styles.attachmentsContainer, marginBottom: 5}}>
+        <View style={{ ...styles.attachmentsContainer, marginBottom: 5 }}>
           <MapMH lat={latitude} long={longitude} style={styles.selectedImage} />
           <MaterialIcons
             name="highlight-remove"
@@ -130,7 +132,7 @@ const InputBox = ({currentUserId, receiverID, submit}) => {
             }}
             size={35}
             color="gray"
-            style={{...styles.removeSelectedImage}}
+            style={{ ...styles.removeSelectedImage }}
           />
         </View>
       )}
@@ -140,10 +142,10 @@ const InputBox = ({currentUserId, receiverID, submit}) => {
           horizontal={true}
           data={images}
           keyExtractor={item => item.id}
-          renderItem={({item}) => (
+          renderItem={({ item }) => (
             <View style={styles.attachmentsContainer}>
               <Image
-                source={{uri: item.path}}
+                source={{ uri: item.path }}
                 style={styles.selectedImage}
                 resizeMode="contain"
               />
@@ -169,7 +171,7 @@ const InputBox = ({currentUserId, receiverID, submit}) => {
           name="plus"
           size={24}
           color="royalblue"
-          style={{marginRight: 10}}
+          style={{ marginRight: 10 }}
         />
         <AntDesign
           onPress={onLocation}

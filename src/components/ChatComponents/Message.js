@@ -1,13 +1,13 @@
 import React from 'react';
-import {View, Text, StyleSheet, FlatList, Image, Pressable,Linking,Platform} from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, Pressable, Linking, Platform } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import MapMH from './Map';
 import moment from 'moment';
 
-const Message = ({message, currentUserId}) => {
+const Message = ({ message, currentUserId }) => {
   const navigation = useNavigation();
   const isMyMessage = () => {
     return message.sender_id === currentUserId;
@@ -23,51 +23,43 @@ const Message = ({message, currentUserId}) => {
       {message?.latitude && message?.longitude && (
         <Pressable
           onPress={() => {
-              const latitude = message?.latitude; 
-              const longitude = message?.longitude; 
-              const label = 'Location'; // Replace with your desired label or address
-            
-              const url = `https://www.google.com/maps?q=${latitude},${longitude}(${label})`;
-            
-              Linking.canOpenURL(url)
-                .then((supported) => {
-                  if (supported) {
-                    Linking.openURL(url);
-                  } else {
-                    console.log("Cannot open Google Maps");
-                  }
-                })
-                .catch((error) => console.log(error));       
+            const latitude = message?.latitude;
+            const longitude = message?.longitude;
+            const label = 'Location'; // Replace with your desired label or address
+
+            const url = `https://www.google.com/maps?q=${latitude},${longitude}(${label})`;
+
+            Linking.canOpenURL(url)
+              .then((supported) => {
+                if (supported) {
+                  Linking.openURL(url);
+                } else {
+                  console.log("Cannot open Google Maps");
+                }
+              })
+              .catch((error) => console.log(error));
           }}>
           <MapMH
-            lat={message?.latitude}
-            long={message?.longitude}
-            style={{...styles.selectedMap, margin: 0}}
+            lat={parseFloat(message?.latitude)}
+            long={parseFloat(message?.longitude)}
+            style={{ ...styles.selectedMap, margin: 0 }}
           />
         </Pressable>
       )}
       {message?.images && (
         <Pressable
           onPress={() =>
-            navigation.navigate('PresentImage', {arrayOfURI: message?.images})
+            navigation.navigate('PresentImage', { arrayOfURI: message?.images })
           }>
-          {/* {message.images.map((element, index) => (
-            <Image
-              key={index}
-              source={{uri: element}}
-              style={{...styles.selectedImage, marginBottom: 5}}
-              resizeMode="contain"
-            />
-          ))} */}
           <Image
-              source={{uri: message?.images}}
-              style={{...styles.selectedImage, marginBottom: 5}}
-              resizeMode="contain"
-            />
+            source={{ uri: message?.images }}
+            style={{ ...styles.selectedImage, marginBottom: 5 }}
+            resizeMode="cover"
+          />
         </Pressable>
       )}
       <Text>{message?.text}</Text>
-      <Text style={styles.time}>{dayjs(moment.utc(message?.created_at).local().format() ).fromNow(true)}</Text>
+      <Text style={styles.time}>{dayjs(moment.utc(message?.created_at).local().format()).fromNow(true)}</Text>
     </View>
   );
 };
@@ -99,7 +91,8 @@ const styles = StyleSheet.create({
   },
   selectedMap: {
     height: 150,
-    width: 300,
+    width: '100%',
+    minWidth: '80%',
     margin: 5,
     borderRadius: 10,
   },

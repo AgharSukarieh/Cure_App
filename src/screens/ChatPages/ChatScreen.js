@@ -5,16 +5,47 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import bg from '../../../assets/BG.png'
-import {messagesListDemo} from '../../messages';
-import Message from  '../../components/ChatComponents/Message';
+import { messagesListDemo } from '../../messages';
+import Message from '../../components/ChatComponents/Message';
 import InputBox from '../../components/ChatComponents/InputBox';
-import {GET_CHAT_MESSAGES} from '../../Provider/ApiRequest';
+import { GET_CHAT_MESSAGES } from '../../Provider/ApiRequest';
 import axios from 'axios';
+import {
+  Pusher,
+  PusherMember,
+  PusherChannel,
+  PusherEvent,
+} from '@pusher/pusher-websocket-react-native';
 
-const ChatScreen = ({route, navigation}) => {
-  const {id, name, currentUser} = route.params;
+const ChatScreen = ({ route, navigation }) => {
+
+  const pusher = Pusher.getInstance();
+
+  const sendpusher = async () => {
+
+    await pusher.init({
+      apiKey: "7d3cf02011bb653450a0",
+      cluster: "mt1"
+    });
+    await pusher.connect();
+    await pusher.subscribe({
+      channelName: "pharmaceuticals",
+      onEvent: (event: PusherEvent) => {
+        console.log('222222222222222');
+        console.log(`Event received: ${event}`);
+        getMessages()
+      }
+    });
+    // console.log(pusher.connectionState);
+  }
+
+  useEffect(() => {
+    sendpusher()
+  }, []);
+
+  const { id, name, currentUser } = route.params;
   const [messages, setMessages] = useState([]);
 
   const getMessages = () => {
@@ -33,16 +64,16 @@ const ChatScreen = ({route, navigation}) => {
       .catch(error => {
         console.log(error);
       });
-    }
+  }
 
   useEffect(() => {
     getMessages();
-  },[])
+  }, [])
 
   useEffect(() => {
-    navigation.setOptions({title: name});
+    navigation.setOptions({ title: name });
   }, [name, navigation]);
-// console.log('-----',messages);
+  // console.log('-----',messages);
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -51,15 +82,14 @@ const ChatScreen = ({route, navigation}) => {
       <ImageBackground source={bg} style={styles.bg}>
         <FlatList
           data={messages}
-          renderItem={({item}) => <Message message={item} currentUserId={currentUser}/>}
+          renderItem={({ item }) => <Message message={item} currentUserId={currentUser} />}
           style={styles.list}
           inverted
           showsVerticalScrollIndicator={false}
         />
         <InputBox currentUserId={currentUser} receiverID={id} submit={(msg) => {
-          console.log(msg);
           setMessages([msg, ...messages])
-        }}/>
+        }} />
       </ImageBackground>
     </KeyboardAvoidingView>
   );
@@ -70,7 +100,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    padding: 10,
   },
 });
 
