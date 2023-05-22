@@ -11,7 +11,7 @@ import React, {useState, useEffect} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Dropdown} from 'react-native-element-dropdown';
 import axios from 'axios';
-import {GET_Areas, GET_CITY} from '../../Provider/ApiRequest';
+import {GET_Areas, GET_CITY, CREATE_DOCTOR} from '../../Provider/ApiRequest';
 import Input from '../Input';
 import GetLocation from 'react-native-get-location';
 
@@ -37,24 +37,37 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
   const [longitude, setLongitude] = useState('');
   const [location, setLocation] = useState('');
 
-  const submitData = () => {
-    submit({
-      doctorName,
-      specialty,
-      classification,
-      latitude,
-      longitude
-    })
-    hide();
-    setCityValue(null);
-    setAreaValue(null);
-    setDoctorName('')
-    setsSpecialty('')
-    setClassification('')
-    setAddress('');
-    setLatitude('')
-    setLongitude('')
-    setLocation('')
+  const submitData = async () => {
+    try {
+      const response = await axios.post(CREATE_DOCTOR, {
+        city: cityValue,
+        area: areaValue,
+        name: doctorName,
+        specialty: specialty,
+        classification: classification,
+        address: address,
+        longitude,
+        latitude
+      });
+      if(response.data.success) {
+        hide();
+        setCityValue(null);
+        setAreaValue(null);
+        setDoctorName('')
+        setsSpecialty('')
+        setClassification('')
+        setAddress('');
+        setLatitude('')
+        setLongitude('')
+        setLocation('')
+      }
+    } catch (error) {
+      console.log('====================================');
+      console.log(error.response.data.message);
+      console.log('====================================');
+    }
+
+
   }
 
   const getCurrentLocation = () => {

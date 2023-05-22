@@ -7,13 +7,18 @@ import {
   Modal,
   ScrollView,
   FlatList,
-  Image
+  Image,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Dropdown} from 'react-native-element-dropdown';
 import axios from 'axios';
-import {GET_Areas, GET_CITY} from '../../Provider/ApiRequest';
+import {
+  GET_Areas,
+  GET_CITY,
+  CREATE_PHARMACY,
+  ADD_PHARMACY_IMAGE,
+} from '../../Provider/ApiRequest';
 import Input from '../Input';
 import GetLocation from 'react-native-get-location';
 import {openPicker} from '@baronha/react-native-multiple-image-picker';
@@ -41,23 +46,56 @@ const AddNewPharmacyModel = ({showM, hideM, submit}) => {
 
   const [images, setImages] = useState([]);
 
-  const submitData = () => {
-    submit({
-      cityValue,
-      areaValue,
-      pharmacyName,
-      classification,
-      latitude,
-      longitude,
-    });
-    hideM();
-    setCityValue(null);
-    setAreaValue(null);
-    setLatitude('');
-    setLongitude('');
-    setLocation('');
-    setPharmacyName('');
-    setClassification('');
+  const submitData = async () => {
+    console.log('====================================');
+    console.log(images);
+    console.log('====================================');
+
+    try {
+      const response = await axios.post(CREATE_PHARMACY, {
+        city: cityValue,
+        area: areaValue,
+        name: pharmacyName,
+        class: classification,
+        long: longitude,
+        lat: latitude,
+      });
+      if (response.data.success) {
+        
+        const formData = new FormData();
+        images.forEach(image => {
+          formData.append('images[]', {
+            uri: image.path,
+            type: image.mime,
+            name: image.fileName,
+          });
+        });
+        await axios.post(
+          `${ADD_PHARMACY_IMAGE}?id=${response.data.pharmacy.ph_id}`,
+          formData,
+        );
+        submit({
+          cityValue,
+          areaValue,
+          pharmacyName,
+          classification,
+          latitude,
+          longitude,
+        });
+        hideM();
+        setCityValue(null);
+        setAreaValue(null);
+        setLatitude('');
+        setLongitude('');
+        setLocation('');
+        setPharmacyName('');
+        setClassification('');
+      }
+    } catch (error) {
+      console.log('================err====================');
+      console.log(error.response.data.message);
+      console.log('====================================');
+    }
   };
 
   const getCities = () => {
@@ -331,23 +369,35 @@ const AddNewPharmacyModel = ({showM, hideM, submit}) => {
                   <FlatList
                     horizontal={true}
                     data={images}
-                    renderItem={({item}) => 
-                    <View>
-                      <Image style={{height:80, width:80,marginRight:5, borderRadius: 7}} source={{uri: item.path}}/>
-                      <TouchableOpacity style={{position: 'absolute', top: 5, right: 5}} onPress={() => {
-                        const arr = images.filter((items) => items.localIdentifier !== item.localIdentifier);
-                        setImages(arr)
-                      }}>
-                      <AntDesign
-                        style={styles.icon}
-                        color={'red'}
-                        name="minuscircle"
-                        size={25}
-                      />
-                      </TouchableOpacity>
-                    </View>
-                    
-                  }
+                    renderItem={({item}) => (
+                      <View>
+                        <Image
+                          style={{
+                            height: 80,
+                            width: 80,
+                            marginRight: 5,
+                            borderRadius: 7,
+                          }}
+                          source={{uri: item.path}}
+                        />
+                        <TouchableOpacity
+                          style={{position: 'absolute', top: 5, right: 5}}
+                          onPress={() => {
+                            const arr = images.filter(
+                              items =>
+                                items.localIdentifier !== item.localIdentifier,
+                            );
+                            setImages(arr);
+                          }}>
+                          <AntDesign
+                            style={styles.icon}
+                            color={'red'}
+                            name="minuscircle"
+                            size={25}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    )}
                     keyExtractor={item => item.id}
                   />
                 </View>
