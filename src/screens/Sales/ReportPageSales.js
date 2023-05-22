@@ -44,7 +44,7 @@ const ReportPageSales = () => {
             <Text style={styles.reportPageText}>Chat</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
-            <Text style={styles.reportPageText}>Test</Text>
+            <Text style={styles.reportPageText}>Report</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
             <Text style={styles.reportPageText}>Test</Text>
