@@ -14,6 +14,7 @@ import { styles } from '../../components/styles';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { GET_USER_CHATS } from '../../Provider/ApiRequest';
+import { Text } from 'react-native';
 
 const ChatsScreen = ({ userData }) => {
   const navigation = useNavigation();
@@ -48,7 +49,7 @@ const ChatsScreen = ({ userData }) => {
       },
     })
       .then(response => {
-        // console.log(response.data.data);
+        // console.log(response.data);
         setChats(response.data.data);
       })
       .catch(error => {
@@ -62,7 +63,7 @@ const ChatsScreen = ({ userData }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoBack text={'Chats'} addButton addButtonFunc={() => navigation.navigate('ContactsScreen', { currentUser: userData.id })} />
+      <GoBack text={'Chats'} addButton addButtonFunc={() => navigation.navigate('ContactsScreen', { currentUser: userData.id })} /> 
       <FlatList
         data={chats}
         renderItem={({ item }) => <ChatListItem chat={item} currentUser={userData.id} />}

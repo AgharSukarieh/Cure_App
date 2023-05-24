@@ -1,30 +1,27 @@
 import React from 'react';
-import {Text, View, Image, StyleSheet, Pressable} from 'react-native';
+import { Text, View, Image, StyleSheet, Pressable } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 dayjs.extend(relativeTime);
 import moment from 'moment';
 
-const ChatListItem = ({chat, currentUser}) => {
+const ChatListItem = ({ chat, currentUser }) => {
   const navigation = useNavigation();
-
   return (
     <Pressable
       onPress={() =>
         navigation.navigate('ChatScreen', {
-          id: chat?.user?.id,
-          name: chat?.user?.name,
+          id: chat?.users[1]?.id,
+          name: chat?.users[1]?.name,
           currentUser
         })
       }
       style={styles.container}>
-      <Image source={ chat?.user?.image ? {uri: chat?.user?.image} : require('../../../assets/user.png')} style={styles.image} />
+      <Image source={chat?.user?.image ? { uri: chat?.user?.image } : require('../../../assets/user.png')} style={styles.image} />
       <View style={styles.content}>
         <View style={styles.row}>
-          <Text style={styles.name} numberOfLines={1}>
-            {chat?.user?.name}
-          </Text>
+          <Text style={styles.name} numberOfLines={1}> {chat?.users[1]?.name} </Text>
           <Text style={styles.subTitle}>
             {dayjs(moment.utc(chat?.last_message?.created_at).local().format()).fromNow(true)}
           </Text>

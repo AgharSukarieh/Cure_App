@@ -47,7 +47,7 @@ const ChatScreen = ({ route, navigation }) => {
 
   const { id, name, currentUser } = route.params;
   const [messages, setMessages] = useState([]);
-
+  console.log(route.params);
   const getMessages = () => {
     axios({
       method: 'GET',
