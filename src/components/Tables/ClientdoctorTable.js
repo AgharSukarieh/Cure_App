@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text, View, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, Dimensions, ScrollView, LogBox } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SkuModel from '../Modals/skuModel';
@@ -7,7 +7,6 @@ const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
 const ClientdoctorTable = ({ data }) => {
-
     const [modal, setModal] = useState(false)
     const [rowdata, setrowdata] = useState(false)
     const rowModal = (rowdata) => {
@@ -32,7 +31,7 @@ const ClientdoctorTable = ({ data }) => {
 
             <>
                 {data ?
-                    data.map((item, index) => (
+                    data?.map((item, index) => (
                         <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} key={index}>
                             <View style={{ ...styles.filtterel, width: '38%', }}>
                                 <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>

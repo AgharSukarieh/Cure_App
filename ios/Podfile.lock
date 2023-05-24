@@ -80,7 +80,7 @@ PODS:
   - libevent (2.1.12)
   - NWWebSocket (0.5.2)
   - OpenSSL-Universal (1.1.1100)
-  - pusher-websocket-react-native (1.2.1):
+  - pusher-websocket-react-native (1.2.2):
     - PusherSwift (~> 10.1.1)
     - React
   - PusherSwift (10.1.2):
@@ -685,7 +685,7 @@ SPEC CHECKSUMS:
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   NWWebSocket: 21f0c73639815da3272862c912275b26102aa80c
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  pusher-websocket-react-native: 6bd923d89bfac5dac3a805eb8c7df63cba9cca40
+  pusher-websocket-react-native: ca8f78071843c907a13c364c1c0e21c05dbde934
   PusherSwift: fb30ba1dcbe09a6ca257ccb39dc2f84866e811b4
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: bec48f07daf7bcdc2655a0cde84e07d24d2a9e2a
