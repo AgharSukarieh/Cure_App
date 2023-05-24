@@ -74,7 +74,7 @@ const InputBox = ({ currentUserId, receiverID, submit }) => {
           })
           .catch(error => {
             console.log(
-              '🚀 ~ file: DailyaddModel.js ~ line 43 ~ getdoctors ~ error',
+              '🚀 ~ file: InputBox.js ~~ ChatScreen.js ~~ line 43 ~ getdoctors ~ error',
               error,
             );
           });
