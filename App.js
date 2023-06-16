@@ -37,6 +37,7 @@ import { View, ActivityIndicator } from 'react-native';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
+  
   const {isLoggedIn, isLoading, token, role} = useAuth();
 
   const setRoot = () => {
