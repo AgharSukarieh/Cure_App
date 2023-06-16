@@ -4,31 +4,32 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
-  StyleSheet
+  StyleSheet,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {styles} from '../components/styles';
 import GoBack from '../components/GoBack';
-import SearchableDropdown from 'react-native-searchable-dropdown';
 import {salesdata} from '../helpers/data';
 import DatePicker from 'react-native-date-picker';
 import SalesTable from '../components/Tables/salesTable';
-import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';
 import {GET_Areas, GET_CITY} from '../Provider/ApiRequest';
 import Feather from 'react-native-vector-icons/Feather';
 import {Dropdown} from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import SalesHeaderTable from '../components/Tables/SalesHeaderTable';
+import TableView from '../General/TableView';
+import SalesItemTable from '../components/Tables/SalesItemTable';
+import { useAuth } from '../contexts/AuthContext';
 Feather.loadFont();
 
 const Sales = () => {
-  //
+  const {role} = useAuth();
+
   const [citiesData, setCitiesData] = useState([]);
   const [areasData, setAreasData] = useState([]);
-
   const [cityValue, setCityValue] = useState(null);
   const [isCityFocus, setIsCityFocus] = useState(false);
-
   const [areaValue, setAreaValue] = useState(null);
   const [isAreaFocus, setIsAreaFocus] = useState(false);
 
@@ -87,45 +88,6 @@ const Sales = () => {
   useEffect(() => {
     getCities();
   }, []);
-  //
-
-  // const [citylist, setcitylist] = useState([])
-  // const [selectedcity, setselectedcity] = useState('');
-  // const [arealist, setarealist] = useState([])
-  // const [selectedarea, setselectedarea] = useState()
-
-  // const getdoctors = () => {
-  //   axios({
-  //     method: "POST",
-  //     url: GET_CITY,
-  //   }).then((response) => {
-  //     // console.log(response);
-  //     setcitylist(response.data)
-  //   }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error", error) })
-  // }
-
-  // const getarea = () => {
-  //   let data = {
-  //     city_id: selectedcity
-  //   }
-  //   axios({
-  //     method: "POST",
-  //     url: GET_Areas,
-  //     data: data
-  //   }).then((response) => {
-  //     // console.log(response.data);
-  //     setarealist(response.data)
-  //   }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 39 ~ getarea ~ error", error) })
-  // }
-
-  // useEffect(() => {
-  //   getdoctors()
-  //   getarea()
-  // }, [selectedcity])
-
-  // //////////////////////////////////////////////////////////
-  // //////////////////////////////////////////////////////////
-  // //////////////////////////////////////////////////////////
 
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date());
@@ -135,202 +97,95 @@ const Sales = () => {
   const [date2, setDate2] = useState(new Date());
   const [calenderTo, setCalenderTo] = useState('');
 
+  const apiEndpoint = `users`;
+  const params = {
+    // sortBy: 'price',
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* <KeyboardAwareScrollView> */}
       <GoBack text={'Sales'} />
-
-      {/* <View style={styles.filterContainer}>
-        <Text style={styles.calenderText}>Filter</Text>
-        <SearchableDropdown
-          onItemSelect={(item) => { setFilterValue(item) }}
-          onRemoveItem={(item, index) => {
-            setFilterValue('')
-          }}
-          containerStyle={{ padding: 5, width: '90%', }}
-          itemStyle={{
-            padding: 10,
-            backgroundColor: '#fff',
-            borderColor: '#bbb',
-            borderWidth: 1,
-
-          }}
-          itemTextStyle={{ color: '#000' }}
-          itemsContainerStyle={{ maxHeight: 140, width: '100%', }}
-          items={areas}
-          resetValue={false}
-          textInputProps={
-            {
-              placeholder: filterValue != '' ? filterValue.name : 'Select Area',
-              underlineColorAndroid: "transparent",
-              style: {
-                padding: 12,
-                borderWidth: 1,
-                borderColor: filterValue != '' ? '#7189FF' : '#7189FF',
-                borderRadius: 5,
-              },
-            }
-          }
-        />
-      </View> */}
-
-      {/* test */}
       <View
-          style={{
-            width: '90%',
-            flexDirection: 'row',
-            alignSelf: 'center',
-            justifyContent: 'space-between',
-            marginBottom:10
-          }}>
-          <View style={style.container}>
-            <Dropdown
-              style={style.dropdown}
-              placeholderStyle={style.placeholderStyle}
-              selectedTextStyle={style.selectedTextStyle}
-              inputSearchStyle={style.inputSearchStyle}
-              iconStyle={style.iconStyle}
-              data={citiesData}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!isCityFocus ? 'Select City' : '...'}
-              searchPlaceholder="Search..."
-              value={cityValue}
-              onFocus={() => setIsCityFocus(true)}
-              onBlur={() => setIsCityFocus(false)}
-              onChange={item => {
-                setCityValue(item.value);
-                setIsCityFocus(false);
-                getareas(item.value)
-              }}
-              renderLeftIcon={() => (
-                <AntDesign
-                  style={styles.icon}
-                  color={isCityFocus ? 'blue' : 'black'}
-                  name="Safety"
-                  size={20}
-                />
-              )}
-            />
-          </View>
-
-          <View style={style.container}>
-            <Dropdown
-              style={style.dropdown}
-              placeholderStyle={style.placeholderStyle}
-              selectedTextStyle={style.selectedTextStyle}
-              inputSearchStyle={style.inputSearchStyle}
-              iconStyle={style.iconStyle}
-              data={areasData}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!isAreaFocus ? 'Select Area' : '...'}
-              searchPlaceholder="Search..."
-              value={areaValue}
-              onFocus={() => setIsAreaFocus(true)}
-              onBlur={() => setIsAreaFocus(false)}
-              onChange={item => {
-                setIsAreaFocus(false);
-                afterSelectCityAndArea(item.value)
-              }}
-              renderLeftIcon={() => (
-                <AntDesign
-                  style={styles.icon}
-                  color={isAreaFocus ? 'blue' : 'black'}
-                  name="Safety"
-                  size={20}
-                />
-              )}
-            />
-          </View>
-        </View>
-      {/* test */}
-
-      {/* <View style={styles.calenderContainer}>
-        <View style={styles.calenderSubContainer}>
-          <Text style={{ ...styles.calenderText, marginBottom: 5 }}>City</Text>
-          <SelectDropdown
-            buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-            buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-            defaultButtonText='Select'
-            data={citylist}
-            onSelect={(selectedItem, index) => {
-              setselectedcity(selectedItem.city_id)
+        style={{
+          width: '90%',
+          flexDirection: 'row',
+          alignSelf: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 10,
+        }}>
+        <View style={style.container}>
+          <Dropdown
+            style={style.dropdown}
+            placeholderStyle={style.placeholderStyle}
+            selectedTextStyle={style.selectedTextStyle}
+            inputSearchStyle={style.inputSearchStyle}
+            iconStyle={style.iconStyle}
+            data={citiesData}
+            search
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder={!isCityFocus ? 'Select City' : '...'}
+            searchPlaceholder="Search..."
+            value={cityValue}
+            onFocus={() => setIsCityFocus(true)}
+            onBlur={() => setIsCityFocus(false)}
+            onChange={item => {
+              setCityValue(item.value);
+              setIsCityFocus(false);
+              getareas(item.value);
             }}
-            rowTextForSelection={(item, index) => {
-              return (
-                <>
-                  <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                    {item.city_name}
-                  </Text>
-                </>
-              );
-            }}
-            buttonTextAfterSelection={(selectedItem, index) => {
-              return (
-                <>
-                  <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                    {selectedItem.city_name}
-                  </Text>
-                </>
-              );
-            }}
-            renderDropdownIcon={isOpened => {
-              return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-            }}
-            dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
+            renderLeftIcon={() => (
+              <AntDesign
+                style={styles.icon}
+                color={isCityFocus ? 'blue' : 'black'}
+                name="Safety"
+                size={20}
+              />
+            )}
           />
         </View>
 
-        <View style={styles.calenderSubContainer}>
-          <Text style={{ ...styles.calenderText, marginBottom: 5 }}>Area</Text>
-          <SelectDropdown
-            disabled={selectedcity ? false : true}
-            buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-            buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-            defaultButtonText='Select'
-            data={arealist}
-            onSelect={(selectedItem, index) => {
-              setselectedarea(selectedItem.city_id)
+        <View style={style.container}>
+          <Dropdown
+            style={style.dropdown}
+            placeholderStyle={style.placeholderStyle}
+            selectedTextStyle={style.selectedTextStyle}
+            inputSearchStyle={style.inputSearchStyle}
+            iconStyle={style.iconStyle}
+            data={areasData}
+            search
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder={!isAreaFocus ? 'Select Area' : '...'}
+            searchPlaceholder="Search..."
+            value={areaValue}
+            onFocus={() => setIsAreaFocus(true)}
+            onBlur={() => setIsAreaFocus(false)}
+            onChange={item => {
+              setIsAreaFocus(false);
+              afterSelectCityAndArea(item.value);
             }}
-            rowTextForSelection={(item, index) => {
-              return (
-                <>
-                  <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                    {item.area_name}
-                  </Text>
-                </>
-              );
-            }}
-            buttonTextAfterSelection={(selectedItem, index) => {
-              return (
-                <>
-                  <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                    {selectedItem.area_name}
-                  </Text>
-                </>
-              );
-            }}
-            renderDropdownIcon={isOpened => {
-              return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-            }}
-            dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
+            renderLeftIcon={() => (
+              <AntDesign
+                style={styles.icon}
+                color={isAreaFocus ? 'blue' : 'black'}
+                name="Safety"
+                size={20}
+              />
+            )}
           />
         </View>
-
-      </View> */}
-
-      <View style={{
-            width: '90%',
-            flexDirection: 'row',
-            alignSelf: 'center',
-            justifyContent: 'space-between',
-            marginBottom:6,
-          }}>
+      </View>
+      <View
+        style={{
+          width: '90%',
+          flexDirection: 'row',
+          alignSelf: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 6,
+        }}>
         <View style={{...style.container, marginTop: 0}}>
           <Text style={{...styles.calenderText, marginBottom: 5}}>From</Text>
           <TouchableOpacity
@@ -400,21 +255,32 @@ const Sales = () => {
           />
         </View>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View >
+
+      <View style={style.tableContainer}>
+        <SalesHeaderTable />
+        <TableView 
+          apiEndpoint={apiEndpoint} 
+          params={params} 
+          renderItem={({ item }) => <SalesItemTable item={item} />} 
+        />
+      </View>
+
+      {/* <ScrollView showsVerticalScrollIndicator={false}>
+        <View>
           <SalesTable data={salesdata} />
         </View>
-      </ScrollView>
+      </ScrollView> */}
     </SafeAreaView>
   );
 };
 
 export default Sales;
+
 export const style = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     width: '48%',
-    marginTop: 15
+    marginTop: 15,
   },
   dropdown: {
     height: 50,
@@ -448,5 +314,10 @@ export const style = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+  },
+  tableContainer: {
+    flex: 1,
+    width: '98%',
+    alignSelf: 'center',
   },
 });

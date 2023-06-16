@@ -51,7 +51,6 @@ export const AuthProvider = ({children}) => {
     setIsLoading(true);
     await post(Constants.auth.login, {email, password})
       .then(res => {
-        console.log(res);
         const token = res.token;
         const userData = res.user;
         const role = res.user.role;

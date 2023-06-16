@@ -2,10 +2,14 @@ import {AppRegistry} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
 import {AuthProvider} from './src/contexts/AuthContext';
+import {Provider} from 'react-redux';
+import { store } from './src/store';
 
 const AppWithAuthProvider = () => (
   <AuthProvider>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </AuthProvider>
 );
 

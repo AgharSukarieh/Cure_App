@@ -42,6 +42,9 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   response => {
+    console.log('----------API Response Start------');
+    console.log(response.data);
+    console.log('----------API Response End------');
     hideLoadingIndicator();
     return response;
   },

@@ -62,7 +62,13 @@ export default function App() {
         <Stack.Screen name="SignInPharmacy" component={SignInPharmacy}/>
         <Stack.Screen name="ConfirmProfile" component={ConfirmProfile}/>
 
-        <Stack.Screen name="Sales" component={Sales} options={{ headerShown: false }} />
+        <Stack.Screen name="Sales" component={Sales} />
+
+
+
+
+
+
         <Stack.Screen name="Monthly" component={Monthly} options={{ headerShown: false }} />
         <Stack.Screen name="Weekly" component={Weekly} options={{ headerShown: false }} />
         {/* <Stack.Screen name="Weekly" component={Role == "sales" ? WeeklySales : Weekly} options={{ headerShown: false }} /> */}

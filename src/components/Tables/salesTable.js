@@ -17,6 +17,7 @@ const SalesTable = ({ data }) => {
 
     return (
         <View style={styles.container}>
+
             <View style={styles.header}>
                 <View style={{ ...styles.headerel, width: '30%', }}>
                     <Text style={styles.headerel_tetx}>Name</Text>
@@ -34,8 +35,12 @@ const SalesTable = ({ data }) => {
                     <Text style={styles.headerel_tetx}>Info</Text>
                 </View>
             </View>
+
+
             {data ?
                 data.map((item, index) => (
+
+                    
                     <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} key={index}>
                         <View style={{ ...styles.rowel, width: '30.1%', }}>
                             <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item.pharm_name}</Text>
@@ -59,12 +64,21 @@ const SalesTable = ({ data }) => {
                             </TouchableOpacity>
                         </View>
                     </View>
+
+
                 ))
                 :
                 <View style={{ width: '100%', height: 70, justifyContent: 'center', alignItems: 'center', borderWidth: 1 }}>
                     <Text style={{ textTransform: 'capitalize', fontSize: 25 }}>no available data</Text>
                 </View>
             }
+
+
+
+
+
+
+
             <SalesModel show={modal} hide={() => { setModal(false) }} data={rowdata} />
         </View >
     );

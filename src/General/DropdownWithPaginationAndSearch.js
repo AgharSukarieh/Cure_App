@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, FlatList, TouchableOpacity, TextInput} from 'react-native';
-import {getPage} from './your-api-client'; // Replace with the actual path to your API client file
+import { getPage } from '../WebService/RequestBuilder';
 
 const DropdownWithPaginationAndSearch = ({
   apiEndpoint,
@@ -17,8 +17,8 @@ const DropdownWithPaginationAndSearch = ({
     const loadItems = async (page, query) => {
       try {
         const response = await getPage(apiEndpoint, page, 10, {query});
-        setItems(response.data); // Assuming the API response contains an array of items
-        setTotalPages(response.totalPages); // Assuming the API response contains the total number of pages
+        setItems(response.data);
+        setTotalPages(response.totalPages);
       } catch (error) {
         console.log('Error loading items:', error);
       }
