@@ -32,45 +32,35 @@ import MainClientdoctorlist from './src/screens/MainClientdoctorlist';
 import ChatScreen from './src/screens/ChatPages/ChatScreen';
 import ContactsScreen from './src/screens/ChatPages/ContactsScreen';
 import PresentImage from './src/screens/ChatPages/PresentImage';
+import {useAuth} from './src/contexts/AuthContext';
+import { View, ActivityIndicator } from 'react-native';
 
 export default function App() {
+  const Stack = createNativeStackNavigator();
+  const {isLoggedIn, isLoading, token, role} = useAuth();
 
-  const [logedin, setlogedin] = useState(false)
-  const [userData, setuserData] = useState({})
-
-  // console.log(logedin);
-  const getlogs = async () => {
-    const a = await AsyncStorage.getItem('userInfo')
-    let user = (JSON.parse(a))
-    if (user) {
-      setuserData(user)
-      setlogedin(true)
-      console.log('-------',user.role);
+  const setRoot = () => {
+    if (isLoggedIn && token) {
+      return 'ReportPage';
+    } else {
+      return 'SignIn';
     }
   }
 
-
-  // Locationupdate()
-
-
-  useEffect(() => {
-    getlogs()
-  }, []);
-
-
-  const Stack = createNativeStackNavigator();
-  return (
+  return isLoading ? (
+    <View
+      style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <ActivityIndicator size="large" color='blue'/>
+    </View>
+  ) : (
     <NavigationContainer>
-      <Stack.Navigator >
-      
-        <Stack.Screen name="Firstscreen" component={Firstscreen} options={{ headerShown: false }} />
+      <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={setRoot()}>
+        <Stack.Screen name="SignIn" component={SignIn}/>
+        <Stack.Screen name="ReportPage" component={ReportPage}/>
 
-        <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
-        {/* <Stack.Screen name="ReportPage" component={Role == "Sales" ? ReportPageSales : ReportPage} options={{ headerShown: false }} /> */}
-        <Stack.Screen name="ReportPage" component={ReportPage} options={{ headerShown: false }} />
-        <Stack.Screen name="SignUpPharmacy" component={SignUpPharmacy} options={{ headerShown: false }} />
-        <Stack.Screen name="SignInPharmacy" component={SignInPharmacy} options={{ headerShown: false }} />
-        <Stack.Screen name="ConfirmProfile" component={ConfirmProfile} options={{ headerShown: false }} />
+        <Stack.Screen name="SignUpPharmacy" component={SignUpPharmacy}/>
+        <Stack.Screen name="SignInPharmacy" component={SignInPharmacy}/>
+        <Stack.Screen name="ConfirmProfile" component={ConfirmProfile}/>
 
         <Stack.Screen name="Sales" component={Sales} options={{ headerShown: false }} />
         <Stack.Screen name="Monthly" component={Monthly} options={{ headerShown: false }} />
@@ -90,17 +80,17 @@ export default function App() {
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
         <Stack.Screen name="ContactsScreen" component={ContactsScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="PresentImage" component={PresentImage} options={{ title: 'Images' }}/>
-
-        {/*  */}
          <Stack.Screen name="Clientlist-sales" component={Clientpharmalist} options={{ headerShown: false }} /> 
          <Stack.Screen name="Clientlist-notSales" component={MainClientdoctorlist} options={{ headerShown: false }} />
-
          <Stack.Screen name="Daily-sales" component={ DailySales } options={{ headerShown: false }} />
          <Stack.Screen name="Daily-notSales" component={Daily} options={{ headerShown: false }} />
-
          <Stack.Screen name="WeeklySales" component={ WeeklySales} options={{ headerShown: false }} />
-        {/*  */}
       </Stack.Navigator>
     </NavigationContainer >
   );
 }
+
+
+      
+ {/* <Stack.Screen name="Firstscreen" component={Firstscreen} options={{ headerShown: false }} /> */}
+ {/* <Stack.Screen name="ReportPage" component={Role == "Sales" ? ReportPageSales : ReportPage} options={{ headerShown: false }} /> */}

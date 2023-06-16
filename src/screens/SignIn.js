@@ -1,68 +1,56 @@
-import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { styles } from '../components/styles';
+import {Alert, View, ActivityIndicator, SafeAreaView, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {styles} from '../components/styles';
 import TopView from '../components/TopView';
 import Input from '../components/Input';
 import Button from '../components/Button';
-import { Alert } from 'react-native';
-import axios from 'axios';
-import { LOGIN, MED_GET_DAILY } from '../Provider/ApiRequest';
-// import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useAuth} from '../contexts/AuthContext';
+const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const SignIn = ({ navigation }) => {
-  const [email, setemail] = useState('');
-  const [password, setPassword] = useState('');
+const SignIn = ({navigation}) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setemail] = useState('delete@gmail.com');
+  const [password, setPassword] = useState('123456789');
+  const {login} = useAuth();
 
-  const getlogs = async () => {
-    const a = await AsyncStorage.getItem('userInfo')
-    console.log(a);
-  }
-  useEffect(() => {
-    getlogs()
-  }, []);
-
-  const handleSignIn = () => {
-    // 
+  const LoginPress = async () => {
+    setIsLoading(true);
     if (email != '' && password != '') {
-      let data = {
-        email: email,
-        password: password
-      }
-      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (regex.test(email)) {
-        axios({
-          method: "POST",
-          url: LOGIN,
-          data: data
-        }).then(async (response) => {
-          if (response.data.message == 'email') {
-            Alert.alert('The Email you Entered isn\'t valid')
-          }
-          if (response.data.message == 'pass') {
-            Alert.alert('The Password you Entered is wrong')
-          }
-          if (response.data.message == 'done') {
-            await AsyncStorage.setItem('userInfo', JSON.stringify(response.data.data))
-            navigation.navigate('ReportPage')
-          }
-        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error", error) })
+        await login(email, password)
+          .then(() => {
+            setIsLoading(false);
+            navigation.navigate('ReportPage');
+          })
+          .catch(err => {
+            setIsLoading(false);
+            Alert.alert('login error', err.response.data.message);
+          });
       } else {
-        Alert.alert('Make sure to enter a valid email')
+        setIsLoading(false);
+        Alert.alert('Make sure to enter a valid email');
       }
     } else {
-      Alert.alert('Make sure to enter Email and Password')
+      setIsLoading(false);
+      Alert.alert('Make sure to enter Email and Password');
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <TopView text={'Sgin in'} />
-      <Input lable={'Email'} setData={setemail} />
-      <Input lable={'PASSWORD'} setData={setPassword} isPassword={true} />
-      <Button text={'Sign In'} handleClick={handleSignIn} />
-
-      <View style={styles.checkPharmacy}>
+      <View style={style.content}>
+        <TopView text={'Sgin in'} />
+        <Input lable={'Email'} setData={setemail} />
+        <Input lable={'PASSWORD'} setData={setPassword} isPassword={true} />
+        <Button text={'Sign In'} handleClick={() => LoginPress()} />
+      </View>
+      {isLoading && (
+        <View
+          style={style.loadingContainer}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>
+      )}
+      {/* <View style={styles.checkPharmacy}>
         <Text style={styles.checkPharmacyText}>Are you a pharmacy?</Text>
         <TouchableOpacity
           onPress={() => navigation.navigate('SignInPharmacy')}
@@ -70,9 +58,19 @@ const SignIn = ({ navigation }) => {
           style={styles.signInPharmacyStyle}>
           <Text style={styles.buttonText}>Sign in</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 };
 
 export default SignIn;
+
+const style = StyleSheet.create({
+  content:{flex: 1, justifyContent: 'flex-start'},
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  }
+});

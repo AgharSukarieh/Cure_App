@@ -4,7 +4,7 @@ import {styles} from './styles';
 import Icon from 'react-native-vector-icons/Feather';
 
 Icon.loadFont()
-const Input = ({lable, placeholder,isPassword, setData, labelStyle=styles.label ,viewStyle= styles.inbutContainer,style = styles.input, value = null, multiline = false, numberOfLines=0 }) => {
+const Input = ({lable, placeholder,isPassword, setData, labelStyle=styles.label ,viewStyle= styles.inbutContainer,style = styles.input, value = null, multiline = false, numberOfLines=1 }) => {
   const [showEye, setShowEye] = useState(false);
   return (
     <View style={{...styles.inbutContainer, ...viewStyle}}>
@@ -18,7 +18,6 @@ const Input = ({lable, placeholder,isPassword, setData, labelStyle=styles.label 
         numberOfLines={numberOfLines}
         placeholder={placeholder}
       />
-
       {isPassword && (
         <>
           {!showEye ? (

@@ -5,11 +5,12 @@ import TopView from '../../components/TopView';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNRestart from 'react-native-restart';
+import { useAuth } from '../../contexts/AuthContext';
 
-// doctor id is 1 and pharma 2
 const keyid = 1
 
 const ReportPage = () => {
+  const {logout} = useAuth();
 
   const date = new Date().toLocaleDateString();
   const navigation = useNavigation();
@@ -24,19 +25,16 @@ const ReportPage = () => {
     getlogs()
   }, []);
 
+  const LogoutPress = async () => {
+    await logout()
+      .then(() => {
+        navigation.navigate('SignIn');
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
 
-  const logout = async () => {
-    // AsyncStorage.removeItem('userInfo')
-    // AsyncStorage.clear()
-
-    try {
-      await AsyncStorage.removeItem('userInfo');
-      console.log(`Item with key userInfo has been removed from storage.`);
-      RNRestart.Restart();
-    } catch (error) {
-      console.log(`Error removing item with key userInfo from storage: ${error}`);
-    }
-  }
   const scan = async () => {
     
   }
@@ -80,7 +78,7 @@ const ReportPage = () => {
             <Text style={styles.reportPageText}>Test</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.logoutbtn} onPress={() => { logout() }}>
+        <TouchableOpacity style={styles.logoutbtn} onPress={() => LogoutPress()}>
           <Text style={styles.reportPageText}>Logout</Text>
         </TouchableOpacity>
       </ScrollView>
