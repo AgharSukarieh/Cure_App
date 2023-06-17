@@ -25,6 +25,7 @@ const Clientpharmalist = ({ navigation, route }) => {
   const cityArea = route?.params?.cityArea
  
   const [modal, setModal] = useState(false);
+
   const [scModal, setScModal] = useState(false);
 
   const [search, setSearch] = useState(null);
@@ -177,7 +178,6 @@ const Clientpharmalist = ({ navigation, route }) => {
           renderItem={({ item }) => <PharmacyItemTable item={item} />} 
         />
       </View>
-      
 
       <View style={style.rButton}>
         <TouchableOpacity onPress={() => setModal(true)}>
@@ -185,7 +185,10 @@ const Clientpharmalist = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
 
-      <AddNewPharmacyModel showM={modal} hideM={() => setModal(false)} 
+      <AddNewPharmacyModel 
+        showM={modal} 
+        hideM={() => setModal(false)} 
+        data={cityArea}
         submit={e => { (e !== null) ? submitAddPharmacy(e) : null }}
       />
       
