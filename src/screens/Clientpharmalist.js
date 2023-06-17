@@ -1,9 +1,6 @@
 import {
   View,
-  Text,
   SafeAreaView,
-  Dimensions,
-  ScrollView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -11,124 +8,57 @@ import {
 import React, {useState, useEffect} from 'react';
 import {styles} from '../components/styles';
 import GoBack from '../components/GoBack';
-// import SearchableDropdown from 'react-native-searchable-dropdown';
-import {areas, classification, pharams} from '../helpers/data';
-import ClientpharmaTable from '../components/Tables/ClientpharmaTable';
 import Feather from 'react-native-vector-icons/Feather';
 import {Dropdown} from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { GET_Areas, GET_CITY, SAL_GET_PHARMACY } from '../Provider/ApiRequest';
-import axios from 'axios';
 import AddNewPharmacyModel from '../components/Modals/AddNewPharmacyModel';
 import SuccessfullyModel from '../components/Modals/SuccessfullyModel';
+import Constants from '../config/globalConstants';
+import PharmacyHeaderTable from '../components/Tables/PharmacyHeaderTable';
+import TableView from '../General/TableView';
+import PharmacyItemTable from '../components/Tables/PharmacyItemTable';
 
-const wwidth = Dimensions.get('window').width;
+const getPharmacyEndpoint = Constants.sales.pharmacy;
 
 const Clientpharmalist = ({ navigation, route }) => {
   const title = route?.params?.title
-
-  const [citiesData, setCitiesData] = useState([]);
-  const [areasData, setAreasData] = useState([]);
-  const [cityValue, setCityValue] = useState(null);
-  const [isCityFocus, setIsCityFocus] = useState(false);
-  const [areaValue, setAreaValue] = useState(null);
-  const [isAreaFocus, setIsAreaFocus] = useState(false);
+  const cityArea = route?.params?.cityArea
+ 
   const [modal, setModal] = useState(false);
   const [scModal, setScModal] = useState(false);
-  const [pharmacyArray, setPharmacyArray] = useState([])
 
-  const [pharmacyArraySearch, setPharmacyArraySearch] = useState([])
-  // const [clearSearch, setClearSearch] = useState('')
-
-  const afterSelectCityAndArea = (area_id) => {
-    console.log(cityValue, area_id);
-    if (area_id !== null) {
-      const arr = pharmacyArray.filter((item) => item.area_code == area_id);
-      setPharmacyArraySearch(arr)
-      }else {
-        setPharmacyArraySearch([])
-      }
-  }
-
-   const submitAddPharmacy = (data) => {
-    console.log(data);
-    // API ...
-    setScModal(true)
-   }
-
-   const getPharmacy = () => {
-    axios({
-      method: 'GET',
-      url: SAL_GET_PHARMACY,
-      params: {},
-    })
-      .then(response => {
-        setPharmacyArray(response.data.data);
-        //
-        setPharmacyArraySearch(response.data.data);
-        //
-        console.log(response.data.data);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    }
+  const [search, setSearch] = useState(null);
+  const [citiesData, setCitiesData] = useState([]);
+  const [cityValue, setCityValue] = useState(null);
+  const [areasData, setAreasData] = useState([]);
+  const [areaValue, setAreaValue] = useState(null);
+  const [filter, setFilter] = useState(null);
+  const params = {
+    seach_term: filter,
+  };
 
   const getCities = () => {
-    axios({
-      method: "POST",
-      url: GET_CITY,
-    }).then((response) => {
-        var count = Object.keys(response.data).length
+    var count = Object.keys(cityArea.cities).length
         let cityArray = []
         for (var i = 0; i < count; i++ ){
             cityArray.push({
-                value: response.data[i].city_id,
-                label: response.data[i].city_name
+                value: cityArea.cities[i].id,
+                label: cityArea.cities[i].name
+            })
+        }
+        var count = Object.keys(cityArea.areas).length
+        let areaArray = []
+        for (var i = 0; i < count; i++ ){
+          areaArray.push({
+                value: cityArea.areas[i].id,
+                label: cityArea.areas[i].name
             })
         }
         setCitiesData(cityArray)
-    }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error", error) })
-  }
-
-  const getareas = (city_id) => {
-    let data = {
-      city_id: city_id
-    }
-    axios({
-      method: "POST",
-      url: GET_Areas,
-      data: data
-    }).then((response) => {
-        var count = Object.keys(response.data).length
-        let areaArray = []
-        for (var i = 0; i < count; i++ ){
-            areaArray.push({
-                value: response.data[i].area_id,
-                label: response.data[i].area_name
-            })
-        }
         setAreasData(areaArray)
-    }).catch((error) => { console.log("🚀 ~ file: Sales.js ~ line 39 ~ getarea ~ error", error) })
   }
-
-const [search, setSearch] = useState('');
-
-const updateSearch = (search) => {
-  setSearch(search);
-  if (search !== '') {
-    const arr = pharmacyArray.filter((item) => item.pharmacy_name.includes(search));
-    setPharmacyArraySearch(arr)
-    }else {
-      setPharmacyArraySearch(pharmacyArray)
-      //
-      // setPharmacyArraySearch([])
-      //
-    }
-};
 
   useEffect(() => {
-    getPharmacy()
     getCities()
   }, [])
 
@@ -142,13 +72,15 @@ const updateSearch = (search) => {
             style={styles.searchinput}
             placeholder="Search"
             onChangeText={text => {
-              updateSearch(text)
+              setSearch(text)
+              setFilter(text)
             }}
             value={search}
           />
           <TouchableOpacity
             onPress={() => {
-              updateSearch('')
+              setSearch(null)
+              setFilter(null)
             }}
             style={{
               width: '15%',
@@ -163,6 +95,7 @@ const updateSearch = (search) => {
             />
           </TouchableOpacity>
         </View>
+
         <View
           style={{
             width: '100%',
@@ -183,27 +116,24 @@ const updateSearch = (search) => {
               maxHeight={300}
               labelField="label"
               valueField="value"
-              placeholder={!isCityFocus ? 'Select City' : '...'}
+              placeholder={!cityValue ? 'Select City' : '...'}
               searchPlaceholder="Search..."
               value={cityValue}
-              onFocus={() => setIsCityFocus(true)}
-              onBlur={() => setIsCityFocus(false)}
+              onBlur={() => {}}
               onChange={item => {
                 setCityValue(item.value);
-                setIsCityFocus(false);
-                getareas(item.value)
+                setFilter(item.label);
               }}
               renderLeftIcon={() => (
                 <AntDesign
                   style={styles.icon}
-                  color={isCityFocus ? 'blue' : 'black'}
+                  color={cityValue ? 'blue' : 'black'}
                   name="Safety"
                   size={20}
                 />
               )}
             />
           </View>
-
           <View style={style.container}>
             <Dropdown
               style={style.dropdown}
@@ -216,19 +146,18 @@ const updateSearch = (search) => {
               maxHeight={300}
               labelField="label"
               valueField="value"
-              placeholder={!isAreaFocus ? 'Select Area' : '...'}
+              placeholder={!areaValue ? 'Select Area' : '...'}
               searchPlaceholder="Search..."
               value={areaValue}
-              onFocus={() => setIsAreaFocus(true)}
-              onBlur={() => setIsAreaFocus(false)}
+              onBlur={() => {}}
               onChange={item => {
-                setIsAreaFocus(false);
-                afterSelectCityAndArea(item.value)
+                setAreaValue(item.value);
+                setFilter(item.label);
               }}
               renderLeftIcon={() => (
                 <AntDesign
                   style={styles.icon}
-                  color={isAreaFocus ? 'blue' : 'black'}
+                  color={areaValue ? 'blue' : 'black'}
                   name="Safety"
                   size={20}
                 />
@@ -236,38 +165,36 @@ const updateSearch = (search) => {
             />
           </View>
         </View>
+
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* <ClientpharmaTable data={pharmacyArraySearch.length > 0 ? pharmacyArraySearch : pharmacyArray} /> */}
-        <ClientpharmaTable data={pharmacyArraySearch} />
-      </ScrollView>
+      <View style={style.containerTable}>
+        <PharmacyHeaderTable/>
+        <TableView 
+          apiEndpoint={getPharmacyEndpoint} 
+          enablePullToRefresh
+          params={params} 
+          renderItem={({ item }) => <PharmacyItemTable item={item} />} 
+        />
+      </View>
+      
 
       <View style={style.rButton}>
-              <TouchableOpacity
-                onPress={() => {
-                  setModal(true);
-                }}>
-                <AntDesign name="plus" size={30} color= {'#fff'} />
-              </TouchableOpacity>
+        <TouchableOpacity onPress={() => setModal(true)}>
+          <AntDesign name="plus" size={30} color= {'#fff'} />
+        </TouchableOpacity>
       </View>
 
-      <AddNewPharmacyModel
-        showM={modal}
-        hideM={() => {
-          setModal(false);
-        }}
-        submit={e => {
-          (e !== null) ? submitAddPharmacy(e) : null
-        }}
+      <AddNewPharmacyModel showM={modal} hideM={() => setModal(false)} 
+        submit={e => { (e !== null) ? submitAddPharmacy(e) : null }}
       />
       
       <SuccessfullyModel
+        message= {'The pharmacy has been added successfully.'}
         show={scModal}
         hide={() => {
           setScModal(false);
         }}
-        message= {'The pharmacy has been added successfully.'}
       />
 
     </SafeAreaView>
@@ -287,6 +214,11 @@ export const style = StyleSheet.create({
     color: 'rgba(37, 50, 116, 0.6)',
     marginHorizontal: 10,
   },
+  containerTable: {
+    flex: 1,
+    width: '98%',
+    alignSelf: 'center',
+},
   container: {
     backgroundColor: 'white',
     width: '48%',

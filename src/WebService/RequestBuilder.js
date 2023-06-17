@@ -55,24 +55,18 @@ apiClient.interceptors.response.use(
   },
 );
 
-const request = async (method, url, data = null, options = {}) => {
+const request = async (method, url, data = null, params = {}) => {
   try {
-    const response = await apiClient.request({
-      method,
-      url,
-      data,
-      ...options,
-    });
+    const response = await apiClient.request({ method, url, data, params });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || error.message);
   }
 };
 
-const createApiFunction =
-  method =>
-  async (url, data = null, options = {}) => {
-    const response = await request(method, url, data, options);
+const createApiFunction = method =>
+  async (url, data = null, params = {}) => {
+    const response = await request(method, url, data, params);
     return response;
   };
 
@@ -81,31 +75,20 @@ export const post = createApiFunction('post');
 export const put = createApiFunction('put');
 export const del = createApiFunction('delete');
 
-export const uploadFiles = async (url, files, options = {}) => {
+export const uploadFiles = async (url, files, params = {}) => {
   const formData = new FormData();
   files.forEach((file, index) => {
     formData.append(`file${index}`, file);
   });
 
-  const response = await request('post', url, formData, options);
+  const response = await request('post', url, formData, params);
   return response;
 };
 
 // Pagination handling
-export const getPage = async (
-  url,
-  page = 1,
-  limit = 10,
-  params = null,
-  options = {},
-) => {
-  const paginationParams = {
-    ...params,
-    page,
-    limit,
-  };
-
-  const response = await get(url, paginationParams, options);
+export const getPage = async (url, page = 1, limit = 10, param = {}, data = null,) => {
+  const params = { ...param, page, limit };
+  const response = await get(url, data, params);
   return response;
 };
 

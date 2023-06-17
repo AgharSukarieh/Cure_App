@@ -197,11 +197,11 @@
 
 
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { getPage } from '../WebService/RequestBuilder';
 
-const TableView = ({ apiEndpoint, renderItem, params }) => {
+const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = false  }) => {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -209,15 +209,13 @@ const TableView = ({ apiEndpoint, renderItem, params }) => {
   const [error, setError] = useState(null);
   const [hasMoreData, setHasMoreData] = useState(true);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (loading || !hasMoreData) return;
     setLoading(true);
     setError(null);
-
     try {
       const response = await getPage(apiEndpoint, page, 10, params);
-      const newData = response.results;
-
+      const newData = response.data;
       if (newData.length === 0) {
         setHasMoreData(false);
       } else {
@@ -229,17 +227,16 @@ const TableView = ({ apiEndpoint, renderItem, params }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiEndpoint, page, loading, hasMoreData, params]);
 
   const handleRefresh = async () => {
     if (refreshing) return;
     setRefreshing(true);
     setError(null);
     setHasMoreData(true);
-
     try {
       const response = await getPage(apiEndpoint, 1, 10, params);
-      setData(response.results);
+      setData(response.data);
       setPage(2);
     } catch (error) {
       setError(error.message);
@@ -251,7 +248,13 @@ const TableView = ({ apiEndpoint, renderItem, params }) => {
   useEffect(() => {
     fetchData();
   }, []);
-
+  
+  useEffect(() => {
+    setData([]);
+    setPage(1);
+    setHasMoreData(true);
+  }, [params]);
+  
   const renderFooter = () => {
     if (!loading || !hasMoreData) return null;
 
@@ -276,6 +279,7 @@ const TableView = ({ apiEndpoint, renderItem, params }) => {
     <View style={styles.container}>
       {error ? (
         <Text>Error: {error}</Text>
+        
       ) : (
         <FlatList
           data={data}
@@ -286,7 +290,9 @@ const TableView = ({ apiEndpoint, renderItem, params }) => {
           onEndReached={fetchData}
           onEndReachedThreshold={0.1}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+            enablePullToRefresh && (
+              <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+            )
           }
         />
       )}
@@ -311,3 +317,24 @@ const styles = {
 };
 
 export default TableView;
+
+  // const fetchData = async () => {
+  //   if (loading || !hasMoreData) return;
+  //   setLoading(true);
+  //   setError(null);
+
+  //   try {
+  //     const response = await getPage(apiEndpoint, page, 10, params);
+  //     const newData = response.data;
+  //     if (newData.length === 0) {
+  //       setHasMoreData(false);
+  //     } else {
+  //       setData(prevData => [...prevData, ...newData]);
+  //       setPage(prevPage => prevPage + 1);
+  //     }
+  //   } catch (error) {
+  //     setError(error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };

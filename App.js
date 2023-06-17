@@ -55,48 +55,46 @@ export default function App() {
   ) : (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={setRoot()}>
-        <Stack.Screen name="SignIn" component={SignIn}/>
-        <Stack.Screen name="ReportPage" component={ReportPage}/>
-
+        <Stack.Screen name="SignIn" component={SignIn}/> 
         <Stack.Screen name="SignUpPharmacy" component={SignUpPharmacy}/>
         <Stack.Screen name="SignInPharmacy" component={SignInPharmacy}/>
         <Stack.Screen name="ConfirmProfile" component={ConfirmProfile}/>
 
+        <Stack.Screen name="ReportPage" component={ReportPage}/>
         <Stack.Screen name="Sales" component={Sales} />
+        <Stack.Screen name="Clientlist-sales" component={Clientpharmalist}/> 
+
+        <Stack.Screen name="Clientlist-medical" component={MainClientdoctorlist}/>
 
 
 
 
 
-
-        <Stack.Screen name="Monthly" component={Monthly} options={{ headerShown: false }} />
-        <Stack.Screen name="Weekly" component={Weekly} options={{ headerShown: false }} />
-        {/* <Stack.Screen name="Weekly" component={Role == "sales" ? WeeklySales : Weekly} options={{ headerShown: false }} /> */}
-        {/* <Stack.Screen name="Daily" component={userData.role == "sales" ? DailySales : Daily} options={{ headerShown: false }} /> */}
-        {/* <Stack.Screen name="Clientlist" component={userData.role !== "sales" ? MainClientdoctorlist : Clientpharmalist} options={{ headerShown: false }} /> */}
-        <Stack.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
-        <Stack.Screen name="Sal_rep_pharm" component={Sal_rep_pharm} options={{ headerShown: false }} />
-        <Stack.Screen name="Inventory" component={Inventory} options={{ headerShown: false }} />
-        <Stack.Screen name="Order" component={Order} options={{ headerShown: false }} />
-        <Stack.Screen name="Return" component={Return} options={{ headerShown: false }} />
-        <Stack.Screen name="AccountInfo" component={AccountInfo} options={{ headerShown: false }} />
-        <Stack.Screen name="Clientdoctorlist" component={Clientdoctorlist} options={{ headerShown: false }} />
-        <Stack.Screen name="Clientpharmalist" component={Clientpharmalist} options={{ headerShown: false }} />
-        <Stack.Screen name="ChatPage" component={ChatPage} options={{ headerShown: false }} />
-        <Stack.Screen name="ChatScreen" component={ChatScreen} />
-        <Stack.Screen name="ContactsScreen" component={ContactsScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name="PresentImage" component={PresentImage} options={{ title: 'Images' }}/>
-         <Stack.Screen name="Clientlist-sales" component={Clientpharmalist} options={{ headerShown: false }} /> 
-         <Stack.Screen name="Clientlist-notSales" component={MainClientdoctorlist} options={{ headerShown: false }} />
-         <Stack.Screen name="Daily-sales" component={ DailySales } options={{ headerShown: false }} />
-         <Stack.Screen name="Daily-notSales" component={Daily} options={{ headerShown: false }} />
-         <Stack.Screen name="WeeklySales" component={ WeeklySales} options={{ headerShown: false }} />
+        <Stack.Screen name="Monthly" component={Monthly}/>
+        <Stack.Screen name="Weekly" component={Weekly}/>
+        <Stack.Screen name="Sal_rep_pharm" component={Sal_rep_pharm}/>
+        <Stack.Screen name="Inventory" component={Inventory}/>
+        <Stack.Screen name="Order" component={Order}/>
+        <Stack.Screen name="Return" component={Return}/>
+        <Stack.Screen name="AccountInfo" component={AccountInfo}/>
+        <Stack.Screen name="Clientdoctorlist" component={Clientdoctorlist}/> 
+        <Stack.Screen name="ChatPage" component={ChatPage}/>
+        <Stack.Screen name="ChatScreen" component={ChatScreen}/>
+        <Stack.Screen name="ContactsScreen" component={ContactsScreen}/>
+        <Stack.Screen name="PresentImage" component={PresentImage}/>  
+        <Stack.Screen name="Daily-sales" component={ DailySales }/>
+        <Stack.Screen name="Daily-notSales" component={Daily}/>
+        <Stack.Screen name="WeeklySales" component={ WeeklySales}/>
+        
       </Stack.Navigator>
     </NavigationContainer >
   );
 }
 
-
-      
+{/* <Stack.Screen name="Weekly" component={Role == "sales" ? WeeklySales : Weekly} options={{ headerShown: false }} /> */}
+        {/* <Stack.Screen name="Daily" component={userData.role == "sales" ? DailySales : Daily} options={{ headerShown: false }} /> */}
+        {/* <Stack.Screen name="Clientlist" component={userData.role !== "sales" ? MainClientdoctorlist : Clientpharmalist} options={{ headerShown: false }} /> */}
+        // <Stack.Screen name="Chat" component={Chat}/>
+{/* <Stack.Screen name="Clientpharmalist" component={Clientpharmalist} options={{ headerShown: false }} /> */}
  {/* <Stack.Screen name="Firstscreen" component={Firstscreen} options={{ headerShown: false }} /> */}
  {/* <Stack.Screen name="ReportPage" component={Role == "Sales" ? ReportPageSales : ReportPage} options={{ headerShown: false }} /> */}

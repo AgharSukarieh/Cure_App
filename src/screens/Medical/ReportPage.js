@@ -6,24 +6,26 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNRestart from 'react-native-restart';
 import { useAuth } from '../../contexts/AuthContext';
-
+import Constants from '../../config/globalConstants';
+import { get } from '../../WebService/RequestBuilder';
+const getCityAreaEndpoint = Constants.users.cityArea;
 const keyid = 1
 
 const ReportPage = () => {
-  const {logout} = useAuth();
+  const {logout , role, user} = useAuth();
 
   const date = new Date().toLocaleDateString();
   const navigation = useNavigation();
-  const [user, setuser] = useState('');
+  // const [userr, setuserr] = useState('');
 
-  const getlogs = async () => {
-    const a = await AsyncStorage.getItem('userInfo')
-    // console.log(a);
-    setuser(JSON.parse(a))
-  }
-  useEffect(() => {
-    getlogs()
-  }, []);
+  // const getlogs = async () => {
+  //   const a = await AsyncStorage.getItem('userInfo')
+  //   // console.log(a);
+  //   setuserr(JSON.parse(a))
+  // }
+  // useEffect(() => {
+  //   getlogs()
+  // }, []);
 
   const LogoutPress = async () => {
     await logout()
@@ -62,7 +64,20 @@ const ReportPage = () => {
           <TouchableOpacity style={styles.reportPageButton} onPress={() => navigation.navigate('Monthly',{role: user.role})}>
             <Text style={styles.reportPageText}>Monthly Plan</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.reportPageButton} onPress={() => { user.role == 'sales' ? navigation.navigate('Clientlist-sales') : navigation.navigate('Clientlist-notSales') }}>
+          <TouchableOpacity style={styles.reportPageButton} onPress={() => {
+            if (role == 'sales') {
+              get(`${getCityAreaEndpoint}${user?.id}`)
+                .then(response => {
+                  navigation.navigate('Clientlist-sales', {cityArea: response.data})
+               })
+              .catch(err => {
+                   console.error(err);
+               })
+              .finally(() => {});
+            }else{
+              navigation.navigate('Clientlist-medical') 
+            } 
+            }}>
             <Text style={styles.reportPageText}>Client List</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.reportPageButton} onPress={() => {navigation.navigate('ChatPage', {user: user}) }}>
@@ -71,9 +86,6 @@ const ReportPage = () => {
           <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
             <Text style={styles.reportPageText}>Test</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity style={styles.reportPageButton} onPress={() => { navigation.navigate('Chat') }}>
-            <Text style={styles.reportPageText}>Chat</Text>
-          </TouchableOpacity> */}
           <TouchableOpacity style={styles.reportPageButton} onPress={() => { }}>
             <Text style={styles.reportPageText}>Test</Text>
           </TouchableOpacity>

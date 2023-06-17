@@ -9,15 +9,18 @@ export default {
   uId: 'uId',
   role: 'role',
   userData: 'userData',
-
   auth: {
     login: 'login',
     logout: 'logout',
   },
-  models: {},
+  sales: {
+    pharmacy: 'sales/pharamcy',
+  },
+  users: {
+    cityArea: 'users/'
+  }
+
 };
-
-
 
 
 
