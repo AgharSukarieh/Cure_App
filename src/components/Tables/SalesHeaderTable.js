@@ -9,11 +9,11 @@ const SalesHeaderTable = () => {
       </View>
       <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
       <View style={styles.headerel}>
-        <Text style={styles.headerel_tetx}>Item</Text>
+        <Text style={styles.headerel_tetx}>Price</Text>
       </View>
       <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
       <View style={styles.headerel}>
-        <Text style={styles.headerel_tetx}>units</Text>
+        <Text style={styles.headerel_tetx}>Date</Text>
       </View>
       <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
       <View style={{...styles.headerel, width: '12%'}}>
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
         paddingVertical: 7
     },
     headerel: {
-        width: '29%',
+        width: '25%',
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 1,

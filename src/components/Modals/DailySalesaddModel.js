@@ -2,65 +2,50 @@ import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView
 import React, { useEffect, useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SelectDropdown from 'react-native-select-dropdown'
-import { pharams } from '../../helpers/data';
 import Feather from 'react-native-vector-icons/Feather';
 import { styles } from '../styles';
 import Moment from 'moment';
-import DatePicker from 'react-native-date-picker'
-import { GET_PHARMACY, SAL_ADD_REPORT } from '../../Provider/ApiRequest';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from '../../config/globalConstants';
+import { useAuth } from '../../contexts/AuthContext';
+import { get, post } from '../../WebService/RequestBuilder';
 
-const width = Dimensions.get('window').width
-const height = Dimensions.get('window').height
-
-const DailySalesaddModel = ({ show, hide, submit, date }) => {
-
-    const [user, setuser] = useState('');
-    const getlogs = async () => {
-        const a = await AsyncStorage.getItem('userInfo')
-        setuser(JSON.parse(a))
-    }
-    useEffect(() => {
-        getlogs()
-    }, []);
-
-    const [pharam, setpharam] = useState('')
-    const currentTime = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false });
-    const submit2 = () => {
-        let data = {
-            user_id: user.id,
-            pharam: pharam,
-            date: date + ' ' + currentTime,
-        }
-        axios({
-            method: "POST",
-            url: SAL_ADD_REPORT,
-            data: data
-        }).then((response) => {
-            console.log(response.data);
-            if (response.data.message == 'done') {
-                submit(data)
-                hide()
-                setpharam('')
-            }
-        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error", error) })
-    }
-
+const DailySalesaddModel = ({ show, hide, submit, date, area}) => {
+    const {user} = useAuth();
 
     const [pharmacy_list, setpharmacy_list] = useState([]);
-    const getpharmacys = () => {
-        axios({
-            method: "POST",
-            url: GET_PHARMACY,
-        }).then((response) => {
-            // console.log(response.data)
-            setpharmacy_list(response.data)
-        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 43 ~ getdoctors ~ error", error) })
+    const [pharam, setpharam] = useState(null)
+
+    const currentTime = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false });
+
+    const getpharmacys = async() => {
+        get(Constants.sales.pharmacy, null, {user_id: user.id, area_id: area.id})
+        .then((res) => {
+            setpharmacy_list(res.data)
+        })
+        .catch((err) => {})
+        .finally(() => {
+        })
     }
+
     useEffect(() => {
         getpharmacys()
-    }, [show])
+    }, [])
+
+    const submit2 = () => {
+        const body = {
+            sale_id: user.sales.id,
+            pharmacy_id: pharam.id
+        }
+        post(Constants.visit.sales, body, null)
+        .then((res) => {  
+            submit(true)
+        })
+        .catch((err) => {})
+        .finally(() => {
+            hide()
+            setpharam(null)
+        })    
+    }
 
     return (
         <Modal
@@ -87,13 +72,13 @@ const DailySalesaddModel = ({ show, hide, submit, date }) => {
                                     defaultButtonText='Select'
                                     data={pharmacy_list}
                                     onSelect={(selectedItem, index) => {
-                                        setpharam(selectedItem.ph_id)
+                                        setpharam(selectedItem)
                                     }}
                                     rowTextForSelection={(item, index) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.pharmacy_name}
+                                                    {item.name}
                                                 </Text>
                                             </>
                                         );
@@ -102,7 +87,7 @@ const DailySalesaddModel = ({ show, hide, submit, date }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.pharmacy_name}
+                                                    {selectedItem.name}
                                                 </Text>
                                             </>
                                         );
@@ -116,7 +101,7 @@ const DailySalesaddModel = ({ show, hide, submit, date }) => {
 
                             <View style={style.card}>
                                 <TouchableOpacity disabled={pharam != '' ? false : true} style={{ ...styles.btn, backgroundColor: pharam != '' ? '#7189FF' : '#ddd' }} onPress={() => { submit2() }}>
-                                    <Text style={{ fontSize: 18, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>submit</Text>
+                                    <Text style={{ fontSize: 18, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>Start Visit</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -140,7 +125,7 @@ const style = StyleSheet.create({
         backgroundColor: "#fff",
         borderRadius: 10,
         width: '95%',
-        height: '40%',
+        height: '60%',
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,

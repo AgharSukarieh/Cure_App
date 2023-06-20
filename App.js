@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -21,10 +21,7 @@ import Inventory from './src/screens/Sales/Inventory';
 import Order from './src/screens/Sales/Order';
 import Return from './src/screens/Sales/Return';
 import AccountInfo from './src/screens/Sales/AccountInfo';
-import Chat from './src/screens/chat';
 import ChatPage from './src/screens/ChatPages/ChatPage';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Firstscreen from './src/helpers/firstscreen';
 import Locationupdate from './src/Provider/Locationupdate';
 import Sal_rep_pharm from './src/screens/Sales/sal_rep_pharm';
@@ -63,27 +60,23 @@ export default function App() {
         <Stack.Screen name="ReportPage" component={ReportPage}/>
         <Stack.Screen name="Sales" component={Sales} />
         <Stack.Screen name="Clientlist-sales" component={Clientpharmalist}/> 
-
         <Stack.Screen name="Clientlist-medical" component={MainClientdoctorlist}/>
-
-
-
-
-
+        <Stack.Screen name="Clientdoctorlist" component={Clientdoctorlist}/> 
         <Stack.Screen name="Monthly" component={Monthly}/>
         <Stack.Screen name="Weekly" component={Weekly}/>
+
+        <Stack.Screen name="Daily-sales" component={ DailySales }/>
+        <Stack.Screen name="Daily-notSales" component={Daily}/>
         <Stack.Screen name="Sal_rep_pharm" component={Sal_rep_pharm}/>
+        <Stack.Screen name="AccountInfo" component={AccountInfo}/>
+
         <Stack.Screen name="Inventory" component={Inventory}/>
         <Stack.Screen name="Order" component={Order}/>
         <Stack.Screen name="Return" component={Return}/>
-        <Stack.Screen name="AccountInfo" component={AccountInfo}/>
-        <Stack.Screen name="Clientdoctorlist" component={Clientdoctorlist}/> 
         <Stack.Screen name="ChatPage" component={ChatPage}/>
         <Stack.Screen name="ChatScreen" component={ChatScreen}/>
         <Stack.Screen name="ContactsScreen" component={ContactsScreen}/>
         <Stack.Screen name="PresentImage" component={PresentImage}/>  
-        <Stack.Screen name="Daily-sales" component={ DailySales }/>
-        <Stack.Screen name="Daily-notSales" component={Daily}/>
         <Stack.Screen name="WeeklySales" component={ WeeklySales}/>
         
       </Stack.Navigator>

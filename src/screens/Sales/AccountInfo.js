@@ -9,7 +9,6 @@ import {
 import React, {useEffect, useState} from 'react';
 import {styles} from '../../components/styles';
 import GoBack from '../../components/GoBack';
-import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
 import ScanBarcodeAndQRModel from '../../components/Modals/ScanBarcodeAndQRModel';
 import Input from '../../components/Input';
@@ -19,7 +18,9 @@ import DatePicker from 'react-native-date-picker';
 
 Feather.loadFont();
 
-const AccountInfo = () => {
+const AccountInfo = ({route}) => {
+  const item = route.params.item;
+
   const [modal, setModal] = useState(false);
   const [statusMethod, setStatusMethod] = useState(null);
   const [open, setOpen] = useState(false);

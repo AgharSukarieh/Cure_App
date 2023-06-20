@@ -15,6 +15,7 @@ const ClientdoctorTable = ({ data }) => {
     }
     return (
         <View style={styles.container}>
+            
             <View style={styles.header}>
                 <View style={{ ...styles.headerel, width: '38%', }}>
                     <Text style={styles.headerel_tetx}>name</Text>

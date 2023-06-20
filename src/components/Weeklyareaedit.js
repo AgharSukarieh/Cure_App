@@ -1,63 +1,43 @@
-import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, Modal } from 'react-native';
 import React, { useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Moment from 'moment';
-import { areas } from '../helpers/data';
-import SearchableDropdown from 'react-native-searchable-dropdown';
-import { GET_Areas, GET_CITY } from '../Provider/ApiRequest';
 import { useEffect } from 'react';
-import axios from 'axios';
 import SelectDropdown from 'react-native-select-dropdown';
 import Feather from 'react-native-vector-icons/Feather';
 import { styles } from './styles';
 
-const width = Dimensions.get('window').width
-const height = Dimensions.get('window').height
+const Weeklyareaedit = ({ show, hide, data, submit, cityArea}) => {
 
-const Weeklyareaedit = ({ show, hide, data, submit }) => {
-
-
-
-    const [cityValue, setcityValue] = useState();
-    const [filterValue, setFilterValue] = useState('');
+    const [cityValue, setCityValue] = useState();
+    const [areaValue, setAreaValue] = useState('');
     const [citylist, setcitylist] = useState([])
     const [arealist, setarealist] = useState([])
 
     const getcity = () => {
-        axios({
-            method: "POST",
-            url: GET_CITY,
-        }).then((response) => {
-            setcitylist(response.data);
-        }).catch((error) => { console.log("🚀 ~ file: Weeklyareaedit.js ~ line 27 ~ getarea ~ error", error) })
+       setcitylist(cityArea.cities);
     }
 
-    const getarea = () => {
-        let data = {
-            city_id: cityValue
-        }
-        axios({
-            method: "POST",
-            url: GET_Areas,
-            data: data
-        }).then((response) => {
-            setarealist(response.data)
-        }).catch((error) => { console.log("🚀 ~ file: Weeklyareaedit.js ~ line 27 ~ getarea ~ error", error) })
+    const getArea = (id) => {
+        const arr = [];
+        cityArea.areas.forEach((area) => {
+            if (area.city_id == id) {
+                arr.push(area);
+            }
+        });
+        setarealist(arr);
     }
 
     useEffect(() => {
-        getarea()
         getcity()
-    }, [cityValue])
+    }, [])
+
     const submit22 = () => {
-        submit(filterValue)
+        submit({city: cityValue, area: areaValue})
         hide()
     }
 
-
-    const doctorindex = citylist?.findIndex(item => item?.city_id === data?.city_id);
-
-    console.log('data', doctorindex);
+    const doctorindex = citylist?.findIndex(item => item?.id === data?.city_id);
 
     return (
         <Modal
@@ -81,13 +61,14 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
                             defaultButtonText='Select'
                             data={citylist}
                             onSelect={(selectedItem, index) => {
-                                setcityValue(selectedItem.city_id)
+                                setCityValue(selectedItem.id);
+                                getArea(selectedItem.id);
                             }}
                             rowTextForSelection={(item, index) => {
                                 return (
                                     <>
                                         <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                            {item.city_name}
+                                            {item.name}
                                         </Text>
                                     </>
                                 );
@@ -96,7 +77,7 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
                                 return (
                                     <>
                                         <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                            {selectedItem.city_name}
+                                            {selectedItem.name}
                                         </Text>
                                     </>
                                 );
@@ -108,7 +89,6 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
                         />
                         {cityValue &&
                             <>
-
                                 < Text style={style.calenderText}>Area</Text>
                                 <SelectDropdown
                                     buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
@@ -116,13 +96,13 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
                                     defaultButtonText='Select'
                                     data={arealist}
                                     onSelect={(selectedItem, index) => {
-                                        setFilterValue(selectedItem)
+                                        setAreaValue(selectedItem.id)
                                     }}
                                     rowTextForSelection={(item, index) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.area_name}
+                                                    {item.name}
                                                 </Text>
                                             </>
                                         );
@@ -131,7 +111,7 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.area_name}
+                                                    {selectedItem.name}
                                                 </Text>
                                             </>
                                         );
@@ -180,7 +160,6 @@ const style = StyleSheet.create({
     filterContainer: {
         marginVertical: 20,
         width: '100%',
-
     },
     calenderText: {
         fontSize: 17,

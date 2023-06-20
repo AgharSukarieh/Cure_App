@@ -6,43 +6,34 @@ import GoBack from '../../components/GoBack';
 import DailySalesaddModel from '../../components/Modals/DailySalesaddModel';
 import DailySalesTable from '../../components/Tables/DailyTableSales';
 import { useEffect } from 'react';
-import axios from 'axios';
-import { SAL_GET_REPORT } from '../../Provider/ApiRequest';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../contexts/AuthContext';
+import Constants from '../../config/globalConstants';
+import { get } from '../../WebService/RequestBuilder';
+import LoadingScreen from '../../components/LoadingScreen';
 
 const DailySales = ({ navigation, route }) => {
-
-    const [user, setuser] = useState('');
-    const getlogs = async () => {
-        const a = await AsyncStorage.getItem('userInfo')
-        setuser(JSON.parse(a))
-    }
-    useEffect(() => {
-        getlogs()
-    }, []);
-
+    const {user} = useAuth();
     const title = route.params.title
     const date = route.params.date
     const area = route.params.area
+    const [isLoading, setIsLoading] = useState(true);
     const [modal, setModal] = useState(false)
     const [rows, setrows] = useState([])
 
-    const getpharmacys = () => {
-        let data = {
-            date: date,
-            user_id: user.id
-        }
-        axios({
-            method: "POST",
-            url: SAL_GET_REPORT,
-            data: data
-        }).then((response) => {
-            setrows(response.data)
-        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 43 ~ getdoctors ~ error", error) })
+    const getpharmacys = async() => {
+        get()
+        .then((res) => {
+            setrows(res.data)
+        })
+        .catch((err) => {})
+        .finally(() => {
+            setIsLoading(false)
+        })
     }
+
     useEffect(() => {
         getpharmacys()
-    }, [user])
+    }, [])
 
 
 
@@ -50,22 +41,30 @@ const DailySales = ({ navigation, route }) => {
         <SafeAreaView style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <GoBack text={title} />
+
                 <View style={{ marginVertical: 30 }}>
+
                     <TouchableOpacity style={style.newbtn} onPress={() => { setModal(true) }}>
                         <Text style={{ color: '#fff', fontSize: 18 }}>Add Pharmacy</Text>
                     </TouchableOpacity>
+
                     <View style={style.div}>
                         {rows && rows.map((item, index) => (
                             <TouchableOpacity key={index} style={style.card} onPress={() => { navigation.navigate('Sal_rep_pharm', { item: item, area: area });
                              }}>
-                                <Text style={{ color: "#fff", fontSize: 17, fontWeight: '700' }}>{item?.pharm_id?.pharmacy_name}</Text>
+                                <Text style={{ color: "#fff", fontSize: 17, fontWeight: '700' }}>{item?.name}</Text>
                             </TouchableOpacity>
 
                         ))}
                     </View>
+
                 </View>
+
             </ScrollView>
-            <DailySalesaddModel show={modal} hide={() => { setModal(false) }} submit={(e) => { getpharmacys() }} date={date} />
+
+            <DailySalesaddModel show={modal} hide={() => { setModal(false) }} submit={() => { getpharmacys() }} date={date} area={area}/>
+
+            {isLoading && <LoadingScreen />}
         </SafeAreaView >
     );
 };
@@ -86,7 +85,6 @@ export const style = StyleSheet.create({
     },
     newbtn: {
         backgroundColor: '#7189FF',
-        // width: '25%',
         paddingVertical: 5,
         paddingHorizontal: 8,
         borderRadius: 7,

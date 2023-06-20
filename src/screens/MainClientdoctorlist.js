@@ -9,9 +9,12 @@ import {
   import React, {useState} from 'react';
   import {styles} from '../components/styles';
   import GoBack from '../components/GoBack';
-  
+  import { get } from '../WebService/RequestBuilder';
+  import Constants from '../config/globalConstants';
+
   const MainClientdoctorlist = ({navigation, route}) => {
-  
+    const cityArea = route?.params?.cityArea
+
     return (
       <SafeAreaView style={{height:'100%', flex:1, flexDirection: 'column',alignContent:'space-around' }}>
         <GoBack text={'Client List'} />
@@ -19,12 +22,22 @@ import {
           <View style={{...styles.containerSignIn}}>
             <TouchableOpacity
               style={styles.Sal_rep_pharmButton}
-              onPress={() => navigation.navigate('Clientdoctorlist')}>
+              onPress={() => {
+                get(Constants.doctor.speciality)
+                .then(response => { 
+                  navigation.navigate('Clientdoctorlist', {cityArea: cityArea, specialty: response.speciality});
+               })
+              .catch(err => {
+                   console.error(err);
+               })
+              .finally(() => {});
+              }}
+              >
               <Text style={styles.reportPageText}>Doctor List</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.Sal_rep_pharmButton}
-              onPress={() => navigation.navigate('Clientpharmalist', { title:'Pharmacy List'})}>
+              onPress={() => navigation.navigate('Clientlist-sales', { title:'Pharmacy List', cityArea: cityArea})}>
               <Text style={styles.reportPageText}>Pharmacy List</Text>
             </TouchableOpacity>
           </View>

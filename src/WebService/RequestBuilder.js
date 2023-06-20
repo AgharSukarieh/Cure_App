@@ -75,21 +75,11 @@ export const post = createApiFunction('post');
 export const put = createApiFunction('put');
 export const del = createApiFunction('delete');
 
-// export const uploadFiles = async (url, files, params = {}) => {
-//   const formData = new FormData();
-//   files.forEach((file, index) => {
-//     formData.append(`file${index}`, file);
-//   });
-
-//   const response = await request('post', url, formData, params);
-//   return response;
-// };
-
-////
-export const uploadFiles = async (url, files, body = {}, params = {}) => {
+export const uploadFiles = async (url, body = {}, files = [], params = {}) => {
   const formData = new FormData();
+
   files.forEach((file, index) => {
-    formData.append(`images[]`, {
+    formData.append(`files[${index}]`, {
       uri: file.path,
       type: file.mime,
       name: file.fileName,
@@ -100,10 +90,9 @@ export const uploadFiles = async (url, files, body = {}, params = {}) => {
     formData.append(key, value);
   });
 
-  const response = await request('post', url, formData, params);
-  return response;
+  return request('post', url, formData, params);
 };
-////
+
 
 // Pagination handling
 export const getPage = async (url, page = 1, limit = 10, param = {}, data = null,) => {

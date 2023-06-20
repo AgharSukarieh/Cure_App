@@ -5,7 +5,7 @@ import {Dropdown} from 'react-native-element-dropdown';
 import Input from '../Input';
 import GetLocation from 'react-native-get-location';
 import {openPicker} from '@baronha/react-native-multiple-image-picker';
-import { uploadFiles } from '../../WebService/RequestBuilder';
+import { uploadFiles, post } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
 
 const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
@@ -23,6 +23,18 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
   const [images, setImages] = useState([]);
 
   const submitData = async () => {
+
+  // const formData = new FormData();
+  // // images.forEach((file, index) => {
+  // //   formData.append('image', file[0]);
+  // // });
+  // formData.append('images[]', images[0]);
+  // formData.append('name', 'asdasds');
+  // formData.append('activate_status', 1);
+  // formData.append('city_id', 1);
+  // formData.append('area_id', 1);
+
+
     const body = {
       name: pharmacyName,
       activate_status: 1,
@@ -31,16 +43,31 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
       classification: classification,
       latitude: latitude,
       longitude: longitude,
+      // 'images[]': formData._parts
     };
-    uploadFiles(Constants.sales.pharmacy, images, body)
-    .then(response => {
-      console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! File !!!!!!!!!!!!!!!!!!!!');
-   })
-  .catch(err => {
-       console.error(err);
-   })
-  .finally(() => {});
+
+    await post(Constants.sales.pharmacy, body, null)
+    .then((res) => {
+      console.log('!!!!!!!!!!!!!!!!',res);
+    })
+    .catch((err) => {
+      console.log('###################',err);
+    }).finally(() => {
+
+    });
   }
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //   await uploadFiles(Constants.sales.pharmacy, body, images, null)
+  //   .then(response => {
+  //     console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! File !!!!!!!!!!!!!!!!!!!!');
+  //  })
+  // .catch(err => {
+  //   console.log('eeeeeeeeeeeeeeeeeeee File eeeeeeeeeeeeeeeeeeeeee');
+  //      console.error(err);
+  //  })
+  // .finally(() => {});
+  // }
 
   const getCities = () => {
     var count = Object.keys(data.cities).length
@@ -50,18 +77,27 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
                 value: data.cities[i].id,
                 label: data.cities[i].name
             })
+        }  
+        setCitiesData(cityArray)
+  }
+ 
+  const getArea = (id) => {
+    const arr = [];
+    data.areas.forEach((area) => {
+        if (area.city_id == id) {
+            arr.push(area);
         }
-        var count = Object.keys(data.areas).length
+    });
+      var count = Object.keys(arr).length
         let areaArray = []
         for (var i = 0; i < count; i++ ){
           areaArray.push({
-                value: data.areas[i].id,
-                label: data.areas[i].name
+                value: arr[i].id,
+                label: arr[i].name
             })
         }
-        setCitiesData(cityArray)
         setAreasData(areaArray)
-  }
+}
  
   const getCurrentLocation = () => {
     GetLocation.getCurrentPosition({
@@ -154,6 +190,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
               onBlur={() => {}}
               onChange={item => {
                 setCityValue(item.value);
+                getArea(item.value);
               }}
               renderLeftIcon={() => (
                 <AntDesign

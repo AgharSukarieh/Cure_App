@@ -17,15 +17,16 @@ import Constants from '../config/globalConstants';
 import PharmacyHeaderTable from '../components/Tables/PharmacyHeaderTable';
 import TableView from '../General/TableView';
 import PharmacyItemTable from '../components/Tables/PharmacyItemTable';
+import { useAuth } from '../contexts/AuthContext';
 
 const getPharmacyEndpoint = Constants.sales.pharmacy;
 
 const Clientpharmalist = ({ navigation, route }) => {
   const title = route?.params?.title
   const cityArea = route?.params?.cityArea
- 
-  const [modal, setModal] = useState(false);
+  const {user} = useAuth();
 
+  const [modal, setModal] = useState(false);
   const [scModal, setScModal] = useState(false);
 
   const [search, setSearch] = useState(null);
@@ -33,10 +34,7 @@ const Clientpharmalist = ({ navigation, route }) => {
   const [cityValue, setCityValue] = useState(null);
   const [areasData, setAreasData] = useState([]);
   const [areaValue, setAreaValue] = useState(null);
-  const [filter, setFilter] = useState(null);
-  const params = {
-    seach_term: filter,
-  };
+  const [filter, setFilter] = useState({user_id: user?.id});
 
   const getCities = () => {
     var count = Object.keys(cityArea.cities).length
@@ -58,12 +56,13 @@ const Clientpharmalist = ({ navigation, route }) => {
         setCitiesData(cityArray)
         setAreasData(areaArray)
   }
-
+ 
   useEffect(() => {
     getCities()
   }, [])
 
   return (
+    <>
     <SafeAreaView style={styles.container}>
       <GoBack text={title || 'Client List'} />
 
@@ -74,14 +73,19 @@ const Clientpharmalist = ({ navigation, route }) => {
             placeholder="Search"
             onChangeText={text => {
               setSearch(text)
-              setFilter(text)
+              setFilter((prev) => ({
+                ...prev,
+                seach_term: text
+              }))
             }}
             value={search}
           />
           <TouchableOpacity
             onPress={() => {
               setSearch(null)
-              setFilter(null)
+              setFilter({user_id: user?.id})
+              setCityValue(null);
+              setAreaValue(null);
             }}
             style={{
               width: '15%',
@@ -123,7 +127,10 @@ const Clientpharmalist = ({ navigation, route }) => {
               onBlur={() => {}}
               onChange={item => {
                 setCityValue(item.value);
-                setFilter(item.label);
+                setFilter((prev) => ({
+                  ...prev,
+                  seach_term: item.label
+                }))
               }}
               renderLeftIcon={() => (
                 <AntDesign
@@ -153,7 +160,10 @@ const Clientpharmalist = ({ navigation, route }) => {
               onBlur={() => {}}
               onChange={item => {
                 setAreaValue(item.value);
-                setFilter(item.label);
+                setFilter((prev) => ({
+                  ...prev,
+                  seach_term: item.label
+                }))
               }}
               renderLeftIcon={() => (
                 <AntDesign
@@ -174,7 +184,7 @@ const Clientpharmalist = ({ navigation, route }) => {
         <TableView 
           apiEndpoint={getPharmacyEndpoint} 
           enablePullToRefresh
-          params={params} 
+          params={filter} 
           renderItem={({ item }) => <PharmacyItemTable item={item} />} 
         />
       </View>
@@ -186,7 +196,7 @@ const Clientpharmalist = ({ navigation, route }) => {
       </View>
 
       <AddNewPharmacyModel 
-        showM={modal} 
+        showM={modal}
         hideM={() => setModal(false)} 
         data={cityArea}
         submit={e => { (e !== null) ? submitAddPharmacy(e) : null }}
@@ -201,6 +211,8 @@ const Clientpharmalist = ({ navigation, route }) => {
       />
 
     </SafeAreaView>
+    
+    </>
   );
 };
 

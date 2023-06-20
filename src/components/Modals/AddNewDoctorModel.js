@@ -3,71 +3,57 @@ import {
   Text,
   View,
   StyleSheet,
-  Dimensions,
   Modal,
   ScrollView,
+  Alert,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Dropdown} from 'react-native-element-dropdown';
-import axios from 'axios';
-import {GET_Areas, GET_CITY, CREATE_DOCTOR} from '../../Provider/ApiRequest';
 import Input from '../Input';
 import GetLocation from 'react-native-get-location';
+import { get, post } from '../../WebService/RequestBuilder';
+import Constants from '../../config/globalConstants';
 
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
-
-const AddNewDoctorModel = ({show, hide, submit}) => {
-  const [citiesData, setCitiesData] = useState([]);
-  const [areasData, setAreasData] = useState([]);
-
-  const [cityValue, setCityValue] = useState(null);
-  const [isCityFocus, setIsCityFocus] = useState(false);
-
-  const [areaValue, setAreaValue] = useState(null);
-  const [isAreaFocus, setIsAreaFocus] = useState(false);
+const AddNewDoctorModel = ({show, hide, submit, cityArea}) => {
 
   const [doctorName, setDoctorName] = useState('');
-  const [specialty, setsSpecialty] = useState('');
   const [classification, setClassification] = useState('');
   const [address, setAddress] = useState('');
   
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
-  const [location, setLocation] = useState('');
+
+  const [citiesData, setCitiesData] = useState([]);
+  const [cityValue, setCityValue] = useState(null);
+  const [areasData, setAreasData] = useState([]);
+  const [areaValue, setAreaValue] = useState(null);
+  const [specialtyData, setSpecialtyData] = useState([]);
+  const [specialtyValue, setSpecialtyValue] = useState(null);
 
   const submitData = async () => {
-    try {
-      const response = await axios.post(CREATE_DOCTOR, {
-        city: cityValue,
-        area: areaValue,
-        name: doctorName,
-        specialty: specialty,
-        classification: classification,
-        address: address,
-        longitude,
-        latitude
-      });
-      if(response.data.success) {
-        hide();
-        setCityValue(null);
-        setAreaValue(null);
-        setDoctorName('')
-        setsSpecialty('')
-        setClassification('')
-        setAddress('');
-        setLatitude('')
-        setLongitude('')
-        setLocation('')
-      }
-    } catch (error) {
-      console.log('====================================');
-      console.log(error.response.data.message);
-      console.log('====================================');
+    const body = {
+      name: doctorName,
+      activate_status: 1,
+      city_id: cityValue,
+      area_id: areaValue,
+      speciality_id: specialtyValue,
+      address: address,
+      classification: classification,
+      longitude: longitude,
+      latitude: latitude 
     }
-
-
+    await post(Constants.doctor.allDoctors,body)
+    .then((res) => {
+      submit(true)
+      hide();
+    })
+    .catch((err) => {
+      Alert.alert('Error', err.message || '')
+      submit(false)
+      hide();
+    })
+    .finally(() => {})
   }
 
   const getCurrentLocation = () => {
@@ -78,65 +64,66 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
       .then(location => {
         setLatitude(location.latitude);
         setLongitude(location.longitude);
-        setLocation(`${location.latitude}, ${location.longitude}`);
       })
       .catch(error => {
-        console.warn(code, message);
+        console.log( error);
       });
   };
 
   const getCities = () => {
-    axios({
-      method: 'POST',
-      url: GET_CITY,
-    })
-      .then(response => {
-        var count = Object.keys(response.data).length;
-        let cityArray = [];
-        for (var i = 0; i < count; i++) {
-          cityArray.push({
-            value: response.data[i].city_id,
-            label: response.data[i].city_name,
-          });
+    var count = Object.keys(cityArea.cities).length
+        let cityArray = []
+        for (var i = 0; i < count; i++ ){
+            cityArray.push({
+                value: cityArea.cities[i].id,
+                label: cityArea.cities[i].name
+            })
+        }  
+        setCitiesData(cityArray)
+  }
+ 
+  const getArea = (id) => {
+    const arr = [];
+    cityArea.areas.forEach((area) => {
+        if (area.city_id == id) {
+            arr.push(area);
         }
-        setCitiesData(cityArray);
-      })
-      .catch(error => {
-        console.log(
-          '🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error',
-          error,
-        );
-      });
-  };
-
-  const getareas = city_id => {
-    let data = {
-      city_id: city_id,
-    };
-    axios({
-      method: 'POST',
-      url: GET_Areas,
-      data: data,
-    })
-      .then(response => {
-        var count = Object.keys(response.data).length;
-        let areaArray = [];
-        for (var i = 0; i < count; i++) {
+    });
+      var count = Object.keys(arr).length
+        let areaArray = []
+        for (var i = 0; i < count; i++ ){
           areaArray.push({
-            value: response.data[i].area_id,
-            label: response.data[i].area_name,
-          });
+                value: arr[i].id,
+                label: arr[i].name
+            })
         }
-        setAreasData(areaArray);
-      })
-      .catch(error => {
-        console.log('🚀 ~ file: Sales.js ~ line 39 ~ getarea ~ error', error);
-      });
-  };
+        setAreasData(areaArray)
+}
+
+  const getSpeciality = async () => {
+    await get(Constants.doctor.speciality)
+    .then((res) => {
+      console.log(res);
+      var count = Object.keys(res.speciality).length
+        let specialtyArray = []
+        for (var i = 0; i < count; i++ ){
+          specialtyArray.push({
+                value: res.speciality[i].id,
+                label: res.speciality[i].name
+            })
+        }   
+        setSpecialtyData(specialtyArray)
+    })
+    .catch((err) => {
+      Alert.alert('Error', err.message || '')
+    })
+    .finally(() => {})
+  }
 
   useEffect(() => {
     getCities();
-  }, []);
+    getSpeciality();
+  }, [])
   
   return (
     <Modal
@@ -147,6 +134,7 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
       onSwipeComplete={() => setModalVisible2(false)}>
       <View style={styles.ModalContainer}>
         <View style={styles.ModalView}>
+
           <TouchableOpacity
             onPress={() => {
               submit(null);
@@ -159,6 +147,7 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
               style={{alignSelf: 'flex-end'}}
             />
           </TouchableOpacity>
+
           <View style={{marginVertical: 10}}>
             <ScrollView showsVerticalScrollIndicator={false}>
               <View
@@ -167,69 +156,7 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                  <View style={styles.container}>
-                  <Dropdown
-                    style={styles.dropdown}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={citiesData}
-                    search
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isCityFocus ? 'Select City' : '...'}
-                    searchPlaceholder="Search..."
-                    value={cityValue}
-                    onFocus={() => setIsCityFocus(true)}
-                    onBlur={() => setIsCityFocus(false)}
-                    onChange={item => {
-                      setCityValue(item.value);
-                      setIsCityFocus(false);
-                      getareas(item.value);
-                    }}
-                    renderLeftIcon={() => (
-                      <AntDesign
-                        style={styles.icon}
-                        color={isCityFocus ? 'blue' : 'black'}
-                        name="Safety"
-                        size={20}
-                      />
-                    )}
-                  />
-                </View>
-                <View style={{...styles.container, marginTop: 40}}>
-                  <Dropdown
-                    style={styles.dropdown}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={areasData}
-                    search
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isAreaFocus ? 'Select Area' : '...'}
-                    searchPlaceholder="Search..."
-                    value={areaValue}
-                    onFocus={() => setIsAreaFocus(true)}
-                    onBlur={() => setIsAreaFocus(false)}
-                    onChange={item => {
-                      setIsAreaFocus(false);
-                      setAreaValue(item.value);
-                    }}
-                    renderLeftIcon={() => (
-                      <AntDesign
-                        style={styles.icon}
-                        color={isAreaFocus ? 'blue' : 'black'}
-                        name="Safety"
-                        size={20}
-                      />
-                    )}
-                  />
-                </View>
+
                 <Input
                   lable={'Doctor Name'}
                   setData={setDoctorName}
@@ -237,13 +164,98 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
                   value={doctorName}
                   viewStyle={{width: '90%'}}
                 />
-                <Input
-                  lable={'Specialty'}
-                  setData={setsSpecialty}
-                  style={{...styles.inputModel, backgroundColor: 'white'}}
-                  value={specialty}
-                  viewStyle={{width: '90%'}}
+
+                <View style={{...styles.container, marginTop: 40}}>
+                  <Dropdown
+                    style={styles.dropdown}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              data={citiesData}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!cityValue ? 'Select City' : '...'}
+              searchPlaceholder="Search..."
+              value={cityValue}
+              onBlur={() => {}}
+              onChange={item => {
+                setCityValue(item.value);
+                getArea(item.value)
+              }}
+              renderLeftIcon={() => (
+                <AntDesign
+                  style={styles.icon}
+                  color={cityValue ? 'blue' : 'black'}
+                  name="Safety"
+                  size={20}
                 />
+              )}
+            />
+                </View>
+
+                <View style={{...styles.container, marginTop: 40}}>
+                <Dropdown
+                  style={styles.dropdown}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              data={areasData}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!areaValue ? 'Select Area' : '...'}
+              searchPlaceholder="Search..."
+              value={areaValue}
+              onBlur={() => {}}
+              onChange={item => {
+                setAreaValue(item.value);
+              }}
+              renderLeftIcon={() => (
+                <AntDesign
+                  style={styles.icon}
+                  color={areaValue ? 'blue' : 'black'}
+                  name="Safety"
+                  size={20}
+                />
+              )}
+            />
+                </View>
+
+                <View style={{...styles.container, marginTop: 40}}>
+                  <Dropdown
+                    style={styles.dropdown}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              data={specialtyData}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!specialtyValue ? 'Select Specialty' : '...'}
+              searchPlaceholder="Search..."
+              value={specialtyValue}
+              onBlur={() => {}}
+              onChange={item => {
+                setSpecialtyValue(item.value);
+              }}
+              renderLeftIcon={() => (
+                <AntDesign
+                  style={styles.icon}
+                  color={specialtyValue ? 'blue' : 'black'}
+                  name="Safety"
+                  size={20}
+                />
+              )}
+            />
+                </View>
+
                 <Input
                   lable={'Classification'}
                   setData={setClassification}
@@ -258,32 +270,12 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
                   value={address}
                   viewStyle={{width: '90%'}}
                 />
-                <View style={{marginTop: 40, width: '90%'}}>
-                  <Text style={{marginBottom: 5, color: '#253274'}}>
-                    location
+
+                <TouchableOpacity style={{marginTop: 40, width: '90%',height: 50, backgroundColor: latitude ? '#7189FF' : '#fff', borderWidth:2,borderColor: '#7189FF',borderRadius:5, justifyContent:'center'}} onPress={() => {getCurrentLocation()}}>
+                  <Text style={{marginBottom: 5, color: latitude ? '#fff' : '#7189FF', textAlign:'center', fontSize:17, fontWeight:'bold'}}>
+                    Location
                   </Text>
-                  <View
-                    style={{...styles.inputModel, backgroundColor: 'white'}}>
-                    <TouchableOpacity
-                      onPress={() => getCurrentLocation()}
-                      style={{...styles.iconPassword, justifyContent:'center',textAlign: 'center'}}>
-                      <AntDesign
-                        style={styles.icon}
-                        color={location ? 'black' : 'blue'}
-                        name="enviromento"
-                        size={25}
-                      />
-                    </TouchableOpacity>
-                    <Text
-                      style={{
-                        textAlign: 'center',
-                        justifyContent: 'center',
-                        marginTop: 8,
-                      }}>
-                      {location}
-                    </Text>
-                  </View>
-                </View>
+                </TouchableOpacity>
 
                 <View
                   style={{
@@ -307,6 +299,7 @@ const AddNewDoctorModel = ({show, hide, submit}) => {
                     </Text>
                   </TouchableOpacity>
                 </View>
+
               </View>
             </ScrollView>
           </View>

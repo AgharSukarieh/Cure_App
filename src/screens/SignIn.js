@@ -1,15 +1,16 @@
-import {Alert, View, ActivityIndicator, SafeAreaView, StyleSheet} from 'react-native';
+import {Alert, View, SafeAreaView, StyleSheet} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {styles} from '../components/styles';
 import TopView from '../components/TopView';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import {useAuth} from '../contexts/AuthContext';
+import LoadingScreen from '../components/LoadingScreen';
 const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const SignIn = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setemail] = useState('john@gmail.com');
+  const [email, setemail] = useState('mosale@gamil.com'); //testhello@gmail.com
   const [password, setPassword] = useState('123');
   const {login} = useAuth();
 
@@ -44,12 +45,9 @@ const SignIn = ({navigation}) => {
         <Input lable={'PASSWORD'} setData={setPassword} isPassword={true} />
         <Button text={'Sign In'} handleClick={() => LoginPress()} />
       </View>
-      {isLoading && (
-        <View
-          style={style.loadingContainer}>
-          <ActivityIndicator size="large" color="blue" />
-        </View>
-      )}
+      
+      {isLoading && <LoadingScreen />}
+
       {/* <View style={styles.checkPharmacy}>
         <Text style={styles.checkPharmacyText}>Are you a pharmacy?</Text>
         <TouchableOpacity
@@ -67,10 +65,4 @@ export default SignIn;
 
 const style = StyleSheet.create({
   content:{flex: 1, justifyContent: 'flex-start'},
-  loadingContainer: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  }
 });

@@ -197,11 +197,12 @@
 
 
 
-import React, { useState, useEffect, useCallback, memo  } from 'react';
+import React, { useState, useEffect} from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { getPage } from '../WebService/RequestBuilder';
 
 const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = false  }) => {
+  console.log('##########################',params);
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -209,7 +210,7 @@ const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = fals
   const [error, setError] = useState(null);
   const [hasMoreData, setHasMoreData] = useState(true);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
     if (loading || !hasMoreData) return;
     setLoading(true);
     setError(null);
@@ -227,7 +228,7 @@ const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = fals
     } finally {
       setLoading(false);
     }
-  }, [apiEndpoint, page, loading, hasMoreData, params]);
+  }
 
   const handleRefresh = async () => {
     if (refreshing) return;
@@ -282,6 +283,7 @@ const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = fals
         
       ) : (
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={data}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}

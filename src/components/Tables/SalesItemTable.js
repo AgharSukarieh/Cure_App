@@ -1,32 +1,30 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import React, {useState} from 'react'
 import SalesModel from '../Modals/SalesModel'
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const SalesItemTable = ({item}) => {
     const [modal, setModal] = useState(false)
-    const [rowdata, setrowdata] = useState('')
-    const DDD = (row) => {
+    const [rowData, setRowData] = useState('')
+
+    const DDD = async (item) => {
         setModal(true)
-        setrowdata(row)
+        setRowData(item)
     }
 
   return (
     <>
     <View style={{ ...styles.row, backgroundColor: item?.id % 2 == 0 ? '#7189FF' : '#fff' }}>
         <View style={{ ...styles.rowel, width: '30.1%', }}>
-            <Text style={{ ...styles.rowel_tetx, color: item?.id % 2 == 0 ? '#fff' : '#000' }}>{item?.pharm_name}</Text>
+            <Text style={{ ...styles.rowel_tetx, color: item?.id % 2 == 0 ? '#fff' : '#000' }}>{item?.pharmacy}</Text>
         </View>
 
         <View style={styles.rowel}>
-            {item?.items?.slice(0, 3).map((row, index2) => (
-                <Text key={index2} style={{ ...styles.rowel_tetx, color: item?.id % 2 == 0 ? '#fff' : '#000' }}>{row.item_name}</Text>
-            ))}
+            <Text style={{ ...styles.rowel_tetx, color: item?.id % 2 == 0 ? '#fff' : '#000' }}>{item?.total_price}</Text>
         </View>
 
         <View style={styles.rowel}>
-            {item?.items?.slice(0, 3).map((row, index2) => (
-             <Text key={index2} style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{row.items_sum} / {row.bonus}</Text>
-            ))}
+             <Text style={{ ...styles.rowel_tetx, color: item?.id % 2 == 0 ? '#fff' : '#000' }}>{new Date(item?.created_at).toISOString().split('T')[0]}</Text>
         </View>
         
         <View style={{ ...styles.rowel, width: '12%', }}>
@@ -35,7 +33,7 @@ const SalesItemTable = ({item}) => {
             </TouchableOpacity>
         </View>
     </View>
-    <SalesModel show={modal} hide={() => { setModal(false) }} data={rowdata} />
+    <SalesModel show={modal} hide={() => { setModal(false) }} data={rowData} />
     </>
   )
 }
@@ -53,7 +51,7 @@ const styles = StyleSheet.create({
         borderRadius: 7
     },
     rowel: {
-        width: '29%',
+        width: '27%',
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 10,

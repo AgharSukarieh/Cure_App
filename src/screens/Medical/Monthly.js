@@ -6,31 +6,25 @@ import { Monthes } from '../../helpers/data';
 import SelectDropdown from 'react-native-select-dropdown'
 import Feather from 'react-native-vector-icons/Feather';
 import Moment from 'moment';
+import { useAuth } from '../../contexts/AuthContext';
  
-const Monthly = ({ navigation, route }) => { 
-    const role = route.params.role
+const Monthly = ({ navigation, route}) => { 
+    const {role} = useAuth();
+    const cityArea = route.params.cityArea
+
     const [year, setyear] = useState(Moment(new Date()).format('Y'));
     const start = parseInt(Moment(new Date()).format('Y')) - 2
     const end = parseInt(Moment(new Date()).format('Y')) + 5
     const years = Array.from({ length: end - start + 1 }, (_, index) => start + index);
 
-    // const [user, setuser] = useState('');
-    // const getlogs = async () => {
-    //     const a = await AsyncStorage.getItem('userInfo')
-    //     setuser(JSON.parse(a))
-    // }
-    // useEffect(() => {
-    //     getlogs()
-    // }, []);
-
-    // console.log('year ==> ', year);
     const submit = (data) => {
-        navigation.navigate('Weekly', { data: data, year: year,role });
+        navigation.navigate('Weekly', { data: data, year: year, role: role, cityArea: cityArea });
     }
 
     return (
         <SafeAreaView style={styles.container}>
             <GoBack text={'Monthly Plan'} />
+
             <View style={{ marginVertical: 10, alignItems: 'center' }}>
                 <Text style={{ marginBottom: 7, fontSize: 21 }}>Year</Text>
                 <SelectDropdown
@@ -64,6 +58,7 @@ const Monthly = ({ navigation, route }) => {
                     defaultValueByIndex={2}
                 />
             </View>
+
             <View style={{ marginVertical: 10 }}>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', width: '95%', justifyContent: 'space-between', alignSelf: 'center' }}>
                     {Monthes.map((item, index) => (
@@ -72,8 +67,8 @@ const Monthly = ({ navigation, route }) => {
                         </TouchableOpacity>
                     ))}
                 </View>
-
             </View>
+
         </SafeAreaView >
     );
 };

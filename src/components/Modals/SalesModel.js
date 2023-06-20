@@ -1,13 +1,13 @@
 import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView } from 'react-native';
 import React from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Constants from '../../config/globalConstants';
+import TableView from '../../General/TableView';
+import SalesModelItemTable from '../Tables/SalesModelItemTable';
 
-const width = Dimensions.get('window').width
-const height = Dimensions.get('window').height
 
 const SalesModel = ({ show, hide, data }) => {
-
-    // console.log(data);
+    const getOrderDetailsEndpoint = Constants.users.order_details + data?.id;
 
     return (
         <Modal
@@ -17,40 +17,30 @@ const SalesModel = ({ show, hide, data }) => {
             coverScreen={false}
             onSwipeComplete={() => setModalVisible2(false)}
         >
+
             <View style={styles.ModalContainer}>
                 <View style={styles.ModalView}>
+
                     <TouchableOpacity onPress={() => { hide() }}>
                         <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
+                    <Text style={styles.phname}>{data?.pharmacy}</Text>
+                    <Text style={styles.phlocation}>{data?.area}</Text>
 
-                    <Text style={styles.phname}>{data.pharm_name}</Text>
-                    <Text style={styles.phlocation}>{data.location}</Text>
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                        <View style={{ marginVertical: 10 }}>
-                            {data?.items?.map((item, index) => (
-                                <View key={index} style={styles.card}>
-                                    <Text style={styles.item_name}>{item.item_name}</Text>
-                                    <View style={{ width: '99%', height: 0.5, backgroundColor: '#7189FF', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 15 }}>
-                                        <View style={styles.item_info}>
-                                            <Text style={styles.item_itemtitle}>count</Text>
-                                            <Text style={styles.item_item}>{item.items_sum}</Text>
-                                        </View>
-                                        <View style={styles.item_info}>
-                                            <Text style={styles.item_itemtitle}>bonus</Text>
-                                            <Text style={styles.item_item}>{item.bonus}</Text>
-                                        </View>
-                                        <View style={styles.item_info}>
-                                            <Text style={styles.item_itemtitle}>price</Text>
-                                            <Text style={styles.item_item}>{item.price}</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                            ))}
+                    <View style={styles.tableContainer}>
+                        <TableView
+                            apiEndpoint={getOrderDetailsEndpoint} 
+                            renderItem={({ item }) => <SalesModelItemTable item={item} />} 
+                        />
+                        <View style={styles.card}>
+                            <Text style={{...styles.item_name, color: '#000000'}}>Total Price</Text>
+                            <Text style={styles.item_name}>{data?.total_price}</Text>
                         </View>
-                    </ScrollView>
+                    </View>
+
                 </View>
             </View>
+
         </Modal>
     );
 };
@@ -82,43 +72,31 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.22,
         shadowRadius: 2.22,
         elevation: 3,
-
         width: '99%',
         alignSelf: 'center',
         backgroundColor: '#fff',
         padding: 15,
-        // borderTopWidth: 1,
-        // borderBottomWidth: 1,
-        // paddingBottom: 10,
-        // borderStyle: 'dashed',
         marginTop: 10,
-        borderRadius: 7
-
+        borderRadius: 7,
+        borderWidth:0.5,
+        flexDirection:'row',
+        justifyContent:'space-between'
     },
     phname: {
         fontSize: 25,
         textTransform: 'capitalize',
-        color: '#7189FF'
+        color: '#7189FF',
+        textAlign:'center'
     },
-    phlocation: {
-        marginHorizontal: 15,
-        marginVertical: 5,
-        fontSize: 16,
-    },
-    item_name: {
+    tableContainer: {
+        flex: 1,
+        width: '98%',
+        alignSelf: 'center',
+        marginVertical: 10
+      },
+      item_name: {
         fontSize: 20,
         textTransform: 'capitalize',
         color: '#7189FF'
     },
-    item_info: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    item_itemtitle: {
-        marginBottom: 5,
-        textTransform: 'capitalize',
-    },
-    item_item: {
-
-    }
 })

@@ -1,241 +1,115 @@
 import {
   View,
-  Text,
   SafeAreaView,
-  Dimensions,
-  ScrollView,
   StyleSheet,
   TextInput,
+  Text,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
 import React, {useState} from 'react';
 import {styles} from '../components/styles';
 import GoBack from '../components/GoBack';
-import SearchableDropdown from 'react-native-searchable-dropdown';
-import {areas, classification, pharams, Specialty} from '../helpers/data';
-import ClientdoctorTable from '../components/Tables/ClientdoctorTable';
 import Feather from 'react-native-vector-icons/Feather';
 import {useEffect} from 'react';
-import axios from 'axios';
-import {
-  GET_Areas,
-  GET_CITY,
-  GET_MED_CLIENT,
-  GET_SPECIALTIES,
-  GET_CLIENT_DOCTOR,
-} from '../Provider/ApiRequest';
 import {Dropdown} from 'react-native-element-dropdown';
-import SelectDropdown from 'react-native-select-dropdown';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SuccessfullyModel from '../components/Modals/SuccessfullyModel';
 import AddNewDoctorModel from '../components/Modals/AddNewDoctorModel';
+import DoctorsHeaderTable from '../components/Tables/DoctorsHeaderTable';
+import TableView from '../General/TableView';
+import Constants from '../config/globalConstants';
+import DoctorsItemTable from '../components/Tables/DoctorsItemTable';
+import { useAuth } from '../contexts/AuthContext';
+const getDoctorsEndpoint = Constants.doctor.allDoctors;
 
-const wwidth = Dimensions.get('window').width;
-
-const Clientdoctorlist = () => {
-  const [userinfo, setuserinfo] = useState([]);
-  const getlogs = async () => {
-    const a = await AsyncStorage.getItem('userInfo');
-    setuserinfo(JSON.parse(a));
-  };
-  useEffect(() => {
-    getlogs();
-  }, []);
-
-  const [clientslist, setclientslist] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+const Clientdoctorlist = ({navigation, route}) => {
+  const cityArea = route?.params?.cityArea
+  const specialty = route?.params?.specialty
+  const {user} = useAuth();
 
   const [modal, setModal] = useState(false);
   const [scModal, setScModal] = useState(false);
 
-  const submitAddDoctor = data => {
-    console.log(data);
-    // API ...
-    setScModal(true);
-  };
+  const [search, setSearch] = useState(null);
 
   const [citiesData, setCitiesData] = useState([]);
-  const [areasData, setAreasData] = useState([]);
-  const [specialtiesData, setspecialtiesData] = useState([]);
-
   const [cityValue, setCityValue] = useState(null);
-  const [isCityFocus, setIsCityFocus] = useState(false);
 
+  const [areasData, setAreasData] = useState([]);
   const [areaValue, setAreaValue] = useState(null);
-  const [isAreaFocus, setIsAreaFocus] = useState(false);
 
-  const [specialtiesValue, setSpecialtiesValue] = useState(null);
-  const [isSpecialtiesFocus, setIsSpecialtiesFocus] = useState(false);
+  const [specialtyData, setSpecialtyData] = useState([]);
+  const [specialtyValue, setSpecialtyValue] = useState(null);
 
-  const [search, setSearch] = useState('');
-  const [doctorArraySearch, setDoctorArraySearch] = useState([]);
-  let [page, setPage] = useState(1);
-
-  const updateSearch = search => {
-    setSearch(search);
-    if (search !== '') {
-      const arr = clientslist.filter(item => item.doc_name.includes(search));
-      setDoctorArraySearch(arr);
-    } else {
-      // setDoctorArraySearch([])
-      //
-      setDoctorArraySearch(clientslist);
-      //
-    }
-  };
-
-  const updateSearchByArea = area => {
-    if (area !== null) {
-      const arr = clientslist.filter(item => item.area_code == area);
-      setDoctorArraySearch(arr);
-    } else {
-      setDoctorArraySearch([]);
-    }
-  };
-
-  const updateSearchBySpecialty = specialty => {
-    if (specialty !== null) {
-      const arr = clientslist.filter(item => item.speciality == specialty);
-      console.log(arr);
-      setDoctorArraySearch(arr);
-    } else {
-      setDoctorArraySearch([]);
-    }
-  };
-
-  const getDoctor = () => {
-    setIsLoading(true)
-    axios({
-      method: 'GET',
-      url: `${GET_CLIENT_DOCTOR}?page=${page}`,
-      params: {},
-    })
-      .then(response => {
-        console.log('====================================');
-        console.log(response.data.data.data);
-        console.log('====================================');
-        setclientslist(prevState => [...prevState, ...response.data.data.data]);
-        //
-        setDoctorArraySearch(prevState => [
-          ...prevState,
-          ...response.data.data.data,
-        ]);
-        setIsLoading(false);
-        //
-      })
-      .catch(error => {
-        console.log(error.response.data.message);
-      });
-  };
-
-  const handleScroll = ({layoutMeasurement, contentOffset, contentSize}) => {
-    const isScrolledToBottom =
-      layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
-
-    if (isScrolledToBottom) {
-      setPage(page + 1);
-      getDoctor(page);
-      setIsLoading(true);
-    }
-  };
+  const [filter, setFilter] = useState({user_id: user?.id});
 
   const getCities = () => {
-    axios({
-      method: 'POST',
-      url: GET_CITY,
-    })
-      .then(response => {
-        var count = Object.keys(response.data).length;
-        let cityArray = [];
-        for (var i = 0; i < count; i++) {
-          cityArray.push({
-            value: response.data[i].city_id,
-            label: response.data[i].city_name,
-          });
+    var count = Object.keys(cityArea.cities).length
+        let cityArray = []
+        for (var i = 0; i < count; i++ ){
+            cityArray.push({
+                value: cityArea.cities[i].id,
+                label: cityArea.cities[i].name
+            })
         }
-        setCitiesData(cityArray);
-      })
-      .catch(error => {
-        console.log(
-          '🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error',
-          error,
-        );
-      });
-  };
 
-  const getareas = city_id => {
-    let data = {
-      city_id: city_id,
-    };
-    axios({
-      method: 'POST',
-      url: GET_Areas,
-      data: data,
-    })
-      .then(response => {
-        var count = Object.keys(response.data).length;
-        let areaArray = [];
-        for (var i = 0; i < count; i++) {
+    var count = Object.keys(cityArea.areas).length
+        let areaArray = []
+        for (var i = 0; i < count; i++ ){
           areaArray.push({
-            value: response.data[i].area_id,
-            label: response.data[i].area_name,
-          });
+                value: cityArea.areas[i].id,
+                label: cityArea.areas[i].name
+            })
         }
-        setAreasData(areaArray);
-      })
-      .catch(error => {
-        console.log('🚀 ~ file: Sales.js ~ line 39 ~ getarea ~ error', error);
-      });
-  };
-
-  const getspecialties = () => {
-    axios({
-      method: 'POST',
-      url: GET_SPECIALTIES,
-    })
-      .then(response => {
-        var count = Object.keys(response.data).length;
-        let pecialtiesArray = [];
-        for (var i = 0; i < count; i++) {
-          pecialtiesArray.push({
-            value: response.data[i].sp_id,
-            label: response.data[i].sp_name,
-          });
-        }
-        setspecialtiesData(pecialtiesArray);
-      })
-      .catch(error => {
-        console.log(
-          '🚀 ~ file: Sales.js ~ line 26 ~ getdoctors ~ error',
-          error,
-        );
-      });
-  };
-
+     var count = Object.keys(specialty).length
+        let specialtyArray = []
+        for (var i = 0; i < count; i++ ){
+          specialtyArray.push({
+                value: specialty[i].id,
+                label: specialty[i].name
+            })
+        }    
+        setCitiesData(cityArray)
+        setAreasData(areaArray)
+        setSpecialtyData(specialtyArray)
+  }
+ 
   useEffect(() => {
-    getDoctor();
-    getCities();
-    getspecialties();
-  }, []);
+    getCities()
+  }, [])
+
+  const submitAddDoctor = data => {
+    if (data == true) {
+      setScModal(true);
+      setFilter({user_id: user?.id})
+    } 
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <GoBack text={'Doctor List'} />
       <View style={{width: '90%', alignSelf: 'center'}}>
+        
         <View style={styles.search}>
           <TextInput
             style={styles.searchinput}
             placeholder="Search"
             onChangeText={text => {
-              updateSearch(text);
+              setSearch(text)
+              setFilter((prev) => ({
+                ...prev,
+                seach_term: text
+              }))
             }}
             value={search}
           />
           <TouchableOpacity
             onPress={() => {
-              updateSearch('');
+              setSearch(null)
+              setFilter(null)
+              setCityValue(null);
+              setAreaValue(null);
+              setSpecialtyValue(null);
             }}
             style={{
               width: '15%',
@@ -250,6 +124,7 @@ const Clientdoctorlist = () => {
             />
           </TouchableOpacity>
         </View>
+
         <View
           style={{
             width: '100%',
@@ -259,7 +134,7 @@ const Clientdoctorlist = () => {
             marginBottom: 10,
           }}>
           <View style={style.container}>
-            <Dropdown
+          <Dropdown
               style={style.dropdown}
               placeholderStyle={style.placeholderStyle}
               selectedTextStyle={style.selectedTextStyle}
@@ -270,20 +145,21 @@ const Clientdoctorlist = () => {
               maxHeight={300}
               labelField="label"
               valueField="value"
-              placeholder={!isCityFocus ? 'Select City' : '...'}
+              placeholder={!cityValue ? 'Select City' : '...'}
               searchPlaceholder="Search..."
               value={cityValue}
-              onFocus={() => setIsCityFocus(true)}
-              onBlur={() => setIsCityFocus(false)}
+              onBlur={() => {}}
               onChange={item => {
                 setCityValue(item.value);
-                setIsCityFocus(false);
-                getareas(item.value);
+                setFilter((prev) => ({
+                  ...prev,
+                  seach_term: item.label
+                }))
               }}
               renderLeftIcon={() => (
                 <AntDesign
                   style={styles.icon}
-                  color={isCityFocus ? 'blue' : 'black'}
+                  color={cityValue ? 'blue' : 'black'}
                   name="Safety"
                   size={20}
                 />
@@ -292,7 +168,7 @@ const Clientdoctorlist = () => {
           </View>
 
           <View style={style.container}>
-            <Dropdown
+          <Dropdown
               style={style.dropdown}
               placeholderStyle={style.placeholderStyle}
               selectedTextStyle={style.selectedTextStyle}
@@ -303,19 +179,21 @@ const Clientdoctorlist = () => {
               maxHeight={300}
               labelField="label"
               valueField="value"
-              placeholder={!isAreaFocus ? 'Select Area' : '...'}
+              placeholder={!areaValue ? 'Select Area' : '...'}
               searchPlaceholder="Search..."
               value={areaValue}
-              onFocus={() => setIsAreaFocus(true)}
-              onBlur={() => setIsAreaFocus(false)}
+              onBlur={() => {}}
               onChange={item => {
-                setIsAreaFocus(false);
-                updateSearchByArea(item.label);
+                setAreaValue(item.value);
+                setFilter((prev) => ({
+                  ...prev,
+                  seach_term: item.label
+                }))
               }}
               renderLeftIcon={() => (
                 <AntDesign
                   style={styles.icon}
-                  color={isAreaFocus ? 'blue' : 'black'}
+                  color={areaValue ? 'blue' : 'black'}
                   name="Safety"
                   size={20}
                 />
@@ -323,6 +201,7 @@ const Clientdoctorlist = () => {
             />
           </View>
         </View>
+
         <View style={{...style.container, width: '100%'}}>
           <Dropdown
             style={style.dropdown}
@@ -330,51 +209,44 @@ const Clientdoctorlist = () => {
             selectedTextStyle={style.selectedTextStyle}
             inputSearchStyle={style.inputSearchStyle}
             iconStyle={style.iconStyle}
-            data={specialtiesData}
+            data={specialtyData}
             search
             maxHeight={300}
             labelField="label"
             valueField="value"
-            placeholder={!isSpecialtiesFocus ? 'Select Specialty' : '...'}
+            placeholder={!specialtyValue ? 'Select Specialty' : '...'}
             searchPlaceholder="Search..."
-            value={specialtiesValue}
-            onFocus={() => setIsSpecialtiesFocus(true)}
-            onBlur={() => setIsSpecialtiesFocus(false)}
+            value={specialtyValue}
+            onBlur={() => {}}
             onChange={item => {
-              setSpecialtiesValue(item.value);
-              setIsSpecialtiesFocus(false);
-              updateSearchBySpecialty(item.label);
+              setSpecialtyValue(item.value);
+              setFilter((prev) => ({
+                ...prev,
+                seach_term: item.label
+              }))
             }}
             renderLeftIcon={() => (
               <AntDesign
                 style={styles.icon}
-                color={isSpecialtiesFocus ? 'blue' : 'black'}
+                color={specialtyValue ? 'blue' : 'black'}
                 name="Safety"
                 size={20}
               />
             )}
           />
         </View>
+
       </View>
 
-      <ScrollView
-        onScroll={({nativeEvent}) => {
-          handleScroll(nativeEvent);
-        }}
-        scrollEventThrottle={0}>
-        {isLoading && (
-          <View style={{alignItems: 'center', paddingVertical: 10}}>
-            <ActivityIndicator size="small" color="#0000ff" />
-          </View>
-        )}
-        {/* <ClientdoctorTable data={doctorArraySearch.length > 0 ? doctorArraySearch : clientslist} /> */}
-        <ClientdoctorTable data={doctorArraySearch} />
-      </ScrollView>
-      {isLoading && (
-        <View style={{alignItems: 'center', paddingVertical: 10}}>
-          <ActivityIndicator size="small" color="#0000ff" />
-        </View>
-      )}
+      <View style={style.containerTable}>
+        <DoctorsHeaderTable/>
+        <TableView 
+          apiEndpoint={getDoctorsEndpoint} 
+          enablePullToRefresh
+          params={filter} 
+          renderItem={({ item }) => <DoctorsItemTable item={item} />} 
+        />
+      </View>
 
       <View style={style.rButton}>
         <TouchableOpacity
@@ -387,6 +259,7 @@ const Clientdoctorlist = () => {
 
       <AddNewDoctorModel
         show={modal}
+        cityArea={cityArea}
         hide={() => {
           setModal(false);
         }}
@@ -416,7 +289,6 @@ export const style = StyleSheet.create({
   },
   filterContainer: {
     justifyContent: 'center',
-    // alignItems: 'center',
     marginTop: 10,
     width: '50%',
   },
@@ -424,6 +296,11 @@ export const style = StyleSheet.create({
     fontSize: 16,
     color: 'rgba(37, 50, 116, 0.6)',
     marginHorizontal: 10,
+  },
+  containerTable:{
+    flex: 1,
+    width: '98%',
+    alignSelf: 'center',
   },
   rButton: {
     backgroundColor: '#7189FF',

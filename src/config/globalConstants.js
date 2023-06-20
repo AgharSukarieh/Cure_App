@@ -9,6 +9,7 @@ export default {
   uId: 'uId',
   role: 'role',
   userData: 'userData',
+  visit_id: 'visit_id',
   auth: {
     login: 'login',
     logout: 'logout',
@@ -17,7 +18,20 @@ export default {
     pharmacy: 'sales/pharamcy',
   },
   users: {
-    cityArea: 'users/'
+    cityArea: 'users/',
+    user_orders:'user-orders',
+    order_details:'order-details/', 
+  },
+  doctor: {
+    speciality: 'doctor/speciality',
+    allDoctors:'sales/doctor',
+    specialArea: 'sales/doctor/areas/'
+  },
+  plans:{
+    get_plans: 'plans'
+  },
+  visit: {
+    sales: 'sale-visits',
   }
 
 };
