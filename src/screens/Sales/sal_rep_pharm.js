@@ -12,25 +12,28 @@ import Moment from 'moment';
 import GoBack from '../../components/GoBack';
 import { put } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
-// import { useAuth } from '../../contexts/AuthContext';
 
 const Sal_rep_pharm = ({navigation, route}) => {
-  // const {user} = useAuth();
   const item = route.params.item;
   const area = route.params.area;
 
-  // const endVisit = async () => {
-  //   await put(Constants.visit.sales + `/${''}`)
-  //   .then((res) => {})
-  //   .catch((err) => {})
-  //   .finally(() => {})
-  // }
+  console.log(item);
+
+  const endVisit = async () => {
+    await put(Constants.visit.sales + `/${item?.id}`)
+    .then((res) => {
+      navigation.goBack();
+    })
+    .catch((err) => {})
+    .finally(() => {})
+  }
 
   return (
     <SafeAreaView style={{height:'100%', flex:1, flexDirection: 'column',alignContent:'space-around' }}>
       <GoBack text={item?.name} />
       <ScrollView showsVerticalScrollIndicator={false} style={{ marginVertical: 30 }}>
         <View style={{...styles.containerSignIn}}>
+
           <TouchableOpacity
             style={styles.Sal_rep_pharmButton}
             onPress={() => navigation.navigate('AccountInfo',{item: item})}>
@@ -56,13 +59,13 @@ const Sal_rep_pharm = ({navigation, route}) => {
             <Text style={styles.reportPageText}>Returns</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.endVisitBtn}
+          {!item?.end_visit ? <TouchableOpacity
+            style={style.endVisitBtn}
             onPress={() => {
-              
+              endVisit()
             }}>
             <Text style={styles.reportPageText}>End Visit</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> : null}
 
         </View>
       </ScrollView>

@@ -18,7 +18,8 @@ const DailySalesaddModel = ({ show, hide, submit, date, area}) => {
     const currentTime = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false });
 
     const getpharmacys = async() => {
-        get(Constants.sales.pharmacy, null, {user_id: user.id, area_id: area.id})
+
+        get(Constants.sales.pharmacy, null, {user_id: user.id, area_id: area.area_id})
         .then((res) => {
             setpharmacy_list(res.data)
         })

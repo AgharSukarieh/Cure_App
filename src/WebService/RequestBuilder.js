@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {Alert} from 'react-native';
+import RNFS from 'react-native-fs';
 
 const apiClient = axios.create({
   baseURL: 'http://44.211.184.140/api/',
@@ -29,6 +30,7 @@ apiClient.interceptors.request.use(
   config => {
     showLoadingIndicator();
     config.headers['Accept'] = 'application/json';
+    config.headers['Content-Type'] = 'multipart/form-data';
     console.log('----------API config Start------');
     console.log(config);
     console.log('----------API config End------');
@@ -75,24 +77,36 @@ export const post = createApiFunction('post');
 export const put = createApiFunction('put');
 export const del = createApiFunction('delete');
 
-export const uploadFiles = async (url, body = {}, files = [], params = {}) => {
-  const formData = new FormData();
+export const uploadFiles = async (url, files, body = {}) => {
+  try {
+    const formData = new FormData();
+    console.log('@@',files);
+    // formData.append(`images[]`, {
+    //   uri: files.assets[0].uri,
+    //   type: files.assets[0].type,
+    //   name: files.assets[0].fileName,
+    // });
+    // formData.append(`images[]`, JSON.stringify(files.assets));
 
-  files.forEach((file, index) => {
-    formData.append(`files[${index}]`, {
-      uri: file.path,
-      type: file.mime,
-      name: file.fileName,
+  // files.forEach((file, index) => {
+  //   // console.log(file.path);
+  //   formData.append(`images[]`, {
+  //     uri: ,
+  //     type: file.,
+  //     name: file.,
+  //   });
+  // });
+
+    Object.entries(body).forEach(([key, value]) => {
+      formData.append(key, value);
     });
-  });
 
-  Object.entries(body).forEach(([key, value]) => {
-    formData.append(key, value);
-  });
-
-  return request('post', url, formData, params);
+    const response = await request('post', url, formData, null);
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || error.message);
+  }
 };
-
 
 // Pagination handling
 export const getPage = async (url, page = 1, limit = 10, param = {}, data = null,) => {

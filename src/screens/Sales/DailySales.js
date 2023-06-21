@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { styles } from '../../components/styles';
-import Moment from 'moment';
+import moment from 'moment';
 import GoBack from '../../components/GoBack';
 import DailySalesaddModel from '../../components/Modals/DailySalesaddModel';
 import DailySalesTable from '../../components/Tables/DailyTableSales';
@@ -21,7 +21,13 @@ const DailySales = ({ navigation, route }) => {
     const [rows, setrows] = useState([])
 
     const getpharmacys = async() => {
-        get()
+        const params = {
+            start_visit: moment(date, 'YYYY-M-D').format('YYYY-MM-DD'),
+            sale_id: user.sales.id,
+            limit: 500
+        }
+        console.log(params);
+        get(Constants.visit.sales, null, params)
         .then((res) => {
             setrows(res.data)
         })
@@ -35,8 +41,6 @@ const DailySales = ({ navigation, route }) => {
         getpharmacys()
     }, [])
 
-
-
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -44,9 +48,9 @@ const DailySales = ({ navigation, route }) => {
 
                 <View style={{ marginVertical: 30 }}>
 
-                    <TouchableOpacity style={style.newbtn} onPress={() => { setModal(true) }}>
+                    {moment(date, 'YYYY-M-D').format('YYYY-MM-DD') == moment().format('YYYY-MM-DD') ? <TouchableOpacity style={style.newbtn} onPress={() => { setModal(true) }}>
                         <Text style={{ color: '#fff', fontSize: 18 }}>Add Pharmacy</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> : null}
 
                     <View style={style.div}>
                         {rows && rows.map((item, index) => (

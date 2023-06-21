@@ -64,12 +64,12 @@ export default function App() {
         <Stack.Screen name="Clientdoctorlist" component={Clientdoctorlist}/> 
         <Stack.Screen name="Monthly" component={Monthly}/>
         <Stack.Screen name="Weekly" component={Weekly}/>
-
         <Stack.Screen name="Daily-sales" component={ DailySales }/>
-        <Stack.Screen name="Daily-notSales" component={Daily}/>
         <Stack.Screen name="Sal_rep_pharm" component={Sal_rep_pharm}/>
+        
+        <Stack.Screen name="Daily-notSales" component={Daily}/>
+        
         <Stack.Screen name="AccountInfo" component={AccountInfo}/>
-
         <Stack.Screen name="Inventory" component={Inventory}/>
         <Stack.Screen name="Order" component={Order}/>
         <Stack.Screen name="Return" component={Return}/>

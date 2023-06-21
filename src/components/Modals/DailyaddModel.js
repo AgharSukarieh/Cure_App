@@ -10,52 +10,14 @@ import { GET_DOCTORS_LIST, GET_Products, MED_ADD_DAILY } from '../../Provider/Ap
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GetLocation from 'react-native-get-location'
+import Constants from '../../config/globalConstants';
+import { get } from '../../WebService/RequestBuilder';
+import { useAuth } from '../../contexts/AuthContext';
 
-
-const width = Dimensions.get('window').width
-const height = Dimensions.get('window').height
-
-const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
-    const [user, setuser] = useState('');
-    const getlogs = async () => {
-        const a = await AsyncStorage.getItem('userInfo')
-        setuser(JSON.parse(a))
-    }
-    useEffect(() => {
-        getlogs()
-    }, []);
-
-
-
+const DailyaddModel = ({ show, hide, area, submit, date }) => {
+    const {user} = useAuth();
     const [doctorslist, setdoctorslist] = useState([])
     const [Productslist, setdProductslist] = useState([])
-
-    const getdoctors = () => {
-        axios({
-            method: "POST",
-            url: GET_DOCTORS_LIST,
-        }).then((response) => {
-            setdoctorslist(response.data)
-        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error", error) })
-    }
-
-    const getproducts = () => {
-        axios({
-            method: "POST",
-            url: GET_Products,
-        }).then((response) => {
-            setdProductslist(response.data)
-            // console.log(response.data);
-        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error", error) })
-    }
-
-    useEffect(() => {
-        getdoctors()
-        getproducts()
-    }, [])
-
-    // ///////////////////////////
-
     const [docname, setdocname] = useState('')
     const [docSpecialty, setdocSpecialty] = useState('')
     const [docclass, setdocclass] = useState('')
@@ -63,7 +25,6 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
     const [drug2, setdrug2] = useState('')
     const [drug3, setdrug3] = useState('')
     const [note, setnote] = useState('')
-
     const [textInputHeight, setTextInputHeight] = useState(40);
 
     const handleContentSizeChange = (event) => {
@@ -71,48 +32,63 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
         setTextInputHeight(height);
     };
     const currentTime = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false });
-    const submit2 = () => {
-        const latitude = ''
-        const longitude = ''
-        GetLocation.getCurrentPosition({
-            enableHighAccuracy: true,
-            timeout: 60000,
+
+    const getDoctors = async() => {
+        get(Constants.doctor.allDoctors, null, {user_id: user.id, area_id: area.area_id})
+        .then((res) => {
+            setdoctorslist(res.data);
         })
-            .then(location => {
-                submit3(location.latitude, location.longitude)
-            })
-            .catch(error => {
-                const { code, message } = error;
-                console.warn(code, message);
-            })
-
+        .catch((err) => {})
+        .finally(() => {
+        })
     }
 
-    const submit3 = (latitude, longitude) => {
-        let data = {
-            user_id: user.id,
-            area_id: areaid,
-            doctor: docname.doc_id,
-            drug1: drug1.pro_id,
-            drug2: drug2.pro_id,
-            drug3: drug3.pro_id,
-            note: note,
-            date: date + ' ' + currentTime,
-            latitude: latitude,
-            longitude: longitude
-        }
-        axios({
-            method: "POST",
-            url: MED_ADD_DAILY,
-            data: data
-        }).then((response) => {
-            console.log(response.data);
-            if (response.data.message == 'done') {
-                submit(data)
-                hide()
-            }
-        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error", error) })
-    }
+    useEffect(() => {
+        getDoctors()
+    }, [])
+
+    // const submit2 = () => {
+    //     const latitude = ''
+    //     const longitude = ''
+    //     GetLocation.getCurrentPosition({
+    //         enableHighAccuracy: true,
+    //         timeout: 60000,
+    //     })
+    //         .then(location => {
+    //             submit3(location.latitude, location.longitude)
+    //         })
+    //         .catch(error => {
+    //             const { code, message } = error;
+    //             console.warn(code, message);
+    //         })
+
+    // }
+
+    // const submit3 = (latitude, longitude) => {
+    //     let data = {
+    //         user_id: user.id,
+    //         area_id: areaid,
+    //         doctor: docname.doc_id,
+    //         drug1: drug1.pro_id,
+    //         drug2: drug2.pro_id,
+    //         drug3: drug3.pro_id,
+    //         note: note,
+    //         date: date + ' ' + currentTime,
+    //         latitude: latitude,
+    //         longitude: longitude
+    //     }
+    //     axios({
+    //         method: "POST",
+    //         url: MED_ADD_DAILY,
+    //         data: data
+    //     }).then((response) => {
+    //         console.log(response.data);
+    //         if (response.data.message == 'done') {
+    //             submit(data)
+    //             hide()
+    //         }
+    //     }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error", error) })
+    // }
 
     return (
         <Modal
@@ -165,74 +141,6 @@ const DailyaddModel = ({ show, hide, areaid, submit, date }) => {
                                     dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
                                 />
                             </View>
-                            {/* <View style={style.card}>
-                                <Text style={style.lable}>Doctor Specialty</Text>
-                                <SelectDropdown
-                                    buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-                                    buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-                                    defaultButtonText='Select'
-                                    data={Specialty}
-                                    onSelect={(selectedItem, index) => {
-                                        setdocSpecialty(selectedItem)
-                                    }}
-                                    rowTextForSelection={(item, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    buttonTextAfterSelection={(selectedItem, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    renderDropdownIcon={isOpened => {
-                                        return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-                                    }}
-                                    dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
-                                />
-                            </View>
-                            <View style={style.card}>
-                                <Text style={style.lable}>Doctor classification</Text>
-                                <SelectDropdown
-                                    buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-                                    buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-                                    defaultButtonText='Select'
-                                    data={classification}
-                                    onSelect={(selectedItem, index) => {
-                                        setdocclass(selectedItem)
-                                    }}
-                                    rowTextForSelection={(item, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    buttonTextAfterSelection={(selectedItem, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    renderDropdownIcon={isOpened => {
-                                        return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-                                    }}
-                                    dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
-                                />
-                            </View> */}
                             <View style={style.card}>
                                 <Text style={style.lable}>item 1</Text>
                                 <SelectDropdown

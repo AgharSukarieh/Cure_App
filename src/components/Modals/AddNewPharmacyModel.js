@@ -7,9 +7,12 @@ import GetLocation from 'react-native-get-location';
 import {openPicker} from '@baronha/react-native-multiple-image-picker';
 import { uploadFiles, post } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
+// import { useAuth } from '../../contexts/AuthContext';
+// import axios from 'axios';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
-
+  // const {token} = useAuth();
   const [pharmacyName, setPharmacyName] = useState('');
   const [classification, setClassification] = useState('');
 
@@ -24,50 +27,27 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
 
   const submitData = async () => {
 
-  // const formData = new FormData();
-  // // images.forEach((file, index) => {
-  // //   formData.append('image', file[0]);
-  // // });
-  // formData.append('images[]', images[0]);
-  // formData.append('name', 'asdasds');
-  // formData.append('activate_status', 1);
-  // formData.append('city_id', 1);
-  // formData.append('area_id', 1);
+    const files = images;
 
-
-    const body = {
-      name: pharmacyName,
+    const bodyData = {
+      name: 'aaaaaaaaaaa',
       activate_status: 1,
       city_id: cityValue,
       area_id: areaValue,
-      classification: classification,
+      classification: 'B',
       latitude: latitude,
       longitude: longitude,
-      // 'images[]': formData._parts
     };
 
-    await post(Constants.sales.pharmacy, body, null)
-    .then((res) => {
-      console.log('!!!!!!!!!!!!!!!!',res);
-    })
-    .catch((err) => {
-      console.log('###################',err);
-    }).finally(() => {
+    uploadFiles(Constants.sales.pharmacy, files, bodyData)
+      .then((response) => {
+        console.log('Upload response:', response);
+      })
+      .catch((error) => {
+        console.error('Upload error:', error);
+      });
 
-    });
   }
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-  //   await uploadFiles(Constants.sales.pharmacy, body, images, null)
-  //   .then(response => {
-  //     console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! File !!!!!!!!!!!!!!!!!!!!');
-  //  })
-  // .catch(err => {
-  //   console.log('eeeeeeeeeeeeeeeeeeee File eeeeeeeeeeeeeeeeeeeeee');
-  //      console.error(err);
-  //  })
-  // .finally(() => {});
-  // }
 
   const getCities = () => {
     var count = Object.keys(data.cities).length
@@ -113,27 +93,42 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
       });
   };
 
+
   const onPicker = async () => {
-    try {
-      const singleSelectedMode = false;
-      const response = await openPicker({
-        useCameraButton: true,
-        selectedAssets: images,
-        isExportThumbnail: true,
-        maxVideo: 0,
-        doneTitle: 'Done',
-        singleSelectedMode,
-        isCrop: true,
-      });
-      const crop = response.crop;
-      if (crop) {
-        response.path = crop.path;
-        response.width = crop.width;
-        response.height = crop.height;
+    const options = {
+      title: 'Select Image',
+      type: 'library',
+      options: {
+        selectionLimit: 1,
+        mediaType: 'photo',
+        includeBase64: false,
       }
-      setImages(response);
-      console.log(response);
-    } catch (e) {}
+    }
+
+    const images = await launchImageLibrary(options);
+    setImages(images);
+
+    // try {
+    //   const singleSelectedMode = false;
+    //   const response = await openPicker({
+    //     useCameraButton: true,
+    //     selectedAssets: images,
+    //     isExportThumbnail: true,
+    //     maxVideo: 0,
+    //     doneTitle: 'Done',
+    //     singleSelectedMode,
+    //     isCrop: true,
+    //   });
+    //   const crop = response.crop;
+    //   if (crop) {
+    //     response.path = crop.path;
+    //     response.width = crop.width;
+    //     response.height = crop.height;
+    //   }
+
+    //   setImages(response);
+    //   console.log(response);
+    // } catch (e) {}
   };
 
   useEffect(() => {
@@ -307,7 +302,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
                             marginRight: 5,
                             borderRadius: 7,
                           }}
-                          source={{uri: item.path}}
+                          source={{uri: `file://${item.path}`}}
                         />
 
                         <TouchableOpacity

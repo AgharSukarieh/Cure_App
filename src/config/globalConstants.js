@@ -32,6 +32,7 @@ export default {
   },
   visit: {
     sales: 'sale-visits',
+    medical: 'medical-visits',
   }
 
 };

@@ -2,51 +2,43 @@ import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView } fr
 import React, { useEffect, useState } from 'react';
 import { styles } from '../../components/styles';
 import GoBack from '../../components/GoBack';
-import Moment from 'moment';
+import moment from 'moment';
 import DailyTable from '../../components/Tables/DailyTable';
-import { salesdata } from '../../helpers/data';
 import DailyaddModel from '../../components/Modals/DailyaddModel';
 import Sweetalert from '../../components/sweetalert';
-import axios from 'axios';
-import { GET_DOCTORS_LIST, MED_GET_DAILY } from '../../Provider/ApiRequest';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from '../../config/globalConstants';
+import { get } from '../../WebService/RequestBuilder';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Daily = ({ navigation, route }) => {
-
-    const [user, setuser] = useState('');
-    const getlogs = async () => {
-        const a = await AsyncStorage.getItem('userInfo')
-        setuser(JSON.parse(a))
-    }
-    useEffect(() => {
-        getlogs()
-    }, []);
-
-
+    const {user} = useAuth();
     const title = route.params.title
     const date = route.params.date
     const area = route.params.area
     const [modal, setModal] = useState(false)
     const [alert, setalert] = useState(false)
     const [rows, setrows] = useState([])
-    const [Productslist, setdProductslist] = useState([])
-    const getdata = () => {
-        let data = {
-            userid: user.id,
-            date: date
-        }
-        axios({
-            method: "POST",
-            url: MED_GET_DAILY,
-            data: data
-        }).then((response) => {
-            setrows(response.data)
-        }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 43 ~ getdoctors ~ error", error) })
-    }
-    useEffect(() => {
-        getdata()
-    }, [user])
 
+    const getDoctors = async() => {
+        const params = {
+            start_visit: moment(date, 'YYYY-M-D').format('YYYY-MM-DD'),
+            // sale_id: user.sales.id,
+            limit: 500
+        }
+        console.log(params);
+        get(Constants.visit.medical, null, params)
+        .then((res) => {
+            setrows(res.data)
+        })
+        .catch((err) => {})
+        .finally(() => {
+            setIsLoading(false)
+        })
+    }
+
+    useEffect(() => {
+        getDoctors()
+    }, [])
 
     const mainrow = (e) => {
         setalert(true)
@@ -67,7 +59,7 @@ const Daily = ({ navigation, route }) => {
                     <DailyTable data={rows} refresh={() => { getdata() }} />
                 </View>
             </ScrollView>
-            <DailyaddModel show={modal} hide={() => { setModal(false) }} submit={(e) => { mainrow(e) }} date={date} areaid={area.areaid} />
+            <DailyaddModel show={modal} hide={() => { setModal(false) }} submit={(e) => { mainrow(e) }} date={date} area={area} />
             <Sweetalert show={alert} hide={() => { setalert(false) }} title='Record added successfully' />
         </SafeAreaView >
     );
@@ -89,6 +81,5 @@ export const style = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'flex-end',
-        // marginHorizontal: 15
     }
 })
