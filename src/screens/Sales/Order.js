@@ -44,21 +44,20 @@ const submit2 = (data) => {
   setRows([...rows,testData])
 }
 
-  // //////////////////////////////////////////////////////////
-  // //////////////////////////////////////////////////////////
-  // //////////////////////////////////////////////////////////
-
   return (
     <SafeAreaView>
       <GoBack text={'Orders'} />
+
       <View style={style.container}>
-      <TouchableOpacity
+
+          {/* <TouchableOpacity
            style={style.newbtn}
            onPress={() => {
              setModal(true);
             }}>
-           <Text style={{color: '#fff', fontSize: 18, paddingHorizontal: 5}}>Export PDF</Text>
-          </TouchableOpacity>
+            <Text style={{color: '#fff', fontSize: 18, paddingHorizontal: 5}}>Export PDF</Text>
+          </TouchableOpacity> */}
+
           <TouchableOpacity
             style={style.newbtn}
             onPress={() => {
@@ -66,8 +65,10 @@ const submit2 = (data) => {
            }}>
             <Text style={{color: '#fff', fontSize: 18, paddingHorizontal: 5}}>Add</Text>
           </TouchableOpacity>
+
       </View >
-        <ScrollView showsVerticalScrollIndicator={false} style={{marginVertical: 40}}>
+      
+      <ScrollView showsVerticalScrollIndicator={false} style={{marginVertical: 40}}>
         <View>
           <OrderTable data={salesdata} />
         </View>
@@ -83,14 +84,11 @@ export default Order;
 export const style = StyleSheet.create({
   newbtn: {
       backgroundColor: '#7189FF',
-      // width: '25%',
       height: 40,
       paddingVertical: 5,
       paddingHorizontal: 4,
       borderRadius: 7,
       justifyContent: 'center',
-      // alignItems: 'center',
-      // alignSelf: 'flex-end',
       marginHorizontal: 7,
   },
   container: {

@@ -3,46 +3,14 @@ import {
   Text,
   View,
   StyleSheet,
-  Dimensions,
   Modal,
   ScrollView,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { SAL_GET_LAST_ORDER } from '../../Provider/ApiRequest';
-import axios from 'axios';
 import moment from 'moment';
 
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
-
 const InventoryModel = ({show, hide, data}) => {
-
-  const [lastOrder, setLastOrder] = useState({});
-  // const [lastOrder, setLastOrder] = useState({});
-
-  const getLastOrder = () => {
-    let params = {
-      pharm_id: data.pharm_id.ph_id,
-      product_id: data.item_id.pro_id,
-    };
-    axios({
-      method: 'GET',
-      url: SAL_GET_LAST_ORDER,
-      params: params,
-    })
-      .then(response => {
-        setLastOrder(response.data);
-        // console.log("MM-MM",response.data);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    }
-
-  useEffect(() => {
-    getLastOrder();
-  }, []);
 
   return (
     <Modal
@@ -69,29 +37,30 @@ const InventoryModel = ({show, hide, data}) => {
           data && 
           <>
           <View style={styles.viewInfo}>
-            <Text style={styles.titleInfo}>SKU Name :  </Text>
-            <Text style={styles.phname}>{data.item_id.product_name}</Text>
+            <Text style={styles.titleInfo}>Name :  </Text>
+            <Text style={styles.phname}>{data?.product?.name}</Text>
           </View>
           <View style={styles.viewInfo}>
             <Text style={styles.titleInfo}>Batch # :  </Text>
-            <Text style={styles.phname}>{!data.batch_number ? '-' : data.batch_number}</Text>
+            <Text style={styles.phname}>{!data?.product?.batch_number ? '-' : data?.product?.batch_number}</Text>
           </View>
           <View style={styles.viewInfo}>
             <Text style={styles.titleInfo}>Barcode :  </Text>
-            <Text style={styles.phname}>{!data.item_id.barcode ? '-' : data.item_id.barcode}</Text>
+            <Text style={styles.phname}>{!data?.product?.barcode ? '-' : data?.product?.barcode}</Text>
           </View>
           <View style={styles.viewInfo}>
             <Text style={styles.titleInfo}>Amount :  </Text>
-            <Text style={styles.phname}>{data.availability}</Text>
+            <Text style={styles.phname}>{data?.product?.quantity}</Text>
           </View>
           <View style={styles.viewInfo}>
             <Text style={styles.titleInfo}>Expired Date :  </Text>
-            <Text style={styles.phname}>{ moment(data.expired_date).format('DD /MM/ Y')}</Text>
+            <Text style={styles.phname}>{ moment(data?.product?.expiry_date).format('DD /MM/ YYYY')}</Text>
           </View>
           <View style={{ width: '99%', height: 0.5, backgroundColor: '#7189FF', alignSelf: 'center', marginTop: 20, borderRadius: 22 }} />
           </>
           }
-          { 
+
+          {/* { 
           lastOrder ? 
           <> 
           <View style={{marginTop: 10}}>
@@ -118,7 +87,7 @@ const InventoryModel = ({show, hide, data}) => {
             <Text style={styles.phname}>{lastOrder?.batch_number}</Text>
           </View>
           </> : null
-          }
+          } */}
           </ScrollView>  
         </View>
       </View>

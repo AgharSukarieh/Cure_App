@@ -17,7 +17,7 @@ const Sal_rep_pharm = ({navigation, route}) => {
   const item = route.params.item;
   const area = route.params.area;
 
-  console.log(item);
+  console.log('item---- ',item);
 
   const endVisit = async () => {
     await put(Constants.visit.sales + `/${item?.id}`)
@@ -34,16 +34,18 @@ const Sal_rep_pharm = ({navigation, route}) => {
       <ScrollView showsVerticalScrollIndicator={false} style={{ marginVertical: 30 }}>
         <View style={{...styles.containerSignIn}}>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.Sal_rep_pharmButton}
             onPress={() => navigation.navigate('AccountInfo',{item: item})}>
             <Text style={styles.reportPageText}>Account info</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
+
           <TouchableOpacity
             style={styles.Sal_rep_pharmButton}
             onPress={() => navigation.navigate('Inventory', { item: item, area: area })}>
             <Text style={styles.reportPageText}>Inventory</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.Sal_rep_pharmButton}
             onPress={() => {
@@ -51,6 +53,7 @@ const Sal_rep_pharm = ({navigation, route}) => {
             }}>
             <Text style={styles.reportPageText}>Orders</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.Sal_rep_pharmButton}
             onPress={() => {

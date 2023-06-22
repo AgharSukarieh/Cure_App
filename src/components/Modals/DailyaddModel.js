@@ -86,6 +86,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
             notes: note
         }
         post(Constants.visit.medical, data).then((res) => {
+          console.log('@@@@@@@@@@@@@@@@@@@@', res);
             if (res.code == 200) {
                 console.log('#@#@#', res);
                 const sampleProductsData = {

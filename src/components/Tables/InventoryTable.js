@@ -3,21 +3,16 @@ import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import InventoryModel from '../Modals/InventoryModel';
 AntDesign.loadFont();
-const width = Dimensions.get('window').width
-const height = Dimensions.get('window').height
 
 const InventoryTable = ({ data }) => {
-
     const [modal, setModal] = useState(false)
     const [rowdata, setrowdata] = useState('')
     const [lastOrder, setLastOrder] = useState({})
 
     const DDD = (row) => {
-        
         setrowdata(row)
         setLastOrder({})
         setModal(true)
-        // console.log('----',row);
     }
 
     return (
@@ -40,23 +35,23 @@ const InventoryTable = ({ data }) => {
                     <Text style={styles.headerel_tetx}>Info</Text>
                 </View>
             </View>
-            {data ?
-                data.map((item, index) => (
+            {data?.order_details.length > 0 ?
+                data?.order_details.map((item, index) => (
                     <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} key={index}>
                         <View style={{ ...styles.rowel, width: '30.1%', }}>
-                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item.item_id.product_name}</Text>
+                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item?.product?.name}</Text>
                         </View>
                         <View style={styles.rowel}>
                             {/* {item?.items?.slice(0, 3).map((row, index2) => (
                                 <Text key={index2} style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{row.item_name}</Text>
                             ))} */}
-                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item.availability}</Text>
+                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item?.product?.quantity}</Text>
                         </View>
                         <View style={styles.rowel}>
                             {/* {item?.items?.slice(0, 3).map((row, index2) => (
                                 <Text key={index2} style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{row.items_sum} / {row.bonus}</Text>
                             ))} */}
-                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item.expired_date}</Text>
+                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item?.product?.expiry_date}</Text>
                         </View>
                         <View style={{ ...styles.rowel, width: '12%', }}>
                             <TouchableOpacity onPress={() => { DDD(item) }}>
@@ -66,7 +61,7 @@ const InventoryTable = ({ data }) => {
                     </View>
                 ))
                 :
-                <View style={{ width: '100%', height: 70, justifyContent: 'center', alignItems: 'center', borderWidth: 1 }}>
+                <View style={{ width: '100%', height: 70, justifyContent: 'center', alignItems: 'center', borderWidth: 0.5 }}>
                     <Text style={{ textTransform: 'capitalize', fontSize: 25 }}>no available data</Text>
                 </View>
             }
@@ -88,7 +83,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '100%',
         borderColor: '#7189FF',
-        // borderWidth: 1,
         marginTop: 10,
         borderRadius: 7,
         paddingVertical: 7
@@ -97,7 +91,6 @@ const styles = StyleSheet.create({
         width: '29%',
         justifyContent: 'center',
         alignItems: 'center',
-        // borderWidth: 0.6,
         paddingHorizontal: 1,
         borderColor: '#7189FF',
     },
@@ -120,7 +113,6 @@ const styles = StyleSheet.create({
         width: '29%',
         justifyContent: 'center',
         alignItems: 'center',
-        // borderWidth: 1, 
         paddingVertical: 10,
         paddingHorizontal: 4
     },

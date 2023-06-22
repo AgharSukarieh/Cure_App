@@ -3,7 +3,6 @@ import {
   Text,
   View,
   StyleSheet,
-  Dimensions,
   Modal,
   ScrollView,
   TextInput,
@@ -11,31 +10,18 @@ import {
 import React, {useEffect, useState} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SelectDropdown from 'react-native-select-dropdown';
-import {pharams} from '../../helpers/data';
 import Feather from 'react-native-vector-icons/Feather';
 import {styles} from '../styles';
-import Moment from 'moment';
+import moment from 'moment';
 import DatePicker from 'react-native-date-picker';
-import {
-  GET_PHARMACY,
-  SAL_ADD_REPORT,
-  GET_Products,
-} from '../../Provider/ApiRequest';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import Input from '../Input';
 import {Dropdown} from 'react-native-element-dropdown';
 import OrdersAfterAddTable from '../../components/Tables/OrdersAfterAddTable';
 
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
-
 const AddNewOrderModel = ({show, hide, submit}) => {
-  // const [item, setItem] = useState('');
   const [amount, setAmount] = useState('');
   const [bouns, setBouns] = useState('');
-  // const [offers, setOffers] = useState('');
-  // const [expiredDate, setExpiredDate] = useState('');
 
   const [productsData, setProductsData] = useState([]);
   const [productValue, setProductValue] = useState(null);
@@ -45,29 +31,6 @@ const AddNewOrderModel = ({show, hide, submit}) => {
   const [orderData, setOrderData] = useState([]);
 
   const data = {productValue, amount, bouns};
-
-  const getProducts = () => {
-    axios({
-      method: 'POST',
-      url: GET_Products,
-    })
-      .then(response => {
-        var count = Object.keys(response.data).length;
-        let productArray = [];
-        for (var i = 0; i < count; i++) {
-          productArray.push({
-            value: response.data[i].pro_id,
-            label: response.data[i].product_name,
-          });
-        }
-        setProductsData(productArray);
-      })
-      .catch(error => {});
-  };
-
-  useEffect(() => {
-    getProducts();
-  }, []);
 
   const submitBtn = () => {
     if (orderData.length > 0) {
@@ -104,6 +67,7 @@ const AddNewOrderModel = ({show, hide, submit}) => {
       onSwipeComplete={() => setModalVisible2(false)}>
       <View style={style.ModalContainer}>
         <View style={style.ModalView}>
+
           <TouchableOpacity
             onPress={() => {
               hide();
@@ -115,8 +79,8 @@ const AddNewOrderModel = ({show, hide, submit}) => {
               style={{alignSelf: 'flex-end'}}
             />
           </TouchableOpacity>
-
           <Text style={{...style.maintitle, paddingHorizontal:10}}>Add new </Text>
+
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{marginVertical: 0, paddingHorizontal:10}}>
               <View style={style.card}>

@@ -37,6 +37,9 @@ export default {
   product: {
     products: 'product',
     sample_products: 'sample-products'
+  },
+  inventory: {
+    get_inventory: 'get-last-order-pharamcy',
   }
 
 };
