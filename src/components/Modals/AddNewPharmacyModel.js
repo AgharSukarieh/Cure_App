@@ -113,17 +113,17 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
       setImages(response);
       console.log(response);
 
-      const data = await fetch(response.path);
-      const blob = await data.blob();
-      return new Promise(resolve => {
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = () => {
-          const base64data = reader.result;
-          console.log(base64data);
-          resolve(base64data);
-        };
-      });
+      // const data = await fetch(response[0].path);
+      // const blob = await data.blob();
+      // return new Promise(resolve => {
+      //   const reader = new FileReader();
+      //   reader.readAsDataURL(blob);
+      //   reader.onloadend = () => {
+      //     const base64data = reader.result;
+      //     console.log(base64data);
+      //     resolve(base64data);
+      //   };
+      // });
     } catch (e) {}
   };
 

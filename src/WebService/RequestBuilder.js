@@ -80,21 +80,14 @@ export const del = createApiFunction('delete');
 export const uploadFiles = async (url, files, body = {}) => {
   try {
     const formData = new FormData();
-    console.log('@@',files);
-    // formData.append(`images[]`, {
-    //   uri: files.assets[0].uri,
-    //   type: files.assets[0].type,
-    //   name: files.assets[0].fileName,
-    // });
 
-  // files.forEach((file, index) => {
-  //   // console.log(file.path);
-  //   formData.append(`images[]`, {
-  //     uri: ,
-  //     type: file.,
-  //     name: file.,
-  //   });
-  // });
+    files.forEach(file => {
+    formData.append(`images[]`, {
+      uri: file.path,
+      type: file.mime,
+      name: file.fileName
+    });
+  });
 
     Object.entries(body).forEach(([key, value]) => {
       formData.append(key, value);
