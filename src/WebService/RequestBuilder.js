@@ -62,6 +62,7 @@ const request = async (method, url, data = null, params = {}) => {
     const response = await apiClient.request({ method, url, data, params });
     return response.data;
   } catch (error) {
+    Alert.alert(error.response?.data?.message || error.message)
     throw new Error(error.response?.data?.message || error.message);
   }
 };

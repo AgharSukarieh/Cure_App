@@ -5,9 +5,6 @@ import SkuModel from '../Modals/skuModel';
 import moment from 'moment';
 import SkueditModel from '../Modals/skueditModel';
 
-const width = Dimensions.get('window').width
-const height = Dimensions.get('window').height
-
 const DailyTable = ({ data, refresh }) => {
 
     const [modal, setModal] = useState(false)
@@ -114,7 +111,6 @@ const styles = StyleSheet.create({
         width: '24%',
         justifyContent: 'center',
         alignItems: 'center',
-        // borderWidth: 0.6,
         paddingHorizontal: 1,
         borderColor: '#7189FF',
     },
@@ -124,7 +120,6 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize',
         color: '#000'
     },
-    // ***********************
     filtterrow1: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -150,8 +145,7 @@ const styles = StyleSheet.create({
     filtterel: {
         width: '29%',
         justifyContent: 'center',
-        alignItems: 'center',
-        // borderWidth: 1, 
+        alignItems: 'center', 
         paddingVertical: 10,
         paddingHorizontal: 4
     },
@@ -172,7 +166,6 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize',
         color: '#fff',
     },
-    // ***********************
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -186,7 +179,6 @@ const styles = StyleSheet.create({
         width: '29%',
         justifyContent: 'center',
         alignItems: 'center',
-        // borderWidth: 1, 
         paddingVertical: 10,
         paddingHorizontal: 4
     },

@@ -1,94 +1,112 @@
-import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView, TextInput } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, Alert, Modal, ScrollView, TextInput } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import SelectDropdown from 'react-native-select-dropdown'
-import { classification, doctors, drugs, Specialty } from '../../helpers/data';
-import Feather from 'react-native-vector-icons/Feather';
 import { styles } from '../styles';
-import Moment from 'moment';
-import { GET_DOCTORS_LIST, GET_Products, MED_ADD_DAILY } from '../../Provider/ApiRequest';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import GetLocation from 'react-native-get-location'
 import Constants from '../../config/globalConstants';
-import { get } from '../../WebService/RequestBuilder';
+import { get, post } from '../../WebService/RequestBuilder';
 import { useAuth } from '../../contexts/AuthContext';
+import {MultiSelect, Dropdown} from 'react-native-element-dropdown';
 
 const DailyaddModel = ({ show, hide, area, submit, date }) => {
     const {user} = useAuth();
-    const [doctorslist, setdoctorslist] = useState([])
-    const [Productslist, setdProductslist] = useState([])
-    const [docname, setdocname] = useState('')
-    const [docSpecialty, setdocSpecialty] = useState('')
-    const [docclass, setdocclass] = useState('')
-    const [drug1, setdrug1] = useState('')
-    const [drug2, setdrug2] = useState('')
-    const [drug3, setdrug3] = useState('')
+    const [selected, setSelected] = useState([]);
+    const [productData, setProductData] = useState([])
+    const [specialitiesData, setSpecialitiesData] = useState([])
+    const [specialitiesValue, setSpecialitiesValue] = useState(null);
+    const [doctorsData, setDoctorsData] = useState([])
+    const [doctorsValue, setDoctorsValue] = useState(null);
     const [note, setnote] = useState('')
     const [textInputHeight, setTextInputHeight] = useState(40);
-
+    
     const handleContentSizeChange = (event) => {
         const { height } = event.nativeEvent.contentSize;
         setTextInputHeight(height);
     };
+
     const currentTime = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false });
 
-    const getDoctors = async() => {
-        get(Constants.doctor.allDoctors, null, {user_id: user.id, area_id: area.area_id})
+    const getSpecialities = async() => {
+        get(Constants.doctor.speciality)
         .then((res) => {
-            setdoctorslist(res.data);
+            var count = Object.keys(res.speciality).length
+            let specialitiesArray = []
+            for (var i = 0; i < count; i++ ){
+                specialitiesArray.push({
+                 value: res.speciality[i].id,
+                 label: res.speciality[i].name
+                })
+            }
+            setSpecialitiesData(specialitiesArray);
         })
         .catch((err) => {})
         .finally(() => {
         })
     }
 
+    const getDoctors = async() => {
+        get(Constants.doctor.allDoctors, null, {user_id: user.id, area_id: area.area_id, limit: 1000, seach_term: specialitiesValue})
+        .then((res) => {
+            var count = Object.keys(res.data).length
+            let doctorsArray = []
+            for (var i = 0; i < count; i++ ){
+                doctorsArray.push({
+                 value: res.data[i].id,
+                 label: res.data[i].name
+                })
+            }
+            setDoctorsData(doctorsArray);
+        })
+        .catch((err) => {})
+        .finally(() => {
+        })
+    }
+
+    const getProducts = async() => {
+        get(Constants.product.products, null, {limit: 10000})
+        .then((res) => { 
+            var count = Object.keys(res.data).length
+            let productsArray = []
+            for (var i = 0; i < count; i++ ){
+                productsArray.push({
+                 value: res.data[i].id,
+                 label: res.data[i].name
+                })
+            }
+            setProductData(productsArray);
+        })
+        .catch((err) => {})
+        .finally(() => {
+        })
+    }
+
+    const submit2 = () => {
+        const data = {
+            medical_id: user?.medicals.id,
+            doctor_id: doctorsValue,
+            notes: note
+        }
+        post(Constants.visit.medical, data).then((res) => {
+            if (res.code == 200) {
+                console.log('#@#@#', res);
+                const sampleProductsData = {
+                    visit_id: res.id,
+                    'product_ids[]': selected
+                }
+                post(Constants.product.sample_products, sampleProductsData).then((res) => {
+                    
+                }).catch((err) => {}).finally(() => {})
+            }else {
+                Alert.alert(res.message || 'Error');
+            } 
+        }).catch((err) => {}).finally(() => {
+            hide();
+        })
+    }
+
     useEffect(() => {
-        getDoctors()
-    }, [])
-
-    // const submit2 = () => {
-    //     const latitude = ''
-    //     const longitude = ''
-    //     GetLocation.getCurrentPosition({
-    //         enableHighAccuracy: true,
-    //         timeout: 60000,
-    //     })
-    //         .then(location => {
-    //             submit3(location.latitude, location.longitude)
-    //         })
-    //         .catch(error => {
-    //             const { code, message } = error;
-    //             console.warn(code, message);
-    //         })
-
-    // }
-
-    // const submit3 = (latitude, longitude) => {
-    //     let data = {
-    //         user_id: user.id,
-    //         area_id: areaid,
-    //         doctor: docname.doc_id,
-    //         drug1: drug1.pro_id,
-    //         drug2: drug2.pro_id,
-    //         drug3: drug3.pro_id,
-    //         note: note,
-    //         date: date + ' ' + currentTime,
-    //         latitude: latitude,
-    //         longitude: longitude
-    //     }
-    //     axios({
-    //         method: "POST",
-    //         url: MED_ADD_DAILY,
-    //         data: data
-    //     }).then((response) => {
-    //         console.log(response.data);
-    //         if (response.data.message == 'done') {
-    //             submit(data)
-    //             hide()
-    //         }
-    //     }).catch((error) => { console.log("🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error", error) })
-    // }
+        getSpecialities()
+        getProducts();
+    }, []);
 
     return (
         <Modal
@@ -100,149 +118,108 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
         >
             <View style={style.ModalContainer}>
                 <View style={style.ModalView}>
+
                     <TouchableOpacity onPress={() => { hide() }}>
                         <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
 
                     <Text style={style.maintitle}>Add new</Text>
+
                     <ScrollView showsVerticalScrollIndicator={false}>
-                        <View style={{ marginVertical: 10 }}>
-                            <View style={style.card}>
-                                <Text style={style.lable}>Doctor name</Text>
-                                <SelectDropdown
-                                    buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-                                    buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-                                    defaultButtonText='Select'
-                                    data={doctorslist}
-                                    onSelect={(selectedItem, index) => {
-                                        setdocname(selectedItem)
-                                    }}
-                                    rowTextForSelection={(item, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.doc_name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    buttonTextAfterSelection={(selectedItem, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.doc_name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    renderDropdownIcon={isOpened => {
-                                        return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-                                    }}
-                                    dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
-                                />
+                        <View style={{ marginVertical: 10 }}>                        
+                            <View style={style.container}>
+            <Dropdown
+              style={style.dropdown}
+              placeholderStyle={style.placeholderStyle}
+              selectedTextStyle={style.selectedTextStyle}
+              inputSearchStyle={style.inputSearchStyle}
+              iconStyle={style.iconStyle}
+              data={specialitiesData}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!specialitiesValue ? 'Select speciality' : '...'}
+              searchPlaceholder="Search..."
+              value={specialitiesValue}
+              onBlur={() => {}}
+              onChange={item => {
+                setSpecialitiesValue(item.value);
+                getDoctors();
+              }}
+              renderLeftIcon={() => (
+                <AntDesign
+                  style={styles.icon}
+                  color={specialitiesValue ? 'blue' : 'black'}
+                  name="Safety"
+                  size={20}
+                />
+              )}
+            />
                             </View>
-                            <View style={style.card}>
-                                <Text style={style.lable}>item 1</Text>
-                                <SelectDropdown
-                                    buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-                                    buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-                                    defaultButtonText='Select'
-                                    data={Productslist}
-                                    onSelect={(selectedItem, index) => {
-                                        setdrug1(selectedItem)
-                                    }}
-                                    rowTextForSelection={(item, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.product_name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    buttonTextAfterSelection={(selectedItem, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.product_name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    renderDropdownIcon={isOpened => {
-                                        return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-                                    }}
-                                    dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
-                                />
+
+                            <View style={style.container}>
+            <Dropdown
+              style={style.dropdown}
+              placeholderStyle={style.placeholderStyle}
+              selectedTextStyle={style.selectedTextStyle}
+              inputSearchStyle={style.inputSearchStyle}
+              iconStyle={style.iconStyle}
+              data={doctorsData}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!doctorsValue ? 'Select doctor' : '...'}
+              searchPlaceholder="Search..."
+              value={doctorsValue}
+              onBlur={() => {}}
+              onChange={item => {
+                setDoctorsValue(item.value);
+              }}
+              renderLeftIcon={() => (
+                <AntDesign
+                  style={styles.icon}
+                  color={doctorsValue ? 'blue' : 'black'}
+                  name="Safety"
+                  size={20}
+                />
+              )}
+            />
                             </View>
-                            <View style={style.card}>
-                                <Text style={style.lable}>item 2</Text>
-                                <SelectDropdown
-                                    buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-                                    buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-                                    defaultButtonText='Select'
-                                    data={Productslist}
-                                    onSelect={(selectedItem, index) => {
-                                        setdrug2(selectedItem)
-                                    }}
-                                    rowTextForSelection={(item, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.product_name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    buttonTextAfterSelection={(selectedItem, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.product_name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    renderDropdownIcon={isOpened => {
-                                        return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-                                    }}
-                                    dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
-                                />
+
+                            <View style={style.container}>
+            <MultiSelect
+              style={style.dropdown}
+              placeholderStyle={style.placeholderStyle}
+              selectedStyle={style.selectedStyle}
+              selectedTextStyle={style.selectedTextStyle}
+              inputSearchStyle={style.inputSearchStyle}
+              iconStyle={style.iconStyle}
+              data={productData}
+              search
+              labelField="label"
+              valueField="value"
+              placeholder={'Select Products'}
+              searchPlaceholder="Search..."
+              value={selected}
+              onBlur={() => {}}
+              onChange={item => {
+                // if (selected.length <= 2) {
+                    setSelected(item);
+                // }
+              }}
+              renderLeftIcon={() => (
+                <AntDesign
+                  style={styles.icon}
+                  color={'blue'}
+                  name="Safety"
+                  size={20}
+                />
+              )}
+            />
                             </View>
-                            <View style={style.card}>
-                                <Text style={style.lable}>item 3</Text>
-                                <SelectDropdown
-                                    buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
-                                    buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
-                                    defaultButtonText='Select'
-                                    data={Productslist}
-                                    onSelect={(selectedItem, index) => {
-                                        setdrug3(selectedItem)
-                                    }}
-                                    rowTextForSelection={(item, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.product_name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    buttonTextAfterSelection={(selectedItem, index) => {
-                                        return (
-                                            <>
-                                                <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.product_name}
-                                                </Text>
-                                            </>
-                                        );
-                                    }}
-                                    renderDropdownIcon={isOpened => {
-                                        return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
-                                    }}
-                                    dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
-                                />
-                            </View>
+                            
                             <View style={style.card}>
                                 <Text style={style.lable}>note</Text>
                                 <TextInput
@@ -256,13 +233,15 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
                                     onContentSizeChange={handleContentSizeChange}
                                 />
                             </View>
+
                             <View style={style.card}>
                                 <TouchableOpacity style={styles.btn} onPress={() => { submit2() }}>
-                                    <Text style={{ fontSize: 18, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>submit</Text>
+                                    <Text style={{ fontSize: 18, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>Start Visit</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
                     </ScrollView>
+
                 </View>
             </View>
         </Modal>
@@ -306,5 +285,46 @@ const style = StyleSheet.create({
         textTransform: 'capitalize'
     },
 
-
+    container: {
+        backgroundColor: 'white',
+        width: '100%',
+        marginTop: 30
+      },
+      dropdown: {
+        height: 50,
+        borderColor: '#7189FF',
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 8,
+      },
+      icon: {
+        marginRight: 5,
+      },
+      label: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        left: 22,
+        top: 8,
+        zIndex: 999,
+        paddingHorizontal: 8,
+        fontSize: 14,
+      },
+      placeholderStyle: {
+        fontSize: 16,
+      },
+      selectedTextStyle: {
+        fontSize: 16,
+      },
+      iconStyle: {
+        width: 20,
+        height: 20,
+      },
+      inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
+      },
+      selectedStyle:{
+        borderRadius: 7,
+        borderWidth:1
+      }
 })

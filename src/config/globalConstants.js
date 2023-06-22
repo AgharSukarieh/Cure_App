@@ -33,6 +33,10 @@ export default {
   visit: {
     sales: 'sale-visits',
     medical: 'medical-visits',
+  },
+  product: {
+    products: 'product',
+    sample_products: 'sample-products'
   }
 
 };

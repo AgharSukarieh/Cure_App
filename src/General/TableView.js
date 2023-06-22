@@ -201,7 +201,7 @@ import React, { useState, useEffect} from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { getPage } from '../WebService/RequestBuilder';
 
-const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = false  }) => {
+const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = false, onEndReached = true  }) => {
   console.log('##########################',params);
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
@@ -289,7 +289,7 @@ const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = fals
           renderItem={renderItem}
           ListFooterComponent={renderFooter}
           ListEmptyComponent={renderEmptyState}
-          onEndReached={fetchData}
+          onEndReached={onEndReached ? fetchData : null}
           onEndReachedThreshold={0.1}
           refreshControl={
             enablePullToRefresh && (

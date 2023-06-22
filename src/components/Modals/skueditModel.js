@@ -3,7 +3,6 @@ import {
   Text,
   View,
   StyleSheet,
-  Dimensions,
   Modal,
   ScrollView,
   TextInput,
@@ -11,135 +10,86 @@ import {
 import React, {useEffect, useState} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SelectDropdown from 'react-native-select-dropdown';
-import {classification, doctors, drugs, Specialty} from '../../helpers/data';
 import Feather from 'react-native-vector-icons/Feather';
 import {styles} from '../styles';
-import Moment from 'moment';
-import {
-  GET_DOCTORS_LIST,
-  GET_Products,
-  MED_ADD_DAILY,
-  MED_EDIT_DAILY,
-} from '../../Provider/ApiRequest';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import GetLocation from 'react-native-get-location';
-
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
+import moment from 'moment';
+import Constants from '../../config/globalConstants';
+import { put } from '../../WebService/RequestBuilder';
 
 const SkueditModel = ({show, hide, submit, data}) => {
-  const [docname, setdocname] = useState('');
-  const [drug1, setdrug1] = useState('');
-  const [drug2, setdrug2] = useState('');
-  const [drug3, setdrug3] = useState('');
-  const [note, setnote] = useState('');
-  const [user, setuser] = useState('');
-  const getlogs = async () => {
-    const a = await AsyncStorage.getItem('userInfo');
-    setuser(JSON.parse(a));
-  };
-  useEffect(() => {
-    getlogs();
-    setnote(data.note);
-  }, []);
+  // const [docname, setdocname] = useState('');
+  // const [drug1, setdrug1] = useState('');
+  // const [drug2, setdrug2] = useState('');
+  // const [drug3, setdrug3] = useState('');
+  // const [note, setnote] = useState('');
+  // const [user, setuser] = useState('');
 
-  const [doctorslist, setdoctorslist] = useState([]);
-  const [Productslist, setdProductslist] = useState([]);
-  
-  const getdoctors = () => {
-    axios({
-      method: 'POST',
-      url: GET_DOCTORS_LIST,
+  // const [doctorslist, setdoctorslist] = useState([]);
+  // const [Productslist, setdProductslist] = useState([]);
+  // const [textInputHeight, setTextInputHeight] = useState(40);
+
+  // const doctorindex = doctorslist?.findIndex(
+  //   item => item?.doc_id === data?.doctor_id?.doc_id,
+  // );
+  // const peoduct1index = Productslist?.findIndex(
+  //   item => item?.pro_id === data?.product1?.pro_id,
+  // );
+  // const peoduct2index = Productslist?.findIndex(
+  //   item => item?.pro_id === data?.product2?.pro_id,
+  // );
+  // const peoduct3index = Productslist?.findIndex(
+  //   item => item?.pro_id === data?.product3?.pro_id,
+  // );
+
+  // const handleContentSizeChange = event => {
+  //   const {height} = event.nativeEvent.contentSize;
+  //   setTextInputHeight(height);
+  // };
+
+  // const currentTime = new Date().toLocaleString('en-US', {
+  //   hour: 'numeric',
+  //   minute: 'numeric',
+  //   hour12: false,
+  // });
+
+  // const submit2 = () => {
+  //   let nwedata = {
+  //     report_id: data.report_id,
+  //     user_id: user.id,
+  //     doctor: data?.doctor_id?.doc_id,
+  //     drug1: data?.product1?.pro_id,
+  //     drug2: data?.product2?.pro_id,
+  //     drug3: data?.product3.pro_id,
+  //     note: note ? note : data.note,
+  //   };
+  //   // console.log('nwedata', nwedata);
+  //   axios({
+  //     method: 'POST',
+  //     url: MED_EDIT_DAILY,
+  //     data: nwedata,
+  //   })
+  //     .then(response => {
+  //       if (response.data.message == 'done') {
+  //         submit(data);
+  //         hide();
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.log(
+  //         '🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error',
+  //         error,
+  //       );
+  //     });
+  // };
+
+  const endVisit = async () => {
+    await put(Constants.visit.medical + `/${data?.id}`)
+    .then((res) => {
+      hide();
     })
-      .then(response => {
-        setdoctorslist(response.data.data);
-      })
-      .catch(error => {
-        console.log(
-          '🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error',
-          error,
-        );
-      });
-  };
-
-  const getproducts = () => {
-    axios({
-      method: 'POST',
-      url: GET_Products,
-    })
-      .then(response => {
-        setdProductslist(response.data);
-      })
-      .catch(error => {
-        console.log(
-          '🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error',
-          error,
-        );
-      });
-  };
-
-  useEffect(() => {
-    getdoctors();
-    getproducts();
-  }, []);
-
-  // ///////////////////////////
-
-  const doctorindex = doctorslist?.findIndex(
-    item => item?.doc_id === data?.doctor_id?.doc_id,
-  );
-  const peoduct1index = Productslist?.findIndex(
-    item => item?.pro_id === data?.product1?.pro_id,
-  );
-  const peoduct2index = Productslist?.findIndex(
-    item => item?.pro_id === data?.product2?.pro_id,
-  );
-  const peoduct3index = Productslist?.findIndex(
-    item => item?.pro_id === data?.product3?.pro_id,
-  );
-
-  const [textInputHeight, setTextInputHeight] = useState(40);
-
-  const handleContentSizeChange = event => {
-    const {height} = event.nativeEvent.contentSize;
-    setTextInputHeight(height);
-  };
-  const currentTime = new Date().toLocaleString('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: false,
-  });
-
-  const submit2 = () => {
-    let nwedata = {
-      report_id: data.report_id,
-      user_id: user.id,
-      doctor: data?.doctor_id?.doc_id,
-      drug1: data?.product1?.pro_id,
-      drug2: data?.product2?.pro_id,
-      drug3: data?.product3.pro_id,
-      note: note ? note : data.note,
-    };
-    // console.log('nwedata', nwedata);
-    axios({
-      method: 'POST',
-      url: MED_EDIT_DAILY,
-      data: nwedata,
-    })
-      .then(response => {
-        if (response.data.message == 'done') {
-          submit(data);
-          hide();
-        }
-      })
-      .catch(error => {
-        console.log(
-          '🚀 ~ file: DailyaddModel.js ~ line 26 ~ getdoctors ~ error',
-          error,
-        );
-      });
-  };
+    .catch((err) => {})
+    .finally(() => {})
+  }
 
   return (
     <Modal
@@ -162,10 +112,11 @@ const SkueditModel = ({show, hide, submit, data}) => {
             />
           </TouchableOpacity>
 
-          <Text style={style.maintitle}>Add new</Text>
+          {/* <Text style={style.maintitle}>Add new</Text> */}
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{marginVertical: 10}}>
-              <View style={style.card}>
+              
+              {/* <View style={style.card}>
                 <Text style={style.lable}>Doctor name</Text>
                 
                 <SelectDropdown 
@@ -224,8 +175,9 @@ const SkueditModel = ({show, hide, submit, data}) => {
                   dropdownStyle={{backgroundColor: '#fff', borderRadius: 10}}
                   defaultValueByIndex={doctorindex}
                 />
-              </View>
-              <View style={style.card}>
+              </View> */}
+
+              {/* <View style={style.card}>
                 <Text style={style.lable}>item 1</Text>
                 <SelectDropdown
                   disabled
@@ -284,7 +236,8 @@ const SkueditModel = ({show, hide, submit, data}) => {
                   dropdownStyle={{backgroundColor: '#fff', borderRadius: 10}}
                   defaultValueByIndex={peoduct1index}
                 />
-              </View>
+              </View> */}
+{/* 
               <View style={style.card}>
                 <Text style={style.lable}>item 2</Text>
                 <SelectDropdown
@@ -345,6 +298,7 @@ const SkueditModel = ({show, hide, submit, data}) => {
                   defaultValueByIndex={peoduct2index}
                 />
               </View>
+
               <View style={style.card}>
                 <Text style={style.lable}>item 3</Text>
                 <SelectDropdown
@@ -405,6 +359,7 @@ const SkueditModel = ({show, hide, submit, data}) => {
                   defaultValueByIndex={peoduct3index}
                 />
               </View>
+
               <View style={style.card}>
                 <Text style={style.lable}>note</Text>
                 <TextInput
@@ -425,6 +380,7 @@ const SkueditModel = ({show, hide, submit, data}) => {
                   onContentSizeChange={handleContentSizeChange}
                 />
               </View>
+
               <View style={style.card}>
                 <TouchableOpacity
                   style={styles.btn}
@@ -441,7 +397,20 @@ const SkueditModel = ({show, hide, submit, data}) => {
                     submit
                   </Text>
                 </TouchableOpacity>
-              </View>
+              </View> */}
+
+              {
+                !data?.end_visit ? 
+                <TouchableOpacity
+                  style={style.endVisitBtn}
+                  onPress={() => {
+                    endVisit()
+                  }}>
+                  <Text style={styles.reportPageText}>End Visit</Text>
+                </TouchableOpacity>
+                :
+                 null
+              } 
             </View>
           </ScrollView>
         </View>
@@ -486,4 +455,15 @@ const style = StyleSheet.create({
     color: '#000',
     textTransform: 'capitalize',
   },
+  endVisitBtn:{
+    backgroundColor: '#ccc',
+    padding: 10,
+    width: '90%',
+    height: 150,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'red',
+    borderRadius: 10,
+    marginBottom: 20
+  }
 });

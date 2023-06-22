@@ -3,9 +3,6 @@ import React, { useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import moment from 'moment';
 
-const width = Dimensions.get('window').width
-const height = Dimensions.get('window').height
-
 const SkuModel = ({ show, hide, data, submit }) => {
 
     return (
@@ -23,34 +20,38 @@ const SkuModel = ({ show, hide, data, submit }) => {
                     </TouchableOpacity>
                     <ScrollView showsVertical
                     ScrollIndicator={false}>
+
                         <View style={styles.card}>
                             <Text style={styles.lable}>Dr. name</Text>
-                            <Text style={styles.value}>{data.doctor_id?.doc_name}</Text>
+                            <Text style={styles.value}>{data?.doctor?.name}</Text>
                         </View>
+
                         <View style={styles.card}>
                             <Text style={styles.lable}>Dr. Specialty</Text>
-                            <Text style={styles.value}>{data.doctor_id?.sp_name}</Text>
+                            <Text style={styles.value}>{data?.doctor?.speciality?.name}</Text>
                         </View>
+
                         <View style={styles.card}>
                             <Text style={styles.lable}>Time of Visit</Text>
-                            <Text style={styles.value}>{moment(data.time_of_visit).format('h:m A')}</Text>
+                            <Text style={styles.value}>{moment(data?.start_visit).format('h:m A')}</Text>
                         </View>
-                        <View style={styles.card}>
-                            <Text style={styles.lable}>item 1</Text>
-                            <Text style={styles.value}>{data.product1 ? data.product1.product_name : '___________'}</Text>
-                        </View>
-                        <View style={styles.card}>
-                            <Text style={styles.lable}>item 2</Text>
-                            <Text style={styles.value}>{data.product2 ? data.product2.product_name : '___________'}</Text>
-                        </View>
-                        <View style={styles.card}>
-                            <Text style={styles.lable}>item 3</Text>
-                            <Text style={styles.value}>{data.product3 ? data.product3.product_name : '___________'}</Text>
-                        </View>
+
+                        { data?.sample_product?.length > 0 ?
+                            data?.sample_product?.map((item, index) => (
+                                <View style={styles.card}  key={index}>
+                                    <Text style={styles.lable}>Product {index + 1}</Text>
+                                    <Text style={styles.value}>{item?.product?.name}</Text>
+                                </View>
+                            )) 
+                            :
+                             null
+                        }
+
                         <View style={styles.card}>
                             <Text style={styles.lable}>Note</Text>
-                            <Text style={styles.value}>{data.note}</Text>
+                            <Text style={styles.value}>{data?.notes}</Text>
                         </View>
+
                     </ScrollView>
                 </View>
             </View>
