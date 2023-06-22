@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {Alert} from 'react-native';
-import RNFS from 'react-native-fs';
+
 
 const apiClient = axios.create({
   baseURL: 'http://44.211.184.140/api/',
@@ -86,7 +86,6 @@ export const uploadFiles = async (url, files, body = {}) => {
     //   type: files.assets[0].type,
     //   name: files.assets[0].fileName,
     // });
-    // formData.append(`images[]`, JSON.stringify(files.assets));
 
   // files.forEach((file, index) => {
   //   // console.log(file.path);

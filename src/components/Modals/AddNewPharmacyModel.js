@@ -7,12 +7,9 @@ import GetLocation from 'react-native-get-location';
 import {openPicker} from '@baronha/react-native-multiple-image-picker';
 import { uploadFiles, post } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
-// import { useAuth } from '../../contexts/AuthContext';
-// import axios from 'axios';
 import {launchImageLibrary} from 'react-native-image-picker';
 
 const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
-  // const {token} = useAuth();
   const [pharmacyName, setPharmacyName] = useState('');
   const [classification, setClassification] = useState('');
 
@@ -95,40 +92,39 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
 
 
   const onPicker = async () => {
-    const options = {
-      title: 'Select Image',
-      type: 'library',
-      options: {
-        selectionLimit: 1,
-        mediaType: 'photo',
-        includeBase64: false,
+    try {
+      const singleSelectedMode = false;
+      const response = await openPicker({
+        useCameraButton: true,
+        selectedAssets: images,
+        isExportThumbnail: true,
+        maxVideo: 0,
+        doneTitle: 'Done',
+        singleSelectedMode,
+        isCrop: true,
+      });
+      const crop = response.crop;
+      if (crop) {
+        response.path = crop.path;
+        response.width = crop.width;
+        response.height = crop.height;
       }
-    }
 
-    const images = await launchImageLibrary(options);
-    setImages(images);
+      setImages(response);
+      console.log(response);
 
-    // try {
-    //   const singleSelectedMode = false;
-    //   const response = await openPicker({
-    //     useCameraButton: true,
-    //     selectedAssets: images,
-    //     isExportThumbnail: true,
-    //     maxVideo: 0,
-    //     doneTitle: 'Done',
-    //     singleSelectedMode,
-    //     isCrop: true,
-    //   });
-    //   const crop = response.crop;
-    //   if (crop) {
-    //     response.path = crop.path;
-    //     response.width = crop.width;
-    //     response.height = crop.height;
-    //   }
-
-    //   setImages(response);
-    //   console.log(response);
-    // } catch (e) {}
+      const data = await fetch(response.path);
+      const blob = await data.blob();
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          const base64data = reader.result;
+          console.log(base64data);
+          resolve(base64data);
+        };
+      });
+    } catch (e) {}
   };
 
   useEffect(() => {
