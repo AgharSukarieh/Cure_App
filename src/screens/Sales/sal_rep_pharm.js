@@ -58,7 +58,7 @@ const Sal_rep_pharm = ({navigation, route}) => {
           <TouchableOpacity
             style={styles.Sal_rep_pharmButton}
             onPress={() => {
-              navigation.navigate('Return');
+              navigation.navigate('Return', { item: item });
             }}>
             <Text style={styles.reportPageText}>Returns</Text>
           </TouchableOpacity>

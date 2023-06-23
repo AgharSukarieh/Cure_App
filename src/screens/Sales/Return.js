@@ -15,12 +15,19 @@ import Feather from 'react-native-vector-icons/Feather';
 import ScanBarcodeAndQRModel from '../../components/Modals/ScanBarcodeAndQRModel';
 import Input from '../../components/Input';
 import ReturnsAfterAddTable from '../../components/Tables/ReturnsAfterAddTable';
+import {Dropdown} from 'react-native-element-dropdown';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import {SAL_GET_PRODUCT_BY_BARCODE } from '../../Provider/ApiRequest';
+import { get } from '../../WebService/RequestBuilder';
+import globalConstants from '../../config/globalConstants';
+import { TextInput } from 'react-native';
 
 Feather.loadFont();
 
-const Return = () => {
+const Return = ({navigation, route}) => {
+  const item = route.params.item;
+
   const [modal, setModal] = useState(false);
   const [dataForScan, setDataForScan] = useState(null);
   const [notes, setNotes] = useState('');
@@ -28,6 +35,50 @@ const Return = () => {
   const [returnData, setReturnData] = useState([]);
   const [notInStore, setNotInStore] = useState(false);
   const [totalReturnsStatus, setTotalReturnsStatus] = useState(false);
+
+  const [productsData, setProductsData] = useState([])
+  const [productValue, setProductValue] = useState(null)
+  const [productsArray, setProductsArray] = useState([])
+
+  const [date, setDate] = useState('');
+
+  const getProducts = async() => {
+    get(globalConstants.product.products, null, {limit: 10000})
+    .then((res) => { 
+      setProductsArray(res.data);
+        var count = Object.keys(res.data).length
+        let productsArray = []
+        for (var i = 0; i < count; i++ ) {
+            productsArray.push({
+             value: res.data[i].id,
+             label: res.data[i].name
+            })
+        }
+        setProductsData(productsArray);
+    })
+    .catch((err) => {})
+    .finally(() => {
+    })
+  }
+
+  const endEditing = () => {
+    const product = productsArray.find(product => product.id === productValue);
+    const parms = {
+      batch_number_or_barcode: 'FGT78954G',//product.barcode,
+      expiry_date: '2027-06-01',//date,
+      pharmacy_id: 2//item.pharmacy_id,
+    }
+    if (parms.expiry_date != null) {
+      get(globalConstants.return.get_returns, null, parms).then((res) => {
+        setDataForScan(res.return_orders[0]?.order_details[0]);
+        // checIfProductInOurStore(res.return_orders);
+      }).catch(() => {}).finally(() => {});
+    }
+  }
+
+  useEffect(() => {
+    getProducts();
+  }, [])
 
   const scan = () => {
     // To Start Scanning
@@ -124,7 +175,8 @@ const submit = () => {
   return (
     <SafeAreaView>
       <GoBack text={'Return'} />
-      <View style={style.container}>
+      
+      <View style={{width:100, marginBottom:10}}>
         <TouchableOpacity
           style={style.newbtn}
           onPress={() => {
@@ -136,28 +188,65 @@ const submit = () => {
         </TouchableOpacity>
       </View>
 
+      <View style={{width:'50%'}}>
+          <Dropdown
+            style={style.dropdown}
+                  placeholderStyle={style.placeholderStyle}
+                  selectedTextStyle={style.selectedTextStyle}
+                  inputSearchStyle={style.inputSearchStyle}
+                  iconStyle={style.iconStyle}
+                  data={productsData}
+                  search
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={!productValue ? 'Select Product' : '...'}
+                  searchPlaceholder="Search..."
+                  value={productValue}
+                  onBlur={() => {}}
+                  onChange={item => {
+                    setProductValue(item.value);
+                  }}
+                  renderLeftIcon={() => (
+                    <AntDesign
+                      style={styles.icon}
+                      color={productValue ? 'blue' : 'black'}
+                      name="Safety"
+                      size={20}
+                    />
+            )}
+          />
+        <TextInput
+          style={{marginHorizontal: 10, height: 40, borderWidth:1, borderColor: 'blue', marginTop: 10, borderRadius: 5, paddingHorizontal: 10}}
+          placeholder='YYYY-MM-DD'
+          onChange={(txt) => {setDate(txt)}}
+          onEndEditing={endEditing}
+        />
+      </View>
+      
+
       <ScrollView
         showsVerticalScrollIndicator={false}
-        style={{marginVertical: 40, marginHorizontal: 20}}>
+        style={{marginBottom: 40, marginHorizontal: 20}}>
         {dataForScan && (
           <>
             <View style={style.viewInfo}>
               <Text style={style.titleInfo}>Batch # : </Text>
               <Text style={style.phname}>
-                {dataForScan?.batch_number || '-'}
+                {dataForScan?.product?.batch_number || '-'}
               </Text>
             </View>
             <View style={style.viewInfo}>
               <Text style={style.titleInfo}>Expired Date : </Text>
               <Text style={style.phname}>
-                {dataForScan?.expired_date || '-'}
+                {dataForScan?.product?.expiry_date || '-'}
               </Text>
             </View>
             <View style={style.viewInfo}>
               <Text style={style.titleInfo}>Amount : </Text>
-              <Text style={style.phname}>{dataForScan?.amount || '-'}</Text>
+              <Text style={style.phname}>{dataForScan?.units || '-'}</Text>
             </View>
-            <Input
+            {/* <Input
               viewStyle={{marginLeft: 0, marginTop: 15}}
               labelStyle={{
                 fontSize: 20,
@@ -172,7 +261,7 @@ const submit = () => {
               multiline={true}
               numberOfLines={4}
               placeholder={'If you have any comments, write them here.'}
-            />
+            /> */}
             <View
               style={{
                 width: '99%',
@@ -185,7 +274,7 @@ const submit = () => {
             />
           </>
         )}
-        {prductInOurStore ? (
+        {/* {prductInOurStore ? (
           <View style={{marginBottom: 10}}>
             <View style={{...style.viewInfo}}>
               <Text style={style.titleInfo}>Batch # : </Text>
@@ -260,7 +349,7 @@ const submit = () => {
               </View>
             </View>
           )
-        )}
+        )} */}
         <View
           style={{
             width: '99%',
@@ -271,7 +360,7 @@ const submit = () => {
             borderRadius: 22,
           }}
         />
-        {returnData.length > 0 && (
+        {/* {returnData.length > 0 && (
           <>
             <ReturnsAfterAddTable data={returnData} />
             <View
@@ -293,9 +382,9 @@ const submit = () => {
               </TouchableOpacity>
             </View>
           </>
-        )}
+        )} */}
       </ScrollView>
-                    { totalReturnsStatus && <View style={{ marginTop: 20, width: '90%', marginHorizontal: '5%'}}>
+                    {/* { totalReturnsStatus && <View style={{ marginTop: 20, width: '90%', marginHorizontal: '5%'}}>
                         <View style={{...style.card, backgroundColor: '#cccccf' }}>
                                     <Text style={{color: '#7189FF', fontWeight: 'bold'}}>Total Returns</Text>
                                     <View style={{ width: '99%', height: 0.5, backgroundColor: 'black', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
@@ -305,7 +394,7 @@ const submit = () => {
                                         </View> 
                                     </View>
                         </View>
-                    </View>}
+                    </View>} */}
       <ScanBarcodeAndQRModel
         show={modal}
         hide={() => {
@@ -379,4 +468,39 @@ export const style = StyleSheet.create({
     borderRadius: 7
 
 },
+dropdown: {
+  height: 42,
+  borderColor: '#7189FF',
+  borderWidth: 1,
+  borderRadius: 5,
+  paddingHorizontal: 8,
+  marginLeft: 10,
+  marginRight: 10,
+  // marginTop: 20,
+  width:'100%'
+},
+icon: {
+  marginRight: 5,
+},
+placeholderStyle: {
+  fontSize: 16,
+},
+selectedTextStyle: {
+  fontSize: 16,
+},
+iconStyle: {
+  width: 20,
+  height: 20,
+},
+inputSearchStyle: {
+  height: 40,
+  fontSize: 16,
+},
+textinput:{
+  height: 60,
+  borderColor: 'rgba(37, 50, 116, 0.28)',
+  borderWidth: 1,
+  paddingLeft: 10,
+  borderRadius: 5,
+}
 });

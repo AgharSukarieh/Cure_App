@@ -1,5 +1,5 @@
 const base_URL = () => {
-  return 'http://44.211.184.140/api/';
+  return 'https://pharmaceuticals.ncitsolutions.com/api/';
 };
 
 export default {
@@ -44,6 +44,9 @@ export default {
   orders: {
     add_order: 'orders',
     get_orders: 'user-orders',
+  },
+  return: {
+    get_returns: 'return-orders'
   }
 
 };
