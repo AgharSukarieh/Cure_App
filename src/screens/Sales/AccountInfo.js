@@ -16,7 +16,7 @@ import AccountTable from '../../components/Tables/AccountTable';
 import PaymentMethodModel from '../../components/Modals/PaymentMethodModel';
 import DatePicker from 'react-native-date-picker';
 
-Feather.loadFont();
+// Feather.loadFont();
 
 const AccountInfo = ({route}) => {
   const item = route.params.item;

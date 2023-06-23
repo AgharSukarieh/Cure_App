@@ -18,7 +18,7 @@ import SalesItemTable from '../components/Tables/SalesItemTable';
 import Constants from '../config/globalConstants';
 const getSalesEndpoint = Constants.users.user_orders;
 
-Feather.loadFont();
+// Feather.loadFont();
 
 const Sales= ({navigation, route}) => {
 

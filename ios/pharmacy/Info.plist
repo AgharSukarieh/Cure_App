@@ -4,9 +4,14 @@
 <dict>
 
 	<key>NSCameraUsageDescription</key>
-	<string>For taking photos</string>	
+	<string>app wants to access camera</string>	
+	
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>For taking photo</string>
+	<string>app wants to access image gallery</string>
+
+	<key>NSCalendarsUsageDescription</key>
+  	<string>app wants to access calendar</string>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>

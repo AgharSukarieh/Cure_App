@@ -14,7 +14,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import AddNewOrderModel from '../../components/Modals/AddNewOrderModel';
 import Constants from '../../config/globalConstants';
 
-Feather.loadFont();
+// Feather.loadFont();
 
 const Order = ({navigation, route}) => {
   const item = route.params.item;

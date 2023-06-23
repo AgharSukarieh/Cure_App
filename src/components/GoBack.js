@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 
-Icon.loadFont();
+// Icon.loadFont();
 const GoBack = ({ text, addButton=false, addButtonFunc }) => {
   const navigation = useNavigation();
   return (

@@ -10,7 +10,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import OrderModel from '../Modals/OrderModel';
 import AddNewOfferModel from '../Modals/AddNewOfferModel';
 
-AntDesign.loadFont();
+// AntDesign.loadFont();
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 

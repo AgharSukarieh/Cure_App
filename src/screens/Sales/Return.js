@@ -18,7 +18,7 @@ import ReturnsAfterAddTable from '../../components/Tables/ReturnsAfterAddTable';
 
 import {SAL_GET_PRODUCT_BY_BARCODE } from '../../Provider/ApiRequest';
 
-Feather.loadFont();
+// Feather.loadFont();
 
 const Return = () => {
   const [modal, setModal] = useState(false);

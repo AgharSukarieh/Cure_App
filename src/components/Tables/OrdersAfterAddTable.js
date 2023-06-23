@@ -8,7 +8,7 @@ import {
 import React, {useState, useEffect} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
-AntDesign.loadFont();
+// AntDesign.loadFont();
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 

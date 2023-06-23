@@ -15,7 +15,7 @@ import AddNewInventoryModel from '../../components/Modals/AddNewInventoryModel';
 import { get } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
 
-Feather.loadFont();
+// Feather.loadFont();
 
 const Inventory = ({navigation, route}) => {
   const item = route.params.item;
@@ -71,7 +71,7 @@ const Inventory = ({navigation, route}) => {
 
       <View>
 
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={style.newbtn}
           onPress={() => {
             setModal(true);
@@ -79,7 +79,7 @@ const Inventory = ({navigation, route}) => {
           <Text style={{color: '#fff', fontSize: 18, paddingHorizontal: 5}}>
             Add
           </Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
 
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{marginVertical: 10}}>
@@ -89,7 +89,7 @@ const Inventory = ({navigation, route}) => {
 
       </View>
 
-      {/* <AddNewInventoryModel
+      <AddNewInventoryModel
         show={modal}
         hide={() => {
           setModal(false);
@@ -97,7 +97,7 @@ const Inventory = ({navigation, route}) => {
         submit={e => {
           submit2(e);
         }}
-      /> */}
+      />
     </SafeAreaView>
   );
 };
