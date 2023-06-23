@@ -15,7 +15,7 @@ import AddNewInventoryModel from '../../components/Modals/AddNewInventoryModel';
 import { get } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
 
-// Feather.loadFont();
+Feather.loadFont();
 
 const Inventory = ({navigation, route}) => {
   const item = route.params.item;

@@ -2,7 +2,7 @@ import { TouchableOpacity, Text, View, StyleSheet, Dimensions } from 'react-nati
 import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SalesModel from '../Modals/SalesModel';
-// AntDesign.loadFont();
+AntDesign.loadFont();
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 

@@ -2,7 +2,7 @@ import { TouchableOpacity, Text, View, StyleSheet, Dimensions } from 'react-nati
 import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import InventoryModel from '../Modals/InventoryModel';
-// AntDesign.loadFont();
+AntDesign.loadFont();
 
 const InventoryTable = ({ data }) => {
     const [modal, setModal] = useState(false)
