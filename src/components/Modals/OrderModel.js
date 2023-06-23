@@ -1,13 +1,22 @@
 import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-
-const width = Dimensions.get('window').width
-const height = Dimensions.get('window').height
 
 const OrderModel = ({ show, hide, data }) => {
 
-    // console.log(data);
+const [totalPrice, setTotalPrice] = useState(0);
+
+const calc = () => {
+    var price = 0
+    data?.order_details?.forEach(element => {
+        price = price + (parseFloat(element?.units) * parseFloat(element?.product?.price_tax))
+    });
+    setTotalPrice(price);
+}
+
+useEffect(() => {
+    calc();
+}, [])
 
     return (
         <Modal
@@ -23,47 +32,69 @@ const OrderModel = ({ show, hide, data }) => {
                         <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
 
-                    <Text style={styles.phname}>{data.pharm_name}</Text>
-                    <Text style={styles.phlocation}>{data.location}</Text>
+                    <Text style={styles.phname}>{data?.pharmacy}</Text>
+                    <Text style={styles.phlocation}>{data?.city}</Text>
+
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={{ marginVertical: 10 }}>
-                            {data?.items?.map((item, index) => (
+
+                            {data?.order_details?.map((item, index) => (
+                                
                                 <View key={index} style={styles.card}>
-                                    <Text style={styles.item_name}>{item.item_name}</Text>
+                                    <Text style={styles.item_name}>{item?.product?.name}</Text>
                                     <View style={{ width: '99%', height: 0.5, backgroundColor: '#7189FF', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 15 }}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 }}>
                                         <View style={styles.item_info}>
-                                            <Text style={styles.item_itemtitle}>Unit</Text>
-                                            <Text style={styles.item_item}>{item.bonus}</Text>
+                                            <Text style={styles.item_itemtitle}>Barcode</Text>
+                                            <Text style={{...styles.item_item, fontSize: 11}}>{item?.product?.barcode}</Text>
                                         </View>
                                         <View style={styles.item_info}>
-                                            <Text style={styles.item_itemtitle}>Bouns</Text>
-                                            <Text style={styles.item_item}>{item.items_sum}</Text>
+                                            <Text style={styles.item_itemtitle}>Amount</Text>
+                                            <Text style={styles.item_item}>{item?.units}</Text>
                                         </View>
                                         <View style={styles.item_info}>
-                                            <Text style={styles.item_itemtitle}>Cost Price</Text>
-                                            <Text style={styles.item_item}>{item.bonus}</Text>
-                                        </View>   
-                                        <View style={styles.item_info}>
-                                            <Text style={styles.item_itemtitle}>Public Price</Text>
-                                            <Text style={styles.item_item}>{item.bonus}</Text>
+                                            <Text style={styles.item_itemtitle}>Bonus</Text>
+                                            <Text style={styles.item_item}>{item?.bonus}</Text>
                                         </View> 
+
+                                        <View style={styles.item_info}>
+                                            <Text style={styles.item_itemtitle}>Cost</Text>
+                                            <Text style={styles.item_item}>{parseFloat(item?.units) * parseFloat(item?.product?.price)}</Text>
+                                        </View> 
+                                        
+                                        <View style={styles.item_info}>
+                                            <Text style={styles.item_itemtitle}>with-Tax</Text>
+                                            <Text style={styles.item_item}>{parseFloat(item?.units) * parseFloat(item?.product?.price_tax)}</Text>
+                                        </View> 
+
+                                        <View style={styles.item_info}>
+                                            <Text style={styles.item_itemtitle}>Expiry date</Text>
+                                            <Text style={styles.item_item}>{item?.product?.expiry_date}</Text>
+                                        </View> 
+
                                     </View>
                                 </View>
                             ))}
+
                         </View>
                     </ScrollView>
+
                     <View style={{ marginVertical: 10, marginTop: 20}}>
                         <View style={{...styles.card, backgroundColor: '#cccccf' }}>
-                                    <Text style={{...styles.item_name, color: '#7189FF', fontWeight: 'bold'}}>Total Cost</Text>
+                                    {/* <TouchableOpacity onPress={() => {calc()}}> */}
+                                        <Text style={{...styles.item_name, color: '#7189FF', fontWeight: 'bold'}}>Total Cost</Text>
+                                    {/* </TouchableOpacity> */}
+                                     
                                     <View style={{ width: '99%', height: 0.5, backgroundColor: 'black', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
+                                   
                                     <View style={{ flexDirection: 'row', justifyContent: 'center', paddingHorizontal: 15 }}>  
                                         <View style={styles.item_info}>
-                                            <Text style={{fontSize: 20, fontWeight:'bold', color: 'black'}}>20.0 JOD</Text>
+                                            <Text style={{fontSize: 20, fontWeight:'bold', color: 'black'}}>{totalPrice} JOD</Text>
                                         </View> 
                                     </View>
                         </View>
                     </View>
+
                 </View>
             </View>
         </Modal>
@@ -101,7 +132,7 @@ const styles = StyleSheet.create({
         width: '99%',
         alignSelf: 'center',
         backgroundColor: '#fff',
-        padding: 15,
+        padding: 5,
         // borderTopWidth: 1,
         // borderBottomWidth: 1,
         // paddingBottom: 10,

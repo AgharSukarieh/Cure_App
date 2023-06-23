@@ -26,7 +26,6 @@ const DailySales = ({ navigation, route }) => {
             sale_id: user.sales.id,
             limit: 500
         }
-        console.log(params);
         get(Constants.visit.sales, null, params)
         .then((res) => {
             setrows(res.data)
@@ -54,7 +53,7 @@ const DailySales = ({ navigation, route }) => {
 
                     <View style={style.div}>
                         {rows && rows.map((item, index) => (
-                            <TouchableOpacity key={index} style={style.card} onPress={() => { navigation.navigate('Sal_rep_pharm', { item: item, area: area });
+                            <TouchableOpacity key={index} style={style.card} onPress={() => { navigation.navigate('Sal_rep_pharm', { item: item, area: area, date: date });
                              }}>
                                 <Text style={{ color: "#fff", fontSize: 17, fontWeight: '700' }}>{item?.name}</Text>
                             </TouchableOpacity>

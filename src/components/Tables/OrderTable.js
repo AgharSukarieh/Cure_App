@@ -11,8 +11,6 @@ import OrderModel from '../Modals/OrderModel';
 import AddNewOfferModel from '../Modals/AddNewOfferModel';
 
 AntDesign.loadFont();
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
 
 const OrderTable = ({data}) => {
   const [modal, setModal] = useState(false);
@@ -36,15 +34,15 @@ const OrderTable = ({data}) => {
         </View>
         <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
         <View style={styles.headerel}>
-          <Text style={styles.headerel_tetx}>Cost</Text>
+          <Text style={styles.headerel_tetx}>Total Price</Text>
         </View>
-        <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
+        {/* <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
         <View style={styles.headerel}>
-          <Text style={styles.headerel_tetx}>Offers</Text>
-        </View>
+          <Text style={styles.headerel_tetx}></Text>
+        </View> */}
         <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
         <View style={{...styles.headerel, width: '12%'}}>
-          <Text style={styles.headerel_tetx}>Info</Text>
+          <Text style={styles.headerel_tetx}>View</Text>
         </View>
       </View>
       {data ? (
@@ -55,28 +53,31 @@ const OrderTable = ({data}) => {
               backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff',
             }}
             key={index}>
-            <View style={{...styles.rowel, width: '30.1%'}}>
-              <Text
-                style={{
-                  ...styles.rowel_tetx,
-                  color: index % 2 == 0 ? '#fff' : '#000',
-                }}>
-                {item.pharm_name}
-              </Text>
-            </View>
+
             <View style={styles.rowel}>
-              {item?.items?.slice(0, 3).map((row, index2) => (
+              {item?.order_details?.slice(0, 5).map((row, index2) => (
                 <Text
                   key={index2}
                   style={{
                     ...styles.rowel_tetx,
                     color: index % 2 == 0 ? '#fff' : '#000',
                   }}>
-                  {row.item_name}
+                  {row?.product?.name}
                 </Text>
               ))}
             </View>
-            <View style={styles.rowel}>
+
+            <View style={{...styles.rowel, width: '30.1%'}}>
+              <Text
+                style={{
+                  ...styles.rowel_tetx,
+                  color: index % 2 == 0 ? '#fff' : '#000',
+                }}>
+                {item?.order_status}
+              </Text>
+            </View>
+
+            {/* <View style={styles.rowel}>
               <TouchableOpacity
                 style={{
                     ...styles.newbtn,
@@ -88,7 +89,8 @@ const OrderTable = ({data}) => {
                 }}>
                 <AntDesign name="plus" size={30} color= {index % 2 != 0 ? '#7189FF' : '#fff'} />
               </TouchableOpacity>
-            </View>
+            </View> */}
+
             <View style={{...styles.rowel, width: '12%'}}>
               <TouchableOpacity
                 onPress={() => {
@@ -97,6 +99,7 @@ const OrderTable = ({data}) => {
                 <AntDesign name="infocirlceo" color="gold" size={17} />
               </TouchableOpacity>
             </View>
+
           </View>
         ))
       ) : (
@@ -120,7 +123,7 @@ const OrderTable = ({data}) => {
         }}
         data={rowdata}
       />
-      <AddNewOfferModel show={offersModal} hide={() => { setOffersModal(false) }} submit={(e) => { submitBtn(e) }} item={item}/>
+      {/* <AddNewOfferModel show={offersModal} hide={() => { setOffersModal(false) }} submit={(e) => { submitBtn(e) }} item={item}/> */}
     </View>
   );
 };

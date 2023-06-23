@@ -8,24 +8,43 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import GoBack from '../../components/GoBack';
-import {salesdata} from '../../helpers/data';
+// import {salesdata} from '../../helpers/data';
 import OrderTable from '../../components/Tables/OrderTable';
 import Feather from 'react-native-vector-icons/Feather';
 import AddNewOrderModel from '../../components/Modals/AddNewOrderModel';
 import Constants from '../../config/globalConstants';
+import { get } from '../../WebService/RequestBuilder';
+import { useAuth } from '../../contexts/AuthContext';
+import moment from 'moment';
 
 Feather.loadFont();
 
 const Order = ({navigation, route}) => {
+  const {user} = useAuth();
   const item = route.params.item;
   const area = route.params.area;
+  const date = route.params.date;
 
   const [modal, setModal] = useState(false)
   const [rows, setRows] = useState([])
 
-//   useEffect(() => {
-//     setRows(salesdata)
-//   }, []);
+  const getOrders = () => {
+    const params = {
+      user_id: 8,//user.id,
+      pharmacy_id: 2,//item.pharmacy_id,
+      data: '2023-06-15'// moment(date, 'YYYY-M-D').format('YYYY-MM-DD'), 
+    }
+    get(Constants.orders.get_orders, null, params).then((res) => {
+      setRows(res.data)
+    }).catch((res) => {
+
+    }).finally(() => {})
+  }
+
+
+  useEffect(() => {
+    getOrders();
+  }, []);
 
 // const submit2 = (data) => {
 //   const testData = {
@@ -71,7 +90,7 @@ const Order = ({navigation, route}) => {
       
       <ScrollView showsVerticalScrollIndicator={false} style={{marginVertical: 40}}>
         <View>
-          <OrderTable data={salesdata} />
+          <OrderTable data={rows} />
         </View>
       </ScrollView> 
 

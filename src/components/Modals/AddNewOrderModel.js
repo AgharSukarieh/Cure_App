@@ -73,7 +73,7 @@ const AddNewOrderModel = ({show, hide, submit, item}) => {
   }
 
   const afterAddAmount = () => {
-  setBouns(0.0);
+    setBouns(0.0);
     const product = productsArray.find(product => product.id === productValue);
     
     if (product.bonuse != null && product.bonuse?.quantity_required && parseFloat(amount) >= product.bonuse?.quantity_required) {
@@ -84,14 +84,14 @@ const AddNewOrderModel = ({show, hide, submit, item}) => {
         case 'Fix':
           bonuse = (parseFloat(amount) / product.bonuse?.quantity_required) * product.bonuse?.bonuse
           setBouns(bonuse.toFixed(3));
-          price = parseFloat(product.price) * parseFloat(amount);
+          price = parseFloat(product.price_tax) * parseFloat(amount);
           console.log(price);
           set_total_price_product(price)
           break;
         case 'Percentage':
           bonuse = parseFloat(amount) * (product.bonuse?.bonuse / 100)
           setBouns(bonuse.toFixed(3));
-          price = parseFloat(product.price) * parseFloat(amount);
+          price = parseFloat(product.price_tax) * parseFloat(amount);
           set_total_price_product(price)
           break;
         case 'Discount':
@@ -99,7 +99,7 @@ const AddNewOrderModel = ({show, hide, submit, item}) => {
           const afterDiscountPrice = beforeDiscountPrice - (product.bonuse?.bonuse)
           const priceOfBouns = beforeDiscountPrice - afterDiscountPrice
           setBouns(priceOfBouns);
-          price = parseFloat(product.price) * parseFloat(amount);
+          price = parseFloat(product.price_tax) * parseFloat(amount);
           set_total_price_product(price)
           break;  
         default:
@@ -107,7 +107,7 @@ const AddNewOrderModel = ({show, hide, submit, item}) => {
       }
     } else {
       var price = 0.0;
-      price = parseFloat(product.price) * parseFloat(amount);
+      price = parseFloat(product.price_tax) * parseFloat(amount);
       console.log(price);
       set_total_price_product(price)
     }

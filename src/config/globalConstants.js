@@ -43,7 +43,7 @@ export default {
   },
   orders: {
     add_order: 'orders',
-    
+    get_orders: 'user-orders',
   }
 
 };

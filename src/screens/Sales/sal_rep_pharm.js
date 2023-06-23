@@ -16,7 +16,8 @@ import Constants from '../../config/globalConstants';
 const Sal_rep_pharm = ({navigation, route}) => {
   const item = route.params.item;
   const area = route.params.area;
-
+  const date = route.params.date;
+  
   console.log('item---- ',item);
 
   const endVisit = async () => {
@@ -49,7 +50,7 @@ const Sal_rep_pharm = ({navigation, route}) => {
           <TouchableOpacity
             style={styles.Sal_rep_pharmButton}
             onPress={() => {
-              navigation.navigate('Order', { item: item, area: area });
+              navigation.navigate('Order', { item: item, area: area, date: date });
             }}>
             <Text style={styles.reportPageText}>Orders</Text>
           </TouchableOpacity>
