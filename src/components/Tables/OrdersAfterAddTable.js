@@ -13,6 +13,7 @@ const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
 const OrdersAfterAddTable = ({data}) => {
+  console.log(data);
   const [modal, setModal] = useState(false);
   const [offersModal, setOffersModal] = useState(false);
   const [rowdata, setrowdata] = useState('');
@@ -20,6 +21,7 @@ const OrdersAfterAddTable = ({data}) => {
 
   return (
     <View style={styles.container}>
+
       <View style={styles.header}>
         <View style={{...styles.headerel, width: '30%'}}>
           <Text style={styles.headerel_tetx}>Items</Text>
@@ -33,6 +35,7 @@ const OrdersAfterAddTable = ({data}) => {
           <Text style={styles.headerel_tetx}>Bouns</Text>
         </View>
       </View>
+
       {data ? (
         data.map((item, index) => (
           <View
@@ -47,7 +50,7 @@ const OrdersAfterAddTable = ({data}) => {
                   ...styles.rowel_tetx,
                   color: index % 2 == 0 ? '#fff' : '#000',
                 }}>
-                {item?.productLabel}
+                {item?.product_name}
               </Text>
             </View>
             <View style={styles.rowel}>
@@ -56,7 +59,7 @@ const OrdersAfterAddTable = ({data}) => {
                     ...styles.rowel_tetx,
                     color: index % 2 == 0 ? '#fff' : '#000',
                   }}>
-                  {item?.amount}
+                  {item?.units}
                 </Text>
             </View>
             <View style={styles.rowel}>
@@ -65,7 +68,7 @@ const OrdersAfterAddTable = ({data}) => {
                     ...styles.rowel_tetx,
                     color: index % 2 == 0 ? '#fff' : '#000',
                   }}>
-                  {item?.bouns}
+                  {item?.bonus}
                 </Text>
             </View>
           </View>
@@ -80,7 +83,7 @@ const OrdersAfterAddTable = ({data}) => {
             borderWidth: 1,
           }}>
           <Text style={{textTransform: 'capitalize', fontSize: 25}}>
-            no available data
+            no available added 
           </Text>
         </View>
       )}

@@ -49,7 +49,7 @@ const Sal_rep_pharm = ({navigation, route}) => {
           <TouchableOpacity
             style={styles.Sal_rep_pharmButton}
             onPress={() => {
-              navigation.navigate('Order');
+              navigation.navigate('Order', { item: item, area: area });
             }}>
             <Text style={styles.reportPageText}>Orders</Text>
           </TouchableOpacity>

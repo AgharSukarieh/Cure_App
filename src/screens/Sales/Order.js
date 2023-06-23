@@ -7,42 +7,43 @@ import {
   StyleSheet
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {styles} from '../../components/styles';
 import GoBack from '../../components/GoBack';
 import {salesdata} from '../../helpers/data';
 import OrderTable from '../../components/Tables/OrderTable';
-import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
 import AddNewOrderModel from '../../components/Modals/AddNewOrderModel';
-import { isBlock } from 'typescript';
+import Constants from '../../config/globalConstants';
 
 Feather.loadFont();
 
-const Order = () => {
+const Order = ({navigation, route}) => {
+  const item = route.params.item;
+  const area = route.params.area;
+
   const [modal, setModal] = useState(false)
   const [rows, setRows] = useState([])
 
-  useEffect(() => {
-    setRows(salesdata)
-  }, []);
+//   useEffect(() => {
+//     setRows(salesdata)
+//   }, []);
 
-const submit2 = (data) => {
-  const testData = {
-    id: 1,
-    pharm_name: 'test pharm 1',
-    location: 'Jabal Weibdeh',
-    items: [
-        {
-            item_id: 1,
-            item_name: 'test item 1',
-            items_sum: 12,
-            bonus: 0,
-            price: 20
-        }
-    ]
-}
-  setRows([...rows,testData])
-}
+// const submit2 = (data) => {
+//   const testData = {
+//     id: 1,
+//     pharm_name: 'test pharm 1',
+//     location: 'Jabal Weibdeh',
+//     items: [
+//         {
+//             item_id: 1,
+//             item_name: 'test item 1',
+//             items_sum: 12,
+//             bonus: 0,
+//             price: 20
+//         }
+//     ]
+// }
+//   setRows([...rows,testData])
+// }
 
   return (
     <SafeAreaView>
@@ -74,7 +75,7 @@ const submit2 = (data) => {
         </View>
       </ScrollView> 
 
-      <AddNewOrderModel show={modal} hide={() => { setModal(false) }} submit={(e) => { submit2(e) }} />
+      <AddNewOrderModel show={modal} hide={() => { setModal(false) }} submit={(e) => { submit2(e) }} item={item}/>
     </SafeAreaView>
   );
 };

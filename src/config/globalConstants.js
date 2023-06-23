@@ -40,6 +40,10 @@ export default {
   },
   inventory: {
     get_inventory: 'get-last-order-pharamcy',
+  },
+  orders: {
+    add_order: 'orders',
+    
   }
 
 };

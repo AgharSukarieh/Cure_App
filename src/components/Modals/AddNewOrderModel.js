@@ -9,54 +9,134 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import SelectDropdown from 'react-native-select-dropdown';
-import Feather from 'react-native-vector-icons/Feather';
 import {styles} from '../styles';
 import moment from 'moment';
-import DatePicker from 'react-native-date-picker';
-
 import Input from '../Input';
 import {Dropdown} from 'react-native-element-dropdown';
 import OrdersAfterAddTable from '../../components/Tables/OrdersAfterAddTable';
+import Constants from '../../config/globalConstants';
+import { get, post } from '../../WebService/RequestBuilder';
+import { useAuth } from '../../contexts/AuthContext';
 
-const AddNewOrderModel = ({show, hide, submit}) => {
-  const [amount, setAmount] = useState('');
-  const [bouns, setBouns] = useState('');
+const AddNewOrderModel = ({show, hide, submit, item}) => {
+  const {user} = useAuth();
+  const [productsData, setProductsData] = useState([])
+  const [productValue, setProductValue] = useState(null)
+  const [productLabel, setProductLabel] = useState(null)
+  const [productsArray, setProductsArray] = useState([])
 
-  const [productsData, setProductsData] = useState([]);
-  const [productValue, setProductValue] = useState(null);
-  const [productLabel, setProductLabel] = useState(null);
-  const [isProductFocus, setIsProductFocus] = useState(false);
-
+  const [amount, setAmount] = useState(0);
+  const [bouns, setBouns] = useState(0);
+  const [total_price, set_total_price] = useState(0);
+  const [total_price_product, set_total_price_product] = useState(0);
   const [orderData, setOrderData] = useState([]);
 
-  const data = {productValue, amount, bouns};
-
   const submitBtn = () => {
+    console.log('QQQ', total_price);
     if (orderData.length > 0) {
-      submit(data);
-      console.log('z',orderData);
+      // submit(data);
+      const data = {
+        user_id: user.id,
+        pharmacy_id: item.pharmacy_id,
+        payment_method: 0,
+        total_price: total_price,
+        products: orderData
+      }
+      post(Constants.orders.add_order, data).then((res) => {
+        // console.log('rrrrrrrrrrrrrrrrrrrrrrrrrrrrr', res);
+      }).catch((err) => {
+
+      }).finally(() => {})
       hide();
       setOrderData([])
+      set_total_price(0)
     }
   };
 
+  const getProducts = async() => {
+    get(Constants.product.products, null, {limit: 10000})
+    .then((res) => { 
+        setProductsArray(res.data);
+        var count = Object.keys(res.data).length
+        let productsArray = []
+        for (var i = 0; i < count; i++ ){
+            productsArray.push({
+             value: res.data[i].id,
+             label: res.data[i].name
+            })
+        }
+        setProductsData(productsArray);
+    })
+    .catch((err) => {})
+    .finally(() => {
+    })
+  }
+
+  const afterAddAmount = () => {
+  setBouns(0.0);
+    const product = productsArray.find(product => product.id === productValue);
+    
+    if (product.bonuse != null && product.bonuse?.quantity_required && parseFloat(amount) >= product.bonuse?.quantity_required) {
+      var bonuse = 0.0;
+      var price = 0.0;
+
+      switch(product.bonuse?.type) {
+        case 'Fix':
+          bonuse = (parseFloat(amount) / product.bonuse?.quantity_required) * product.bonuse?.bonuse
+          setBouns(bonuse.toFixed(3));
+          price = parseFloat(product.price) * parseFloat(amount);
+          console.log(price);
+          set_total_price_product(price)
+          break;
+        case 'Percentage':
+          bonuse = parseFloat(amount) * (product.bonuse?.bonuse / 100)
+          setBouns(bonuse.toFixed(3));
+          price = parseFloat(product.price) * parseFloat(amount);
+          set_total_price_product(price)
+          break;
+        case 'Discount':
+          const beforeDiscountPrice = parseFloat(amount) * product.price_tax
+          const afterDiscountPrice = beforeDiscountPrice - (product.bonuse?.bonuse)
+          const priceOfBouns = beforeDiscountPrice - afterDiscountPrice
+          setBouns(priceOfBouns);
+          price = parseFloat(product.price) * parseFloat(amount);
+          set_total_price_product(price)
+          break;  
+        default:
+          // code block
+      }
+    } else {
+      var price = 0.0;
+      price = parseFloat(product.price) * parseFloat(amount);
+      console.log(price);
+      set_total_price_product(price)
+    }
+
+  }
+
   const addBtn = () => {
-    if (productValue != '' && amount != '') {
+    if (productValue != null && amount != 0) {
         const data = {
-            productValue,
-            productLabel,
-            amount,
-            bouns
+          product_id: productValue,
+          product_name: productLabel,
+          units: amount,
+          bonus: bouns
         }
         const dd = [...orderData, data]
         setOrderData(dd)
+        const total_p = total_price + total_price_product
+        set_total_price(total_p);
+        set_total_price_product(0)
         setProductValue(null);
         setProductLabel(null);
-        setAmount('');
-        setBouns('');
+        setAmount(0);
+        setBouns(0);
     }
   }
+
+  useEffect(() => {
+    getProducts();
+  }, []);
 
   return (
     <Modal
@@ -84,7 +164,7 @@ const AddNewOrderModel = ({show, hide, submit}) => {
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{marginVertical: 0, paddingHorizontal:10}}>
               <View style={style.card}>
-                {/* <Input lable={'Item'} setData={setItem} style= {styles.inputModel}/> */}
+
                 <Dropdown
                   style={style.dropdown}
                   placeholderStyle={style.placeholderStyle}
@@ -96,46 +176,47 @@ const AddNewOrderModel = ({show, hide, submit}) => {
                   maxHeight={300}
                   labelField="label"
                   valueField="value"
-                  placeholder={!isProductFocus ? 'Select Product' : '...'}
+                  placeholder={!productValue ? 'Select Product' : '...'}
                   searchPlaceholder="Search..."
                   value={productValue}
-                  onFocus={() => setIsProductFocus(true)}
-                  onBlur={() => setIsProductFocus(false)}
+                  onBlur={() => {}}
                   onChange={item => {
                     setProductValue(item.value);
                     setProductLabel(item.label)
-                    setIsProductFocus(false);
                   }}
                   renderLeftIcon={() => (
                     <AntDesign
                       style={styles.icon}
-                      color={isProductFocus ? 'blue' : 'black'}
+                      color={productValue ? 'blue' : 'black'}
                       name="Safety"
                       size={20}
                     />
                   )}
                 />
+                
                 <Input
                   lable={'Amount'}
                   setData={setAmount}
+                  onEndEditing={afterAddAmount}
                   style={styles.inputModel}
                   value={amount}
                 />
-                {/* <Input lable={'Expired Date'} setData={setExpiredDate}  style= {styles.inputModel} /> */}
-                <Input
-                  lable={'Bouns'}
-                  setData={setBouns}
-                  style={styles.inputModel}
-                  value={bouns}
-                />
-                {/* <Input lable={'Offers'} setData={setOffers} style= {styles.inputModel}/> */}
+
+                
+                <View style={{marginHorizontal: 10, marginTop: 20}}>
+                      <Text style={{marginBottom: 5,
+                          color: '#253274',
+                          fontSize: 11,}}>Bouns
+                      </Text>
+                      <View style={{height: 40, borderWidth: 1, justifyContent:'center', padding: 10, borderRadius: 5, borderColor: '#7189FF'}}>
+                        <Text style={{color: 'black'}}>{bouns}</Text>
+                      </View>
+                </View>
+                
               </View>
-              {/* <View style={style.card}>
-                                <TouchableOpacity style={{ ...styles.btn, backgroundColor: '#7189FF', height: 45 }} onPress={() => { submitBtn() }}>
-                                    <Text style={{ fontSize: 18, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>submit</Text>
-                                </TouchableOpacity>
-                            </View> */}
+
               <View style={style.btnContainer}>
+
                 <TouchableOpacity
                   style={{
                     ...style.btn,
@@ -156,6 +237,7 @@ const AddNewOrderModel = ({show, hide, submit}) => {
                     submit
                   </Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
                   style={{
                     ...style.btn,
@@ -176,11 +258,15 @@ const AddNewOrderModel = ({show, hide, submit}) => {
                     Add
                   </Text>
                 </TouchableOpacity>
+
               </View>
+
             </View>
+
             <View>
               <OrdersAfterAddTable data={orderData} />
             </View>
+
           </ScrollView>
         </View>
       </View>
@@ -278,4 +364,11 @@ const style = StyleSheet.create({
     height: 40,
     fontSize: 16,
   },
+  textinput:{
+    height: 60,
+    borderColor: 'rgba(37, 50, 116, 0.28)',
+    borderWidth: 1,
+    paddingLeft: 10,
+    borderRadius: 5,
+  }
 });
