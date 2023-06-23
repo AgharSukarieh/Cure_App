@@ -55,6 +55,7 @@ useEffect(() => {
                                         <View style={styles.item_info}>
                                             <Text style={styles.item_itemtitle}>Bonus</Text>
                                             <Text style={styles.item_item}>{item?.bonus}</Text>
+                                            
                                         </View> 
 
                                         <View style={styles.item_info}>
