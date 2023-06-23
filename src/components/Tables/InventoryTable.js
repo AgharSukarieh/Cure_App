@@ -2,6 +2,7 @@ import { TouchableOpacity, Text, View, StyleSheet, Dimensions } from 'react-nati
 import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import InventoryModel from '../Modals/InventoryModel';
+import moment from 'moment';
 AntDesign.loadFont();
 
 const InventoryTable = ({ data }) => {
@@ -28,7 +29,7 @@ const InventoryTable = ({ data }) => {
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
                 <View style={styles.headerel}>
-                    <Text style={styles.headerel_tetx}>Expired</Text>
+                    <Text style={styles.headerel_tetx}>Last Order</Text>
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
                 <View style={{ ...styles.headerel, width: '12%', }}>
@@ -45,13 +46,13 @@ const InventoryTable = ({ data }) => {
                             {/* {item?.items?.slice(0, 3).map((row, index2) => (
                                 <Text key={index2} style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{row.item_name}</Text>
                             ))} */}
-                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item?.product?.quantity}</Text>
+                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{parseFloat(item?.units) + parseFloat(item?.bouns)}</Text>
                         </View>
                         <View style={styles.rowel}>
                             {/* {item?.items?.slice(0, 3).map((row, index2) => (
                                 <Text key={index2} style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{row.items_sum} / {row.bonus}</Text>
                             ))} */}
-                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item?.product?.expiry_date}</Text>
+                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{moment(item?.created_at).format('YYYY-MM-DD')}</Text>
                         </View>
                         <View style={{ ...styles.rowel, width: '12%', }}>
                             <TouchableOpacity onPress={() => { DDD(item) }}>

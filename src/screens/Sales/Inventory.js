@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  TextInput,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {styles} from '../../components/styles';
@@ -14,17 +16,40 @@ import Feather from 'react-native-vector-icons/Feather';
 import AddNewInventoryModel from '../../components/Modals/AddNewInventoryModel';
 import { get } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
+import {Dropdown} from 'react-native-element-dropdown';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 Feather.loadFont();
 
 const Inventory = ({navigation, route}) => {
   const item = route.params.item;
   const area = route.params.area;
-
+  const [barcode, setBarcode] = useState(); 
   const [modal, setModal] = useState(false);
   const [rows, setRows] = useState(null);
+  const [productFromBarcode, setProductFromBarcode] = useState(null);
+  const [showTable, setShowTable] = useState(false)
+  const [productsData, setProductsData] = useState([])
+  const [productValue, setProductValue] = useState(null)
+ 
+  const getProducts = async() => {
+    get(Constants.product.products, null, {limit: 10000})
+    .then((res) => { 
+        var count = Object.keys(res.data).length
+        let productsArray = []
+        for (var i = 0; i < count; i++ ){
+            productsArray.push({
+             value: res.data[i].id,
+             label: res.data[i].name
+            })
+        }
+        setProductsData(productsArray);
+    })
+    .catch((err) => {})
+    .finally(() => {
+    })
+  }
 
-  console.log(item.pharmacy_id);
   const getInventory = () => {
     const parms = {
       pharmacy_id: item.pharmacy_id,
@@ -39,7 +64,8 @@ const Inventory = ({navigation, route}) => {
   }
 
   useEffect(() => {
-    getInventory()
+    getInventory();
+    getProducts();
   }, [])
 
   const submit2 = data => {
@@ -65,25 +91,74 @@ const Inventory = ({navigation, route}) => {
     //   });
   };
 
+  const endEditing = (value) => {
+    const parms = {
+      seach_term: value,
+    }
+    if (parms.seach_term != null) {
+      get(Constants.product.products, null, parms).then((res) => {
+        rows?.order_details?.forEach(element => {
+          if (element.product_id === res.data[0]?.id) {
+            console.log(res.data[0]);
+            setShowTable(true)
+          } else {
+            Alert.alert('Not Match');
+            setShowTable(false)
+          }
+        });
+      }).catch(() => {}).finally(() => {});
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <GoBack text={'Inventory'} />
 
       <View>
-
+        <View style={{flexDirection:'row', justifyContent:'space-between', paddingHorizontal:10}}>
+        <Dropdown
+          style={style.dropdown}
+                  placeholderStyle={style.placeholderStyle}
+                  selectedTextStyle={style.selectedTextStyle}
+                  inputSearchStyle={style.inputSearchStyle}
+                  iconStyle={style.iconStyle}
+                  data={productsData}
+                  search
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={!productValue ? 'Select Product' : '...'}
+                  searchPlaceholder="Search..."
+                  value={productValue}
+                  onBlur={() => {}}
+                  onChange={item => {
+                    setProductValue(item.label);
+                    endEditing(item.label)
+                  }}
+                  renderLeftIcon={() => (
+                    <AntDesign
+                      style={styles.icon}
+                      color={productValue ? 'blue' : 'black'}
+                      name="Safety"
+                      size={20}
+                    />
+          )}
+        />
         <TouchableOpacity
           style={style.newbtn}
           onPress={() => {
-            setModal(true);
+            // setModal(true);
           }}>
           <Text style={{color: '#fff', fontSize: 18, paddingHorizontal: 5}}>
-            Add
+            Scan
           </Text>
         </TouchableOpacity>
+        </View>
+        <View style={{ width: '99%', height: 1, backgroundColor: '#7189FF', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
 
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{marginVertical: 10}}>
-            <InventoryTable data={rows} />
+            {showTable ?   <InventoryTable data={rows} /> : null}
           </View>
         </ScrollView>
 
@@ -116,4 +191,39 @@ export const style = StyleSheet.create({
     marginHorizontal: 15,
     height: 40,
   },
+  dropdown: {
+    height: 42,
+    borderColor: '#7189FF',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 8,
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 20,
+    width:'50%'
+  },
+  icon: {
+    marginRight: 5,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  textinput:{
+    height: 60,
+    borderColor: 'rgba(37, 50, 116, 0.28)',
+    borderWidth: 1,
+    paddingLeft: 10,
+    borderRadius: 5,
+  }
 });

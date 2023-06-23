@@ -30,9 +30,9 @@ const Order = ({navigation, route}) => {
 
   const getOrders = () => {
     const params = {
-      user_id: 8,//user.id,
-      pharmacy_id: 2,//item.pharmacy_id,
-      data: '2023-06-15'// moment(date, 'YYYY-M-D').format('YYYY-MM-DD'), 
+      user_id: user.id,
+      pharmacy_id: item.pharmacy_id,
+      data: moment(date, 'YYYY-M-D').format('YYYY-MM-DD'), 
     }
     get(Constants.orders.get_orders, null, params).then((res) => {
       setRows(res.data)

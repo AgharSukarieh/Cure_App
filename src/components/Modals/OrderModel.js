@@ -11,7 +11,7 @@ const calc = () => {
     data?.order_details?.forEach(element => {
         price = price + (parseFloat(element?.units) * parseFloat(element?.product?.price_tax))
     });
-    setTotalPrice(price);
+    setTotalPrice(price.toFixed(3));
 }
 
 useEffect(() => {
@@ -59,12 +59,12 @@ useEffect(() => {
 
                                         <View style={styles.item_info}>
                                             <Text style={styles.item_itemtitle}>Cost</Text>
-                                            <Text style={styles.item_item}>{parseFloat(item?.units) * parseFloat(item?.product?.price)}</Text>
+                                            <Text style={styles.item_item}>{(parseFloat(item?.units) * parseFloat(item?.product?.price)).toFixed(2)}</Text>
                                         </View> 
                                         
                                         <View style={styles.item_info}>
                                             <Text style={styles.item_itemtitle}>with-Tax</Text>
-                                            <Text style={styles.item_item}>{parseFloat(item?.units) * parseFloat(item?.product?.price_tax)}</Text>
+                                            <Text style={styles.item_item}>{(parseFloat(item?.units) * parseFloat(item?.product?.price_tax)).toFixed(2)}</Text>
                                         </View> 
 
                                         <View style={styles.item_info}>
@@ -165,6 +165,6 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize',
     },
     item_item: {
-
+        fontSize:12
     }
 })

@@ -50,7 +50,7 @@ const InventoryModel = ({show, hide, data}) => {
           </View>
           <View style={styles.viewInfo}>
             <Text style={styles.titleInfo}>Amount :  </Text>
-            <Text style={styles.phname}>{data?.product?.quantity}</Text>
+            <Text style={styles.phname}>{ parseFloat(data?.units) + parseFloat(data?.bouns)}</Text>
           </View>
           <View style={styles.viewInfo}>
             <Text style={styles.titleInfo}>Expired Date :  </Text>
