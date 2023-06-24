@@ -52,13 +52,16 @@ const ScanBarcodeAndQRModel = ({ show, hide, submit }) => {
       transparent={true}
       visible={show}
       coverScreen={false}
-      onSwipeComplete={() => setModalVisible2(false)}>
+      onSwipeComplete={() => setModalVisible2(false)}
+      >
       <View style={style.ModalContainer}>
-        <View style={style.ModalView}>
+        {/* <View style={style.MosdalView}> */}
+
           <TouchableOpacity onPress={() => { hide() }}>
             <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
           </TouchableOpacity>
-          <View style={{ width: '90%', height: '60%', alignSelf: 'flex-start' }}>
+
+          {/* <View style={{ width: '90%', height: '20%', alignSelf: 'flex-start' }}> */}
             {/* <CameraScreen
               showFrame={false}
               // Show/hide scan frame
@@ -74,7 +77,9 @@ const ScanBarcodeAndQRModel = ({ show, hide, submit }) => {
                 onBarcodeScan(event.nativeEvent.codeStringValue)
               }
             /> */}
+            
             <QRCodeScanner
+            style={{height: 50}}
               onRead={onSuccess}
               flashMode={RNCamera.Constants.FlashMode.torch}
               topContent={
@@ -86,14 +91,15 @@ const ScanBarcodeAndQRModel = ({ show, hide, submit }) => {
               }
               bottomContent={
                 <TouchableOpacity style={styles.buttonTouchable}>
-                  <Text style={style.buttonText}>OK. Got it!</Text>
+                  {/* <Text style={style.buttonText}>OK. Got it!</Text> */}
                 </TouchableOpacity>
               }
             />
-          </View>
+
+          {/* </View> */}
 
         </View>
-      </View>
+      {/* </View> */}
     </Modal>
   );
 };
@@ -111,13 +117,13 @@ const style = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     width: '95%',
-    height: '70%',
+    height: '100%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    padding: 20,
+    // padding: 20,
   },
   centerText: {
     flex: 1,
