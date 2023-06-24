@@ -21,6 +21,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [images, setImages] = useState([]);
+  const [imagesBase64, setImagesBase64] = useState([]);
 
   const submitData = async () => {
 
@@ -47,15 +48,17 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
   }
 
   const getCities = () => {
-    var count = Object.keys(data.cities).length
-        let cityArray = []
-        for (var i = 0; i < count; i++ ){
-            cityArray.push({
-                value: data.cities[i].id,
-                label: data.cities[i].name
-            })
+   if (data) { 
+    var count = Object.keys(data?.cities).length
+      let cityArray = []
+      for (var i = 0; i < count; i++ ){
+          cityArray.push({
+              value: data.cities[i].id,
+              label: data.cities[i].name
+          })
         }  
-        setCitiesData(cityArray)
+      setCitiesData(cityArray)
+      }
   }
  
   const getArea = (id) => {
@@ -109,21 +112,25 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
         response.width = crop.width;
         response.height = crop.height;
       }
-
       setImages(response);
-      console.log(response);
-
-      // const data = await fetch(response[0].path);
-      // const blob = await data.blob();
-      // return new Promise(resolve => {
-      //   const reader = new FileReader();
-      //   reader.readAsDataURL(blob);
-      //   reader.onloadend = () => {
-      //     const base64data = reader.result;
-      //     console.log(base64data);
-      //     resolve(base64data);
-      //   };
-      // });
+      if (response.length > 0 ) {
+        const baseArray = [];
+        response.map(async (img) => {
+          const data = await fetch(img.path);
+          const blob = await data.blob();
+          return new Promise(resolve => {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = () => {
+           const base64data = reader.result;
+           baseArray.push(base64data)
+           resolve(base64data);
+           };
+          });
+        })
+        setImagesBase64(baseArray);
+        console.log(baseArray);
+      }
     } catch (e) {}
   };
 
@@ -319,7 +326,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
                         </TouchableOpacity>
                       </View>
                     )}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.position}
                   />
                 </View>
 

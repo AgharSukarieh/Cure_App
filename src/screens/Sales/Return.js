@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   PermissionsAndroid,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {styles} from '../../components/styles';
@@ -22,6 +23,7 @@ import {SAL_GET_PRODUCT_BY_BARCODE } from '../../Provider/ApiRequest';
 import { get } from '../../WebService/RequestBuilder';
 import globalConstants from '../../config/globalConstants';
 import { TextInput } from 'react-native';
+import ReturnsTable from '../../components/Tables/ReturnsTable';
 
 Feather.loadFont();
 
@@ -40,7 +42,7 @@ const Return = ({navigation, route}) => {
   const [productValue, setProductValue] = useState(null)
   const [productsArray, setProductsArray] = useState([])
 
-  const [date, setDate] = useState('');
+  const [dateEx, setDateEx] = useState('');
 
   const getProducts = async() => {
     get(globalConstants.product.products, null, {limit: 10000})
@@ -64,15 +66,21 @@ const Return = ({navigation, route}) => {
   const endEditing = () => {
     const product = productsArray.find(product => product.id === productValue);
     const parms = {
-      batch_number_or_barcode: 'FGT78954G',//product.barcode,
-      expiry_date: '2027-06-01',//date,
-      pharmacy_id: 2//item.pharmacy_id,
+      batch_number_or_barcode: product?.barcode, //'FGT78954G',
+      expiry_date: dateEx, //'2027-06-01',
+      pharmacy_id: item?.pharmacy_id, //2
     }
-    if (parms.expiry_date != null) {
+
+    if (dateEx != null && dateEx != '') {
       get(globalConstants.return.get_returns, null, parms).then((res) => {
-        setDataForScan(res.return_orders[0]?.order_details[0]);
-        // checIfProductInOurStore(res.return_orders);
-      }).catch(() => {}).finally(() => {});
+        if ((res.return_orders.length > 0)) {
+          setDataForScan(res.return_orders);
+        } else {
+          setDataForScan(null);
+        }
+      }).catch((err) => {
+        Alert.alert(err.message || 'Error')
+      }).finally(() => {});
     }
   }
 
@@ -217,9 +225,9 @@ const submit = () => {
             )}
           />
         <TextInput
-          style={{marginHorizontal: 10, height: 40, borderWidth:1, borderColor: 'blue', marginTop: 10, borderRadius: 5, paddingHorizontal: 10}}
+          style={{marginLeft: 10,width:'100%', height: 40, borderWidth:1, borderColor: 'blue', marginTop: 10, borderRadius: 5, paddingHorizontal: 10}}
           placeholder='YYYY-MM-DD'
-          onChange={(txt) => {setDate(txt)}}
+          onChangeText={text => setDateEx(text)}
           onEndEditing={endEditing}
         />
       </View>
@@ -228,52 +236,64 @@ const submit = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{marginBottom: 40, marginHorizontal: 20}}>
-        {dataForScan && (
-          <>
-            <View style={style.viewInfo}>
-              <Text style={style.titleInfo}>Batch # : </Text>
-              <Text style={style.phname}>
-                {dataForScan?.product?.batch_number || '-'}
-              </Text>
-            </View>
-            <View style={style.viewInfo}>
-              <Text style={style.titleInfo}>Expired Date : </Text>
-              <Text style={style.phname}>
-                {dataForScan?.product?.expiry_date || '-'}
-              </Text>
-            </View>
-            <View style={style.viewInfo}>
-              <Text style={style.titleInfo}>Amount : </Text>
-              <Text style={style.phname}>{dataForScan?.units || '-'}</Text>
-            </View>
-            {/* <Input
-              viewStyle={{marginLeft: 0, marginTop: 15}}
-              labelStyle={{
-                fontSize: 20,
-                color: 'black',
-                fontWeight: 'bold',
-                marginBottom: 10,
-              }}
-              lable={'Notes'}
-              setData={setNotes}
-              style={{...styles.inputModel, height: 100}}
-              value={notes}
-              multiline={true}
-              numberOfLines={4}
-              placeholder={'If you have any comments, write them here.'}
-            /> */}
-            <View
-              style={{
-                width: '99%',
-                height: 1,
-                backgroundColor: '#7189FF',
-                alignSelf: 'center',
-                marginTop: 20,
-                borderRadius: 22,
-              }}
-            />
-          </>
-        )}
+          {/*  */}
+          <View>
+            {dataForScan && <ReturnsTable data={dataForScan} />}
+          </View>
+          {/*  */}
+
+
+
+        {
+        // dataForScan && (
+        //   <>
+        //     <View style={style.viewInfo}>
+        //       <Text style={style.titleInfo}>Batch # : </Text>
+        //       <Text style={style.phname}>
+        //         {dataForScan?.product?.batch_number || '-'}
+        //       </Text>
+        //     </View>
+        //     <View style={style.viewInfo}>
+        //       <Text style={style.titleInfo}>Expired Date : </Text>
+        //       <Text style={style.phname}>
+        //         {dataForScan?.product?.expiry_date || '-'}
+        //       </Text>
+        //     </View>
+        //     <View style={style.viewInfo}>
+        //       <Text style={style.titleInfo}>Amount : </Text>
+        //       <Text style={style.phname}>{dataForScan?.units || '-'}</Text>
+        //     </View>
+        //     {/* <Input
+        //       viewStyle={{marginLeft: 0, marginTop: 15}}
+        //       labelStyle={{
+        //         fontSize: 20,
+        //         color: 'black',
+        //         fontWeight: 'bold',
+        //         marginBottom: 10,
+        //       }}
+        //       lable={'Notes'}
+        //       setData={setNotes}
+        //       style={{...styles.inputModel, height: 100}}
+        //       value={notes}
+        //       multiline={true}
+        //       numberOfLines={4}
+        //       placeholder={'If you have any comments, write them here.'}
+        //     /> */}
+        //     <View
+        //       style={{
+        //         width: '99%',
+        //         height: 1,
+        //         backgroundColor: '#7189FF',
+        //         alignSelf: 'center',
+        //         marginTop: 20,
+        //         borderRadius: 22,
+        //       }}
+        //     />
+        //   </>
+        // )
+        }
+
+
         {/* {prductInOurStore ? (
           <View style={{marginBottom: 10}}>
             <View style={{...style.viewInfo}}>
@@ -350,7 +370,8 @@ const submit = () => {
             </View>
           )
         )} */}
-        <View
+
+        {/* <View
           style={{
             width: '99%',
             height: 1,
@@ -359,7 +380,8 @@ const submit = () => {
             marginTop: 10,
             borderRadius: 22,
           }}
-        />
+        /> */}
+
         {/* {returnData.length > 0 && (
           <>
             <ReturnsAfterAddTable data={returnData} />
@@ -383,8 +405,10 @@ const submit = () => {
             </View>
           </>
         )} */}
+
       </ScrollView>
-                    {/* { totalReturnsStatus && <View style={{ marginTop: 20, width: '90%', marginHorizontal: '5%'}}>
+
+      {/* { totalReturnsStatus && <View style={{ marginTop: 20, width: '90%', marginHorizontal: '5%'}}>
                         <View style={{...style.card, backgroundColor: '#cccccf' }}>
                                     <Text style={{color: '#7189FF', fontWeight: 'bold'}}>Total Returns</Text>
                                     <View style={{ width: '99%', height: 0.5, backgroundColor: 'black', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
@@ -394,7 +418,8 @@ const submit = () => {
                                         </View> 
                                     </View>
                         </View>
-                    </View>} */}
+      </View>} */}
+
       <ScanBarcodeAndQRModel
         show={modal}
         hide={() => {
@@ -404,6 +429,7 @@ const submit = () => {
           submitAfterGetBarcode(e);
         }}
       />
+
     </SafeAreaView>
   );
 };
@@ -413,14 +439,11 @@ export default Return;
 export const style = StyleSheet.create({
   newbtn: {
     backgroundColor: '#7189FF',
-    // width: '25%',
     height: 40,
     paddingVertical: 5,
     paddingHorizontal: 4,
     borderRadius: 7,
     justifyContent: 'center',
-    // alignItems: 'center',
-    // alignSelf: 'flex-end',
     marginHorizontal: 7,
   },
   viewInfo: {
@@ -460,15 +483,10 @@ export const style = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: '#fff',
     padding: 15,
-    // borderTopWidth: 1,
-    // borderBottomWidth: 1,
-    // paddingBottom: 10,
-    // borderStyle: 'dashed',
     marginTop: 10,
     borderRadius: 7
-
-},
-dropdown: {
+  },
+  dropdown: {
   height: 42,
   borderColor: '#7189FF',
   borderWidth: 1,
@@ -476,31 +494,30 @@ dropdown: {
   paddingHorizontal: 8,
   marginLeft: 10,
   marginRight: 10,
-  // marginTop: 20,
   width:'100%'
-},
-icon: {
+  },
+  icon: {
   marginRight: 5,
-},
-placeholderStyle: {
+  },
+  placeholderStyle: {
   fontSize: 16,
-},
-selectedTextStyle: {
+  },
+  selectedTextStyle: {
   fontSize: 16,
-},
-iconStyle: {
+  },
+  iconStyle: {
   width: 20,
   height: 20,
-},
-inputSearchStyle: {
+  },
+  inputSearchStyle: {
   height: 40,
   fontSize: 16,
-},
-textinput:{
+  },
+  textinput:{
   height: 60,
   borderColor: 'rgba(37, 50, 116, 0.28)',
   borderWidth: 1,
   paddingLeft: 10,
   borderRadius: 5,
-}
+  }
 });

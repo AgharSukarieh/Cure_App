@@ -279,7 +279,7 @@ const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = fals
   return (
     <View style={styles.container}>
       {error ? (
-        <Text>Error: {error}</Text>
+        <Text style={{justifyContent:'center', alignItems:'center', alignSelf:'center'}}>No Data Available</Text>
         
       ) : (
         <FlatList

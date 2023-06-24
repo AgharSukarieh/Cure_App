@@ -125,7 +125,7 @@ const Weekly = ({ navigation, route }) => {
 
             </ScrollView>
             {isLoading && <LoadingScreen />}
-            <Weeklyareaedit show={modal} hide={() => { setModal(false) }} data={dayinfo} cityArea = {cityArea} submit={(e) => { submitedit(e) }} />
+            {cityArea && <Weeklyareaedit show={modal} hide={() => { setModal(false) }} data={dayinfo} cityArea = {cityArea} submit={(e) => { submitedit(e) }} />}
         </SafeAreaView >
     );
 };
