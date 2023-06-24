@@ -44,6 +44,8 @@ const Return = ({navigation, route}) => {
 
   const [dateEx, setDateEx] = useState('');
 
+  const [code, setCode] = useState(null);
+
   const getProducts = async() => {
     get(globalConstants.product.products, null, {limit: 10000})
     .then((res) => { 
@@ -66,7 +68,7 @@ const Return = ({navigation, route}) => {
   const endEditing = () => {
     const product = productsArray.find(product => product.id === productValue);
     const parms = {
-      batch_number_or_barcode: product?.barcode, //'FGT78954G',
+      batch_number_or_barcode: code ? code : product?.barcode,//product?.barcode, //'FGT78954G',
       expiry_date: dateEx, //'2027-06-01',
       pharmacy_id: item?.pharmacy_id, //2
     }
@@ -123,26 +125,28 @@ const Return = ({navigation, route}) => {
   };
 
   const submitAfterGetBarcode = dataforscan => {
-    // setDataForScan(dataforscan);
-    const data = {
-      batch_number: 1234,
-      expired_date: '10/3/2023',
-      amount: 4,
-    };
-    setDataForScan(data);
-    checIfProductInOurStore(data);
-    console.log(`Api for: ${dataforscan}`);
-      axios({
-        method: 'GET',
-        url: SAL_GET_PRODUCT_BY_BARCODE,
-        params: {barcode: dataforscan},
-      })
-        .then(response => {
-          console.log(response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
+    setCode(dataforscan)
+
+    // // setDataForScan(dataforscan);
+    // const data = {
+    //   batch_number: 1234,
+    //   expired_date: '10/3/2023',
+    //   amount: 4,
+    // };
+    // setDataForScan(data);
+    // checIfProductInOurStore(data);
+    // console.log(`Api for: ${dataforscan}`);
+    //   axios({
+    //     method: 'GET',
+    //     url: SAL_GET_PRODUCT_BY_BARCODE,
+    //     params: {barcode: dataforscan},
+    //   })
+    //     .then(response => {
+    //       console.log(response.data);
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //     });
 
   };
 

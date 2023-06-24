@@ -79,7 +79,7 @@ const ScanBarcodeAndQRModel = ({ show, hide, submit }) => {
             /> */}
             
             <QRCodeScanner
-            style={{height: 50}}
+              style={{height: 50}}
               onRead={onSuccess}
               flashMode={RNCamera.Constants.FlashMode.torch}
               topContent={
