@@ -4,6 +4,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  View,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import bg from '../../../assets/BG.png'
@@ -18,10 +19,14 @@ import {
   PusherChannel,
   PusherEvent,
 } from '@pusher/pusher-websocket-react-native';
+import { Text } from 'react-native';
+import GoBack from '../../components/GoBack';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ChatScreen = ({ route, navigation }) => {
 
   const pusher = Pusher.getInstance();
+  const { user, token } = useAuth();
 
   const sendpusher = async () => {
 
@@ -49,21 +54,23 @@ const ChatScreen = ({ route, navigation }) => {
   const [messages, setMessages] = useState([]);
   console.log(route.params);
   const getMessages = () => {
-    axios({
-      method: 'GET',
-      url: GET_CHAT_MESSAGES,
-      params: {
-        receiver_id: id,
-        sender_id: currentUser
-      },
-    })
-      .then(response => {
-        // console.log('asd',response.data.data);
+    let config = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: GET_CHAT_MESSAGES + `?current_user_id=${user.id}&another_user_id=${id}`,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      }
+    };
+
+    axios.request(config)
+      .then((response) => {
         setMessages(response.data.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
+
   }
 
   useEffect(() => {
@@ -79,6 +86,10 @@ const ChatScreen = ({ route, navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 140}
       style={styles.bg}>
+      {/* <View style={{ width: '100%', height: 70, backgroundColor: 'red' }}>
+        <Text>name</Text> */}
+      <GoBack text={name} />
+      {/* </View> */}
       <ImageBackground source={bg} style={styles.bg}>
         <FlatList
           data={messages}

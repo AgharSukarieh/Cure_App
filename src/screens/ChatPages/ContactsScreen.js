@@ -7,31 +7,35 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { Text } from 'react-native';
+import { useAuth } from '../../contexts/AuthContext';
+import { GET_SEARCH_RESULTS } from '../../Provider/ApiRequest';
 
 const ContactsScreen = ({ route, navigation }) => {
   const { currentUser } = route.params;
+  const { user, token } = useAuth();
+
   const [allnewusers, setallnewusers] = useState([]);
-
+  console.log(token);
   const get_users = () => {
-    axios({
-      method: 'GET',
-      url: 'https://pharmaceuticals.ncitsolutions.com/api/get_new_user_chat',
-      params: {
-        userid: currentUser
-      },
-    })
-      .then(response => {
-        if (response.data.message) {
-          setallnewusers(response.data.data)
-        } else {
-          console.log('no new users available');
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
+    let config = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: GET_SEARCH_RESULTS + `?current_user_id=${user.id}&current_user_role=${user.role}&username`,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      }
+    };
 
+    axios.request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        setallnewusers(response.data.users)
+      })
+      .catch((error) => {
+        console.log('🚀 ~ file: ContactsScreen.js ~~ line 35 ~ get_users ~ error', error);
+      });
+
+  }
   useEffect(() => {
     get_users()
   }, [])

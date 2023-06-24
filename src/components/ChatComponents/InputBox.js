@@ -9,9 +9,12 @@ import { useNavigation } from '@react-navigation/native';
 import MapMH from './Map';
 import axios from 'axios';
 import { POST_ADD_MESSAGE } from '../../Provider/ApiRequest';
+import { useAuth } from '../../contexts/AuthContext';
 
 const InputBox = ({ currentUserId, receiverID, submit }) => {
   const navigation = useNavigation();
+  const { user, token } = useAuth();
+
   const [newMessage, setNewMessage] = useState('');
   const [images, setImages] = useState([]);
 
@@ -46,9 +49,8 @@ const InputBox = ({ currentUserId, receiverID, submit }) => {
     }
   };
 
-
   const onSend = () => {
-    if (newMessage.length > 0 || images.length > 0 || longitude.length > 0) {
+    if (newMessage.length > 0 || images.length > 0 || longitude) {
       if (images.length > 0) {
         console.log('-----');
         uploadImages(images);
@@ -63,6 +65,9 @@ const InputBox = ({ currentUserId, receiverID, submit }) => {
         axios({
           method: 'POST',
           url: POST_ADD_MESSAGE,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
           data: data,
         })
           .then(response => {
@@ -141,7 +146,6 @@ const InputBox = ({ currentUserId, receiverID, submit }) => {
         <FlatList
           horizontal={true}
           data={images}
-          keyExtractor={item => item.id}
           renderItem={({ item }) => (
             <View style={styles.attachmentsContainer}>
               <Image
