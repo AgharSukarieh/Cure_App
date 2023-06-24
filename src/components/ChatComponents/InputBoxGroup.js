@@ -8,7 +8,7 @@ import GetLocation from 'react-native-get-location';
 import { useNavigation } from '@react-navigation/native';
 import MapMH from './Map';
 import axios from 'axios';
-import { POST_ADD_MESSAGE } from '../../Provider/ApiRequest';
+import { POST_ADD_MESSAGE, POST_GROUP_MESSAGE } from '../../Provider/ApiRequest';
 import { useAuth } from '../../contexts/AuthContext';
 
 const InputBox = ({ currentUserId, receiverID, submit }) => {
@@ -19,7 +19,7 @@ const InputBox = ({ currentUserId, receiverID, submit }) => {
   const [images, setImages] = useState('');
   const [baseimages, setbaseimages] = useState([]);
 
-  console.log('baseimages', baseimages);
+  // console.log('baseimages', baseimages);
   const currentTimeStamp = () => {
     const currentDate = new Date();
     const timestamp = currentDate.getTime();
@@ -41,7 +41,7 @@ const InputBox = ({ currentUserId, receiverID, submit }) => {
       };
       axios({
         method: 'POST',
-        url: POST_ADD_MESSAGE,
+        url: POST_GROUP_MESSAGE,
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -79,7 +79,7 @@ const InputBox = ({ currentUserId, receiverID, submit }) => {
         };
         axios({
           method: 'POST',
-          url: POST_ADD_MESSAGE,
+          url: POST_GROUP_MESSAGE,
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -137,7 +137,6 @@ const InputBox = ({ currentUserId, receiverID, submit }) => {
 
 
       setImages(response[0]);
-
       const baseArray = await Promise.all(response.map(async (img) => {
         const data = await fetch('file://' + img.path);
         const blob = await data.blob();
@@ -185,8 +184,8 @@ const InputBox = ({ currentUserId, receiverID, submit }) => {
           <MaterialIcons
             name="highlight-remove"
             onPress={async () => {
-              setImages([]);
-              setbaseimages([]);
+              setLatitude('');
+              setLongitude('');
             }}
             size={20}
             color="gray"

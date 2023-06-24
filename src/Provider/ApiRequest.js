@@ -30,9 +30,10 @@ export const SAL_GET_PRODUCT_BY_BARCODE = `${Api}sal_get_product_by_barcode`;
 
 export const SAL_GET_PHARMACY = `${Api}sal_get_pharmacy`;
 export const GET_USER_CHATS = `${Api}get-single-chat-list`;
-export const GET_USER_GROUPS = `${Api}get-group-chat-list`;
-export const GET_GROUPS_MESSAGES = `${Api}get-group-chat-messages`;
 export const GET_CHAT_MESSAGES = `${Api}get-single-chat-messages`;
 export const GET_SEARCH_RESULTS = `${Api}get-search-results`;
 export const POST_ADD_MESSAGE = `${Api}single_chat_message_mobile`;
 
+export const GET_USER_GROUPS = `${Api}get-group-chat-list`;
+export const GET_GROUPS_MESSAGES = `${Api}get-group-chat-messages`;
+export const POST_GROUP_MESSAGE = `${Api}group_chat_message_mobile`;

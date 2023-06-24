@@ -52,7 +52,6 @@ const ChatScreen = ({ route, navigation }) => {
 
   const { id, name, currentUser } = route.params;
   const [messages, setMessages] = useState([]);
-  console.log(route.params);
   const getMessages = () => {
     let config = {
       method: 'get',
@@ -84,7 +83,7 @@ const ChatScreen = ({ route, navigation }) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 140}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 70}
       style={styles.bg}>
       {/* <View style={{ width: '100%', height: 70, backgroundColor: 'red' }}>
         <Text>name</Text> */}
@@ -100,6 +99,7 @@ const ChatScreen = ({ route, navigation }) => {
         />
         <InputBox currentUserId={currentUser} receiverID={id} submit={(msg) => {
           setMessages([msg, ...messages])
+          getMessages()
         }} />
       </ImageBackground>
     </KeyboardAvoidingView>

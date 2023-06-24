@@ -9,8 +9,6 @@ import {
 import React, { useEffect, useState } from 'react';
 import bg from '../../../assets/BG.png'
 import { messagesListDemo } from '../../messages';
-import Message from '../../components/ChatComponents/Message';
-import InputBox from '../../components/ChatComponents/InputBox';
 import { GET_CHAT_MESSAGES, GET_GROUPS_MESSAGES, GET_USER_GROUPS } from '../../Provider/ApiRequest';
 import axios from 'axios';
 import {
@@ -23,6 +21,7 @@ import { Text } from 'react-native';
 import GoBack from '../../components/GoBack';
 import { useAuth } from '../../contexts/AuthContext';
 import GroupMessage from '../../components/ChatComponents/groupMessage';
+import InputBoxGroup from '../../components/ChatComponents/InputBoxGroup';
 
 const GroupPage = ({ route, navigation }) => {
 
@@ -39,7 +38,7 @@ const GroupPage = ({ route, navigation }) => {
         await pusher.subscribe({
             channelName: "pharmaceuticals",
             onEvent: (event: PusherEvent) => {
-                console.log('222222222222222');
+                console.log('555555555555555555555555');
                 console.log(`Event received: ${event}`);
                 getMessages()
             }
@@ -99,8 +98,9 @@ const GroupPage = ({ route, navigation }) => {
                     inverted
                     showsVerticalScrollIndicator={false}
                 />
-                <InputBox currentUserId={currentUser} receiverID={group_id} submit={(msg) => {
+                <InputBoxGroup currentUserId={currentUser} receiverID={group_id} submit={(msg) => {
                     setMessages([msg, ...messages])
+                    getMessages()
                 }} />
             </ImageBackground>
         </KeyboardAvoidingView>
