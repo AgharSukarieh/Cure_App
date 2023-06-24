@@ -1,4 +1,4 @@
-import {TouchableOpacity,Text,View,StyleSheet,Modal,ScrollView,FlatList,Image,} from 'react-native';
+import {TouchableOpacity,Text,View,StyleSheet,Modal,ScrollView,FlatList,Image, Alert,} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Dropdown} from 'react-native-element-dropdown';
@@ -8,9 +8,10 @@ import {openPicker} from '@baronha/react-native-multiple-image-picker';
 import { uploadFiles, post } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
 import {launchImageLibrary} from 'react-native-image-picker';
+import LoadingScreen from '../LoadingScreen';
 
 const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
-  const [pharmacyName, setPharmacyName] = useState('');
+  const [pharmacyName, setPharmacyName] = useState(null);
   const [classification, setClassification] = useState('');
 
   const [citiesData, setCitiesData] = useState([]);
@@ -18,44 +19,58 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
   const [areasData, setAreasData] = useState([]);
   const [areaValue, setAreaValue] = useState(null);
 
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const [images, setImages] = useState([]);
+  const [imagesBase64, setImagesBase64] = useState(['']);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const submitData = async () => {
-
-    const files = images;
-
-    const bodyData = {
-      name: 'aaaaaaaaaaa',
-      activate_status: 1,
-      city_id: cityValue,
-      area_id: areaValue,
-      classification: 'B',
-      latitude: latitude,
-      longitude: longitude,
-    };
-
-    uploadFiles(Constants.sales.pharmacy, files, bodyData)
-      .then((response) => {
-        console.log('Upload response:', response);
+    if (pharmacyName && cityValue && areaValue) {
+      setIsLoading(true);
+      const bodyData = {
+        name: pharmacyName,
+        activate_status: 1,
+        city_id: cityValue,
+        area_id: areaValue,
+        classification: classification,
+        latitude: latitude,
+        longitude: longitude,
+        images: imagesBase64
+      };
+      post(Constants.sales.pharmacy, bodyData).then((res) => {  
+        setPharmacyName(null)
+        setClassification(null)
+        setCityValue(null)
+        setAreaValue(null)
+        setLatitude(null)
+        setLongitude(null)
+        setImages([])
+        setImagesBase64([''])
+        hideM()
+      }).catch((err) => {
+        console.log('....',err);
+      }).finally(() => {
+        setIsLoading(false);
       })
-      .catch((error) => {
-        console.error('Upload error:', error);
-      });
-
+    } else{
+      Alert.alert('pharmacy Name, City and Area is required');
+    }
   }
 
   const getCities = () => {
-    var count = Object.keys(data.cities).length
-        let cityArray = []
-        for (var i = 0; i < count; i++ ){
-            cityArray.push({
-                value: data.cities[i].id,
-                label: data.cities[i].name
-            })
+   if (data) { 
+    var count = Object.keys(data?.cities).length
+      let cityArray = []
+      for (var i = 0; i < count; i++ ){
+          cityArray.push({
+              value: data.cities[i].id,
+              label: data.cities[i].name
+          })
         }  
-        setCitiesData(cityArray)
+      setCitiesData(cityArray)
+      }
   }
  
   const getArea = (id) => {
@@ -109,21 +124,23 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
         response.width = crop.width;
         response.height = crop.height;
       }
-
       setImages(response);
-      console.log(response);
 
-      // const data = await fetch(response[0].path);
-      // const blob = await data.blob();
-      // return new Promise(resolve => {
-      //   const reader = new FileReader();
-      //   reader.readAsDataURL(blob);
-      //   reader.onloadend = () => {
-      //     const base64data = reader.result;
-      //     console.log(base64data);
-      //     resolve(base64data);
-      //   };
-      // });
+      const baseArray = await Promise.all(response.map(async (img) => {
+        const data = await fetch(img.path);
+        const blob = await data.blob();
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = () => {
+            const base64data = reader.result;
+            resolve(base64data);
+          };
+        });
+      }));
+
+      setImagesBase64(baseArray);
+      console.log('....', baseArray.length);
     } catch (e) {}
   };
 
@@ -290,8 +307,9 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
                     horizontal={true}
                     data={images}
                     renderItem={({item}) => (
-                      <View>
+                      <View key={item.position}>
                         <Image
+                        key={item.position}
                           style={{
                             height: 80,
                             width: 80,
@@ -302,13 +320,31 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
                         />
 
                         <TouchableOpacity
+                        key={item.position}
                           style={{position: 'absolute', top: 5, right: 5}}
-                          onPress={() => {
+                          onPress={async () => {
                             const arr = images.filter(
                               items =>
                                 items.localIdentifier !== item.localIdentifier,
                             );
                             setImages(arr);
+
+                            const baseArray = await Promise.all(arr.map(async (img) => {
+        const data = await fetch(img.path);
+        const blob = await data.blob();
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = () => {
+            const base64data = reader.result;
+            resolve(base64data);
+          };
+        });
+      }));
+
+      setImagesBase64(baseArray.length > 0 ? baseArray.length : ['']);
+      console.log('....', baseArray);
+
                           }}>
                           <AntDesign
                             style={styles.icon}
@@ -319,7 +355,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
                         </TouchableOpacity>
                       </View>
                     )}
-                    keyExtractor={item => item.id}
+                    // keyExtractor={item => item.position}
                   />
                 </View>
 
@@ -353,6 +389,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
           </View>
         </View>
       </View>
+      {isLoading && <LoadingScreen />}
     </Modal>
   );
 };

@@ -37,7 +37,8 @@ const Clientpharmalist = ({ navigation, route }) => {
   const [filter, setFilter] = useState({user_id: user?.id});
 
   const getCities = () => {
-    var count = Object.keys(cityArea.cities).length
+    if (cityArea){
+      var count = Object.keys(cityArea.cities).length
         let cityArray = []
         for (var i = 0; i < count; i++ ){
             cityArray.push({
@@ -55,6 +56,7 @@ const Clientpharmalist = ({ navigation, route }) => {
         }
         setCitiesData(cityArray)
         setAreasData(areaArray)
+    }    
   }
  
   useEffect(() => {
