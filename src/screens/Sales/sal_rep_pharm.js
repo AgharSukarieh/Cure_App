@@ -64,7 +64,7 @@ const Sal_rep_pharm = ({navigation, route}) => {
           </TouchableOpacity>
 
           {!item?.end_visit ? <TouchableOpacity
-            style={style.endVisitBtn}
+            style={{...style.endVisitBtn, height: 100}}
             onPress={() => {
               endVisit()
             }}>
