@@ -10,8 +10,9 @@ const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const SignIn = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setemail] = useState('test_medical@mailinator.com'); //testhello@gmail.com    medical_test@mailinator.com
-  const [password, setPassword] = useState('test_medical@mailinator.com');
+  const [email, setemail] = useState(''); //testhello@gmail.com    medical_test@mailinator.com
+  // mosale@gamil.com 123
+  const [password, setPassword] = useState('');
   const {login} = useAuth();
 
   const LoginPress = async () => {

@@ -15,11 +15,13 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { GET_USER_CHATS } from '../../Provider/ApiRequest';
 import { Text } from 'react-native';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ChatsScreen = ({ userData }) => {
+
   const navigation = useNavigation();
   const pusher = Pusher.getInstance();
-
+  const { user, token } = useAuth();
   const sendpusher = async () => {
 
     await pusher.init({
@@ -39,22 +41,25 @@ const ChatsScreen = ({ userData }) => {
   }
 
   const [chats, setChats] = useState([]);
-
+  // console.log('token', chats);
   const getChats = () => {
-    axios({
-      method: 'GET',
-      url: GET_USER_CHATS,
-      params: {
-        user_id: userData.id
-      },
-    })
-      .then(response => {
-        // console.log(response.data);
-        setChats(response.data.data);
+    let config = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: GET_USER_CHATS + `?current_user_id=${user.id}`,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      }
+    };
+    axios.request(config)
+      .then((response) => {
+        console.log(response.data);
+        setChats(response.data.users);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
+
   }
 
   useEffect(() => {
@@ -63,10 +68,10 @@ const ChatsScreen = ({ userData }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoBack text={'Chats'} addButton addButtonFunc={() => navigation.navigate('ContactsScreen', { currentUser: userData.id })} /> 
+      <GoBack text={'Chats'} addButton addButtonFunc={() => navigation.navigate('ContactsScreen', { currentUser: userData.id })} />
       <FlatList
         data={chats}
-        renderItem={({ item }) => <ChatListItem chat={item} currentUser={userData.id} />}
+        renderItem={({ item }) => <ChatListItem chat={item} currentUser={user.id} />}
         style={{ backgroundColor: 'white' }}
         showsVerticalScrollIndicator={false}
       />
