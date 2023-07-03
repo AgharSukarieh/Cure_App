@@ -99,15 +99,18 @@ const Inventory = ({navigation, route}) => {
     }
     if (parms.seach_term != null) {
       get(Constants.product.products, null, parms).then((res) => {
+        let status = false;
         rows?.order_details?.forEach(element => {
           if (element.product_id === res.data[0]?.id) {
-            console.log('_____', res.data[0]);
-            setShowTable(true)
-          }else {
-            Alert.alert('Not Match');
-            setShowTable(false)
-          } 
+            status = true
+          }
         });
+        if (status) {
+          setShowTable(true)
+        } else {
+          setShowTable(false)
+          Alert.alert('Not Match')
+        }
       }).catch(() => {}).finally(() => {});
     }
   }
