@@ -38,37 +38,37 @@ const Return = ({navigation, route}) => {
   const [notInStore, setNotInStore] = useState(false);
   const [totalReturnsStatus, setTotalReturnsStatus] = useState(false);
 
-  const [productsData, setProductsData] = useState([])
-  const [productValue, setProductValue] = useState(null)
-  const [productsArray, setProductsArray] = useState([])
+  // const [productsData, setProductsData] = useState([])
+  // const [productValue, setProductValue] = useState(null)
+  // const [productsArray, setProductsArray] = useState([])
 
   const [dateEx, setDateEx] = useState('');
 
   const [code, setCode] = useState(null);
 
-  const getProducts = async() => {
-    get(globalConstants.product.products, null, {limit: 10000})
-    .then((res) => { 
-      setProductsArray(res.data);
-        var count = Object.keys(res.data).length
-        let productsArray = []
-        for (var i = 0; i < count; i++ ) {
-            productsArray.push({
-             value: res.data[i].id,
-             label: res.data[i].name
-            })
-        }
-        setProductsData(productsArray);
-    })
-    .catch((err) => {})
-    .finally(() => {
-    })
-  }
+  // const getProducts = async() => {
+  //   get(globalConstants.product.products, null, {limit: 10000})
+  //   .then((res) => { 
+  //     // setProductsArray(res.data);
+  //       // var count = Object.keys(res.data).length
+  //       // let productsArray = []
+  //       // for (var i = 0; i < count; i++ ) {
+  //       //     productsArray.push({
+  //       //      value: res.data[i].id,
+  //       //      label: res.data[i].name
+  //       //     })
+  //       // }
+  //       // setProductsData(productsArray);
+  //   })
+  //   .catch((err) => {})
+  //   .finally(() => {
+  //   })
+  // }
 
   const endEditing = () => {
-    const product = productsArray.find(product => product.id === productValue);
+    // const product = productsArray.find(product => product.id === productValue);
     const parms = {
-      batch_number_or_barcode: code ? code : product?.barcode,//product?.barcode, //'FGT78954G',
+      batch_number_or_barcode: code, //'FGT78954G',
       expiry_date: dateEx, //'2027-06-01',
       pharmacy_id: item?.pharmacy_id, //2
     }
@@ -86,9 +86,9 @@ const Return = ({navigation, route}) => {
     }
   }
 
-  useEffect(() => {
-    getProducts();
-  }, [])
+  // useEffect(() => {
+  //   // getProducts();
+  // }, [])
 
   const scan = () => {
     // To Start Scanning
@@ -201,7 +201,7 @@ const submit = () => {
       </View>
 
       <View style={{width:'50%'}}>
-          <Dropdown
+          {/* <Dropdown
             style={style.dropdown}
                   placeholderStyle={style.placeholderStyle}
                   selectedTextStyle={style.selectedTextStyle}
@@ -227,7 +227,7 @@ const submit = () => {
                       size={20}
                     />
             )}
-          />
+          /> */}
         <TextInput
           style={{marginLeft: 10,width:'100%', height: 40, borderWidth:1, borderColor: 'blue', marginTop: 10, borderRadius: 5, paddingHorizontal: 10}}
           placeholder='YYYY-MM-DD'

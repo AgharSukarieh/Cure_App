@@ -31,9 +31,7 @@ const height = Dimensions.get('window').height;
 const ScanBarcodeAndQRModel = ({ show, hide, submit }) => {
 
   const onBarcodeScan = (qrvalue) => {
-    // Called after te successful scanning of QRCode/Barcode
     submit(qrvalue)
-    console.log('code', qrvalue);
     hide()
   };
 
@@ -53,41 +51,23 @@ const ScanBarcodeAndQRModel = ({ show, hide, submit }) => {
       onSwipeComplete={() => setModalVisible2(false)}
       >
       <View style={style.ModalContainer}>
-        {/* <View style={style.MosdalView}> */}
-
           <TouchableOpacity onPress={() => { hide() }}>
             <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
           </TouchableOpacity>
 
-          {/* <View style={{ width: '90%', height: '20%', alignSelf: 'flex-start' }}> */}
-            {/* <CameraScreen
-              showFrame={false}
-              // Show/hide scan frame
-              scanBarcode={true}
-              // Can restrict for the QR Code only
-              laserColor={'blue'}
-              // Color can be of your choice
-              frameColor={'yellow'}
-              // If frame is visible then frame color
-              colorForScannerFrame={'black'}
-              // Scanner Frame color
-              onReadCode={event =>
-                onBarcodeScan(event.nativeEvent.codeStringValue)
-              }
-            /> */}
+          <View style={{ width: '100%', height: '70%', alignSelf: 'center', marginTop:20 }}>
             <CameraScreen
-  actions={{ rightButtonText: 'Done', leftButtonText: 'Cancel' }}
-  onBottomButtonPressed={(event) => this.onBottomButtonPressed(event)}
-  hideControls={false}
-  scanBarcode={true}
-  showCapturedImageCount={false}
-  onReadCode={event =>
-    onBarcodeScan(event.nativeEvent.codeStringValue)
-  }
-  showFrame={true} //(default false) optional, show frame with transparent layer (qr code or barcode will be read on this area ONLY), start animation for scanner,that stoped when find any code. Frame always at center of the screen
-  laserColor='red' // (default red) optional, color of laser in scanner frame
-  frameColor='white'
-/>
+              onBottomButtonPressed={(event) => this.onBottomButtonPressed(event)}
+              hideControls={false}
+              scanBarcode={true}
+              showCapturedImageCount={false}
+              onReadCode={event =>
+                  onBarcodeScan(event.nativeEvent.codeStringValue)
+              }
+              showFrame={true} 
+              laserColor='red'
+              frameColor='white'
+            />
             
              {/* <QRCodeScanner
               style={{height: 50}}
@@ -106,13 +86,8 @@ const ScanBarcodeAndQRModel = ({ show, hide, submit }) => {
                 {/* </TouchableOpacity> */}
               {/* } */}
             {/* /> */}
-
-
-
           </View>
-
-        {/* </View> */}
-      {/* </View> */}
+        </View>
     </Modal>
   );
 };
@@ -121,10 +96,10 @@ export default ScanBarcodeAndQRModel;
 
 const style = StyleSheet.create({
   ModalContainer: {
-    // flex: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    // backgroundColor: '#0707078c',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0707078c',
   },
   ModalView: {
     backgroundColor: '#fff',
