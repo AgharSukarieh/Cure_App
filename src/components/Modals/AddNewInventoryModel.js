@@ -27,7 +27,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Input from '../Input';
 import ScanBarcodeAndQRModel from './ScanBarcodeAndQRModel';
 import {Dropdown} from 'react-native-element-dropdown';
-import {request, PERMISSIONS} from 'react-native-permissions';
+// import {request, PERMISSIONS} from 'react-native-permissions';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -48,9 +48,9 @@ const AddNewInventoryModel = ({show, hide, submit}) => {
   const [isProductFocus, setIsProductFocus] = useState(false);
 
   const askForPermission = (permission) => {
-    request(permission).then((result) => {
-      console.log(result);
-    });
+    // request(permission).then((result) => {
+    //   console.log(result);
+    // });
   }
 
   const getProducts = () => {
@@ -95,15 +95,15 @@ const AddNewInventoryModel = ({show, hide, submit}) => {
   };
 
   const scan = () => {
-    if (Platform.OS == 'ios') {
-      request(PERMISSIONS.IOS.CAMERA).then((result) => {
-        setModal(true);
-      });
-    } else {
-      request(PERMISSIONS.ANDROID.CAMERA).then((result) => {
-        setModal(true);
-      });
-    }
+    // if (Platform.OS == 'ios') {
+    //   request(PERMISSIONS.IOS.CAMERA).then((result) => {
+    //     setModal(true);
+    //   });
+    // } else {
+    //   request(PERMISSIONS.ANDROID.CAMERA).then((result) => {
+    //     setModal(true);
+    //   });
+    // }
   };
 
   return (

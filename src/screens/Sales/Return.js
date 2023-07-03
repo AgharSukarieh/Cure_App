@@ -192,7 +192,8 @@ const submit = () => {
         <TouchableOpacity
           style={style.newbtn}
           onPress={() => {
-            scan();
+            // scan();
+            setModal(true)
           }}>
           <Text style={{color: '#fff', fontSize: 18, paddingHorizontal: 10}}>
             Scan

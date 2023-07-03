@@ -21,8 +21,8 @@ import { styles } from '../styles';
 import Moment from 'moment';
 import DatePicker from 'react-native-date-picker';
 import Input from '../Input';
-import QRCodeScanner from 'react-native-qrcode-scanner';
-import { RNCamera } from 'react-native-camera';
+// import QRCodeScanner from 'react-native-qrcode-scanner';
+// import { RNCamera } from 'react-native-camera';
 import {CameraScreen} from 'react-native-camera-kit';
 
 const width = Dimensions.get('window').width;

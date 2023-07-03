@@ -337,14 +337,6 @@ PODS:
   - React-jsinspector (0.71.3)
   - React-logger (0.71.3):
     - glog
-  - react-native-camera (4.2.1):
-    - React-Core
-    - react-native-camera/RCT (= 4.2.1)
-    - react-native-camera/RN (= 4.2.1)
-  - react-native-camera/RCT (4.2.1):
-    - React-Core
-  - react-native-camera/RN (4.2.1):
-    - React-Core
   - react-native-date-picker (4.2.13):
     - React-Core
   - react-native-geolocation-service (5.3.1):
@@ -455,8 +447,6 @@ PODS:
     - React-Core
   - RNCAsyncStorage (1.18.2):
     - React-Core
-  - RNPermissions (3.8.0):
-    - React-Core
   - RNScreens (3.21.0):
     - React-Core
     - React-RCTImage
@@ -518,7 +508,6 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
-  - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-date-picker (from `../node_modules/react-native-date-picker`)
   - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
@@ -542,7 +531,6 @@ DEPENDENCIES:
   - ReactNativeCameraKit (from `../node_modules/react-native-camera-kit`)
   - ReactNativeGetLocation (from `../node_modules/react-native-get-location`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
-  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
@@ -614,8 +602,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
-  react-native-camera:
-    :path: "../node_modules/react-native-camera"
   react-native-date-picker:
     :path: "../node_modules/react-native-date-picker"
   react-native-geolocation-service:
@@ -662,8 +648,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-location"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
-  RNPermissions:
-    :path: "../node_modules/react-native-permissions"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSVG:
@@ -711,7 +695,6 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 515b703d23ffadeac7687bc2d12fb08b90f0aaa1
   React-jsinspector: 9f7c9137605e72ca0343db4cea88006cb94856dd
   React-logger: 957e5dc96d9dbffc6e0f15e0ee4d2b42829ff207
-  react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-date-picker: 04e866ba4e7857f83abd504ad42e787f0f02ae00
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-image-picker: db60857e03d63721f19b6f4027de20429ddd9cba
@@ -735,7 +718,6 @@ SPEC CHECKSUMS:
   ReactNativeCameraKit: 9d46a5d7dd544ca64aa9c03c150d2348faf437eb
   ReactNativeGetLocation: d8e41c5d499fd26f308502405cadb1f59e6179d6
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
-  RNPermissions: 215c54462104b3925b412b0fb3c9c497b21c358b
   RNScreens: d037903436160a4b039d32606668350d2a808806
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
