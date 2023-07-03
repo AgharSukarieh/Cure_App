@@ -16,39 +16,41 @@ import Feather from 'react-native-vector-icons/Feather';
 import AddNewInventoryModel from '../../components/Modals/AddNewInventoryModel';
 import { get } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
-import {Dropdown} from 'react-native-element-dropdown';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+// import {Dropdown} from 'react-native-element-dropdown';
+// import AntDesign from 'react-native-vector-icons/AntDesign';
+import ScanBarcodeAndQRModel from '../../components/Modals/ScanBarcodeAndQRModel';
 
 Feather.loadFont();
 
 const Inventory = ({navigation, route}) => {
   const item = route.params.item;
-  const area = route.params.area;
-  const [barcode, setBarcode] = useState(); 
+  // const area = route.params.area;
+  // const [barcode, setBarcode] = useState(); 
   const [modal, setModal] = useState(false);
+  const [qrmodal, setqrModal] = useState(false);
   const [rows, setRows] = useState(null);
-  const [productFromBarcode, setProductFromBarcode] = useState(null);
+  // const [productFromBarcode, setProductFromBarcode] = useState(null);
   const [showTable, setShowTable] = useState(false)
-  const [productsData, setProductsData] = useState([])
-  const [productValue, setProductValue] = useState(null)
+  // const [productsData, setProductsData] = useState([])
+  // const [productValue, setProductValue] = useState(null)
  
-  const getProducts = async() => {
-    get(Constants.product.products, null, {limit: 10000})
-    .then((res) => { 
-        var count = Object.keys(res.data).length
-        let productsArray = []
-        for (var i = 0; i < count; i++ ){
-            productsArray.push({
-             value: res.data[i].id,
-             label: res.data[i].name
-            })
-        }
-        setProductsData(productsArray);
-    })
-    .catch((err) => {})
-    .finally(() => {
-    })
-  }
+  // const getProducts = async() => {
+  //   get(Constants.product.products, null, {limit: 10000})
+  //   .then((res) => { 
+  //       var count = Object.keys(res.data).length
+  //       let productsArray = []
+  //       for (var i = 0; i < count; i++ ){
+  //           productsArray.push({
+  //            value: res.data[i].id,
+  //            label: res.data[i].name
+  //           })
+  //       }
+  //       setProductsData(productsArray);
+  //   })
+  //   .catch((err) => {})
+  //   .finally(() => {
+  //   })
+  // }
 
   const getInventory = () => {
     const parms = {
@@ -65,7 +67,7 @@ const Inventory = ({navigation, route}) => {
 
   useEffect(() => {
     getInventory();
-    getProducts();
+    // getProducts();
   }, [])
 
   const submit2 = data => {
@@ -99,12 +101,12 @@ const Inventory = ({navigation, route}) => {
       get(Constants.product.products, null, parms).then((res) => {
         rows?.order_details?.forEach(element => {
           if (element.product_id === res.data[0]?.id) {
-            console.log(res.data[0]);
+            console.log('_____', res.data[0]);
             setShowTable(true)
-          } else {
+          }else {
             Alert.alert('Not Match');
             setShowTable(false)
-          }
+          } 
         });
       }).catch(() => {}).finally(() => {});
     }
@@ -116,7 +118,7 @@ const Inventory = ({navigation, route}) => {
 
       <View>
         <View style={{flexDirection:'row', justifyContent:'space-between', paddingHorizontal:10}}>
-        <Dropdown
+        {/* <Dropdown
           style={style.dropdown}
                   placeholderStyle={style.placeholderStyle}
                   selectedTextStyle={style.selectedTextStyle}
@@ -143,11 +145,11 @@ const Inventory = ({navigation, route}) => {
                       size={20}
                     />
           )}
-        />
+        /> */}
         <TouchableOpacity
           style={style.newbtn}
           onPress={() => {
-            // setModal(true);
+            setqrModal(true);
           }}>
           <Text style={{color: '#fff', fontSize: 18, paddingHorizontal: 5}}>
             Scan
@@ -171,6 +173,16 @@ const Inventory = ({navigation, route}) => {
         }}
         submit={e => {
           submit2(e);
+        }}
+      />
+      
+      <ScanBarcodeAndQRModel
+        show={qrmodal}
+        hide={() => {
+          setqrModal(false);
+        }}
+        submit={e => {
+          endEditing(e);
         }}
       />
     </SafeAreaView>
