@@ -199,7 +199,7 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: '#7189FF',
     backgroundColor: '#fff',
-    height:40,
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -252,7 +252,7 @@ export const styles = StyleSheet.create({
     padding: 7,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop:40
+    marginTop: 40
   },
   search: {
     backgroundColor: '#fff',

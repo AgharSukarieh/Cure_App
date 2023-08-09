@@ -5,12 +5,12 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {styles} from '../components/styles';
+import React, { useEffect, useState } from 'react';
+import { styles } from '../components/styles';
 import GoBack from '../components/GoBack';
 import DatePicker from 'react-native-date-picker';
 import Feather from 'react-native-vector-icons/Feather';
-import {Dropdown} from 'react-native-element-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SalesHeaderTable from '../components/Tables/SalesHeaderTable';
 import TableView from '../General/TableView';
@@ -20,7 +20,7 @@ const getSalesEndpoint = Constants.users.user_orders;
 
 Feather.loadFont();
 
-const Sales= ({navigation, route}) => {
+const Sales = ({ navigation, route }) => {
 
   const cityArea = route?.params?.cityArea
   const user_id = route?.params?.user_id
@@ -29,7 +29,7 @@ const Sales= ({navigation, route}) => {
   const [cityValue, setCityValue] = useState(null);
   const [areasData, setAreasData] = useState([]);
   const [areaValue, setAreaValue] = useState(null);
-  const [filter, setFilter] = useState({user_id: user_id});
+  const [filter, setFilter] = useState({ user_id: user_id });
 
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date());
@@ -41,27 +41,27 @@ const Sales= ({navigation, route}) => {
 
   const getCities = () => {
     var count = Object.keys(cityArea.cities).length
-        let cityArray = []
-        for (var i = 0; i < count; i++ ){
-            cityArray.push({
-                value: cityArea.cities[i].id,
-                label: cityArea.cities[i].name
-            })
-        }
+    let cityArray = []
+    for (var i = 0; i < count; i++) {
+      cityArray.push({
+        value: cityArea.cities[i].id,
+        label: cityArea.cities[i].name
+      })
+    }
 
     var count = Object.keys(cityArea.areas).length
-        let areaArray = []
-        for (var i = 0; i < count; i++ ){
-          areaArray.push({
-                value: cityArea.areas[i].id,
-                label: cityArea.areas[i].name
-            })
-        }
+    let areaArray = []
+    for (var i = 0; i < count; i++) {
+      areaArray.push({
+        value: cityArea.areas[i].id,
+        label: cityArea.areas[i].name
+      })
+    }
 
-        setCitiesData(cityArray)
-        setAreasData(areaArray)
+    setCitiesData(cityArray)
+    setAreasData(areaArray)
   }
- 
+
   useEffect(() => {
     getCities()
   }, [])
@@ -78,71 +78,71 @@ const Sales= ({navigation, route}) => {
           marginBottom: 10,
         }}>
         <View style={style.container}>
-        <Dropdown
-              style={style.dropdown}
-              placeholderStyle={style.placeholderStyle}
-              selectedTextStyle={style.selectedTextStyle}
-              inputSearchStyle={style.inputSearchStyle}
-              iconStyle={style.iconStyle}
-              data={citiesData}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!cityValue ? 'Select City' : '...'}
-              searchPlaceholder="Search..."
-              value={cityValue}
-              onBlur={() => {}}
-              onChange={item => {
-                setCityValue(item.value);
-                setFilter((prev) => ({
-                  ...prev,
-                  city_name: item.label
-                }))
-              }}
-              renderLeftIcon={() => (
-                <AntDesign
-                  style={styles.icon}
-                  color={cityValue ? 'blue' : 'black'}
-                  name="Safety"
-                  size={20}
-                />
-              )}
-            />
+          <Dropdown
+            style={style.dropdown}
+            placeholderStyle={style.placeholderStyle}
+            selectedTextStyle={style.selectedTextStyle}
+            inputSearchStyle={style.inputSearchStyle}
+            iconStyle={style.iconStyle}
+            data={citiesData}
+            search
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder={!cityValue ? 'Select City' : '...'}
+            searchPlaceholder="Search..."
+            value={cityValue}
+            onBlur={() => { }}
+            onChange={item => {
+              setCityValue(item.value);
+              setFilter((prev) => ({
+                ...prev,
+                city_name: item.label
+              }))
+            }}
+            renderLeftIcon={() => (
+              <AntDesign
+                style={styles.icon}
+                color={cityValue ? 'blue' : 'black'}
+                name="Safety"
+                size={20}
+              />
+            )}
+          />
         </View>
 
         <View style={style.container}>
-        <Dropdown
-              style={style.dropdown}
-              placeholderStyle={style.placeholderStyle}
-              selectedTextStyle={style.selectedTextStyle}
-              inputSearchStyle={style.inputSearchStyle}
-              iconStyle={style.iconStyle}
-              data={areasData}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!areaValue ? 'Select Area' : '...'}
-              searchPlaceholder="Search..."
-              value={areaValue}
-              onBlur={() => {}}
-              onChange={item => {
-                setAreaValue(item.value);
-                setFilter((prev) => ({
-                  ...prev,
-                  area_name: item.label
-                }))
-              }}
-              renderLeftIcon={() => (
-                <AntDesign
-                  style={styles.icon}
-                  color={areaValue ? 'blue' : 'black'}
-                  name="Safety"
-                  size={20}
-                />
-              )}
-            />
+          <Dropdown
+            style={style.dropdown}
+            placeholderStyle={style.placeholderStyle}
+            selectedTextStyle={style.selectedTextStyle}
+            inputSearchStyle={style.inputSearchStyle}
+            iconStyle={style.iconStyle}
+            data={areasData}
+            search
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder={!areaValue ? 'Select Area' : '...'}
+            searchPlaceholder="Search..."
+            value={areaValue}
+            onBlur={() => { }}
+            onChange={item => {
+              setAreaValue(item.value);
+              setFilter((prev) => ({
+                ...prev,
+                area_name: item.label
+              }))
+            }}
+            renderLeftIcon={() => (
+              <AntDesign
+                style={styles.icon}
+                color={areaValue ? 'blue' : 'black'}
+                name="Safety"
+                size={20}
+              />
+            )}
+          />
         </View>
       </View>
 
@@ -154,8 +154,8 @@ const Sales= ({navigation, route}) => {
           justifyContent: 'space-between',
           marginBottom: 6,
         }}>
-        <View style={{...style.container, marginTop: 0}}>
-          <Text style={{...styles.calenderText, marginBottom: 5}}>From</Text>
+        <View style={{ ...style.container, marginTop: 0 }}>
+          <Text style={{ ...styles.calenderText, marginBottom: 5 }}>From</Text>
           <TouchableOpacity
             style={styles.filterbutton}
             onPress={() => {
@@ -192,8 +192,8 @@ const Sales= ({navigation, route}) => {
           />
         </View>
 
-        <View style={{...style.container, marginTop: 0}}>
-          <Text style={{...styles.calenderText, marginBottom: 5}}>To</Text>
+        <View style={{ ...style.container, marginTop: 0 }}>
+          <Text style={{ ...styles.calenderText, marginBottom: 5 }}>To</Text>
           <TouchableOpacity
             style={styles.filterbutton}
             onPress={() => {
@@ -234,11 +234,11 @@ const Sales= ({navigation, route}) => {
 
       <View style={style.tableContainer}>
         <SalesHeaderTable />
-        <TableView 
-          apiEndpoint={getSalesEndpoint} 
+        <TableView
+          apiEndpoint={getSalesEndpoint}
           enablePullToRefresh
-          params={filter} 
-          renderItem={({ item }) => <SalesItemTable item={item} />} 
+          params={filter}
+          renderItem={({ item }) => <SalesItemTable item={item} />}
         />
       </View>
 

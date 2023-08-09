@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState, useEffect} from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import Constants from '../config/globalConstants';
 const AuthContext = createContext();
 import {
@@ -14,7 +14,7 @@ import {
 
 export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider = ({children}) => {
+export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState(null);
@@ -49,7 +49,7 @@ export const AuthProvider = ({children}) => {
 
   const login = async (email, password) => {
     setIsLoading(true);
-    await post(Constants.auth.login, {email, password})
+    await post(Constants.auth.login, { email, password })
       .then(res => {
         const token = res.token;
         const userData = res.user;
@@ -66,7 +66,7 @@ export const AuthProvider = ({children}) => {
         setIsLoggedIn(true);
       })
       .catch(err => {
-        console.error(err);
+        console.error('err3', err);
       })
       .finally(() => {
         setIsLoading(false);
@@ -88,7 +88,7 @@ export const AuthProvider = ({children}) => {
         setRole(null);
       })
       .catch(err => {
-        console.error(err);
+        console.error('err4', err);
       })
       .finally(() => {
         setIsLoading(false);

@@ -1,19 +1,19 @@
-import {Alert, View, SafeAreaView, StyleSheet} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {styles} from '../components/styles';
+import { Alert, View, SafeAreaView, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { styles } from '../components/styles';
 import TopView from '../components/TopView';
 import Input from '../components/Input';
 import Button from '../components/Button';
-import {useAuth} from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import LoadingScreen from '../components/LoadingScreen';
 const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const SignIn = ({navigation}) => {
+const SignIn = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setemail] = useState(''); //testhello@gmail.com    medical_test@mailinator.com  mosale@gamil.com
   // mosale@gamil.com 123
   const [password, setPassword] = useState('');  //123
-  const {login} = useAuth();
+  const { login } = useAuth();
 
   const LoginPress = async () => {
     setIsLoading(true);
@@ -41,12 +41,29 @@ const SignIn = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={style.content}>
-        <TopView text={'Sgin in'} />
-        <Input lable={'Email'} setData={setemail} />
-        <Input lable={'PASSWORD'} setData={setPassword} isPassword={true} />
-        <Button text={'Sign In'} handleClick={() => LoginPress()} />
+        <View style={style.imagediv}>
+          <Image source={require('../../assets/logo.png')} style={style.image} resizeMode='contain' />
+        </View>
+        <View style={style.inputContainer}>
+          <Text style={style.inputheader}>Sign In to Continue</Text>
+          <Input lable={'Email'} setData={setemail} placeholder={'Email'} />
+          <Input lable={'PASSWORD'} setData={setPassword} isPassword={true} placeholder={'PASSWORD'} />
+          <Button text={'Sign In'} handleClick={() => LoginPress()} />
+          <View style={{ width: '85%', alignSelf: 'center' }}>
+            <Text style={{ textAlign: 'center', fontSize: 16 }}>
+              By Signing in you Agree to Our{' '}
+              <TouchableOpacity onPress={() => console.log('Terms pressed')}>
+                <Text style={{ textDecorationLine: 'underline', marginHorizontal: 2, textAlign: 'center', fontSize: 16, color: 'red' }}>Terms & Conditions</Text>
+              </TouchableOpacity>
+              and
+              <TouchableOpacity onPress={() => console.log('Privacy Policy')}>
+                <Text style={{ textDecorationLine: 'underline', marginHorizontal: 2, textAlign: 'center', fontSize: 16, color: 'red' }}>Privacy Policy</Text>
+              </TouchableOpacity>
+            </Text>
+          </View>
+        </View>
       </View>
-      
+
       {isLoading && <LoadingScreen />}
 
       {/* <View style={styles.checkPharmacy}>
@@ -65,5 +82,15 @@ const SignIn = ({navigation}) => {
 export default SignIn;
 
 const style = StyleSheet.create({
-  content:{flex: 1, justifyContent: 'flex-start'},
+  content: { flex: 1, justifyContent: 'flex-start', backgroundColor: '#ebebeb96' },
+  imagediv: { width: '100%', height: '35%', },
+  image: { width: '100%', height: '100%', },
+  inputContainer: {
+    alignSelf: 'center',
+    backgroundColor: '#fff',
+    width: '95%',
+    borderRadius: 15,
+    paddingVertical: 12
+  },
+  inputheader: { fontSize: 17, fontWeight: '600', marginHorizontal: 10, color: '#000' }
 });

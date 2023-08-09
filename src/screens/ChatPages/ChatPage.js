@@ -7,10 +7,12 @@ import AllGroups from './AllGroups';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useAuth } from '../../contexts/AuthContext';
 const Tab = createBottomTabNavigator();
 
 const ChatPage = ({ navigation, route }) => {
-  const user = route.params.user; 
+  const { user } = useAuth();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({

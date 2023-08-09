@@ -1,9 +1,9 @@
 import axios from 'axios';
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
 
 
 const apiClient = axios.create({
-  baseURL: 'https://pharmaceuticals.ncitsolutions.com/api/',
+  baseURL: 'http://pharmaceuticals.ncitsolutions.com/api/',
   timeout: 5000,
 });
 
@@ -31,9 +31,9 @@ apiClient.interceptors.request.use(
     showLoadingIndicator();
     config.headers['Accept'] = 'application/json';
     config.headers['Content-Type'] = 'multipart/form-data';
-    console.log('----------API config Start------');
+    // console.log('----------API config Start------');
     console.log(config);
-    console.log('----------API config End------');
+    // console.log('----------API config End------');
     return config;
   },
   error => {
@@ -44,9 +44,9 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   response => {
-    console.log('----------API Response Start------');
+    // console.log('----------API Response Start------');
     console.log(response.data);
-    console.log('----------API Response End------');
+    // console.log('----------API Response End------');
     hideLoadingIndicator();
     return response;
   },
@@ -83,12 +83,12 @@ export const uploadFiles = async (url, files, body = {}) => {
     const formData = new FormData();
 
     files.forEach(file => {
-    formData.append(`images[]`, {
-      uri: file.path,
-      type: file.mime,
-      name: file.fileName
+      formData.append(`images[]`, {
+        uri: file.path,
+        type: file.mime,
+        name: file.fileName
+      });
     });
-  });
 
     Object.entries(body).forEach(([key, value]) => {
       formData.append(key, value);

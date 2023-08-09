@@ -1,11 +1,11 @@
 const base_URL = () => {
-  return 'https://pharmaceuticals.ncitsolutions.com/api/';
+  return 'http://pharmaceuticals.ncitsolutions.com/api/';
 };
 
 export default {
   baseURL: base_URL(),
   storageTokenKeyName: 'access_token',
-  lang:'language',
+  lang: 'language',
   uId: 'uId',
   role: 'role',
   userData: 'userData',
@@ -19,15 +19,15 @@ export default {
   },
   users: {
     cityArea: 'users/',
-    user_orders:'user-orders',
-    order_details:'order-details/', 
+    user_orders: 'user-orders',
+    order_details: 'order-details/',
   },
   doctor: {
     speciality: 'doctor/speciality',
-    allDoctors:'sales/doctor',
+    allDoctors: 'sales/doctor',
     specialArea: 'sales/doctor/areas/'
   },
-  plans:{
+  plans: {
     get_plans: 'plans'
   },
   visit: {

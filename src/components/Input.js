@@ -1,14 +1,14 @@
-import {View, Text, TextInput, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
-import {styles} from './styles';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { styles } from './styles';
 import Icon from 'react-native-vector-icons/Feather';
 
 Icon.loadFont()
-const Input = ({lable, placeholder,isPassword, setData, onEndEditing, labelStyle=styles.label ,viewStyle= styles.inbutContainer,style = styles.input, value = null, multiline = false, numberOfLines=1 }) => {
+const Input = ({ lable, placeholder, isPassword, setData, onEndEditing, labelStyle = styles.label, viewStyle = styles.inbutContainer, style = styles.input, value = null, multiline = false, numberOfLines = 1 }) => {
   const [showEye, setShowEye] = useState(false);
   return (
-    <View style={{...styles.inbutContainer, ...viewStyle}}>
-      <Text style={{...styles.label, ...labelStyle}}>{lable}</Text>
+    <View style={{ ...styles.inbutContainer, ...viewStyle }}>
+      <Text style={{ ...styles.label, ...labelStyle }}>{lable}</Text>
       <TextInput
         style={style}
         onChangeText={text => setData(text)}

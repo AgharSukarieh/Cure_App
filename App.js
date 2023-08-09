@@ -32,6 +32,8 @@ import PresentImage from './src/screens/ChatPages/PresentImage';
 import { useAuth } from './src/contexts/AuthContext';
 import { View, ActivityIndicator } from 'react-native';
 import GroupPage from './src/screens/ChatPages/GroupPage';
+import FirstScreen from './src/screens/firstScreen';
+import BottomTabs from './src/General/BottomTabNavigator';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -39,9 +41,9 @@ export default function App() {
 
   const setRoot = () => {
     if (isLoggedIn && token) {
-      return 'ReportPage';
+      return 'BottomTabs';
     } else {
-      return 'SignIn';
+      return 'FirstScreen';
     }
   }
 
@@ -53,6 +55,8 @@ export default function App() {
   ) : (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={setRoot()}>
+        <Stack.Screen name="FirstScreen" component={FirstScreen} />
+        <Stack.Screen name="BottomTabs" component={BottomTabs} />
         <Stack.Screen name="SignIn" component={SignIn} />
         <Stack.Screen name="SignUpPharmacy" component={SignUpPharmacy} />
         <Stack.Screen name="SignInPharmacy" component={SignInPharmacy} />
