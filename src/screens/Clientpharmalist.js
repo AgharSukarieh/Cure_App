@@ -5,11 +5,11 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
-import {styles} from '../components/styles';
+import React, { useState, useEffect } from 'react';
+import { styles } from '../components/styles';
 import GoBack from '../components/GoBack';
 import Feather from 'react-native-vector-icons/Feather';
-import {Dropdown} from 'react-native-element-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import AddNewPharmacyModel from '../components/Modals/AddNewPharmacyModel';
 import SuccessfullyModel from '../components/Modals/SuccessfullyModel';
@@ -24,7 +24,7 @@ const getPharmacyEndpoint = Constants.sales.pharmacy;
 const Clientpharmalist = ({ navigation, route }) => {
   const title = route?.params?.title
   const cityArea = route?.params?.cityArea
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const [modal, setModal] = useState(false);
   const [scModal, setScModal] = useState(false);
@@ -34,186 +34,186 @@ const Clientpharmalist = ({ navigation, route }) => {
   const [cityValue, setCityValue] = useState(null);
   const [areasData, setAreasData] = useState([]);
   const [areaValue, setAreaValue] = useState(null);
-  const [filter, setFilter] = useState({user_id: user?.id});
+  const [filter, setFilter] = useState({ user_id: user?.id });
 
   const getCities = () => {
-    if (cityArea){
+    if (cityArea) {
       var count = Object.keys(cityArea.cities).length
-        let cityArray = []
-        for (var i = 0; i < count; i++ ){
-            cityArray.push({
-                value: cityArea.cities[i].id,
-                label: cityArea.cities[i].name
-            })
-        }
-        var count = Object.keys(cityArea.areas).length
-        let areaArray = []
-        for (var i = 0; i < count; i++ ){
-          areaArray.push({
-                value: cityArea.areas[i].id,
-                label: cityArea.areas[i].name
-            })
-        }
-        setCitiesData(cityArray)
-        setAreasData(areaArray)
-    }    
+      let cityArray = []
+      for (var i = 0; i < count; i++) {
+        cityArray.push({
+          value: cityArea.cities[i].id,
+          label: cityArea.cities[i].name
+        })
+      }
+      var count = Object.keys(cityArea.areas).length
+      let areaArray = []
+      for (var i = 0; i < count; i++) {
+        areaArray.push({
+          value: cityArea.areas[i].id,
+          label: cityArea.areas[i].name
+        })
+      }
+      setCitiesData(cityArray)
+      setAreasData(areaArray)
+    }
   }
- 
+
   useEffect(() => {
     getCities()
   }, [])
 
   return (
     <>
-    <SafeAreaView style={styles.container}>
-      <GoBack text={title || 'Client List'} />
+      <SafeAreaView style={styles.container}>
+        <GoBack text={title || 'Client List'} />
 
-      <View style={{width: '90%', alignSelf: 'center', marginTop: 15}}>
-        <View style={styles.search}>
-          <TextInput
-            style={styles.searchinput}
-            placeholder="Search"
-            onChangeText={text => {
-              setSearch(text)
-              setFilter((prev) => ({
-                ...prev,
-                seach_term: text
-              }))
-            }}
-            value={search}
-          />
-          <TouchableOpacity
-            onPress={() => {
-              setSearch(null)
-              setFilter({user_id: user?.id})
-              setCityValue(null);
-              setAreaValue(null);
-            }}
-            style={{
-              width: '15%',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Feather
-              name="x"
-              color="#7189FF"
-              size={27}
-              style={{marginHorizontal: 2}}
+        <View style={{ width: '90%', alignSelf: 'center', marginTop: 15 }}>
+          <View style={styles.search}>
+            <TextInput
+              style={styles.searchinput}
+              placeholder="Search"
+              onChangeText={text => {
+                setSearch(text)
+                setFilter((prev) => ({
+                  ...prev,
+                  seach_term: text
+                }))
+              }}
+              value={search}
             />
+            <TouchableOpacity
+              onPress={() => {
+                setSearch(null)
+                setFilter({ user_id: user?.id })
+                setCityValue(null);
+                setAreaValue(null);
+              }}
+              style={{
+                width: '15%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Feather
+                name="x"
+                color="#A5BECC"
+                size={27}
+                style={{ marginHorizontal: 2 }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View
+            style={{
+              width: '100%',
+              flexDirection: 'row',
+              alignSelf: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 10
+            }}>
+            <View style={style.container}>
+              <Dropdown
+                style={style.dropdown}
+                placeholderStyle={style.placeholderStyle}
+                selectedTextStyle={style.selectedTextStyle}
+                inputSearchStyle={style.inputSearchStyle}
+                iconStyle={style.iconStyle}
+                data={citiesData}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={!cityValue ? 'Select City' : '...'}
+                searchPlaceholder="Search..."
+                value={cityValue}
+                onBlur={() => { }}
+                onChange={item => {
+                  setCityValue(item.value);
+                  setFilter((prev) => ({
+                    ...prev,
+                    seach_term: item.label
+                  }))
+                }}
+                renderLeftIcon={() => (
+                  <Feather
+                    style={styles.icon}
+                    color={cityValue ? 'blue' : 'black'}
+                    name="map-pin"
+                    size={20}
+                  />
+                )}
+              />
+            </View>
+            <View style={style.container}>
+              <Dropdown
+                style={style.dropdown}
+                placeholderStyle={style.placeholderStyle}
+                selectedTextStyle={style.selectedTextStyle}
+                inputSearchStyle={style.inputSearchStyle}
+                iconStyle={style.iconStyle}
+                data={areasData}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={!areaValue ? 'Select Area' : '...'}
+                searchPlaceholder="Search..."
+                value={areaValue}
+                onBlur={() => { }}
+                onChange={item => {
+                  setAreaValue(item.value);
+                  setFilter((prev) => ({
+                    ...prev,
+                    seach_term: item.label
+                  }))
+                }}
+                renderLeftIcon={() => (
+                  <Feather
+                    style={styles.icon}
+                    color={cityValue ? 'blue' : 'black'}
+                    name="map-pin"
+                    size={20}
+                  />
+                )}
+              />
+            </View>
+          </View>
+
+        </View>
+
+        <View style={style.containerTable}>
+          <PharmacyHeaderTable />
+          <TableView
+            apiEndpoint={getPharmacyEndpoint}
+            enablePullToRefresh
+            params={filter}
+            renderItem={({ item }) => <PharmacyItemTable item={item} />}
+          />
+        </View>
+
+        <View style={style.rButton}>
+          <TouchableOpacity onPress={() => setModal(true)}>
+            <AntDesign name="plus" size={30} color={'#fff'} />
           </TouchableOpacity>
         </View>
 
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            alignSelf: 'center',
-            justifyContent: 'space-between',
-            marginBottom:10
-          }}>
-          <View style={style.container}>
-            <Dropdown
-              style={style.dropdown}
-              placeholderStyle={style.placeholderStyle}
-              selectedTextStyle={style.selectedTextStyle}
-              inputSearchStyle={style.inputSearchStyle}
-              iconStyle={style.iconStyle}
-              data={citiesData}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!cityValue ? 'Select City' : '...'}
-              searchPlaceholder="Search..."
-              value={cityValue}
-              onBlur={() => {}}
-              onChange={item => {
-                setCityValue(item.value);
-                setFilter((prev) => ({
-                  ...prev,
-                  seach_term: item.label
-                }))
-              }}
-              renderLeftIcon={() => (
-                <AntDesign
-                  style={styles.icon}
-                  color={cityValue ? 'blue' : 'black'}
-                  name="Safety"
-                  size={20}
-                />
-              )}
-            />
-          </View>
-          <View style={style.container}>
-            <Dropdown
-              style={style.dropdown}
-              placeholderStyle={style.placeholderStyle}
-              selectedTextStyle={style.selectedTextStyle}
-              inputSearchStyle={style.inputSearchStyle}
-              iconStyle={style.iconStyle}
-              data={areasData}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!areaValue ? 'Select Area' : '...'}
-              searchPlaceholder="Search..."
-              value={areaValue}
-              onBlur={() => {}}
-              onChange={item => {
-                setAreaValue(item.value);
-                setFilter((prev) => ({
-                  ...prev,
-                  seach_term: item.label
-                }))
-              }}
-              renderLeftIcon={() => (
-                <AntDesign
-                  style={styles.icon}
-                  color={areaValue ? 'blue' : 'black'}
-                  name="Safety"
-                  size={20}
-                />
-              )}
-            />
-          </View>
-        </View>
-
-      </View>
-
-      <View style={style.containerTable}>
-        <PharmacyHeaderTable/>
-        <TableView 
-          apiEndpoint={getPharmacyEndpoint} 
-          enablePullToRefresh
-          params={filter} 
-          renderItem={({ item }) => <PharmacyItemTable item={item} />} 
+        <AddNewPharmacyModel
+          showM={modal}
+          hideM={() => setModal(false)}
+          data={cityArea}
+          submit={e => { (e !== null) ? submitAddPharmacy(e) : null }}
         />
-      </View>
 
-      <View style={style.rButton}>
-        <TouchableOpacity onPress={() => setModal(true)}>
-          <AntDesign name="plus" size={30} color= {'#fff'} />
-        </TouchableOpacity>
-      </View>
+        <SuccessfullyModel
+          message={'The pharmacy has been added successfully.'}
+          show={scModal}
+          hide={() => {
+            setScModal(false);
+          }}
+        />
 
-      <AddNewPharmacyModel 
-        showM={modal}
-        hideM={() => setModal(false)} 
-        data={cityArea}
-        submit={e => { (e !== null) ? submitAddPharmacy(e) : null }}
-      />
-      
-      <SuccessfullyModel
-        message= {'The pharmacy has been added successfully.'}
-        show={scModal}
-        hide={() => {
-          setScModal(false);
-        }}
-      />
+      </SafeAreaView>
 
-    </SafeAreaView>
-    
     </>
   );
 };
@@ -235,33 +235,33 @@ export const style = StyleSheet.create({
     flex: 1,
     width: '98%',
     alignSelf: 'center',
-},
+  },
   container: {
     backgroundColor: 'white',
     width: '48%',
     marginTop: 15
   },
   rButton: {
-    backgroundColor: '#7189FF', 
-    height: 50, 
-    width: 50, 
-    justifyContent:'center', 
-    alignItems:'center', 
-    borderRadius: 25, 
+    backgroundColor: '#7189FF',
+    height: 50,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 25,
     position: 'absolute',
-    bottom: 70, 
+    bottom: 70,
     right: 50,
     shadowColor: "#000000",
     shadowOpacity: 0.8,
     shadowRadius: 15,
     shadowOffset: {
-    height: 1,
-    width: 1
+      height: 1,
+      width: 1
     }
-    },
+  },
   dropdown: {
     height: 50,
-    borderColor: '#7189FF',
+    borderColor: '#A5BECC',
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,

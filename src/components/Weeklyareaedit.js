@@ -7,7 +7,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import Feather from 'react-native-vector-icons/Feather';
 import { styles } from './styles';
 
-const Weeklyareaedit = ({ show, hide, data, submit, cityArea}) => {
+const Weeklyareaedit = ({ show, hide, data, submit, cityArea }) => {
 
     const [cityValue, setCityValue] = useState();
     const [areaValue, setAreaValue] = useState('');
@@ -15,9 +15,8 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea}) => {
     const [arealist, setarealist] = useState([])
 
     const getcity = () => {
-       setcitylist(cityArea.cities);
+        setcitylist(cityArea.areas);
     }
-
     const getArea = (id) => {
         const arr = [];
         cityArea.areas.forEach((area) => {
@@ -33,7 +32,7 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea}) => {
     }, [])
 
     const submit22 = () => {
-        submit({city: cityValue, area: areaValue})
+        submit({ city: cityValue, area: areaValue })
         hide()
     }
 
@@ -56,7 +55,7 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea}) => {
                     < View style={style.filterContainer}>
                         <Text style={style.calenderText}>City</Text>
                         <SelectDropdown
-                            buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
+                            buttonStyle={{ ...styles.drop, flexDirection: 'row-reverse' }}
                             buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                             defaultButtonText='Select'
                             data={citylist}
@@ -83,7 +82,7 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea}) => {
                                 );
                             }}
                             renderDropdownIcon={isOpened => {
-                                return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
+                                return <Feather name={isOpened ? 'chevron-up' : 'map-pin'} color="#3A97D6" size={13} style={{ marginLeft: 0 }} />;
                             }}
                             dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
                         />
@@ -91,7 +90,7 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea}) => {
                             <>
                                 < Text style={style.calenderText}>Area</Text>
                                 <SelectDropdown
-                                    buttonStyle={{ ...styles.drop, flexDirection: 'row' }}
+                                    buttonStyle={{ ...styles.drop, flexDirection: 'row-reverse' }}
                                     buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                                     defaultButtonText='Select'
                                     data={arealist}
@@ -117,7 +116,7 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea}) => {
                                         );
                                     }}
                                     renderDropdownIcon={isOpened => {
-                                        return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color="#000" size={13} style={{ marginLeft: 0 }} />;
+                                        return <Feather name={isOpened ? 'chevron-up' : 'map-pin'} color="#3A97D6" size={13} style={{ marginLeft: 0 }} />;
                                     }}
                                     dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
                                 />
@@ -143,9 +142,9 @@ const style = StyleSheet.create({
     },
     ModalView: {
         backgroundColor: "#fff",
-        borderRadius: 10,
+        borderRadius: 22,
         width: '95%',
-        height: '60%',
+        height: '50%',
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
@@ -163,7 +162,7 @@ const style = StyleSheet.create({
     },
     calenderText: {
         fontSize: 17,
-        color: 'rgba(37, 50, 116, 0.6)',
+        color: '#000',
         marginHorizontal: 7,
         marginBottom: 4,
         marginTop: 10
@@ -172,7 +171,7 @@ const style = StyleSheet.create({
         backgroundColor: '#7189FF',
         width: '90%',
         alignSelf: 'center',
-        borderRadius: 7,
+        borderRadius: 13,
         padding: 7,
         alignItems: 'center',
         justifyContent: 'center'

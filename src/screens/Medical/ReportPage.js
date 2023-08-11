@@ -19,7 +19,7 @@ const ReportPage = () => {
   const date = new Date().toLocaleDateString();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [cityArea, setCityArea] = useState(null);
+
 
   const LogoutPress = async () => {
     await logout()
@@ -31,13 +31,11 @@ const ReportPage = () => {
       });
   };
 
+  const [cityArea, setCityArea] = useState(null);
   useEffect(() => {
-    let url = getCityAreaEndpoint + user?.id
-    console.log(url);
     get(`${getCityAreaEndpoint}${user?.id}`)
       .then(response => {
         setCityArea(response.data);
-        console.log('*************', response);
       })
       .catch(err => {
         console.error(err);
@@ -126,7 +124,7 @@ const style = StyleSheet.create({
   card: {
     width: '45%',
     height: 130,
-    backgroundColor: '#D1EFFF',
+    backgroundColor: '#F6F9FE',
     borderRadius: 20,
     marginBottom: 15,
     borderWidth: 2,

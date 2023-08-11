@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, SafeAreaView ,Dimensions} from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { styles } from '../../components/styles';
 import GoBack from '../../components/GoBack';
@@ -7,9 +7,10 @@ import SelectDropdown from 'react-native-select-dropdown'
 import Feather from 'react-native-vector-icons/Feather';
 import Moment from 'moment';
 import { useAuth } from '../../contexts/AuthContext';
- 
-const Monthly = ({ navigation, route}) => { 
-    const {role} = useAuth();
+
+const Monthly = ({ navigation, route }) => {
+
+    const { role } = useAuth();
     const cityArea = route.params.cityArea
 
     const [year, setyear] = useState(Moment(new Date()).format('Y'));
@@ -23,12 +24,12 @@ const Monthly = ({ navigation, route}) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <GoBack text={'Monthly Plan'} />
+            <GoBack text={'Monthly Plan'} isIcon={'calendar-o'} />
 
             <View style={{ marginVertical: 10, alignItems: 'center' }}>
-                <Text style={{ marginBottom: 7, fontSize: 21 }}>Year</Text>
+                <Text style={{ marginBottom: 7, fontSize: 21, color: '#000', fontWeight: 'bold' }}>Year</Text>
                 <SelectDropdown
-                    buttonStyle={{ ...styles.filterbutton, flexDirection: 'row', alignSelf: 'center' }}
+                    buttonStyle={{ ...styles.filterbutton, flexDirection: 'row-reverse', alignSelf: 'center', width: '40%', }}
                     buttonTextStyle={{ color: "#000", fontSize: 13, marginTop: 0 }}
                     defaultButtonText='Select'
                     data={years}
@@ -52,7 +53,7 @@ const Monthly = ({ navigation, route}) => {
                         );
                     }}
                     renderDropdownIcon={isOpened => {
-                        return <Feather name={isOpened ? 'chevron-up' : 'chevron-down'} color='#000' size={13} style={{ marginLeft: 0 }} />;
+                        return <Feather name={isOpened ? 'chevron-up' : 'calendar'} color='#6BB1E1' size={13} style={{ marginLeft: 0 }} />;
                     }}
                     dropdownStyle={{ backgroundColor: '#fff', borderRadius: 10 }}
                     defaultValueByIndex={2}

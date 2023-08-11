@@ -6,6 +6,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ReportPage from "../screens/Medical/ReportPage";
 import ChatPage from "../screens/ChatPages/ChatPage";
+import Sales from "../screens/Sales";
 
 const pcolor = '#3A97D6'
 
@@ -37,23 +38,38 @@ const BottomTabs = ({ navigation }) => {
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                             <Icon name="home" color={focused ? pcolor : '#748c94'} size={30} style={{ marginHorizontal: 2 }} />
+                            <Text style={{ color: focused ? pcolor : '#748c94', marginTop: 5 }}>Home</Text>
                             {focused && <View style={{ width: 50, height: 2, marginTop: 5, top: 10, backgroundColor: pcolor }} />}
                         </View>
                     ),
                     headerShown: false
                 }} />
+            <Tab.Screen name="Sales" component={Sales}
+                options={{
+                    tabBarLabel: '',
+                    tabBarIcon: ({ focused }) => (
+                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                            <Icon name="box" color={focused ? pcolor : '#748c94'} size={30} style={{ marginHorizontal: 2 }} />
+                            <Text style={{ color: focused ? pcolor : '#748c94', marginTop: 5 }}>Sales</Text>
+                            {focused && <View style={{ width: 50, height: 2, marginTop: 5, top: 10, backgroundColor: pcolor }} />}
+                        </View>
+                    ),
+                    headerShown: false
+                }} />
+                
             <Tab.Screen name="ChatPage" component={ChatPage}
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                             <Ionicons name="chatbox" color={focused ? pcolor : '#748c94'} size={30} style={{ marginHorizontal: 2 }} />
-                            {/* <Text style={{ color: focused ? pcolor : '#748c94', marginTop: 5 }}>{Translate.t("profile")}</Text> */}
+                            <Text style={{ color: focused ? pcolor : '#748c94', marginTop: 5 }}>Chat</Text>
                             {focused && <View style={{ width: 50, height: 2, marginTop: 5, top: 10, backgroundColor: pcolor }} />}
                         </View>
                     ),
                     headerShown: false
                 }} />
+
 
         </Tab.Navigator>
     );

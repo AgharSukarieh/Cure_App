@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import SkuModel from '../Modals/skuModel'
 
-const PharmacyItemTable = ({item}) => {
+const PharmacyItemTable = ({ item }) => {
     const [modal, setModal] = useState(false)
     const [rowdata, setrowdata] = useState(false)
     const rowModal = (rowdata) => {
@@ -10,32 +10,34 @@ const PharmacyItemTable = ({item}) => {
         setModal(true)
     }
 
-  return (
-    <>
-    <View style={{ ...styles.row, backgroundColor: item?.id % 2 == 0 ? '#7189FF' : '#fff' }}>
-        <View style={{ ...styles.filtterel, }}>
-            <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: item?.id % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                 <Text style={{ ...styles.filtterbtntext, color: item?.id % 2 == 0 ? '#fff' : '#7189FF' }}>{item?.name}</Text>
-            </TouchableOpacity>
-        </View>
-        <View style={{ width: 1, height: '80%', backgroundColor: item?.id % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
+    return (
+        <>
+            <View style={styles.row}>
+                <View style={{ ...styles.filtterel, }}>
+                    <TouchableOpacity style={styles.filtterbtn} onPress={() => { }}>
+                        <Text style={styles.filtterbtntext}>{item?.name}</Text>
+                    </TouchableOpacity>
+                </View>
 
-        <View style={{ ...styles.filtterel, }}>
-            <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: item?.id % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                <Text style={{ ...styles.filtterbtntext, color: item?.id % 2 == 0 ? '#fff' : '#7189FF' }}>{item?.address}</Text>
-            </TouchableOpacity>
-        </View>
-        <View style={{ width: 1, height: '80%', backgroundColor: item?.id % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
+                <View style={styles.verticalline} />
 
-        <View style={{ ...styles.filtterel, }}>
-            <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: item?.id % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                <Text style={{ ...styles.filtterbtntext, color: item?.id % 2 == 0 ? '#fff' : '#7189FF' }}>{item?.classification}</Text>
-            </TouchableOpacity>
-        </View>
-    </View>
-    <SkuModel show={modal} data={rowdata} hide={() => { setModal(false) }} submit={(e) => { console.log(e) }} />
-    </>
-  )
+                <View style={{ ...styles.filtterel, }}>
+                    <TouchableOpacity style={styles.filtterbtn} onPress={() => { }}>
+                        <Text style={styles.filtterbtntext}>{item?.address}</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.verticalline} />
+
+                <View style={{ ...styles.filtterel, }}>
+                    <TouchableOpacity style={styles.filtterbtn} onPress={() => { }}>
+                        <Text style={styles.filtterbtntext}>{item?.classification}</Text>
+                    </TouchableOpacity>
+                </View>
+            </View >
+            <SkuModel show={modal} data={rowdata} hide={() => { setModal(false) }} submit={(e) => { console.log(e) }} />
+        </>
+    )
 }
 
 export default PharmacyItemTable
@@ -48,7 +50,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4
     },
     filtterbtn: {
-        backgroundColor: '#7189FF',
         width: '90%',
         paddingVertical: 5,
         borderRadius: 7
@@ -57,15 +58,25 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 15,
         textTransform: 'capitalize',
-        color: '#fff',
+        color: '#000',
     },
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-        borderWidth: 1,
-        borderColor: '#7189FF',
-        marginTop: 10,
-        borderRadius: 7
+        // borderWidth: 1,
+        borderColor: '#000',
+        marginTop: 5,
+        paddingBottom: 3,
+        // borderRadius: 7
+        borderBottomWidth: 1.5,
+        borderStyle: 'dashed'
     },
+    verticalline: {
+        height: '90%',
+        borderWidth: 1,
+        alignSelf: 'center',
+        borderStyle: 'dashed',
+        borderColor: '#000',
+    }
 })

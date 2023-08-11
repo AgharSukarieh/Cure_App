@@ -18,35 +18,40 @@ const SkuModel = ({ show, hide, data, submit }) => {
                     <TouchableOpacity onPress={() => { hide() }}>
                         <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <AntDesign name="infocirlce" color='#7189FF' size={30} />
+                        <Text style={styles.maintitle}>INFO</Text>
+                    </View>
+
                     <ScrollView showsVertical
-                    ScrollIndicator={false}>
+                        ScrollIndicator={false}>
 
                         <View style={styles.card}>
-                            <Text style={styles.lable}>Dr. name</Text>
+                            <Text style={styles.lable}>Dr. name:</Text>
                             <Text style={styles.value}>{data?.doctor?.name}</Text>
                         </View>
 
                         <View style={styles.card}>
-                            <Text style={styles.lable}>Dr. Specialty</Text>
+                            <Text style={styles.lable}>Dr. Specialty:</Text>
                             <Text style={styles.value}>{data?.doctor?.speciality?.name}</Text>
                         </View>
 
-                        <View style={styles.card}>
-                            <Text style={styles.lable}>Time of Visit</Text>
-                            <Text style={styles.value}>{moment(data?.start_visit).format('h:m A')}</Text>
+                        <View style={{ ...styles.card, flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Text style={styles.lable}>Time of Visit:</Text>
+                            <Text style={styles.value}>{moment(data?.start_visit).format('hh:mm A')}</Text>
                         </View>
 
-                        { data?.sample_product?.length > 0 ?
+                        {data?.sample_product?.length > 0 ?
                             data?.sample_product?.map((item, index) => (
-                                <View style={styles.card}  key={index}>
+                                <View style={styles.card} key={index}>
                                     <Text style={styles.lable}>Product {index + 1}</Text>
                                     <Text style={styles.value}>{item?.product?.name}</Text>
                                 </View>
-                            )) 
+                            ))
                             :
-                             null
+                            null
                         }
-
                         <View style={styles.card}>
                             <Text style={styles.lable}>Note</Text>
                             <Text style={styles.value}>{data?.notes}</Text>
@@ -87,7 +92,7 @@ const styles = StyleSheet.create({
     lable: {
         marginBottom: 5,
         fontSize: 22,
-        color: '#7189FF',
+        color: '#000',
         textTransform: 'capitalize'
     },
     value: {
@@ -96,6 +101,11 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#000',
         textTransform: 'capitalize'
-    }
+    },
+    maintitle: {
+        fontSize: 25,
+        color: '#000',
+        marginHorizontal: 10
+    },
 
 })

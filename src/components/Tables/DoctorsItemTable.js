@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import SkuModel from '../Modals/skuModel'
 
 
-const DoctorsItemTable = ({item}) => {
+const DoctorsItemTable = ({ item }) => {
     const [modal, setModal] = useState(false)
     const [rowdata, setrowdata] = useState(false)
     const rowModal = (rowdata) => {
@@ -11,35 +11,35 @@ const DoctorsItemTable = ({item}) => {
         setModal(true)
     }
 
-  return (
-    <>
-    <View style={{ ...styles.row, backgroundColor: item?.id % 2 == 0 ? '#7189FF' : '#fff' }}>
-        <View style={{ ...styles.filtterel, width: '38%', }}>
-            <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: item?.id % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                <Text style={{ ...styles.filtterbtntext, color: item?.id % 2 == 0 ? '#fff' : '#7189FF' }}>{item?.name}</Text>
-            </TouchableOpacity>
-        </View>
+    return (
+        <>
+            <View style={styles.row}>
+                <View style={{ ...styles.filtterel, width: '38%', }}>
+                    <TouchableOpacity style={styles.filtterbtn} onPress={() => { }}>
+                        <Text style={styles.filtterbtntext}>{item?.name}</Text>
+                    </TouchableOpacity>
+                </View>
 
-        <View style={{ width: 1, height: '80%', backgroundColor: item?.id % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
+                <View style={styles.verticalline} />
 
-        <View style={{ ...styles.filtterel, width: '24%', }}>
-            <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: item?.id % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                <Text style={{ ...styles.filtterbtntext, color: item?.id % 2 == 0 ? '#fff' : '#7189FF' }}>{item.speciality}</Text>
-            </TouchableOpacity>
-        </View>
+                <View style={{ ...styles.filtterel, width: '24%', }}>
+                    <TouchableOpacity style={styles.filtterbtn} onPress={() => { }}>
+                        <Text style={styles.filtterbtntext}>{item.speciality}</Text>
+                    </TouchableOpacity>
+                </View>
 
-        <View style={{ width: 1, height: '80%', backgroundColor: item?.id % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
+                <View style={styles.verticalline} />
 
-        <View style={{ ...styles.filtterel, width: '38%', }}>
-            <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: item?.id % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                <Text style={{ ...styles.filtterbtntext, color: item?.id % 2 == 0 ? '#fff' : '#7189FF' }}>{item.area}</Text>
-            </TouchableOpacity>
-        </View>
-    </View>
+                <View style={{ ...styles.filtterel, width: '38%', }}>
+                    <TouchableOpacity style={styles.filtterbtn} onPress={() => { }}>
+                        <Text style={styles.filtterbtntext}>{item.area}</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
 
-    <SkuModel show={modal} data={rowdata} hide={() => { setModal(false) }} submit={(e) => { console.log(e) }} />
-    </>
-  )
+            <SkuModel show={modal} data={rowdata} hide={() => { setModal(false) }} submit={(e) => { console.log(e) }} />
+        </>
+    )
 }
 
 export default DoctorsItemTable
@@ -70,12 +70,11 @@ const styles = StyleSheet.create({
     filtterel: {
         width: '33%',
         justifyContent: 'center',
-        alignItems: 'center', 
+        alignItems: 'center',
         paddingVertical: 10,
         paddingHorizontal: 4
     },
     filtterbtn: {
-        backgroundColor: '#7189FF',
         width: '90%',
         paddingVertical: 5,
         borderRadius: 7
@@ -89,16 +88,19 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 15,
         textTransform: 'capitalize',
-        color: '#fff',
+        color: '#000',
     },
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-        borderWidth: 1,
-        borderColor: '#7189FF',
+        // borderWidth: 1,
+        borderColor: '#000',
         marginTop: 10,
-        borderRadius: 7
+        paddingBottom: 10,
+        // borderRadius: 7
+        borderBottomWidth: 1.5,
+        borderStyle: 'dashed'
     },
     rowel: {
         width: '29%',
@@ -120,6 +122,13 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize',
         color: '#fff',
         height: 20,
-    }
+    },
+    verticalline: {
+        height: '90%',
+        borderWidth: 1,
+        alignSelf: 'center',
+        borderStyle: 'dashed',
+        borderColor: '#000',
+    },
 })
 

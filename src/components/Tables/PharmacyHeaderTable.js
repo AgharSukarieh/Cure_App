@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import React from 'react';
 
 const PharmacyHeaderTable = () => {
@@ -7,12 +7,12 @@ const PharmacyHeaderTable = () => {
       <View style={styles.headerel}>
         <Text style={styles.headerel_tetx}>name</Text>
       </View>
-      <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
+      <View style={styles.verticalline} />
       <View style={styles.headerel}>
         <Text style={styles.headerel_tetx}>location</Text>
       </View>
-      <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
-      <View style={{...styles.headerel}}>
+      <View style={styles.verticalline} />
+      <View style={{ ...styles.headerel }}>
         <Text style={styles.headerel_tetx}>class</Text>
       </View>
     </View>
@@ -26,10 +26,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '98%',
     alignSelf: 'center',
-    borderColor: '#7189FF',
-    borderBottomWidth: 1,
     marginTop: 10,
     paddingVertical: 7,
+    borderColor: '#000',
+    borderBottomWidth: 1.5,
+    borderStyle: 'dashed'
   },
   headerel: {
     width: '33%',
@@ -41,7 +42,17 @@ const styles = StyleSheet.create({
   headerel_tetx: {
     textAlign: 'center',
     fontSize: 17,
+    fontWeight: '600',
     textTransform: 'capitalize',
     color: '#000',
   },
+
+  verticalline: {
+    width: 1,
+    height: '100%',
+    borderWidth: 1,
+    alignSelf: 'center',
+    borderStyle: 'dashed',
+    borderColor: '#000'
+  }
 });

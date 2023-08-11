@@ -12,14 +12,14 @@ import TableView from '../../General/TableView';
 import DailyMedicalItemTable from '../../components/Tables/DailyMedicalItemTable';
 
 const Daily = ({ navigation, route }) => {
-    const {user} = useAuth();
+    const { user } = useAuth();
     const title = route.params.title
     const date = route.params.date
     const area = route.params.area
     const [modal, setModal] = useState(false)
     const [alert, setalert] = useState(false)
     const params = {
-        medical_id: user?.medicals.id, 
+        medical_id: user?.medicals.id,
         start_visit: moment(date, 'YYYY-M-D').format('YYYY-MM-DD')
     }
 
@@ -30,27 +30,28 @@ const Daily = ({ navigation, route }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-                <GoBack text={title} />
+            <GoBack text='Weekly Plan' isIcon={'calendar-o'} />
 
-                <View style={{ marginVertical: 30 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', alignSelf: 'center' }}>
-                        <Text style={{ fontSize: 25, color: '#253274', fontWeight: '600', }}>{area?.area}</Text>
-                        {moment(date, 'YYYY-M-D').format('YYYY-MM-DD') == moment().format('YYYY-MM-DD') ? <TouchableOpacity style={style.newbtn} onPress={() => { setModal(true) }}>
-                            <Text style={{ color: '#fff', fontSize: 18 }}>Add new</Text>
-                        </TouchableOpacity> : null}
-                    </View>  
+            <View style={{ marginVertical: 30, width: '90%', alignSelf: 'center' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 25, color: '#253274', fontWeight: '600', }}>{area?.area}</Text>
+                    {moment(date, 'YYYY-M-D').format('YYYY-MM-DD') == moment().format('YYYY-MM-DD') ? <TouchableOpacity style={style.newbtn} onPress={() => { setModal(true) }}>
+                        <Text style={{ color: '#fff', fontSize: 18 }}>Add new</Text>
+                    </TouchableOpacity> : null}
                 </View>
+                <Text style={{ fontSize: 20, color: '#253274', fontWeight: '600', }}>{title}</Text>
+            </View>
 
-                <View style={style.container}>
-                    <DailyMedicalHeaderTable/>
-                    <TableView 
-                        apiEndpoint={Constants.visit.medical}
-                        enablePullToRefresh
-                        params={params} 
-                        onEndReached = {false}
-                        renderItem={({ item }) => <DailyMedicalItemTable item={item} />} 
-                    />
-                </View>
+            <View style={style.container}>
+                <DailyMedicalHeaderTable />
+                <TableView
+                    apiEndpoint={Constants.visit.medical}
+                    enablePullToRefresh
+                    params={params}
+                    onEndReached={false}
+                    renderItem={({ item }) => <DailyMedicalItemTable item={item} />}
+                />
+            </View>
 
             <DailyaddModel show={modal} hide={() => { setModal(false) }} submit={(e) => { mainrow(e) }} date={date} area={area} />
             <Sweetalert show={alert} hide={() => { setalert(false) }} title='Record added successfully' />

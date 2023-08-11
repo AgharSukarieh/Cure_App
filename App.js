@@ -64,7 +64,6 @@ export default function App() {
 
         <Stack.Screen name="ReportPage" component={ReportPage} />
         <Stack.Screen name="Sales" component={Sales} />
-
         <Stack.Screen name="Clientlist-sales" component={Clientpharmalist} />
         <Stack.Screen name="Clientlist-medical" component={MainClientdoctorlist} />
         <Stack.Screen name="Clientdoctorlist" component={Clientdoctorlist} />

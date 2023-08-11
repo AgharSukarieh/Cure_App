@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import SalesModel from '../Modals/SalesModel'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
-const SalesItemTable = ({item}) => {
+const SalesItemTable = ({ item }) => {
     const [modal, setModal] = useState(false)
     const [rowData, setRowData] = useState('')
 
@@ -12,30 +12,30 @@ const SalesItemTable = ({item}) => {
         setRowData(item)
     }
 
-  return (
-    <>
-    <View style={{ ...styles.row, backgroundColor: item?.id % 2 == 0 ? '#7189FF' : '#fff' }}>
-        <View style={{ ...styles.rowel, width: '30.1%', }}>
-            <Text style={{ ...styles.rowel_tetx, color: item?.id % 2 == 0 ? '#fff' : '#000' }}>{item?.pharmacy}</Text>
-        </View>
+    return (
+        <>
+            <View style={{ ...styles.row, backgroundColor: item?.id % 2 == 0 ? '#7189FF' : '#fff' }}>
+                <View style={{ ...styles.rowel, width: '30.1%', }}>
+                    <Text style={{ ...styles.rowel_tetx, color: item?.id % 2 == 0 ? '#fff' : '#000' }}>{item?.pharmacy}</Text>
+                </View>
 
-        <View style={styles.rowel}>
-            <Text style={{ ...styles.rowel_tetx, color: item?.id % 2 == 0 ? '#fff' : '#000' }}>{item?.total_price}</Text>
-        </View>
+                <View style={styles.rowel}>
+                    <Text style={{ ...styles.rowel_tetx, color: item?.id % 2 == 0 ? '#fff' : '#000' }}>{item?.total_price}</Text>
+                </View>
 
-        <View style={styles.rowel}>
-             <Text style={{ ...styles.rowel_tetx, color: item?.id % 2 == 0 ? '#fff' : '#000' }}>{new Date(item?.created_at).toISOString().split('T')[0]}</Text>
-        </View>
-        
-        <View style={{ ...styles.rowel, width: '12%', }}>
-            <TouchableOpacity onPress={() => { DDD(item) }}>
-                <AntDesign name="infocirlceo" color='gold' size={17} />
-            </TouchableOpacity>
-        </View>
-    </View>
-    <SalesModel show={modal} hide={() => { setModal(false) }} data={rowData} />
-    </>
-  )
+                <View style={styles.rowel}>
+                    <Text style={{ ...styles.rowel_tetx, color: item?.id % 2 == 0 ? '#fff' : '#000' }}>{new Date(item?.created_at).toISOString().split('T')[0]}</Text>
+                </View>
+
+                <View style={{ ...styles.rowel, width: '12%', }}>
+                    <TouchableOpacity onPress={() => { DDD(item) }}>
+                        <AntDesign name="infocirlceo" color='gold' size={17} />
+                    </TouchableOpacity>
+                </View>
+            </View>
+            <SalesModel show={modal} hide={() => { setModal(false) }} data={rowData} />
+        </>
+    )
 }
 
 export default SalesItemTable

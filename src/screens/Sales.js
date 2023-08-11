@@ -16,14 +16,35 @@ import SalesHeaderTable from '../components/Tables/SalesHeaderTable';
 import TableView from '../General/TableView';
 import SalesItemTable from '../components/Tables/SalesItemTable';
 import Constants from '../config/globalConstants';
+import { get } from '../WebService/RequestBuilder';
+import { useAuth } from '../contexts/AuthContext';
+
+
 const getSalesEndpoint = Constants.users.user_orders;
 
 Feather.loadFont();
 
 const Sales = ({ navigation, route }) => {
 
-  const cityArea = route?.params?.cityArea
-  const user_id = route?.params?.user_id
+  // const cityArea = route?.params?.cityArea
+  const { user } = useAuth();
+
+  const user_id = user.id
+
+  const getCityAreaEndpoint = Constants.users.cityArea;
+
+
+  const [cityArea, setCityArea] = useState(null);
+  useEffect(() => {
+    get(`${getCityAreaEndpoint}${user?.id}`)
+      .then(response => {
+        setCityArea(response.data);
+      })
+      .catch(err => {
+        console.error(err);
+      })
+
+  }, []);
 
   const [citiesData, setCitiesData] = useState([]);
   const [cityValue, setCityValue] = useState(null);
@@ -63,11 +84,11 @@ const Sales = ({ navigation, route }) => {
   }
 
   useEffect(() => {
-    getCities()
-  }, [])
+    if (cityArea) getCities()
+  }, [cityArea])
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{ ...styles.container, backgroundColor: '#ebebeb96' }}>
       <GoBack text={'Sales'} />
       <View
         style={{
@@ -77,7 +98,7 @@ const Sales = ({ navigation, route }) => {
           justifyContent: 'space-between',
           marginBottom: 10,
         }}>
-        <View style={style.container}>
+        <View style={{ ...style.container, backgroundColor: 'white', }}>
           <Dropdown
             style={style.dropdown}
             placeholderStyle={style.placeholderStyle}
@@ -111,7 +132,7 @@ const Sales = ({ navigation, route }) => {
           />
         </View>
 
-        <View style={style.container}>
+        <View style={{ ...style.container, backgroundColor: 'white', }}>
           <Dropdown
             style={style.dropdown}
             placeholderStyle={style.placeholderStyle}
@@ -146,14 +167,7 @@ const Sales = ({ navigation, route }) => {
         </View>
       </View>
 
-      <View
-        style={{
-          width: '90%',
-          flexDirection: 'row',
-          alignSelf: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 6,
-        }}>
+      <View style={{ width: '90%', flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-between', marginBottom: 6, }}>
         <View style={{ ...style.container, marginTop: 0 }}>
           <Text style={{ ...styles.calenderText, marginBottom: 5 }}>From</Text>
           <TouchableOpacity
@@ -162,7 +176,7 @@ const Sales = ({ navigation, route }) => {
               setOpen(true);
             }}>
             <Text style={styles.filterbuttontext}>
-              {calenderFrom != '' ? calenderFrom : '-- -- -- -- --'}
+              {calenderFrom != '' ? calenderFrom : 'YYYY-MM-DD'}
             </Text>
           </TouchableOpacity>
           <DatePicker
@@ -194,13 +208,9 @@ const Sales = ({ navigation, route }) => {
 
         <View style={{ ...style.container, marginTop: 0 }}>
           <Text style={{ ...styles.calenderText, marginBottom: 5 }}>To</Text>
-          <TouchableOpacity
-            style={styles.filterbutton}
-            onPress={() => {
-              setOpen2(true);
-            }}>
+          <TouchableOpacity style={styles.filterbutton} onPress={() => { setOpen2(true); }}>
             <Text style={styles.filterbuttontext}>
-              {calenderTo != '' ? calenderTo : '-- -- -- -- --'}
+              {calenderTo != '' ? calenderTo : 'YYYY-MM-DD'}
             </Text>
           </TouchableOpacity>
           <DatePicker
@@ -230,6 +240,7 @@ const Sales = ({ navigation, route }) => {
             }}
           />
         </View>
+
       </View>
 
       <View style={style.tableContainer}>
@@ -250,15 +261,15 @@ export default Sales;
 
 export const style = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
     width: '48%',
     marginTop: 15,
+    borderRadius: 20,
   },
   dropdown: {
     height: 50,
-    borderColor: '#7189FF',
+    borderColor: '#A5BECC',
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 15,
     paddingHorizontal: 8,
   },
   icon: {

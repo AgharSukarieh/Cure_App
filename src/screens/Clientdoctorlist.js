@@ -6,12 +6,12 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import React, {useState} from 'react';
-import {styles} from '../components/styles';
+import React, { useState } from 'react';
+import { styles } from '../components/styles';
 import GoBack from '../components/GoBack';
 import Feather from 'react-native-vector-icons/Feather';
-import {useEffect} from 'react';
-import {Dropdown} from 'react-native-element-dropdown';
+import { useEffect } from 'react';
+import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SuccessfullyModel from '../components/Modals/SuccessfullyModel';
 import AddNewDoctorModel from '../components/Modals/AddNewDoctorModel';
@@ -22,10 +22,10 @@ import DoctorsItemTable from '../components/Tables/DoctorsItemTable';
 import { useAuth } from '../contexts/AuthContext';
 const getDoctorsEndpoint = Constants.doctor.allDoctors;
 
-const Clientdoctorlist = ({navigation, route}) => {
+const Clientdoctorlist = ({ navigation, route }) => {
   const cityArea = route?.params?.cityArea
   const specialty = route?.params?.specialty
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const [modal, setModal] = useState(false);
   const [scModal, setScModal] = useState(false);
@@ -41,39 +41,39 @@ const Clientdoctorlist = ({navigation, route}) => {
   const [specialtyData, setSpecialtyData] = useState([]);
   const [specialtyValue, setSpecialtyValue] = useState(null);
 
-  const [filter, setFilter] = useState({user_id: user?.id});
+  const [filter, setFilter] = useState({ user_id: user?.id });
 
   const getCities = () => {
     var count = Object.keys(cityArea.cities).length
-        let cityArray = []
-        for (var i = 0; i < count; i++ ){
-            cityArray.push({
-                value: cityArea.cities[i].id,
-                label: cityArea.cities[i].name
-            })
-        }
+    let cityArray = []
+    for (var i = 0; i < count; i++) {
+      cityArray.push({
+        value: cityArea.cities[i].id,
+        label: cityArea.cities[i].name
+      })
+    }
 
     var count = Object.keys(cityArea.areas).length
-        let areaArray = []
-        for (var i = 0; i < count; i++ ){
-          areaArray.push({
-                value: cityArea.areas[i].id,
-                label: cityArea.areas[i].name
-            })
-        }
-     var count = Object.keys(specialty).length
-        let specialtyArray = []
-        for (var i = 0; i < count; i++ ){
-          specialtyArray.push({
-                value: specialty[i].id,
-                label: specialty[i].name
-            })
-        }    
-        setCitiesData(cityArray)
-        setAreasData(areaArray)
-        setSpecialtyData(specialtyArray)
+    let areaArray = []
+    for (var i = 0; i < count; i++) {
+      areaArray.push({
+        value: cityArea.areas[i].id,
+        label: cityArea.areas[i].name
+      })
+    }
+    var count = Object.keys(specialty).length
+    let specialtyArray = []
+    for (var i = 0; i < count; i++) {
+      specialtyArray.push({
+        value: specialty[i].id,
+        label: specialty[i].name
+      })
+    }
+    setCitiesData(cityArray)
+    setAreasData(areaArray)
+    setSpecialtyData(specialtyArray)
   }
- 
+
   useEffect(() => {
     getCities()
   }, [])
@@ -81,15 +81,15 @@ const Clientdoctorlist = ({navigation, route}) => {
   const submitAddDoctor = data => {
     if (data == true) {
       setScModal(true);
-      setFilter({user_id: user?.id})
-    } 
+      setFilter({ user_id: user?.id })
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <GoBack text={'Doctor List'} />
-      <View style={{width: '90%', alignSelf: 'center'}}>
-        
+      <View style={{ width: '90%', alignSelf: 'center' }}>
+
         <View style={styles.search}>
           <TextInput
             style={styles.searchinput}
@@ -118,9 +118,9 @@ const Clientdoctorlist = ({navigation, route}) => {
             }}>
             <Feather
               name="x"
-              color="#7189FF"
+              color="#000"
               size={27}
-              style={{marginHorizontal: 2}}
+              style={{ marginHorizontal: 2 }}
             />
           </TouchableOpacity>
         </View>
@@ -134,7 +134,7 @@ const Clientdoctorlist = ({navigation, route}) => {
             marginBottom: 10,
           }}>
           <View style={style.container}>
-          <Dropdown
+            <Dropdown
               style={style.dropdown}
               placeholderStyle={style.placeholderStyle}
               selectedTextStyle={style.selectedTextStyle}
@@ -148,7 +148,7 @@ const Clientdoctorlist = ({navigation, route}) => {
               placeholder={!cityValue ? 'Select City' : '...'}
               searchPlaceholder="Search..."
               value={cityValue}
-              onBlur={() => {}}
+              onBlur={() => { }}
               onChange={item => {
                 setCityValue(item.value);
                 setFilter((prev) => ({
@@ -168,7 +168,7 @@ const Clientdoctorlist = ({navigation, route}) => {
           </View>
 
           <View style={style.container}>
-          <Dropdown
+            <Dropdown
               style={style.dropdown}
               placeholderStyle={style.placeholderStyle}
               selectedTextStyle={style.selectedTextStyle}
@@ -182,7 +182,7 @@ const Clientdoctorlist = ({navigation, route}) => {
               placeholder={!areaValue ? 'Select Area' : '...'}
               searchPlaceholder="Search..."
               value={areaValue}
-              onBlur={() => {}}
+              onBlur={() => { }}
               onChange={item => {
                 setAreaValue(item.value);
                 setFilter((prev) => ({
@@ -202,7 +202,7 @@ const Clientdoctorlist = ({navigation, route}) => {
           </View>
         </View>
 
-        <View style={{...style.container, width: '100%'}}>
+        <View style={{ ...style.container, width: '100%' }}>
           <Dropdown
             style={style.dropdown}
             placeholderStyle={style.placeholderStyle}
@@ -217,7 +217,7 @@ const Clientdoctorlist = ({navigation, route}) => {
             placeholder={!specialtyValue ? 'Select Specialty' : '...'}
             searchPlaceholder="Search..."
             value={specialtyValue}
-            onBlur={() => {}}
+            onBlur={() => { }}
             onChange={item => {
               setSpecialtyValue(item.value);
               setFilter((prev) => ({
@@ -239,12 +239,12 @@ const Clientdoctorlist = ({navigation, route}) => {
       </View>
 
       <View style={style.containerTable}>
-        <DoctorsHeaderTable/>
-        <TableView 
-          apiEndpoint={getDoctorsEndpoint} 
+        <DoctorsHeaderTable />
+        <TableView
+          apiEndpoint={getDoctorsEndpoint}
           enablePullToRefresh
-          params={filter} 
-          renderItem={({ item }) => <DoctorsItemTable item={item} />} 
+          params={filter}
+          renderItem={({ item }) => <DoctorsItemTable item={item} />}
         />
       </View>
 
@@ -297,7 +297,7 @@ export const style = StyleSheet.create({
     color: 'rgba(37, 50, 116, 0.6)',
     marginHorizontal: 10,
   },
-  containerTable:{
+  containerTable: {
     flex: 1,
     width: '98%',
     alignSelf: 'center',
@@ -322,7 +322,7 @@ export const style = StyleSheet.create({
   },
   dropdown: {
     height: 50,
-    borderColor: '#7189FF',
+    borderColor: '#617C9D',
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
