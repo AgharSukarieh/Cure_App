@@ -25,18 +25,9 @@ const ChatListItem = ({ chat, currentUser }) => {
         })
       }
       style={styles.container}>
-      <Image source={chat?.image ? { uri: chat?.image } : require('../../../assets/user.png')} style={styles.image} />
       <View style={styles.content}>
         <View style={styles.row}>
           <Text style={styles.name} numberOfLines={1}> {chat?.name} </Text>
-          <Text style={styles.subTitle}>
-            {dayjs(moment.utc(chat?.updated_at).local().format()).fromNow(true)}
-          </Text>
-        </View>
-        <View style={{ ...styles.row, justifyContent: 'space-between' }}>
-          <Text numberOfLines={2} style={styles.subTitle}>
-            {chat?.last_message?.text || 'attachments'}
-          </Text>
           {isMessageRead
             ?
             <View style={{ backgroundColor: '#323FA6', width: 22, height: 22, borderRadius: 99, justifyContent: 'center', alignItems: 'center' }}>
@@ -47,7 +38,15 @@ const ChatListItem = ({ chat, currentUser }) => {
               <Ionicons name='checkmark-done-outline' color='blue' size={22} />
             </View>
           }
+        </View>
+        <View style={{ ...styles.row, justifyContent: 'space-between' }}>
+          <Text numberOfLines={2} style={styles.subTitle}>
+            {chat?.last_message?.text || 'attachments'}
+          </Text>
 
+          <Text style={styles.subTitle}>
+            {dayjs(moment.utc(chat?.updated_at).local().format()).fromNow(true)}
+          </Text>
         </View>
       </View>
     </Pressable>

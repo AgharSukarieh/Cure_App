@@ -1,7 +1,6 @@
 import { View, Dimensions, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput, Image } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { styles } from '../../components/styles';
-import TopView from '../../components/TopView';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../contexts/AuthContext';
 import Constants from '../../config/globalConstants';
@@ -15,23 +14,12 @@ const getCityAreaEndpoint = Constants.users.cityArea;
 
 const ReportPage = () => {
   const navigation = useNavigation();
-  const { logout, role, user } = useAuth();
-  const date = new Date().toLocaleDateString();
+  const { role, user } = useAuth();
 
   const [isLoading, setIsLoading] = useState(true);
 
-
-  const LogoutPress = async () => {
-    await logout()
-      .then(() => {
-        navigation.navigate('SignIn');
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
-
   const [cityArea, setCityArea] = useState(null);
+
   useEffect(() => {
     get(`${getCityAreaEndpoint}${user?.id}`)
       .then(response => {
@@ -75,7 +63,7 @@ const ReportPage = () => {
               <Image source={require('../../../assets/Group.png')} style={{ ...style.cardimage, marginLeft: 15 }} resizeMode='contain' />
               <Text style={style.cardtext}>Reports</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={style.card} onPress={() => { LogoutPress() }}>
+            <TouchableOpacity style={style.card} onPress={() => { }}>
               <Image source={require('../../../assets/soc.png')} style={{ ...style.cardimage, marginLeft: 0 }} resizeMode='contain' />
               <Text style={style.cardtext}>Social Media</Text>
             </TouchableOpacity>

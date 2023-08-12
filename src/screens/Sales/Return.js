@@ -8,18 +8,18 @@ import {
   PermissionsAndroid,
   Alert,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {styles} from '../../components/styles';
+import React, { useEffect, useState } from 'react';
+import { styles } from '../../components/styles';
 import GoBack from '../../components/GoBack';
 import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
 import ScanBarcodeAndQRModel from '../../components/Modals/ScanBarcodeAndQRModel';
 import Input from '../../components/Input';
 import ReturnsAfterAddTable from '../../components/Tables/ReturnsAfterAddTable';
-import {Dropdown} from 'react-native-element-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
-import {SAL_GET_PRODUCT_BY_BARCODE } from '../../Provider/ApiRequest';
+import { SAL_GET_PRODUCT_BY_BARCODE } from '../../Provider/ApiRequest';
 import { get } from '../../WebService/RequestBuilder';
 import globalConstants from '../../config/globalConstants';
 import { TextInput } from 'react-native';
@@ -27,8 +27,7 @@ import ReturnsTable from '../../components/Tables/ReturnsTable';
 
 Feather.loadFont();
 
-const Return = ({navigation, route}) => {
-  const item = route.params.item;
+const Return = ({ navigation, route, item }) => {
 
   const [modal, setModal] = useState(false);
   const [dataForScan, setDataForScan] = useState(null);
@@ -82,7 +81,7 @@ const Return = ({navigation, route}) => {
         }
       }).catch((err) => {
         Alert.alert(err.message || 'Error')
-      }).finally(() => {});
+      }).finally(() => { });
     }
   }
 
@@ -163,7 +162,7 @@ const Return = ({navigation, route}) => {
     ) {
       setPrductInOurStore(dataFromAPI);
       setNotInStore(false);
-    } 
+    }
     else {
       setPrductInOurStore(null);
       setNotInStore(true);
@@ -171,7 +170,7 @@ const Return = ({navigation, route}) => {
   };
 
   const addBtn = () => {
-    const data = {...dataForScan, notes: notes};
+    const data = { ...dataForScan, notes: notes };
     const dd = [...returnData, data];
     setReturnData(dd);
     setDataForScan(null);
@@ -179,30 +178,29 @@ const Return = ({navigation, route}) => {
     setNotes('');
   };
 
-const submit = () => {
-  // API
+  const submit = () => {
+    // API
     setTotalReturnsStatus(true)
-}
+  }
 
   return (
-    <SafeAreaView>
-      <GoBack text={'Return'} />
-      
-      <View style={{width:100, marginBottom:10}}>
+    <SafeAreaView style={styles.container}>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10 }}>
         <TouchableOpacity
           style={style.newbtn}
           onPress={() => {
             // scan();
             setModal(true)
           }}>
-          <Text style={{color: '#fff', fontSize: 18, paddingHorizontal: 10}}>
+          <Text style={{ color: '#fff', fontSize: 18, paddingHorizontal: 10 }}>
             Scan
           </Text>
         </TouchableOpacity>
       </View>
-
-      <View style={{width:'50%'}}>
-          {/* <Dropdown
+      <View style={{ width: '90%', height: 1, backgroundColor: '#000', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
+      <View style={{ width: '50%' }}>
+        {/* <Dropdown
             style={style.dropdown}
                   placeholderStyle={style.placeholderStyle}
                   selectedTextStyle={style.selectedTextStyle}
@@ -230,72 +228,72 @@ const submit = () => {
             )}
           /> */}
         <TextInput
-          style={{marginLeft: 10,width:'100%', height: 40, borderWidth:1, borderColor: 'blue', marginTop: 10, borderRadius: 5, paddingHorizontal: 10}}
+          style={{ marginLeft: 10, width: '100%', height: 40, borderWidth: 1, borderColor: '#000', marginTop: 10, borderRadius: 5, paddingHorizontal: 10 }}
           placeholder='YYYY-MM-DD'
           onChangeText={text => setDateEx(text)}
           onEndEditing={endEditing}
         />
       </View>
-      
+
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        style={{marginBottom: 40, marginHorizontal: 20}}>
-          {/*  */}
-          <View>
-            {dataForScan && <ReturnsTable data={dataForScan} />}
-          </View>
-          {/*  */}
+        style={{ marginBottom: 40, marginHorizontal: 20 }}>
+        {/*  */}
+        <View>
+          {dataForScan && <ReturnsTable data={dataForScan} />}
+        </View>
+        {/*  */}
 
 
 
         {
-        // dataForScan && (
-        //   <>
-        //     <View style={style.viewInfo}>
-        //       <Text style={style.titleInfo}>Batch # : </Text>
-        //       <Text style={style.phname}>
-        //         {dataForScan?.product?.batch_number || '-'}
-        //       </Text>
-        //     </View>
-        //     <View style={style.viewInfo}>
-        //       <Text style={style.titleInfo}>Expired Date : </Text>
-        //       <Text style={style.phname}>
-        //         {dataForScan?.product?.expiry_date || '-'}
-        //       </Text>
-        //     </View>
-        //     <View style={style.viewInfo}>
-        //       <Text style={style.titleInfo}>Amount : </Text>
-        //       <Text style={style.phname}>{dataForScan?.units || '-'}</Text>
-        //     </View>
-        //     {/* <Input
-        //       viewStyle={{marginLeft: 0, marginTop: 15}}
-        //       labelStyle={{
-        //         fontSize: 20,
-        //         color: 'black',
-        //         fontWeight: 'bold',
-        //         marginBottom: 10,
-        //       }}
-        //       lable={'Notes'}
-        //       setData={setNotes}
-        //       style={{...styles.inputModel, height: 100}}
-        //       value={notes}
-        //       multiline={true}
-        //       numberOfLines={4}
-        //       placeholder={'If you have any comments, write them here.'}
-        //     /> */}
-        //     <View
-        //       style={{
-        //         width: '99%',
-        //         height: 1,
-        //         backgroundColor: '#7189FF',
-        //         alignSelf: 'center',
-        //         marginTop: 20,
-        //         borderRadius: 22,
-        //       }}
-        //     />
-        //   </>
-        // )
+          // dataForScan && (
+          //   <>
+          //     <View style={style.viewInfo}>
+          //       <Text style={style.titleInfo}>Batch # : </Text>
+          //       <Text style={style.phname}>
+          //         {dataForScan?.product?.batch_number || '-'}
+          //       </Text>
+          //     </View>
+          //     <View style={style.viewInfo}>
+          //       <Text style={style.titleInfo}>Expired Date : </Text>
+          //       <Text style={style.phname}>
+          //         {dataForScan?.product?.expiry_date || '-'}
+          //       </Text>
+          //     </View>
+          //     <View style={style.viewInfo}>
+          //       <Text style={style.titleInfo}>Amount : </Text>
+          //       <Text style={style.phname}>{dataForScan?.units || '-'}</Text>
+          //     </View>
+          //     {/* <Input
+          //       viewStyle={{marginLeft: 0, marginTop: 15}}
+          //       labelStyle={{
+          //         fontSize: 20,
+          //         color: 'black',
+          //         fontWeight: 'bold',
+          //         marginBottom: 10,
+          //       }}
+          //       lable={'Notes'}
+          //       setData={setNotes}
+          //       style={{...styles.inputModel, height: 100}}
+          //       value={notes}
+          //       multiline={true}
+          //       numberOfLines={4}
+          //       placeholder={'If you have any comments, write them here.'}
+          //     /> */}
+          //     <View
+          //       style={{
+          //         width: '99%',
+          //         height: 1,
+          //         backgroundColor: '#7189FF',
+          //         alignSelf: 'center',
+          //         marginTop: 20,
+          //         borderRadius: 22,
+          //       }}
+          //     />
+          //   </>
+          // )
         }
 
 
@@ -444,12 +442,14 @@ export default Return;
 export const style = StyleSheet.create({
   newbtn: {
     backgroundColor: '#7189FF',
-    height: 40,
     paddingVertical: 5,
-    paddingHorizontal: 4,
+    paddingHorizontal: 8,
     borderRadius: 7,
     justifyContent: 'center',
-    marginHorizontal: 7,
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    marginHorizontal: 15,
+    height: 40,
   },
   viewInfo: {
     flexDirection: 'row',
@@ -492,37 +492,37 @@ export const style = StyleSheet.create({
     borderRadius: 7
   },
   dropdown: {
-  height: 42,
-  borderColor: '#7189FF',
-  borderWidth: 1,
-  borderRadius: 5,
-  paddingHorizontal: 8,
-  marginLeft: 10,
-  marginRight: 10,
-  width:'100%'
+    height: 42,
+    borderColor: '#7189FF',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 8,
+    marginLeft: 10,
+    marginRight: 10,
+    width: '100%'
   },
   icon: {
-  marginRight: 5,
+    marginRight: 5,
   },
   placeholderStyle: {
-  fontSize: 16,
+    fontSize: 16,
   },
   selectedTextStyle: {
-  fontSize: 16,
+    fontSize: 16,
   },
   iconStyle: {
-  width: 20,
-  height: 20,
+    width: 20,
+    height: 20,
   },
   inputSearchStyle: {
-  height: 40,
-  fontSize: 16,
+    height: 40,
+    fontSize: 16,
   },
-  textinput:{
-  height: 60,
-  borderColor: 'rgba(37, 50, 116, 0.28)',
-  borderWidth: 1,
-  paddingLeft: 10,
-  borderRadius: 5,
+  textinput: {
+    height: 60,
+    borderColor: 'rgba(37, 50, 116, 0.28)',
+    borderWidth: 1,
+    paddingLeft: 10,
+    borderRadius: 5,
   }
 });

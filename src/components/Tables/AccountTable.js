@@ -5,93 +5,53 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 AntDesign.loadFont();
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
-const AccountTable = ({data}) => {
+const AccountTable = ({ data }) => {
 
-  
+
   return (
     <View style={styles.container}>
-          <View style={styles.header}>
-            <View style={{...styles.headerel, width: '25%'}}>
-              <Text style={styles.headerel_tetx}>Pharmacy Amount</Text>
-            </View>
-            <View
-              style={{width: 1, height: '100%', backgroundColor: '#7189FF'}}
-            />
-            <View style={{...styles.headerel, width: '25%'}}>
-              <Text style={styles.headerel_tetx}>Last Payment</Text>
-            </View>
-            <View
-              style={{width: 1, height: '100%', backgroundColor: '#7189FF'}}
-            />
-            <View style={{...styles.headerel, width: '25%'}}>
-              <Text style={styles.headerel_tetx}>Payment Method</Text>
-            </View>
-            <View
-              style={{width: 1, height: '100%', backgroundColor: '#7189FF'}}
-            />
-            <View style={{...styles.headerel, width: '25%'}}>
-              <Text style={styles.headerel_tetx}>Limit</Text>
-            </View>
-          </View>
+      <View style={styles.header}>
+        <View style={{ ...styles.headerel, width: '25%' }}>
+          <Text style={styles.headerel_tetx}>Pharmacy Amount</Text>
+        </View>
+        <View style={styles.varLine} />
+        <View style={{ ...styles.headerel, width: '25%' }}>
+          <Text style={styles.headerel_tetx}>Last Payment</Text>
+        </View>
+        <View style={styles.varLine} />
+        <View style={{ ...styles.headerel, width: '25%' }}>
+          <Text style={styles.headerel_tetx}>Payment Method</Text>
+        </View>
+        <View style={styles.varLine} />
+        <View style={{ ...styles.headerel, width: '25%' }}>
+          <Text style={styles.headerel_tetx}>Limit</Text>
+        </View>
+      </View>
 
-          <View
-            style={{
-              ...styles.row,
-              backgroundColor:'#7189FF' ,
-            }}>
-            <View style={{...styles.rowel, width: '25%'}}>
-              <Text
-                style={{
-                  ...styles.rowel_tetx,
-                  color: '#fff',
-                }}>
-                {'-'}
-              </Text>
-            </View>
-            <View
-              style={{width: 1, height: '80%', backgroundColor: '#fff',marginVertical:3}}
-            />
-            <View style={{...styles.rowel, width: '25%'}}>
-              <Text
-                style={{
-                  ...styles.rowel_tetx,
-                  color:'#fff' ,
-                }}>
-                {'-'}
-              </Text>
-            </View>
-            <View
-              style={{width: 1, height: '80%', backgroundColor: '#fff',marginVertical:3}}
-            />
-            <View style={{...styles.rowel, width: '25%'}}>
-              <Text
-                style={{
-                  ...styles.rowel_tetx,
-                  color:'#fff',
-                }}>
-                {'-'}
-              </Text>
-            </View>
-            <View
-              style={{width: 1, height: '80%', backgroundColor: '#fff',marginVertical:3}}
-            />
-            <View style={{...styles.rowel, width: '25%'}}>
-              <Text
-                style={{
-                  ...styles.rowel_tetx,
-                  color:'#fff',
-                }}>
-                {'-'}
-              </Text>
-            </View>
-          </View>
+      <View style={styles.row}>
+        <View style={{ ...styles.rowel, width: '25%' }}>
+          <Text style={styles.rowel_tetx}>{'-'}</Text>
+        </View>
+        <View style={styles.varLine} />
+        <View style={{ ...styles.rowel, width: '25%' }}>
+          <Text style={styles.rowel_tetx}>{'-'}</Text>
+        </View>
+        <View style={styles.varLine} />
+        <View style={{ ...styles.rowel, width: '25%' }}>
+          <Text style={styles.rowel_tetx}>{'-'}</Text>
+        </View>
+        <View style={styles.varLine} />
+        <View style={{ ...styles.rowel, width: '25%' }}>
+          <Text style={styles.rowel_tetx}>{'-'}</Text>
+        </View>
+      </View>
     </View>
   );
 };
@@ -114,10 +74,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    borderColor: '#7189FF',
-    // borderWidth: 1,
+    borderColor: '#000',
+    borderBottomWidth: 1,
     marginTop: 10,
-    borderRadius: 7,
+    borderStyle: 'dashed',
     paddingVertical: 7,
   },
   headerel: {
@@ -138,10 +98,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    borderWidth: 1,
-    borderColor: '#7189FF',
     marginTop: 10,
-    borderRadius: 7,
+    borderBottomWidth: 1,
+    borderStyle: 'dashed',
+    marginBottom: 3
   },
   rowel: {
     width: '29%',
@@ -173,4 +133,10 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     justifyContent: 'center',
   },
+  varLine: {
+    width: 1,
+    height: '100%',
+    borderWidth: 1,
+    borderStyle: 'dashed'
+  }
 });

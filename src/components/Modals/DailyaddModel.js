@@ -94,7 +94,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
           'product_ids[]': selected
         }
         post(Constants.product.sample_products, sampleProductsData).then((res) => {
-
+          submit(true)
         }).catch((err) => { }).finally(() => { })
       } else {
         Alert.alert(res.message || 'Error');

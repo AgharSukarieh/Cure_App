@@ -9,23 +9,23 @@ import Constants from '../../config/globalConstants';
 import { useAuth } from '../../contexts/AuthContext';
 import { get, post } from '../../WebService/RequestBuilder';
 
-const DailySalesaddModel = ({ show, hide, submit, date, area}) => {
-    const {user} = useAuth();
+const DailySalesaddModel = ({ show, hide, submit, date, area }) => {
+    const { user } = useAuth();
 
     const [pharmacy_list, setpharmacy_list] = useState([]);
     const [pharam, setpharam] = useState(null)
 
     const currentTime = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false });
 
-    const getpharmacys = async() => {
+    const getpharmacys = async () => {
 
-        get(Constants.sales.pharmacy, null, {user_id: user.id, area_id: area.area_id})
-        .then((res) => {
-            setpharmacy_list(res.data)
-        })
-        .catch((err) => {})
-        .finally(() => {
-        })
+        get(Constants.sales.pharmacy, null, { user_id: user.id, area_id: area.area_id })
+            .then((res) => {
+                setpharmacy_list(res.data)
+            })
+            .catch((err) => { })
+            .finally(() => {
+            })
     }
 
     useEffect(() => {
@@ -38,14 +38,14 @@ const DailySalesaddModel = ({ show, hide, submit, date, area}) => {
             pharmacy_id: pharam.id
         }
         post(Constants.visit.sales, body, null)
-        .then((res) => {  
-            submit(true)
-        })
-        .catch((err) => {})
-        .finally(() => {
-            hide()
-            setpharam(null)
-        })    
+            .then((res) => {
+                submit(true)
+            })
+            .catch((err) => { })
+            .finally(() => {
+                hide()
+                setpharam(null)
+            })
     }
 
     return (
@@ -59,7 +59,7 @@ const DailySalesaddModel = ({ show, hide, submit, date, area}) => {
             <View style={style.ModalContainer}>
                 <View style={style.ModalView}>
                     <TouchableOpacity onPress={() => { hide() }}>
-                        <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
+                        <AntDesign name="close" color='#000' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
 
                     <Text style={style.maintitle}>Add new</Text>
@@ -126,7 +126,7 @@ const style = StyleSheet.create({
         backgroundColor: "#fff",
         borderRadius: 10,
         width: '95%',
-        height: '60%',
+        height: '40%',
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
@@ -137,7 +137,7 @@ const style = StyleSheet.create({
     maintitle: {
         fontSize: 25,
         textTransform: 'capitalize',
-        color: '#7189FF'
+        color: '#000'
     },
     card: {
         marginVertical: 15,

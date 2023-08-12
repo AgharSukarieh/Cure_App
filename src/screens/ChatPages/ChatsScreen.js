@@ -53,7 +53,6 @@ const ChatsScreen = ({ userData }) => {
     };
     axios.request(config)
       .then((response) => {
-        console.log(response.data);
         setChats(response.data.users);
       })
       .catch((error) => {
@@ -65,7 +64,7 @@ const ChatsScreen = ({ userData }) => {
   useEffect(() => {
     getChats();
   }, [])
-  console.log('*********************', chats);
+  
   return (
     <SafeAreaView style={styles.container}>
       <GoBack text={'Chats'} addButton addButtonFunc={() => navigation.navigate('ContactsScreen', { currentUser: userData.id })} />

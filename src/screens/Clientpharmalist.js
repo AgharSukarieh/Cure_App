@@ -21,7 +21,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const getPharmacyEndpoint = Constants.sales.pharmacy;
 
-const Clientpharmalist = ({ navigation, route }) => {
+const Clientpharmalist = ({ navigation, route, header = true }) => {
   const title = route?.params?.title
   const cityArea = route?.params?.cityArea
   const { user } = useAuth();
@@ -62,11 +62,11 @@ const Clientpharmalist = ({ navigation, route }) => {
   useEffect(() => {
     getCities()
   }, [])
-
+  console.log(header);
   return (
     <>
       <SafeAreaView style={styles.container}>
-        <GoBack text={title || 'Client List'} />
+        {header == true ? < GoBack text={'Client List'} /> : ''}
 
         <View style={{ width: '90%', alignSelf: 'center', marginTop: 15 }}>
           <View style={styles.search}>

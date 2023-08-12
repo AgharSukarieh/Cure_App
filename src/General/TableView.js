@@ -204,7 +204,6 @@ import { getPage } from '../WebService/RequestBuilder';
 const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = false, onEndReached = true }) => {
   // console.log('##########################',params);
   const [data, setData] = useState([]);
-  
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);

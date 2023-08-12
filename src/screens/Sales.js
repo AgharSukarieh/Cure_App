@@ -19,22 +19,20 @@ import Constants from '../config/globalConstants';
 import { get } from '../WebService/RequestBuilder';
 import { useAuth } from '../contexts/AuthContext';
 
-
-const getSalesEndpoint = Constants.users.user_orders;
-
+const getSalesEndpoint = Constants.visit.sales;
+console.log(getSalesEndpoint);
 Feather.loadFont();
 
 const Sales = ({ navigation, route }) => {
 
-  // const cityArea = route?.params?.cityArea
   const { user } = useAuth();
 
   const user_id = user.id
 
   const getCityAreaEndpoint = Constants.users.cityArea;
 
-
   const [cityArea, setCityArea] = useState(null);
+
   useEffect(() => {
     get(`${getCityAreaEndpoint}${user?.id}`)
       .then(response => {
@@ -50,7 +48,7 @@ const Sales = ({ navigation, route }) => {
   const [cityValue, setCityValue] = useState(null);
   const [areasData, setAreasData] = useState([]);
   const [areaValue, setAreaValue] = useState(null);
-  const [filter, setFilter] = useState({ user_id: user_id });
+  const [filter, setFilter] = useState({ sale_id: user.sales.id });
 
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date());

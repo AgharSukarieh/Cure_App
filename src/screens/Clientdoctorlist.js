@@ -20,12 +20,42 @@ import TableView from '../General/TableView';
 import Constants from '../config/globalConstants';
 import DoctorsItemTable from '../components/Tables/DoctorsItemTable';
 import { useAuth } from '../contexts/AuthContext';
+import { get } from '../WebService/RequestBuilder';
+import globalConstants from '../config/globalConstants';
+import EditDoctorprofle from '../components/Modals/EditDoctorprofle';
 const getDoctorsEndpoint = Constants.doctor.allDoctors;
 
-const Clientdoctorlist = ({ navigation, route }) => {
-  const cityArea = route?.params?.cityArea
-  const specialty = route?.params?.specialty
+const Clientdoctorlist = ({ navigation, route, header = true }) => {
+  // const cityArea = route?.params?.cityArea
+  // const specialty = route?.params?.specialty
+
   const { user } = useAuth();
+  const getCityAreaEndpoint = globalConstants.users.cityArea;
+
+
+  const [cityArea, setCityArea] = useState(null);
+  useEffect(() => {
+    get(`${getCityAreaEndpoint}${user?.id}`)
+      .then(response => {
+        setCityArea(response.data);
+      })
+      .catch(err => {
+        console.error(err);
+      })
+  }, []);
+
+  const [specialty, setspecialityarray] = useState([]);
+  useEffect(() => {
+    get(Constants.doctor.speciality)
+      .then(response => {
+        setspecialityarray(response.speciality);
+      })
+      .catch(err => {
+        console.error(err);
+      })
+      .finally(() => { });
+  }, [])
+
 
   const [modal, setModal] = useState(false);
   const [scModal, setScModal] = useState(false);
@@ -44,7 +74,7 @@ const Clientdoctorlist = ({ navigation, route }) => {
   const [filter, setFilter] = useState({ user_id: user?.id });
 
   const getCities = () => {
-    var count = Object.keys(cityArea.cities).length
+    var count = Object.keys(cityArea?.cities).length
     let cityArray = []
     for (var i = 0; i < count; i++) {
       cityArray.push({
@@ -75,8 +105,8 @@ const Clientdoctorlist = ({ navigation, route }) => {
   }
 
   useEffect(() => {
-    getCities()
-  }, [])
+    if (cityArea) getCities()
+  }, [cityArea])
 
   const submitAddDoctor = data => {
     if (data == true) {
@@ -87,8 +117,8 @@ const Clientdoctorlist = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoBack text={'Doctor List'} />
-      <View style={{ width: '90%', alignSelf: 'center' }}>
+         {header == true ? < GoBack text={'Client List'} /> : ''}
+      <View style={{ width: '90%', alignSelf: 'center', marginTop: 15 }}>
 
         <View style={styles.search}>
           <TextInput
@@ -244,7 +274,7 @@ const Clientdoctorlist = ({ navigation, route }) => {
           apiEndpoint={getDoctorsEndpoint}
           enablePullToRefresh
           params={filter}
-          renderItem={({ item }) => <DoctorsItemTable item={item} />}
+          renderItem={({ item }) => <DoctorsItemTable item={item} cityArea={cityArea} />}
         />
       </View>
 

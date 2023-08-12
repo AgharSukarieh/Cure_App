@@ -1,20 +1,31 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import SkuModel from '../Modals/skuModel'
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
+import DoctorlistModal from '../Modals/DoctorlistModal';
+import EditDoctorprofle from '../Modals/EditDoctorprofle';
 
 
-const DoctorsItemTable = ({ item }) => {
+const DoctorsItemTable = ({ item, cityArea }) => {
     const [modal, setModal] = useState(false)
     const [rowdata, setrowdata] = useState(false)
+    const [edModal, setEdModal] = useState(false);
+
     const rowModal = (rowdata) => {
         setrowdata(rowdata)
         setModal(true)
     }
 
+    const EdModal = (rowdata) => {
+        setrowdata(rowdata)
+        setEdModal(true)
+    }
+
     return (
         <>
             <View style={styles.row}>
-                <View style={{ ...styles.filtterel, width: '38%', }}>
+                <View style={{ ...styles.filtterel, width: '33%', }}>
                     <TouchableOpacity style={styles.filtterbtn} onPress={() => { }}>
                         <Text style={styles.filtterbtntext}>{item?.name}</Text>
                     </TouchableOpacity>
@@ -22,7 +33,7 @@ const DoctorsItemTable = ({ item }) => {
 
                 <View style={styles.verticalline} />
 
-                <View style={{ ...styles.filtterel, width: '24%', }}>
+                <View style={{ ...styles.filtterel, width: '21%', }}>
                     <TouchableOpacity style={styles.filtterbtn} onPress={() => { }}>
                         <Text style={styles.filtterbtntext}>{item.speciality}</Text>
                     </TouchableOpacity>
@@ -30,14 +41,26 @@ const DoctorsItemTable = ({ item }) => {
 
                 <View style={styles.verticalline} />
 
-                <View style={{ ...styles.filtterel, width: '38%', }}>
+                <View style={{ ...styles.filtterel, width: '28%', }}>
                     <TouchableOpacity style={styles.filtterbtn} onPress={() => { }}>
                         <Text style={styles.filtterbtntext}>{item.area}</Text>
                     </TouchableOpacity>
                 </View>
+                <View style={styles.verticalline} />
+                <View style={{ ...styles.filtterel, flexDirection: 'row', width: '15%', justifyContent: 'space-around', alignItems: 'center' }} >
+                    <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => { rowModal(item) }}>
+                        <AntDesign name="infocirlce" color='#7189FF' size={20} />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => { EdModal(item) }}>
+                        <Feather name="edit" color='#000' size={17} />
+                    </TouchableOpacity>
+                </View>
             </View>
 
-            <SkuModel show={modal} data={rowdata} hide={() => { setModal(false) }} submit={(e) => { console.log(e) }} />
+            <DoctorlistModal show={modal} data={rowdata} hide={() => { setModal(false) }} submit={(e) => { console.log(e) }} />
+            <EditDoctorprofle show={edModal} cityArea={cityArea} hide={() => { setEdModal(false); }} submit={e => { console.log(e); }}
+            />
         </>
     )
 }
@@ -77,7 +100,10 @@ const styles = StyleSheet.create({
     filtterbtn: {
         width: '90%',
         paddingVertical: 5,
-        borderRadius: 7
+        borderRadius: 7,
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     filtterbtn2: {
         width: '32%',
@@ -89,6 +115,9 @@ const styles = StyleSheet.create({
         fontSize: 15,
         textTransform: 'capitalize',
         color: '#000',
+        flexDirection: 'row', // This keeps the text on a single line
+        maxWidth: '100%',
+        overflow: 'hidden',
     },
     row: {
         flexDirection: 'row',

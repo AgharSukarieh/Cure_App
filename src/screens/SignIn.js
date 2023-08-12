@@ -22,7 +22,7 @@ const SignIn = ({ navigation }) => {
         await login(email, password)
           .then(() => {
             setIsLoading(false);
-            navigation.navigate('ReportPage');
+            navigation.navigate('BottomTabs');
           })
           .catch(err => {
             setIsLoading(false);

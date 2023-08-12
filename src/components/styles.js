@@ -7,7 +7,8 @@ export const styles = StyleSheet.create({
     flex: 1,
     width: wwidth,
     height: wheight,
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    paddingBottom: 75
   },
 
   // Start Top Container style image with Text
@@ -49,7 +50,7 @@ export const styles = StyleSheet.create({
   },
   inputModel: {
     height: 40,
-    borderColor: '#7189FF',
+    borderColor: '#000',
     borderWidth: 1,
     paddingLeft: 10,
     borderRadius: 5,
@@ -249,7 +250,7 @@ export const styles = StyleSheet.create({
     width: '100%',
     height: 40,
     borderRadius: 7,
-    borderColor: '#7189FF'
+    borderColor: '#A5BECC'
   },
   btn: {
     backgroundColor: '#7189FF',

@@ -7,20 +7,20 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {Dropdown} from 'react-native-element-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 import Input from '../Input';
 import GetLocation from 'react-native-get-location';
 import { get, post } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
 
-const AddNewDoctorModel = ({show, hide, submit, cityArea}) => {
+const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 
   const [doctorName, setDoctorName] = useState('');
   const [classification, setClassification] = useState('');
   const [address, setAddress] = useState('');
-  
+
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
@@ -41,19 +41,19 @@ const AddNewDoctorModel = ({show, hide, submit, cityArea}) => {
       address: address,
       classification: classification,
       longitude: longitude,
-      latitude: latitude 
+      latitude: latitude
     }
-    await post(Constants.doctor.allDoctors,body)
-    .then((res) => {
-      submit(true)
-      hide();
-    })
-    .catch((err) => {
-      Alert.alert('Error', err.message || '')
-      submit(false)
-      hide();
-    })
-    .finally(() => {})
+    await post(Constants.doctor.allDoctors, body)
+      .then((res) => {
+        submit(true)
+        hide();
+      })
+      .catch((err) => {
+        Alert.alert('Error', err.message || '')
+        submit(false)
+        hide();
+      })
+      .finally(() => { })
   }
 
   const getCurrentLocation = () => {
@@ -66,65 +66,64 @@ const AddNewDoctorModel = ({show, hide, submit, cityArea}) => {
         setLongitude(location.longitude);
       })
       .catch(error => {
-        console.log( error);
+        console.log(error);
       });
   };
 
   const getCities = () => {
-    var count = Object.keys(cityArea.cities).length
-        let cityArray = []
-        for (var i = 0; i < count; i++ ){
-            cityArray.push({
-                value: cityArea.cities[i].id,
-                label: cityArea.cities[i].name
-            })
-        }  
-        setCitiesData(cityArray)
+    var count = Object.keys(cityArea?.cities).length
+    let cityArray = []
+    for (var i = 0; i < count; i++) {
+      cityArray.push({
+        value: cityArea.cities[i].id,
+        label: cityArea.cities[i].name
+      })
+    }
+    setCitiesData(cityArray)
   }
- 
+
   const getArea = (id) => {
     const arr = [];
-    cityArea.areas.forEach((area) => {
-        if (area.city_id == id) {
-            arr.push(area);
-        }
+    cityArea?.areas.forEach((area) => {
+      if (area.city_id == id) {
+        arr.push(area);
+      }
     });
-      var count = Object.keys(arr).length
-        let areaArray = []
-        for (var i = 0; i < count; i++ ){
-          areaArray.push({
-                value: arr[i].id,
-                label: arr[i].name
-            })
-        }
-        setAreasData(areaArray)
-}
+    var count = Object.keys(arr).length
+    let areaArray = []
+    for (var i = 0; i < count; i++) {
+      areaArray.push({
+        value: arr[i].id,
+        label: arr[i].name
+      })
+    }
+    setAreasData(areaArray)
+  }
 
   const getSpeciality = async () => {
     await get(Constants.doctor.speciality)
-    .then((res) => {
-      console.log(res);
-      var count = Object.keys(res.speciality).length
+      .then((res) => {
+        var count = Object.keys(res.speciality).length
         let specialtyArray = []
-        for (var i = 0; i < count; i++ ){
+        for (var i = 0; i < count; i++) {
           specialtyArray.push({
-                value: res.speciality[i].id,
-                label: res.speciality[i].name
-            })
-        }   
+            value: res.speciality[i].id,
+            label: res.speciality[i].name
+          })
+        }
         setSpecialtyData(specialtyArray)
-    })
-    .catch((err) => {
-      Alert.alert('Error', err.message || '')
-    })
-    .finally(() => {})
+      })
+      .catch((err) => {
+        Alert.alert('Error', err.message || '')
+      })
+      .finally(() => { })
   }
 
   useEffect(() => {
-    getCities();
+    if (cityArea) getCities();
     getSpeciality();
   }, [])
-  
+
   return (
     <Modal
       animationType="slide"
@@ -144,135 +143,136 @@ const AddNewDoctorModel = ({show, hide, submit, cityArea}) => {
               name="close"
               color="#7189FF"
               size={35}
-              style={{alignSelf: 'flex-end'}}
+              style={{ alignSelf: 'flex-end' }}
             />
           </TouchableOpacity>
 
-          <View style={{marginVertical: 10}}>
+          <View style={{ marginTop: 10, marginBottom: 20 }}>
             <ScrollView showsVerticalScrollIndicator={false}>
               <View
                 style={{
                   width: '100%',
                   justifyContent: 'center',
                   alignItems: 'center',
+                  marginBottom: 20
                 }}>
 
                 <Input
                   lable={'Doctor Name'}
                   setData={setDoctorName}
-                  style={{...styles.inputModel, backgroundColor: 'white'}}
+                  style={{ ...styles.inputModel, backgroundColor: 'white' }}
                   value={doctorName}
-                  viewStyle={{width: '90%'}}
+                  viewStyle={{ width: '90%' }}
                 />
 
-                <View style={{...styles.container, marginTop: 40}}>
+                <View style={{ ...styles.container, marginTop: 40 }}>
                   <Dropdown
                     style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              inputSearchStyle={styles.inputSearchStyle}
-              iconStyle={styles.iconStyle}
-              data={citiesData}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!cityValue ? 'Select City' : '...'}
-              searchPlaceholder="Search..."
-              value={cityValue}
-              onBlur={() => {}}
-              onChange={item => {
-                setCityValue(item.value);
-                getArea(item.value)
-              }}
-              renderLeftIcon={() => (
-                <AntDesign
-                  style={styles.icon}
-                  color={cityValue ? 'blue' : 'black'}
-                  name="Safety"
-                  size={20}
-                />
-              )}
-            />
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={citiesData}
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!cityValue ? 'Select City' : '...'}
+                    searchPlaceholder="Search..."
+                    value={cityValue}
+                    onBlur={() => { }}
+                    onChange={item => {
+                      setCityValue(item.value);
+                      getArea(item.value)
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color={cityValue ? 'blue' : 'black'}
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
+                  />
                 </View>
 
-                <View style={{...styles.container, marginTop: 40}}>
-                <Dropdown
-                  style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              inputSearchStyle={styles.inputSearchStyle}
-              iconStyle={styles.iconStyle}
-              data={areasData}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!areaValue ? 'Select Area' : '...'}
-              searchPlaceholder="Search..."
-              value={areaValue}
-              onBlur={() => {}}
-              onChange={item => {
-                setAreaValue(item.value);
-              }}
-              renderLeftIcon={() => (
-                <AntDesign
-                  style={styles.icon}
-                  color={areaValue ? 'blue' : 'black'}
-                  name="Safety"
-                  size={20}
-                />
-              )}
-            />
-                </View>
-
-                <View style={{...styles.container, marginTop: 40}}>
+                <View style={{ ...styles.container, marginTop: 40 }}>
                   <Dropdown
                     style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              inputSearchStyle={styles.inputSearchStyle}
-              iconStyle={styles.iconStyle}
-              data={specialtyData}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!specialtyValue ? 'Select Specialty' : '...'}
-              searchPlaceholder="Search..."
-              value={specialtyValue}
-              onBlur={() => {}}
-              onChange={item => {
-                setSpecialtyValue(item.value);
-              }}
-              renderLeftIcon={() => (
-                <AntDesign
-                  style={styles.icon}
-                  color={specialtyValue ? 'blue' : 'black'}
-                  name="Safety"
-                  size={20}
-                />
-              )}
-            />
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={areasData}
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!areaValue ? 'Select Area' : '...'}
+                    searchPlaceholder="Search..."
+                    value={areaValue}
+                    onBlur={() => { }}
+                    onChange={item => {
+                      setAreaValue(item.value);
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color={areaValue ? 'blue' : 'black'}
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
+                  />
+                </View>
+
+                <View style={{ ...styles.container, marginTop: 40 }}>
+                  <Dropdown
+                    style={styles.dropdown}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={specialtyData}
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!specialtyValue ? 'Select Specialty' : '...'}
+                    searchPlaceholder="Search..."
+                    value={specialtyValue}
+                    onBlur={() => { }}
+                    onChange={item => {
+                      setSpecialtyValue(item.value);
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color={specialtyValue ? 'blue' : 'black'}
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
+                  />
                 </View>
 
                 <Input
                   lable={'Classification'}
                   setData={setClassification}
-                  style={{...styles.inputModel, backgroundColor: 'white'}}
+                  style={{ ...styles.inputModel, backgroundColor: 'white' }}
                   value={classification}
-                  viewStyle={{width: '90%'}}
+                  viewStyle={{ width: '90%' }}
                 />
                 <Input
                   lable={'Address'}
                   setData={setAddress}
-                  style={{...styles.inputModel, backgroundColor: 'white'}}
+                  style={{ ...styles.inputModel, backgroundColor: 'white' }}
                   value={address}
-                  viewStyle={{width: '90%'}}
+                  viewStyle={{ width: '90%' }}
                 />
 
-                <TouchableOpacity style={{marginTop: 40, width: '90%',height: 50, backgroundColor: latitude ? '#7189FF' : '#fff', borderWidth:2,borderColor: '#7189FF',borderRadius:5, justifyContent:'center'}} onPress={() => {getCurrentLocation()}}>
-                  <Text style={{marginBottom: 5, color: latitude ? '#fff' : '#7189FF', textAlign:'center', fontSize:17, fontWeight:'bold'}}>
+                <TouchableOpacity style={{ marginTop: 40, width: '90%', height: 50, backgroundColor: latitude ? '#7189FF' : '#fff', borderWidth: 2, borderColor: '#7189FF', borderRadius: 5, justifyContent: 'center' }} onPress={() => { getCurrentLocation() }}>
+                  <Text style={{ marginBottom: 5, color: latitude ? '#fff' : '#7189FF', textAlign: 'center', fontSize: 17, fontWeight: 'bold' }}>
                     Location
                   </Text>
                 </TouchableOpacity>
@@ -364,15 +364,16 @@ const styles = StyleSheet.create({
     width: '95%',
     height: '70%',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    padding: 20,
+    padding: 10,
+    paddingBottom: 20
   },
   card: {
     shadowColor: '#7189FF',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 3,

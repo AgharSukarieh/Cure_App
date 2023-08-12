@@ -6,73 +6,72 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import React from 'react';
-import {styles} from '../../components/styles';
+import React, { useState } from 'react';
+import { styles } from '../../components/styles';
 import Moment from 'moment';
 import GoBack from '../../components/GoBack';
 import { put } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
+import { FlatList } from 'react-native';
+import AccountInfo from './AccountInfo';
+import Inventory from './Inventory';
+import Order from './Order';
+import Return from './Return';
 
-const Sal_rep_pharm = ({navigation, route}) => {
+const Sal_rep_pharm = ({ navigation, route }) => {
+
   const item = route.params.item;
   const area = route.params.area;
   const date = route.params.date;
-  
-  console.log('item---- ',item);
+
+  const [index, setindex] = useState(1);
+
+  const data = [
+    { id: '1', title: 'Account info' },
+    { id: '2', title: 'Inventory' },
+    { id: '3', title: 'Orders' },
+    { id: '4', title: 'Return' },
+    { id: '5', title: 'End Visit' },
+  ];
 
   const endVisit = async () => {
     await put(Constants.visit.sales + `/${item?.id}`)
-    .then((res) => {
-      navigation.goBack();
-    })
-    .catch((err) => {})
-    .finally(() => {})
+      .then((res) => {
+        navigation.goBack();
+      })
+      .catch((err) => { })
   }
 
+  const renderItem = ({ item }) => (
+    <TouchableOpacity style={{ ...style.Sal_rep_pharmButton, backgroundColor: item.id == index ? '#469ED8' : '#CCD1D4' }} onPress={() => { setindex(item.id) }}  >
+      <Text style={style.reportPageText}>{item.title}</Text>
+    </TouchableOpacity>
+  );
   return (
-    <SafeAreaView style={{height:'100%', flex:1, flexDirection: 'column',alignContent:'space-around' }}>
+    <SafeAreaView style={{ height: '100%', flex: 1, flexDirection: 'column', alignContent: 'space-around', backgroundColor: '#fff' }}>
       <GoBack text={item?.name} />
-      <ScrollView showsVerticalScrollIndicator={false} style={{ marginVertical: 30 }}>
-        <View style={{...styles.containerSignIn}}>
-
-          {/* <TouchableOpacity
-            style={styles.Sal_rep_pharmButton}
-            onPress={() => navigation.navigate('AccountInfo',{item: item})}>
-            <Text style={styles.reportPageText}>Account info</Text>
-          </TouchableOpacity> */}
-
-          <TouchableOpacity
-            style={styles.Sal_rep_pharmButton}
-            onPress={() => navigation.navigate('Inventory', { item: item, area: area })}>
-            <Text style={styles.reportPageText}>Inventory</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.Sal_rep_pharmButton}
-            onPress={() => {
-              navigation.navigate('Order', { item: item, area: area, date: date });
-            }}>
-            <Text style={styles.reportPageText}>Orders</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.Sal_rep_pharmButton}
-            onPress={() => {
-              navigation.navigate('Return', { item: item });
-            }}>
-            <Text style={styles.reportPageText}>Returns</Text>
-          </TouchableOpacity>
-
-          {!item?.end_visit ? <TouchableOpacity
-            style={{...style.endVisitBtn, height: 100}}
-            onPress={() => {
-              endVisit()
-            }}>
-            <Text style={styles.reportPageText}>End Visit</Text>
-          </TouchableOpacity> : null}
-
-        </View>
-      </ScrollView>
+      <View style={style.containerSignIn} >
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+        />
+      </View>
+      <View style={{ paddingTop: 60 }}>
+        {index == 1 ? <AccountInfo item={item} /> : null}
+        {index == 2 ? <Inventory item={item} area={area} /> : null}
+        {index == 3 ? <Order item={item} area={area} date={date} /> : null}
+        {index == 4 ? <Return item={item} /> : null}
+        {index == 5 ?
+          <>
+            {!item?.end_visit ? <TouchableOpacity style={style.endVisitBtn} onPress={() => { endVisit() }}>
+              <Text style={styles.reportPageText}>End Visit</Text>
+            </TouchableOpacity> : null}
+          </>
+          : null}
+      </View>
     </SafeAreaView>
   );
 };
@@ -80,50 +79,40 @@ const Sal_rep_pharm = ({navigation, route}) => {
 export default Sal_rep_pharm;
 
 export const style = StyleSheet.create({
-  mune: {
-    width: '100%',
-    height: 50,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#7189FF',
-  },
-  munebtn: {
-    width: '33.2%',
-    height: '100%',
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  munebtn2: {
-    width: '33.2%',
-    height: '100%',
-    backgroundColor: '#7189FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  muneheader: {color: '#000', fontSize: 17, color: '#000'},
-  muneheader2: {color: '#000', fontSize: 17, color: '#fff'},
-  newbtn: {
-    backgroundColor: '#7189FF',
-    paddingVertical: 5,
-    paddingHorizontal: 8,
-    borderRadius: 7,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    marginHorizontal: 15,
-  },
-  endVisitBtn:{
+  endVisitBtn: {
     backgroundColor: '#ccc',
     padding: 10,
     width: '90%',
-    height: 150,
+    height: 100,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'red',
     borderRadius: 10,
-    marginBottom: 20
-  }
+    marginBottom: 30,
+    alignSelf: 'center'
+  },
+  containerSignIn: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    width: '95%',
+    alignSelf: 'center',
+    backgroundColor: '#E4E1E1',
+    borderRadius: 25
+  },
+  Sal_rep_pharmButton: {
+    backgroundColor: '#469ED8',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    marginRight: 10
+  },
+  reportPageText: {
+    textAlign: 'center',
+    fontSize: 19,
+    color: '#ffffff',
+  },
 });

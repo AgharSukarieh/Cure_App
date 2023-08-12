@@ -8,8 +8,8 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {styles} from '../../components/styles';
+import React, { useEffect, useState } from 'react';
+import { styles } from '../../components/styles';
 import GoBack from '../../components/GoBack';
 import InventoryTable from '../../components/Tables/InventoryTable';
 import Feather from 'react-native-vector-icons/Feather';
@@ -22,8 +22,8 @@ import ScanBarcodeAndQRModel from '../../components/Modals/ScanBarcodeAndQRModel
 
 Feather.loadFont();
 
-const Inventory = ({navigation, route}) => {
-  const item = route.params.item;
+const Inventory = ({ navigation, item }) => {
+
   // const area = route.params.area;
   // const [barcode, setBarcode] = useState(); 
   const [modal, setModal] = useState(false);
@@ -33,7 +33,7 @@ const Inventory = ({navigation, route}) => {
   const [showTable, setShowTable] = useState(false)
   // const [productsData, setProductsData] = useState([])
   // const [productValue, setProductValue] = useState(null)
- 
+
   // const getProducts = async() => {
   //   get(Constants.product.products, null, {limit: 10000})
   //   .then((res) => { 
@@ -54,9 +54,9 @@ const Inventory = ({navigation, route}) => {
 
   const getInventory = () => {
     const parms = {
-      pharmacy_id: item.pharmacy_id,
+      pharmacy_id: item?.pharmacy_id,
     }
-    get(Constants.inventory.get_inventory,null,parms).then((res) => {
+    get(Constants.inventory.get_inventory, null, parms).then((res) => {
       setRows(res.pharamcy_last_order)
     }).catch(() => {
 
@@ -66,9 +66,8 @@ const Inventory = ({navigation, route}) => {
   }
 
   useEffect(() => {
-    getInventory();
-    // getProducts();
-  }, [])
+    if (item) getInventory();
+  }, [item])
 
   const submit2 = data => {
     // let dataFromModel = {
@@ -111,17 +110,17 @@ const Inventory = ({navigation, route}) => {
           setShowTable(false)
           Alert.alert('Not Match')
         }
-      }).catch(() => {}).finally(() => {});
+      }).catch(() => { }).finally(() => { });
     }
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoBack text={'Inventory'} />
+      {/* <GoBack text={'Inventory'} /> */}
 
       <View>
-        <View style={{flexDirection:'row', justifyContent:'space-between', paddingHorizontal:10}}>
-        {/* <Dropdown
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10 }}>
+          {/* <Dropdown
           style={style.dropdown}
                   placeholderStyle={style.placeholderStyle}
                   selectedTextStyle={style.selectedTextStyle}
@@ -149,21 +148,21 @@ const Inventory = ({navigation, route}) => {
                     />
           )}
         /> */}
-        <TouchableOpacity
-          style={style.newbtn}
-          onPress={() => {
-            setqrModal(true);
-          }}>
-          <Text style={{color: '#fff', fontSize: 18, paddingHorizontal: 5}}>
-            Scan
-          </Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={style.newbtn}
+            onPress={() => {
+              setqrModal(true);
+            }}>
+            <Text style={{ color: '#fff', fontSize: 18, paddingHorizontal: 5 }}>
+              Scan
+            </Text>
+          </TouchableOpacity>
         </View>
-        <View style={{ width: '99%', height: 1, backgroundColor: '#7189FF', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
+        <View style={{ width: '90%', height: 1, backgroundColor: '#000', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={{marginVertical: 10}}>
-            {showTable ?   <InventoryTable data={rows} /> : null}
+          <View style={{ marginVertical: 10 }}>
+            {showTable ? <InventoryTable data={rows} /> : null}
           </View>
         </ScrollView>
 
@@ -178,7 +177,7 @@ const Inventory = ({navigation, route}) => {
           submit2(e);
         }}
       />
-      
+
       <ScanBarcodeAndQRModel
         show={qrmodal}
         hide={() => {
@@ -215,7 +214,7 @@ export const style = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginTop: 20,
-    width:'50%'
+    width: '50%'
   },
   icon: {
     marginRight: 5,
@@ -234,7 +233,7 @@ export const style = StyleSheet.create({
     height: 40,
     fontSize: 16,
   },
-  textinput:{
+  textinput: {
     height: 60,
     borderColor: 'rgba(37, 50, 116, 0.28)',
     borderWidth: 1,

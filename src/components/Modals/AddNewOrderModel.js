@@ -7,19 +7,19 @@ import {
   ScrollView,
   TextInput,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {styles} from '../styles';
+import { styles } from '../styles';
 import moment from 'moment';
 import Input from '../Input';
-import {Dropdown} from 'react-native-element-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 import OrdersAfterAddTable from '../../components/Tables/OrdersAfterAddTable';
 import Constants from '../../config/globalConstants';
 import { get, post } from '../../WebService/RequestBuilder';
 import { useAuth } from '../../contexts/AuthContext';
 
-const AddNewOrderModel = ({show, hide, submit, item}) => {
-  const {user} = useAuth();
+const AddNewOrderModel = ({ show, hide, submit, item }) => {
+  const { user } = useAuth();
   const [productsData, setProductsData] = useState([])
   const [productValue, setProductValue] = useState(null)
   const [productLabel, setProductLabel] = useState(null)
@@ -46,41 +46,41 @@ const AddNewOrderModel = ({show, hide, submit, item}) => {
         // console.log('rrrrrrrrrrrrrrrrrrrrrrrrrrrrr', res);
       }).catch((err) => {
 
-      }).finally(() => {})
+      }).finally(() => { })
       hide();
       setOrderData([])
       set_total_price(0)
     }
   };
 
-  const getProducts = async() => {
-    get(Constants.product.products, null, {limit: 10000})
-    .then((res) => { 
+  const getProducts = async () => {
+    get(Constants.product.products, null, { limit: 10000 })
+      .then((res) => {
         setProductsArray(res.data);
         var count = Object.keys(res.data).length
         let productsArray = []
-        for (var i = 0; i < count; i++ ){
-            productsArray.push({
-             value: res.data[i].id,
-             label: res.data[i].name
-            })
+        for (var i = 0; i < count; i++) {
+          productsArray.push({
+            value: res.data[i].id,
+            label: res.data[i].name
+          })
         }
         setProductsData(productsArray);
-    })
-    .catch((err) => {})
-    .finally(() => {
-    })
+      })
+      .catch((err) => { })
+      .finally(() => {
+      })
   }
 
   const afterAddAmount = () => {
     setBouns(0.0);
     const product = productsArray.find(product => product.id === productValue);
-    
+
     if (product.bonuse != null && product.bonuse?.quantity_required && parseFloat(amount) >= product.bonuse?.quantity_required) {
       var bonuse = 0.0;
       var price = 0.0;
 
-      switch(product.bonuse?.type) {
+      switch (product.bonuse?.type) {
         case 'Fix':
           bonuse = (parseFloat(amount) / product.bonuse?.quantity_required) * product.bonuse?.bonuse
           setBouns(bonuse.toFixed(3));
@@ -101,9 +101,9 @@ const AddNewOrderModel = ({show, hide, submit, item}) => {
           setBouns(priceOfBouns);
           price = parseFloat(product.price_tax) * parseFloat(amount);
           set_total_price_product(price)
-          break;  
+          break;
         default:
-          // code block
+        // code block
       }
     } else {
       var price = 0.0;
@@ -116,21 +116,21 @@ const AddNewOrderModel = ({show, hide, submit, item}) => {
 
   const addBtn = () => {
     if (productValue != null && amount != 0) {
-        const data = {
-          product_id: productValue,
-          product_name: productLabel,
-          units: amount,
-          bonus: bouns
-        }
-        const dd = [...orderData, data]
-        setOrderData(dd)
-        const total_p = total_price + total_price_product
-        set_total_price(total_p);
-        set_total_price_product(0)
-        setProductValue(null);
-        setProductLabel(null);
-        setAmount(0);
-        setBouns(0);
+      const data = {
+        product_id: productValue,
+        product_name: productLabel,
+        units: amount,
+        bonus: bouns
+      }
+      const dd = [...orderData, data]
+      setOrderData(dd)
+      const total_p = total_price + total_price_product
+      set_total_price(total_p);
+      set_total_price_product(0)
+      setProductValue(null);
+      setProductLabel(null);
+      setAmount(0);
+      setBouns(0);
     }
   }
 
@@ -156,13 +156,13 @@ const AddNewOrderModel = ({show, hide, submit, item}) => {
               name="close"
               color="#7189FF"
               size={35}
-              style={{alignSelf: 'flex-end'}}
+              style={{ alignSelf: 'flex-end' }}
             />
           </TouchableOpacity>
-          <Text style={{...style.maintitle, paddingHorizontal:10}}>Add new </Text>
+          <Text style={{ ...style.maintitle, paddingHorizontal: 10 }}>Add new </Text>
 
           <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={{marginVertical: 0, paddingHorizontal:10}}>
+            <View style={{ marginVertical: 0, paddingHorizontal: 10 }}>
               <View style={style.card}>
 
                 <Dropdown
@@ -179,7 +179,7 @@ const AddNewOrderModel = ({show, hide, submit, item}) => {
                   placeholder={!productValue ? 'Select Product' : '...'}
                   searchPlaceholder="Search..."
                   value={productValue}
-                  onBlur={() => {}}
+                  onBlur={() => { }}
                   onChange={item => {
                     setProductValue(item.value);
                     setProductLabel(item.label)
@@ -193,7 +193,7 @@ const AddNewOrderModel = ({show, hide, submit, item}) => {
                     />
                   )}
                 />
-                
+
                 <Input
                   lable={'Amount'}
                   setData={setAmount}
@@ -202,17 +202,19 @@ const AddNewOrderModel = ({show, hide, submit, item}) => {
                   value={amount}
                 />
 
-                
-                <View style={{marginHorizontal: 10, marginTop: 20}}>
-                      <Text style={{marginBottom: 5,
-                          color: '#253274',
-                          fontSize: 11,}}>Bouns
-                      </Text>
-                      <View style={{height: 40, borderWidth: 1, justifyContent:'center', padding: 10, borderRadius: 5, borderColor: '#7189FF'}}>
-                        <Text style={{color: 'black'}}>{bouns}</Text>
-                      </View>
+
+                <View style={{ marginHorizontal: 10, marginTop: 20 }}>
+                  <Text style={{
+                    marginBottom: 5,
+                    color: '#253274',
+                    fontSize: 11,
+                  }}>Bouns
+                  </Text>
+                  <View style={{ height: 40, borderWidth: 1, justifyContent: 'center', padding: 10, borderRadius: 5, borderColor: '#000' }}>
+                    <Text style={{ color: 'black' }}>{bouns}</Text>
+                  </View>
                 </View>
-                
+
               </View>
 
               <View style={style.btnContainer}>
@@ -289,7 +291,7 @@ const style = StyleSheet.create({
     width: '95%',
     height: '70%',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
@@ -339,7 +341,7 @@ const style = StyleSheet.create({
   },
   dropdown: {
     height: 42,
-    borderColor: '#7189FF',
+    borderColor: '#000',
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 8,
@@ -364,7 +366,7 @@ const style = StyleSheet.create({
     height: 40,
     fontSize: 16,
   },
-  textinput:{
+  textinput: {
     height: 60,
     borderColor: 'rgba(37, 50, 116, 0.28)',
     borderWidth: 1,

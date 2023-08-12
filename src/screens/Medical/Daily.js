@@ -18,14 +18,19 @@ const Daily = ({ navigation, route }) => {
     const area = route.params.area
     const [modal, setModal] = useState(false)
     const [alert, setalert] = useState(false)
+
+    const [refr, setrefr] = useState(false)
+
     const params = {
         medical_id: user?.medicals.id,
         start_visit: moment(date, 'YYYY-M-D').format('YYYY-MM-DD')
     }
 
     const mainrow = (e) => {
+        console.log('cccccccccccccc');
         setalert(true)
         getdata()
+        setrefr(true)
     }
 
     return (
@@ -45,6 +50,7 @@ const Daily = ({ navigation, route }) => {
             <View style={style.container}>
                 <DailyMedicalHeaderTable />
                 <TableView
+                    refr={refr}
                     apiEndpoint={Constants.visit.medical}
                     enablePullToRefresh
                     params={params}
