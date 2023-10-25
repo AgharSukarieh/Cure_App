@@ -23,7 +23,7 @@ const getSalesEndpoint = Constants.visit.sales;
 console.log(getSalesEndpoint);
 Feather.loadFont();
 
-const Sales = ({ navigation, route }) => {
+const Sales = ({ navigation }) => {
 
   const { user } = useAuth();
 
@@ -48,7 +48,7 @@ const Sales = ({ navigation, route }) => {
   const [cityValue, setCityValue] = useState(null);
   const [areasData, setAreasData] = useState([]);
   const [areaValue, setAreaValue] = useState(null);
-  const [filter, setFilter] = useState({ sale_id: user.sales.id });
+  const [filter, setFilter] = useState({ sale_id: user_id });
 
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date());

@@ -59,13 +59,13 @@ const ReportPage = () => {
               <Image source={require('../../../assets/chat.png')} style={{ ...style.cardimage, marginLeft: 0 }} resizeMode='contain' />
               <Text style={style.cardtext}>Chat</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={style.card}>
+            <TouchableOpacity style={style.card} onPress={() => navigation.navigate('Reports')}>
               <Image source={require('../../../assets/Group.png')} style={{ ...style.cardimage, marginLeft: 15 }} resizeMode='contain' />
               <Text style={style.cardtext}>Reports</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={style.card} onPress={() => { }}>
+            <TouchableOpacity style={style.card} onPress={() => role == 'sales' ? navigation.navigate('Collection') : navigation.navigate('FrequencyReport') }>
               <Image source={require('../../../assets/soc.png')} style={{ ...style.cardimage, marginLeft: 0 }} resizeMode='contain' />
-              <Text style={style.cardtext}>Social Media</Text>
+              <Text style={{...style.cardtext, textAlign: 'center'}}>Frequency Report</Text>
             </TouchableOpacity>
           </View>
         </View>
