@@ -16,15 +16,13 @@ import {
   import Constants from '../config/globalConstants';
   import { get } from '../WebService/RequestBuilder';
   import { useAuth } from '../contexts/AuthContext';
-import CollectionHeaderTable from '../components/Tables/CollectionHeaderTable';
-import CollectionItemTable from '../components/Tables/CollectionItemTable';
-  
-  const getSalesEndpoint = Constants.visit.sales;
-  console.log(getSalesEndpoint);
+  import CollectionHeaderTable from '../components/Tables/CollectionHeaderTable';
+  import CollectionItemTable from '../components/Tables/CollectionItemTable';
   Feather.loadFont();
   
   const Collection = ({ navigation }) => {
-  
+    const getCollectionEndpoint = Constants.sales.collection;
+
     const { user } = useAuth();
   
     const user_id = user.id
@@ -48,7 +46,7 @@ import CollectionItemTable from '../components/Tables/CollectionItemTable';
     const [cityValue, setCityValue] = useState(null);
     const [areasData, setAreasData] = useState([]);
     const [areaValue, setAreaValue] = useState(null);
-    const [filter, setFilter] = useState({ sale_id: user_id });
+    const [filter, setFilter] = useState({ });
   
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState(new Date());
@@ -116,7 +114,7 @@ import CollectionItemTable from '../components/Tables/CollectionItemTable';
                 setCityValue(item.value);
                 setFilter((prev) => ({
                   ...prev,
-                  city_name: item.label
+                  cityId: item.value
                 }))
               }}
               renderLeftIcon={() => (
@@ -150,7 +148,7 @@ import CollectionItemTable from '../components/Tables/CollectionItemTable';
                 setAreaValue(item.value);
                 setFilter((prev) => ({
                   ...prev,
-                  area_name: item.label
+                  areaId: item.value
                 }))
               }}
               renderLeftIcon={() => (
@@ -244,7 +242,7 @@ import CollectionItemTable from '../components/Tables/CollectionItemTable';
         <View style={style.tableContainer}>
           <CollectionHeaderTable />
           <TableView
-            apiEndpoint={getSalesEndpoint}
+            apiEndpoint={getCollectionEndpoint}
             enablePullToRefresh
             params={filter}
             renderItem={({ item }) => <CollectionItemTable item={item} />}

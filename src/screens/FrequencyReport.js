@@ -16,21 +16,15 @@ import {
   import Constants from '../config/globalConstants';
   import { get } from '../WebService/RequestBuilder';
   import { useAuth } from '../contexts/AuthContext';
-import FrequencyVisitHeaderTable from '../components/Tables/FrequencyVisitHeaderTable';
-import FrequencyVisitItemTable from '../components/Tables/FrequencyVisitItemTable';
-  
-  const getSalesEndpoint = Constants.visit.sales;
-
+  import FrequencyVisitHeaderTable from '../components/Tables/FrequencyVisitHeaderTable';
+  import FrequencyVisitItemTable from '../components/Tables/FrequencyVisitItemTable';
   Feather.loadFont();
   
   const FrequencyReport = ({ navigation }) => {
-  
+    const getFrequencyReportEndpoint = Constants.medical.frequncy_visits
     const { user } = useAuth();
-  
     const user_id = user.id
-  
     const getCityAreaEndpoint = Constants.users.cityArea;
-  
     const [cityArea, setCityArea] = useState(null);
   
     useEffect(() => {
@@ -116,7 +110,7 @@ import FrequencyVisitItemTable from '../components/Tables/FrequencyVisitItemTabl
                 setCityValue(item.value);
                 setFilter((prev) => ({
                   ...prev,
-                  city_name: item.label
+                  cityId: item.value
                 }))
               }}
               renderLeftIcon={() => (
@@ -150,7 +144,7 @@ import FrequencyVisitItemTable from '../components/Tables/FrequencyVisitItemTabl
                 setAreaValue(item.value);
                 setFilter((prev) => ({
                   ...prev,
-                  area_name: item.label
+                  areaId: item.value
                 }))
               }}
               renderLeftIcon={() => (
@@ -244,7 +238,7 @@ import FrequencyVisitItemTable from '../components/Tables/FrequencyVisitItemTabl
         <View style={style.tableContainer}>
           <FrequencyVisitHeaderTable />
           <TableView
-            apiEndpoint={getSalesEndpoint}
+            apiEndpoint={getFrequencyReportEndpoint}
             enablePullToRefresh
             params={filter}
             renderItem={({ item }) => <FrequencyVisitItemTable item={item} />}

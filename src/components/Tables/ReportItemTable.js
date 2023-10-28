@@ -1,39 +1,34 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import SalesModel from '../Modals/SalesModel'
-import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const ReportItemTable = ({ item }) => {
-    const [modal, setModal] = useState(false)
-    const [rowData, setRowData] = useState('')
-
-    const DDD = async (item) => {
-        setModal(true)
-        setRowData(item)
-    }
-
     return (
         <>
             <View style={styles.row}>
+
                 <View style={{ ...styles.rowel, width: '25%', }}>
                     <Text style={styles.rowel_tetx}>{item?.name}</Text>
                 </View>
+
                 <View style={styles.verticalline} />
+
                 <View style={{ ...styles.rowel, width: '20%', }}>
-                    <Text style={styles.rowel_tetx}>{item?.total_price}</Text>
+                    <Text style={styles.rowel_tetx}>{item?.sold_units ?? ''}</Text>
                 </View>
+
                 <View style={styles.verticalline} />
+
                 <View style={{ ...styles.rowel, width: '20%', }}>
-                    <Text style={styles.rowel_tetx}>{new Date(item?.start_visit).toISOString().split('T')[0]}</Text>
+                    <Text style={styles.rowel_tetx}>{item?.target ?? ''}</Text>
                 </View>
+
                 <View style={styles.verticalline} />
+
                 <View style={{ ...styles.rowel, width: '30%', }}>
-                    <TouchableOpacity onPress={() => { DDD(item) }}>
-                        <AntDesign name="infocirlceo" color='gold' size={17} />
-                    </TouchableOpacity>
+                    <Text style={styles.rowel_tetx}>{item?.percentage ?? ''}</Text>
                 </View>
+
             </View>
-            <SalesModel show={modal} hide={() => { setModal(false) }} data={rowData} />
         </>
     )
 }

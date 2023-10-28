@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import SalesModel from '../Modals/SalesModel'
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import CollectionsModel from '../Modals/CollectionsModel';
 
 const CollectionItemTable = ({ item }) => {
     const [modal, setModal] = useState(false)
@@ -16,15 +16,15 @@ const CollectionItemTable = ({ item }) => {
         <>
             <View style={styles.row}>
                 <View style={{ ...styles.rowel, width: '30.1%', }}>
-                    <Text style={styles.rowel_tetx}>{item?.name}</Text>
+                    <Text style={styles.rowel_tetx}>{item?.pharmacy_name ?? ''}</Text>
                 </View>
                 <View style={styles.verticalline} />
                 <View style={styles.rowel}>
-                    <Text style={styles.rowel_tetx}>{item?.total_price}</Text>
+                    <Text style={styles.rowel_tetx}>{item?.credit_amount ?? ''}</Text>
                 </View>
                 <View style={styles.verticalline} />
                 <View style={styles.rowel}>
-                    <Text style={styles.rowel_tetx}>{new Date(item?.start_visit).toISOString().split('T')[0]}</Text>
+                    <Text style={styles.rowel_tetx}>{item?.amount}</Text>
                 </View>
                 <View style={styles.verticalline} />
                 <View style={{ ...styles.rowel, width: '12%', }}>
@@ -33,7 +33,7 @@ const CollectionItemTable = ({ item }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <SalesModel show={modal} hide={() => { setModal(false) }} data={rowData} />
+            <CollectionsModel show={modal} hide={() => { setModal(false) }} data={rowData} />
         </>
     )
 }

@@ -102,8 +102,9 @@ export const uploadFiles = async (url, files, body = {}) => {
 };
 
 // Pagination handling
-export const getPage = async (url, page = 1, limit = 10, param = {}, data = null,) => {
-  const params = { ...param, page, limit };
+export const getPage = async (url, page = 1, limit = 10, param = {}, data = null) => {
+  const params = { ...param, page, limit, _page: page };
+
   const response = await get(url, data, params);
   return response;
 };

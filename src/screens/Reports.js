@@ -16,21 +16,16 @@ import {
   import Constants from '../config/globalConstants';
   import { get } from '../WebService/RequestBuilder';
   import { useAuth } from '../contexts/AuthContext';
-import ReportsHeaderTable from '../components/Tables/ReportsHeaderTable';
-import ReportItemTable from '../components/Tables/ReportItemTable';
-  
-  const getSalesEndpoint = Constants.visit.sales;
-
+  import ReportsHeaderTable from '../components/Tables/ReportsHeaderTable';
+  import ReportItemTable from '../components/Tables/ReportItemTable';
   Feather.loadFont();
   
   const Reports = ({ navigation }) => {
-  
+
     const { user } = useAuth();
-  
+    const getReportsEndpoint = user.role == 'sales' ? Constants.sales.reports : Constants.medical.reports;
     const user_id = user.id
-  
     const getCityAreaEndpoint = Constants.users.cityArea;
-  
     const [cityArea, setCityArea] = useState(null);
   
     useEffect(() => {
@@ -48,7 +43,7 @@ import ReportItemTable from '../components/Tables/ReportItemTable';
     const [cityValue, setCityValue] = useState(null);
     const [areasData, setAreasData] = useState([]);
     const [areaValue, setAreaValue] = useState(null);
-    const [filter, setFilter] = useState({ sale_id: user_id });
+    const [filter, setFilter] = useState({});
   
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState(new Date());
@@ -116,7 +111,7 @@ import ReportItemTable from '../components/Tables/ReportItemTable';
                 setCityValue(item.value);
                 setFilter((prev) => ({
                   ...prev,
-                  city_name: item.label
+                  cityId: item.value
                 }))
               }}
               renderLeftIcon={() => (
@@ -150,7 +145,7 @@ import ReportItemTable from '../components/Tables/ReportItemTable';
                 setAreaValue(item.value);
                 setFilter((prev) => ({
                   ...prev,
-                  area_name: item.label
+                  areaId: item.value
                 }))
               }}
               renderLeftIcon={() => (
@@ -244,7 +239,7 @@ import ReportItemTable from '../components/Tables/ReportItemTable';
         <View style={style.tableContainer}>
           <ReportsHeaderTable />
           <TableView
-            apiEndpoint={getSalesEndpoint}
+            apiEndpoint={getReportsEndpoint}
             enablePullToRefresh
             params={filter}
             renderItem={({ item }) => <ReportItemTable item={item} />}

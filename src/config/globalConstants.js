@@ -16,6 +16,12 @@ export default {
   },
   sales: {
     pharmacy: 'sales/pharamcy',
+    reports:'target/sales',
+    collection: 'collect-money'
+  },
+  medical: {
+    reports:'target/medicals',
+    frequncy_visits: 'frequncy-visits',
   },
   users: {
     cityArea: 'users/',
@@ -47,8 +53,7 @@ export default {
   },
   return: {
     get_returns: 'return-orders'
-  }
-
+  },
 };
 
 
