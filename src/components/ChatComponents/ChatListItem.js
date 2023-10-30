@@ -4,16 +4,16 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
-dayjs.extend(relativeTime);
 import moment from 'moment';
+Ionicons.loadFont();
+dayjs.extend(relativeTime);
 
-const ChatListItem = ({ chat, currentUser }) => {
+const ChatListItem = ({ chat }) => {
 
   const currentTime = new Date();
   const timeDifference = (currentTime - chat?.updated_at) / (1000 * 60 * 60); // Time difference in hours
   const isMessageRead = timeDifference >= 2;
-  console.log('isMessageRead', isMessageRead);
+  // console.log('isMessageRead', isMessageRead);
   const navigation = useNavigation();
   return (
     <Pressable
@@ -21,7 +21,6 @@ const ChatListItem = ({ chat, currentUser }) => {
         navigation.navigate('ChatScreen', {
           id: chat?.id,
           name: chat?.name,
-          currentUser
         })
       }
       style={styles.container}>

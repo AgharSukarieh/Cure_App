@@ -99,7 +99,8 @@ const style = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     borderWidth: 1,
-    borderColor: 'grey'
+    borderColor: 'grey',
+    height:45
   },
   cardsView: {
     width: '90%',
@@ -123,4 +124,5 @@ const style = StyleSheet.create({
   cardimage: { width: '50%', height: '50%', },
   cardtext: { color: '#000', fontWeight: '600', marginTop: 10, fontSize: 17 }
 })
+
 export default ReportPage;

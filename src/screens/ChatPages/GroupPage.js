@@ -5,6 +5,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     View,
+    SafeAreaView,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import bg from '../../../assets/BG.png'
@@ -22,6 +23,9 @@ import GoBack from '../../components/GoBack';
 import { useAuth } from '../../contexts/AuthContext';
 import GroupMessage from '../../components/ChatComponents/groupMessage';
 import InputBoxGroup from '../../components/ChatComponents/InputBoxGroup';
+import { get } from '../../WebService/RequestBuilder';
+import globalConstants from '../../config/globalConstants';
+const getMessagesEndpoint = globalConstants.group_chat.get_mess;
 
 const GroupPage = ({ route, navigation }) => {
 
@@ -50,28 +54,33 @@ const GroupPage = ({ route, navigation }) => {
         sendpusher()
     }, []);
 
-    const { group_id, name, currentUser } = route.params;
+    const { group_id, name } = route.params;
     const [messages, setMessages] = useState([]);
 
-    const getMessages = () => {
+    // const getMessages = () => {
+    //     let config = {
+    //         method: 'get',
+    //         maxBodyLength: Infinity,
+    //         url: GET_GROUPS_MESSAGES + `?group_id=${group_id}&current_user_id=${currentUser}`,
+    //         headers: {
+    //             'Authorization': `Bearer ${token}`,
+    //         }
+    //     };
+    //     axios.request(config)
+    //         .then((response) => {
+    //             setMessages(response.data.data.messages)
+    //         })
+    //         .catch((error) => {
+    //             console.log(error);
+    //         });
+    // }
 
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: GET_GROUPS_MESSAGES + `?group_id=${group_id}&current_user_id=${currentUser}`,
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            }
-        };
-
-        axios.request(config)
-            .then((response) => {
-                setMessages(response.data.data.messages)
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-
+    const getMessages = async () => {
+        get(getMessagesEndpoint, null, {group_id: group_id}).then((res)=> {
+            setMessages(res.data);
+          }).catch((err) => {
+            console.log(err);
+          })
     }
 
     useEffect(() => {
@@ -81,29 +90,32 @@ const GroupPage = ({ route, navigation }) => {
     useEffect(() => {
         navigation.setOptions({ title: name });
     }, [name, navigation]);
+
     return (
+        <SafeAreaView style={{width: '100%', height: '100%',}}>
+        <GoBack text={name} />
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 140}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 140}
             style={styles.bg}>
             {/* <View style={{ width: '100%', height: 70, backgroundColor: 'red' }}>
           <Text>name</Text> */}
-            <GoBack text={name} />
             {/* </View> */}
             <ImageBackground source={bg} style={styles.bg}>
                 <FlatList
                     data={messages}
-                    renderItem={({ item }) => <GroupMessage message={item} currentUserId={currentUser} />}
+                    renderItem={({ item }) => <GroupMessage message={item} />}
                     style={styles.list}
                     inverted
                     showsVerticalScrollIndicator={false}
                 />
-                <InputBoxGroup currentUserId={currentUser} receiverID={group_id} submit={(msg) => {
+                <InputBoxGroup currentUserId={user.id} receiverID={group_id} submit={(msg) => {
                     setMessages([msg, ...messages])
                     getMessages()
                 }} />
             </ImageBackground>
         </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 };
 

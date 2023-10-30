@@ -44,7 +44,7 @@ const CollectionsModel = ({ show, hide, data }) => {
 
                         <View style={styles.verticalline} />
                         <View style={{ ...styles.rowel, width: '33%', }}>
-                            <Text style={styles.rowel_tetx}>{''}</Text>
+                            <Text style={styles.rowel_tetx}>{data?.check_number ?? ''}</Text>
                         </View>
 
                         <View style={styles.verticalline} />

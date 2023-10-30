@@ -13,7 +13,7 @@ const SignIn = ({ navigation }) => {
   // medicalSuper300@gmail.com
   // saleAdmin@gmail.com
   // medical_test@mailinator.com -> FV
-  const [email, setemail] = useState('saleAdmin@gmail.com');
+  const [email, setemail] = useState('medical_test@mailinator.com');
   const [password, setPassword] = useState('123');
   const { login } = useAuth();
 

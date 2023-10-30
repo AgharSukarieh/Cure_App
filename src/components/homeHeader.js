@@ -3,6 +3,7 @@ import React from 'react';
 import { styles } from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const date = new Date().toLocaleDateString();
+FontAwesome.loadFont();
 
 const HomeHeader = ({ username, supervisorname }) => {
     return (

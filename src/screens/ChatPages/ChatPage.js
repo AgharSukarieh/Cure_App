@@ -31,12 +31,12 @@ const ChatPage = ({ navigation, route }) => {
       {/* <Tab.Screen name="ChatsScreen" component={ChatsScreen} options={{ headerShown: false }}/> */}
       <Tab.Screen
         name="ChatsScreen"
-        children={() => <ChatsScreen userData={user} />}
+        children={() => <ChatsScreen />}
         options={{ headerShown: false }}
       />
       <Tab.Screen
         name="Groups"
-        component={AllGroups}
+        children={() => <AllGroups />}
         options={{ headerShown: false }}
       />
     </Tab.Navigator>

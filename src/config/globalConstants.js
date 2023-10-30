@@ -1,5 +1,5 @@
 const base_URL = () => {
-  return 'http://pharmaceuticals.ncitsolutions.com/api/';
+  return 'https://pharmaceuticals.ncitsolutions.com/api/';
 };
 
 export default {
@@ -54,6 +54,16 @@ export default {
   return: {
     get_returns: 'return-orders'
   },
+  single_chat: {
+    get_conv: 'get-single-chat-list',
+    get_mess: 'get-single-chat-messages',
+    send_mess: 'single_chat_message_mobile',
+  },
+  group_chat: {
+    get_conv: 'get-group-chat-list',
+    get_mess: 'get-group-chat-messages',
+  },
+  get_user_to_chat: 'get-search-results',
 };
 
 

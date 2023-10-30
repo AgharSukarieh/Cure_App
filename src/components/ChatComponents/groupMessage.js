@@ -6,9 +6,13 @@ dayjs.extend(relativeTime);
 import { useNavigation } from '@react-navigation/native';
 import MapMH from './Map';
 import moment from 'moment';
+import { useAuth } from '../../contexts/AuthContext';
 
-const GroupMessage = ({ message, currentUserId }) => {
+const GroupMessage = ({ message }) => {
     const navigation = useNavigation();
+    const { user, token } = useAuth();
+    const currentUserId = user.id;
+
     const isMyMessage = () => {
         return message.sender_id === currentUserId;
     };
@@ -23,7 +27,7 @@ const GroupMessage = ({ message, currentUserId }) => {
             {message.sender_id != currentUserId &&
                 <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', marginBottom: 5, }}>
                     <Image source={message?.sender?.image ? { uri: message?.sender?.image } : require('../../../assets/user.png')} style={{ width: 25, height: 25, }} />
-                    <Text style={{ color: '#000', marginHorizontal: 5 }}>{message?.sender.name}</Text>
+                    <Text style={{ color: '#000', marginHorizontal: 5 }}>{message?.sender?.name ?? ''}</Text>
                 </View>
             }
             {message?.latitude && message?.longitude && (

@@ -226,7 +226,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
                 <TextInput
                   onChangeText={(text) => { setnote(text) }}
                   placeholder='Note'
-                  style={{ ...styles.drop, height: textInputHeight, paddingHorizontal: 10 }}
+                  style={{ ...styles.drop, height: 60, paddingHorizontal: 10 }}
                   maxLength={300}
                   multiline
                   numberOfLines={10}

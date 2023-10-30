@@ -16,14 +16,20 @@ import axios from 'axios';
 import { GET_USER_CHATS } from '../../Provider/ApiRequest';
 import { Text } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
+import TableView from '../../General/TableView';
+import globalConstants from '../../config/globalConstants';
+import { get } from '../../WebService/RequestBuilder';
 
-const ChatsScreen = ({ userData }) => {
 
+
+const ChatsScreen = () => {
+  const getConvEndpoint = globalConstants.single_chat.get_conv;
   const navigation = useNavigation();
   const pusher = Pusher.getInstance();
   const { user, token } = useAuth();
-  const sendpusher = async () => {
+  const [chats, setChats] = useState([]);
 
+  const sendpusher = async () => {
     await pusher.init({
       apiKey: "7d3cf02011bb653450a0",
       cluster: "mt1"
@@ -40,25 +46,33 @@ const ChatsScreen = ({ userData }) => {
     // console.log(pusher.connectionState);
   }
 
-  const [chats, setChats] = useState([]);
+  
   // console.log('token', chats);
-  const getChats = () => {
-    let config = {
-      method: 'get',
-      maxBodyLength: Infinity,
-      url: GET_USER_CHATS + `?current_user_id=${user.id}`,
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      }
-    };
-    axios.request(config)
-      .then((response) => {
-        setChats(response.data.users);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
 
+  // const getChats = () => {
+  //   let config = {
+  //     method: 'get',
+  //     maxBodyLength: Infinity,
+  //     url: GET_USER_CHATS + `?current_user_id=${user.id}`,
+  //     headers: {
+  //       'Authorization': `Bearer ${token}`,
+  //     }
+  //   };
+  //   axios.request(config)
+  //     .then((response) => {
+  //       setChats(response.data.users);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // }
+
+  const getChats = async () => {
+    get(getConvEndpoint, null, null).then((res)=> {
+      setChats(res.data);
+    }).catch((err) => {
+      console.log(err);
+    })
   }
 
   useEffect(() => {
@@ -67,13 +81,20 @@ const ChatsScreen = ({ userData }) => {
   
   return (
     <SafeAreaView style={styles.container}>
-      <GoBack text={'Chats'} addButton addButtonFunc={() => navigation.navigate('ContactsScreen', { currentUser: userData.id })} />
+      <GoBack text={'Chats'} addButton addButtonFunc={() => navigation.navigate('ContactsScreen', { currentUser: user.id })} />
+      {/* <TableView
+          apiEndpoint={getConvEndpoint}
+          enablePullToRefresh
+          renderItem={({ item }) => <ChatListItem chat={item}/>}
+        /> */}
+
       <FlatList
         data={chats}
-        renderItem={({ item }) => <ChatListItem chat={item} currentUser={user.id} />}
+        renderItem={({ item }) => <ChatListItem chat={item} />}
         style={{ backgroundColor: 'white' }}
         showsVerticalScrollIndicator={false}
       />
+
     </SafeAreaView>
   );
 };

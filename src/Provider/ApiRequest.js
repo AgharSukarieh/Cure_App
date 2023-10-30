@@ -1,4 +1,4 @@
-export const Api = "http://pharmaceuticals.ncitsolutions.com/api/"
+export const Api = "https://pharmaceuticals.ncitsolutions.com/api/"
 
 
 export const LOGIN = `${Api}login`;
@@ -29,9 +29,10 @@ export const SAL_GET_LAST_ORDER = `${Api}sal_get_last_order`;
 export const SAL_GET_PRODUCT_BY_BARCODE = `${Api}sal_get_product_by_barcode`;
 
 export const SAL_GET_PHARMACY = `${Api}sal_get_pharmacy`;
-export const GET_USER_CHATS = `${Api}get-single-chat-list`;
-export const GET_CHAT_MESSAGES = `${Api}get-single-chat-messages`;
 export const GET_SEARCH_RESULTS = `${Api}get-search-results`;
+
+// export const GET_USER_CHATS = `${Api}get-single-chat-list`;
+export const GET_CHAT_MESSAGES = `${Api}get-single-chat-messages`;
 export const POST_ADD_MESSAGE = `${Api}single_chat_message_mobile`;
 
 export const GET_USER_GROUPS = `${Api}get-group-chat-list`;
