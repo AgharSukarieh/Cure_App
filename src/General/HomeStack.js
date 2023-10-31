@@ -13,7 +13,7 @@ import Order from '../screens/Sales/Order';
 import Inventory from '../screens/Sales/Inventory';
 import Return from '../screens/Sales/Return';
 import AccountInfo from '../screens/Sales/AccountInfo';
-import PresentImage from '../screens/ChatPages/PresentImage';
+// import PresentImage from '../screens/ChatPages/PresentImage';
 import WeeklySales from '../screens/Sales/WeeklySales';
 import Reports from '../screens/Reports';
 import FrequencyReport from '../screens/FrequencyReport';
@@ -36,7 +36,7 @@ const HomeStack = ({ navigation }) => {
             <Stack.Screen name="Inventory" component={Inventory} />
             <Stack.Screen name="Return" component={Return} />
             <Stack.Screen name="AccountInfo" component={AccountInfo} />
-            <Stack.Screen name="PresentImage" component={PresentImage} />
+            {/* <Stack.Screen name="PresentImage" component={PresentImage} /> */}
             <Stack.Screen name="WeeklySales" component={WeeklySales} />
             <Stack.Screen name="Reports" component={Reports} />
             <Stack.Screen name="FrequencyReport" component={FrequencyReport} />

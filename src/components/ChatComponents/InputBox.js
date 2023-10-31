@@ -6,8 +6,8 @@ import { openPicker } from '@baronha/react-native-multiple-image-picker';
 import GetLocation from 'react-native-get-location';
 import { useNavigation } from '@react-navigation/native';
 import MapMH from './Map';
-import axios from 'axios';
-import { POST_ADD_MESSAGE } from '../../Provider/ApiRequest';
+// import axios from 'axios';
+// import { POST_ADD_MESSAGE } from '../../Provider/ApiRequest';
 import { useAuth } from '../../contexts/AuthContext';
 import { post } from '../../WebService/RequestBuilder';
 import globalConstants from '../../config/globalConstants';
@@ -18,10 +18,12 @@ const InputBox = ({ receiverID, submit }) => {
   const { user, token } = useAuth();
 
   const [newMessage, setNewMessage] = useState('');
-  const [images, setImages] = useState('');
+  // const [images, setImages] = useState('');
+  const [images, setImages] = useState([]);
   const [baseimages, setbaseimages] = useState([]);
 
-  console.log('baseimages', baseimages);
+  // console.log('baseimages', baseimages);
+
   const currentTimeStamp = () => {
     const currentDate = new Date();
     const timestamp = currentDate.getTime();
@@ -35,32 +37,39 @@ const InputBox = ({ receiverID, submit }) => {
     try {
       let data = {
         text: '',
-        // sender_id: currentUserId,
         receiver_id: receiverID,
         attachmentUrl: baseimages,
         attachmentName: timestamp + '.png'
-
       };
-      axios({
-        method: 'POST',
-        url: POST_ADD_MESSAGE,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        data: data,
+      post(globalConstants.single_chat.send_mess, data, null).then((res) => {
+        submit(res?.message?.chat_id)
+        setNewMessage('');
+        setImages([]);
+        setbaseimages([])
+      }).catch((err) => {
+        console.log(err);
       })
-        .then(response => {
-          console.log('DONE', response?.data.message);
-          submit(response?.data.message)
-          setImages('')
-          setbaseimages('')
-        })
-        .catch(error => {
-          console.log(
-            '🚀 ~ file: ChatScreen.js ~~ InputBox.js ~~ line 49 ~ uploadImages ~ error',
-            error,
-          );
-        });
+      // axios({
+      //   method: 'POST',
+      //   url: POST_ADD_MESSAGE,
+      //   headers: {
+      //     'Authorization': `Bearer ${token}`,
+      //   },
+      //   data: data,
+      // })
+      //   .then(response => {
+      //     console.log('DONE', response?.data.message);
+      //     submit(response?.data.message)
+      //     setImages('')
+      //     setbaseimages('')
+      //   })
+      //   .catch(error => {
+      //     console.log(
+      //       '🚀 ~ file: ChatScreen.js ~~ InputBox.js ~~ line 49 ~ uploadImages ~ error',
+      //       error,
+      //     );
+      //   });
+
     } catch (error) {
       console.error(error);
     }
@@ -69,7 +78,7 @@ const InputBox = ({ receiverID, submit }) => {
   const onSend = () => {
     if (newMessage.length > 0 || baseimages.length > 0 || longitude) {
       if (baseimages.length > 0) {
-        uploadImages(baseimages);
+        uploadImages(baseimages[0][0]);
       } else {
         let data = {
           receiver_id: receiverID,
@@ -80,7 +89,7 @@ const InputBox = ({ receiverID, submit }) => {
         post(globalConstants.single_chat.send_mess, data, null).then((res) => {
           submit(res?.message?.chat_id)
           setNewMessage('');
-          setImages('');
+          setImages([]);
           setLatitude('');
           setLongitude('');
         }).catch((err) => {
@@ -106,12 +115,11 @@ const InputBox = ({ receiverID, submit }) => {
 
   const onPicker = async () => {
     try {
-      const singleSelectedMode = false;
+      const singleSelectedMode = true;
       const response = await openPicker({
-        useCameraButton: true,
         selectedAssets: images,
         isExportThumbnail: true,
-        maxVideo: 0,
+        maxVideo: 1,
         doneTitle: 'Done',
         singleSelectedMode,
         isCrop: true,
@@ -122,9 +130,26 @@ const InputBox = ({ receiverID, submit }) => {
         response.width = crop.width;
         response.height = crop.height;
       }
-      setImages(response[0]);
-      const baseArray = await Promise.all(response.map(async (img) => {
-        const data = await fetch('file://' + img.path);
+
+      setImages(prev => [...prev, response])
+
+      // const baseArray = await Promise.all(response.map(async (img) => {
+      //   const data = await fetch('file://' + img.path);
+      //   const blob = await data.blob();
+      //   return new Promise((resolve) => {
+      //     const reader = new FileReader();
+      //     reader.readAsDataURL(blob);
+      //     reader.onloadend = () => {
+      //       const base64data = reader.result;
+      //       resolve(base64data);
+      //     };
+      //   });
+      // }));
+      // setbaseimages(baseArray[0])
+
+      let arr = [response]
+      const base = await Promise.all(arr.map(async (img) => {
+        const data = await fetch(img.path);
         const blob = await data.blob();
         return new Promise((resolve) => {
           const reader = new FileReader();
@@ -135,9 +160,11 @@ const InputBox = ({ receiverID, submit }) => {
           };
         });
       }));
-      setbaseimages(baseArray[0])
+
+      setbaseimages(prev => [...prev, base])
+
     } catch (e) {
-      console.log(e);
+      console.log('e', e);
      }
   };
  
@@ -161,11 +188,11 @@ const InputBox = ({ receiverID, submit }) => {
         </View>
       )}
 
-      {baseimages.length > 0 && (
+      {images.length > 0 && (
 
         <View style={styles.attachmentsContainer}>
           <Image
-            source={{ uri: baseimages }}
+            source={{ uri: images[0].path }}
             style={styles.selectedImage}
             resizeMode="contain"
           />

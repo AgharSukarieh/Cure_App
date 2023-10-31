@@ -15,6 +15,7 @@ import { View, ActivityIndicator } from 'react-native';
 import FirstScreen from './src/screens/firstScreen';
 import BottomTabs from './src/General/BottomTabNavigator';
 import EditProfle from './src/screens/editProfle';
+import PresentImage from './src/screens/ChatPages/PresentImage';
 
 export default function App() {
 
@@ -48,6 +49,7 @@ export default function App() {
         <Stack.Screen name="GroupPage" component={GroupPage} />
         <Stack.Screen name="ContactsScreen" component={ContactsScreen} />
         <Stack.Screen name="EditProfle" component={EditProfle} />
+        <Stack.Screen name="PresentImage" component={PresentImage} /> 
       </Stack.Navigator>
     </NavigationContainer >
   );

@@ -4,7 +4,7 @@ import { Alert } from 'react-native';
 
 const apiClient = axios.create({
   baseURL: 'https://pharmaceuticals.ncitsolutions.com/api/',
-  timeout: 5000,
+  timeout: 10000,
 });
 
 let activeRequests = 0;
