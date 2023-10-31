@@ -1,46 +1,15 @@
 import { FlatList, SafeAreaView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { chatListDemo } from '../../DemoData';
 import ContactListItem from '../../components/ChatComponents/ContactListItem';
 import { styles } from '../../components/styles';
 import GoBack from '../../components/GoBack';
-import axios from 'axios';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { Text } from 'react-native';
-import { useAuth } from '../../contexts/AuthContext';
-import { GET_SEARCH_RESULTS } from '../../Provider/ApiRequest';
+import React, { useEffect, useState } from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { get } from '../../WebService/RequestBuilder';
 import globalConstants from '../../config/globalConstants';
 
 const ContactsScreen = ({ route, navigation }) => {
-  const { currentUser } = route.params;
-  const { user, token } = useAuth();
-
   const [txt, setTxt] = useState('');
-
   const [allnewusers, setallnewusers] = useState([]);
-  // console.log(token);
-  // const get_users = () => {
-  //   let config = {
-  //     method: 'get',
-  //     maxBodyLength: Infinity,
-  //     url: GET_SEARCH_RESULTS + `?current_user_id=${user.id}&current_user_role=${user.role}&username`,
-  //     headers: {
-  //       'Authorization': `Bearer ${token}`,
-  //     }
-  //   };
-
-  //   axios.request(config)
-  //     .then((response) => {
-  //       console.log(JSON.stringify(response.data));
-  //       setallnewusers(response.data.users)
-  //     })
-  //     .catch((error) => {
-  //       console.log('🚀 ~ file: ContactsScreen.js ~~ line 35 ~ get_users ~ error', error);
-  //     });
-
-  // }
 
   const handleTextChange = (newText) => {
     setTxt(newText);
@@ -57,9 +26,9 @@ const ContactsScreen = ({ route, navigation }) => {
     })
   }
 
-  // useEffect(() => {
-  //   get_users()
-  // }, [])
+  useEffect(() => {
+    get_users();
+  }, [])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -71,15 +40,16 @@ const ContactsScreen = ({ route, navigation }) => {
               onChangeText={handleTextChange}
             />
             <TouchableOpacity onPress={() => {
-              // get_users();
+              get_users();
               }}>
               <FontAwesome name="search" size={26} color="grey" />
             </TouchableOpacity>
             
-          </View>
+      </View>
+      
       <FlatList
         data={allnewusers}
-        renderItem={({ item }) => <ContactListItem user={item} currentUser={currentUser} />}
+        renderItem={({ item }) => <ContactListItem user={item} />}
         style={{ backgroundColor: 'white' }}
         showsVerticalScrollIndicator={false}
       />

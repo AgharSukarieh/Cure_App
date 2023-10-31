@@ -8,6 +8,7 @@ import SignInPharmacy from './src/screens/Pharmacy/SignInPharmacy';
 import ConfirmProfile from './src/screens/ConfirmProfile';
 import ChatPage from './src/screens/ChatPages/ChatPage';
 import ChatScreen from './src/screens/ChatPages/ChatScreen';
+import GroupPage from './src/screens/ChatPages/GroupPage';
 import ContactsScreen from './src/screens/ChatPages/ContactsScreen'
 import { useAuth } from './src/contexts/AuthContext';
 import { View, ActivityIndicator } from 'react-native';
@@ -44,6 +45,7 @@ export default function App() {
         <Stack.Screen name="ConfirmProfile" component={ConfirmProfile} />
         <Stack.Screen name="ChatPage" component={ChatPage} />
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
+        <Stack.Screen name="GroupPage" component={GroupPage} />
         <Stack.Screen name="ContactsScreen" component={ContactsScreen} />
         <Stack.Screen name="EditProfle" component={EditProfle} />
       </Stack.Navigator>

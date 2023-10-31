@@ -24,8 +24,9 @@ const GroupMessage = ({ message }) => {
                 backgroundColor: isMyMessage() ? '#8ab7eb' : 'white', //'#DCF8C5'
                 alignSelf: isMyMessage() ? 'flex-end' : 'flex-start',
             }}>
+
             {message.sender_id != currentUserId &&
-                <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', marginBottom: 5, }}>
+                <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
                     <Image source={message?.sender?.image ? { uri: message?.sender?.image } : require('../../../assets/user.png')} style={{ width: 25, height: 25, }} />
                     <Text style={{ color: '#000', marginHorizontal: 5 }}>{message?.sender?.name ?? ''}</Text>
                 </View>
@@ -56,6 +57,7 @@ const GroupMessage = ({ message }) => {
                     />
                 </Pressable>
             )}
+            
             {message?.images && (
                 <Pressable
                     onPress={() =>
@@ -68,6 +70,7 @@ const GroupMessage = ({ message }) => {
                     />
                 </Pressable>
             )}
+
             <Text>{message?.text}</Text>
             <Text style={styles.time}>{dayjs(moment.utc(message?.created_at).local().format()).fromNow(true)}</Text>
         </View>

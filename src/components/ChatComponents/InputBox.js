@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, Image, FlatList } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { openPicker } from '@baronha/react-native-multiple-image-picker';
 import GetLocation from 'react-native-get-location';
 import { useNavigation } from '@react-navigation/native';
@@ -12,6 +11,7 @@ import { POST_ADD_MESSAGE } from '../../Provider/ApiRequest';
 import { useAuth } from '../../contexts/AuthContext';
 import { post } from '../../WebService/RequestBuilder';
 import globalConstants from '../../config/globalConstants';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const InputBox = ({ receiverID, submit }) => {
   const navigation = useNavigation();
@@ -69,19 +69,16 @@ const InputBox = ({ receiverID, submit }) => {
   const onSend = () => {
     if (newMessage.length > 0 || baseimages.length > 0 || longitude) {
       if (baseimages.length > 0) {
-        console.log('-----');
         uploadImages(baseimages);
       } else {
         let data = {
-          // sender_id: currentUserId,
           receiver_id: receiverID,
           latitude: latitude,
           longitude: longitude,
           text: newMessage,
         };
-
         post(globalConstants.single_chat.send_mess, data, null).then((res) => {
-          submit(response.data.message)
+          submit(res?.message?.chat_id)
           setNewMessage('');
           setImages('');
           setLatitude('');
@@ -89,27 +86,6 @@ const InputBox = ({ receiverID, submit }) => {
         }).catch((err) => {
           console.log(err);
         })
-        // axios({
-        //   method: 'POST',
-        //   url: POST_ADD_MESSAGE,
-        //   headers: {
-        //     'Authorization': `Bearer ${token}`,
-        //   },
-        //   data: data,
-        // })
-        //   .then(response => {
-            // submit(response.data.message)
-            // setNewMessage('');
-            // setImages('');
-            // setLatitude('');
-            // setLongitude('');
-        //   })
-        //   .catch(error => {
-        //     console.log(
-        //       '🚀 ~ file: InputBox.js ~~ ChatScreen.js ~~ line 43 ~ getdoctors ~ error',
-        //       error,
-        //     );
-        //   });
       }
     }
   };
@@ -146,10 +122,7 @@ const InputBox = ({ receiverID, submit }) => {
         response.width = crop.width;
         response.height = crop.height;
       }
-
-
       setImages(response[0]);
-
       const baseArray = await Promise.all(response.map(async (img) => {
         const data = await fetch('file://' + img.path);
         const blob = await data.blob();
@@ -163,10 +136,12 @@ const InputBox = ({ receiverID, submit }) => {
         });
       }));
       setbaseimages(baseArray[0])
-
-    } catch (e) { }
-
+    } catch (e) {
+      console.log(e);
+     }
   };
+ 
+  
 
   return (
     <>
@@ -206,6 +181,7 @@ const InputBox = ({ receiverID, submit }) => {
           />
         </View>
       )}
+
       <SafeAreaView edges={['bottom']} style={styles.container}>
         <AntDesign
           onPress={onPicker}

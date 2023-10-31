@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl, Image } from 'react-native';
 import { getPage } from '../WebService/RequestBuilder';
 
-const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = false, onEndReached = true}) => {
+const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = false, onEndReached = true, isInverted=false, isNotChat=true }) => {
   // console.log('##########################',params);
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
@@ -73,8 +73,11 @@ const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = fals
 
     return (
       <View style={styles.emptyStateContainer}>
+       { isNotChat &&<>
         <Image style={{ width: '60%', alignSelf: 'center' }} resizeMode='contain' source={require('../../assets/nodata.png')} />
         <Text style={{ fontSize: 20, color: '#000' }}>No data available.</Text>
+        </>
+        }
       </View>
     );
   };
@@ -86,6 +89,7 @@ const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = fals
 
       ) : (
         <FlatList
+          inverted={isInverted}
           showsVerticalScrollIndicator={false}
           data={data}
           keyExtractor={(item, index) => index.toString()}

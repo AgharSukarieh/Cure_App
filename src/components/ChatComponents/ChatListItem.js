@@ -9,7 +9,6 @@ Ionicons.loadFont();
 dayjs.extend(relativeTime);
 
 const ChatListItem = ({ chat }) => {
-
   const currentTime = new Date();
   const timeDifference = (currentTime - chat?.updated_at) / (1000 * 60 * 60); // Time difference in hours
   const isMessageRead = timeDifference >= 2;
@@ -21,6 +20,7 @@ const ChatListItem = ({ chat }) => {
         navigation.navigate('ChatScreen', {
           id: chat?.id,
           name: chat?.name,
+          user_id: chat?.user_id
         })
       }
       style={styles.container}>

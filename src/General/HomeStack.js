@@ -15,7 +15,6 @@ import Return from '../screens/Sales/Return';
 import AccountInfo from '../screens/Sales/AccountInfo';
 import PresentImage from '../screens/ChatPages/PresentImage';
 import WeeklySales from '../screens/Sales/WeeklySales';
-import GroupPage from '../screens/ChatPages/GroupPage';
 import Reports from '../screens/Reports';
 import FrequencyReport from '../screens/FrequencyReport';
 import Collection from '../screens/Collection';
@@ -39,7 +38,6 @@ const HomeStack = ({ navigation }) => {
             <Stack.Screen name="AccountInfo" component={AccountInfo} />
             <Stack.Screen name="PresentImage" component={PresentImage} />
             <Stack.Screen name="WeeklySales" component={WeeklySales} />
-            <Stack.Screen name="GroupPage" component={GroupPage} />
             <Stack.Screen name="Reports" component={Reports} />
             <Stack.Screen name="FrequencyReport" component={FrequencyReport} />
             <Stack.Screen name="Collection" component={Collection} />

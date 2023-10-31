@@ -10,10 +10,12 @@ import MapMH from './Map';
 import axios from 'axios';
 import { POST_ADD_MESSAGE, POST_GROUP_MESSAGE } from '../../Provider/ApiRequest';
 import { useAuth } from '../../contexts/AuthContext';
+import { post } from '../../WebService/RequestBuilder';
+import globalConstants from '../../config/globalConstants';
 
-const InputBox = ({ currentUserId, receiverID, submit }) => {
+const InputBox = ({ receiverID, submit }) => {
   const navigation = useNavigation();
-  const { user, token } = useAuth();
+  const { user } = useAuth();
 
   const [newMessage, setNewMessage] = useState('');
   const [images, setImages] = useState('');
@@ -33,7 +35,6 @@ const InputBox = ({ currentUserId, receiverID, submit }) => {
     try {
       let data = {
         text: '',
-        sender_id: currentUserId,
         receiver_id: receiverID,
         attachmentUrl: baseimages,
         attachmentName: timestamp + '.png'
@@ -71,33 +72,20 @@ const InputBox = ({ currentUserId, receiverID, submit }) => {
         uploadImages(baseimages);
       } else {
         let data = {
-          sender_id: currentUserId,
           receiver_id: receiverID,
           latitude: latitude,
           longitude: longitude,
           text: newMessage,
         };
-        axios({
-          method: 'POST',
-          url: POST_GROUP_MESSAGE,
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-          data: data,
+        post(globalConstants.group_chat.send_mess, data, null).then((res) => {
+          submit(res.message)
+          setNewMessage('');
+          setImages('');
+          setLatitude('');
+          setLongitude('');
+        }).catch((err) => {
+          console.log(err);
         })
-          .then(response => {
-            submit(response.data.message)
-            setNewMessage('');
-            setImages('');
-            setLatitude('');
-            setLongitude('');
-          })
-          .catch(error => {
-            console.log(
-              '🚀 ~ file: InputBox.js ~~ ChatScreen.js ~~ line 43 ~ getdoctors ~ error',
-              error,
-            );
-          });
       }
     }
   };

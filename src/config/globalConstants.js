@@ -62,6 +62,7 @@ export default {
   group_chat: {
     get_conv: 'get-group-chat-list',
     get_mess: 'get-group-chat-messages',
+    send_mess: 'group_chat_message_mobile',
   },
   get_user_to_chat: 'get-search-results',
 };

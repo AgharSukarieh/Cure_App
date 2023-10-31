@@ -345,7 +345,12 @@ PODS:
     - React-Core
   - react-native-maps (1.7.1):
     - React-Core
-  - react-native-multiple-image-picker (1.0.0):
+  - react-native-multiple-image-picker (1.1.6):
+    - CropViewController (= 2.6.1)
+    - React-Core
+    - react-native-multiple-image-picker/Viewer (= 1.1.6)
+    - TLPhotoPicker (= 2.1.9)
+  - react-native-multiple-image-picker/Viewer (1.1.6):
     - CropViewController (= 2.6.1)
     - React-Core
     - TLPhotoPicker (= 2.1.9)
@@ -700,7 +705,7 @@ SPEC CHECKSUMS:
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-image-picker: db60857e03d63721f19b6f4027de20429ddd9cba
   react-native-maps: 667f9b975549c6fa9b1631bf859440f68ebd3b8f
-  react-native-multiple-image-picker: 0da09ef1bfc18a0d18ad7dc61629c5e315af0e1e
+  react-native-multiple-image-picker: 7836e8269dd7696edc87bab686b3c3c7e6ebb41d
   react-native-pager-view: 0ccb8bf60e2ebd38b1f3669fa3650ecce81db2df
   react-native-restart: 7595693413fe3ca15893702f2c8306c62a708162
   react-native-safe-area-context: 9697629f7b2cda43cf52169bb7e0767d330648c2

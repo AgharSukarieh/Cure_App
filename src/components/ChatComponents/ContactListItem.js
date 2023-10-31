@@ -5,14 +5,14 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
-const ContactListItem = ({ user, currentUser }) => {
+const ContactListItem = ({ user }) => {
   const navigation = useNavigation();
   return (
     <Pressable onPress={() => {
       navigation.navigate('ChatScreen', {
-        id: user?.id,
+        id: user?.chat_id,
         name: user?.name,
-        currentUser
+        user_id: user?.id,
       })
     }} style={styles.container}>
       {user?.image
