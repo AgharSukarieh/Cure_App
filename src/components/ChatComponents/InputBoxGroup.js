@@ -126,7 +126,7 @@ const InputBox = ({ receiverID, submit }) => {
             reader.readAsDataURL(blob);
             reader.onloadend = () => {
               const base64data = reader.result;
-              resolve(base);
+              resolve(base64data);
             };
           });
         }));

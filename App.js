@@ -16,6 +16,7 @@ import FirstScreen from './src/screens/firstScreen';
 import BottomTabs from './src/General/BottomTabNavigator';
 import EditProfle from './src/screens/editProfle';
 import PresentImage from './src/screens/ChatPages/PresentImage';
+import { PusherProvider } from './src/contexts/PusherContext';
 
 export default function App() {
 
@@ -36,6 +37,7 @@ export default function App() {
       <ActivityIndicator size="large" color='blue' />
     </View>
   ) : (
+    <PusherProvider>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={setRoot()}>
         <Stack.Screen name="FirstScreen" component={FirstScreen} />
@@ -52,5 +54,6 @@ export default function App() {
         <Stack.Screen name="PresentImage" component={PresentImage} /> 
       </Stack.Navigator>
     </NavigationContainer >
+    </PusherProvider>
   );
 } 

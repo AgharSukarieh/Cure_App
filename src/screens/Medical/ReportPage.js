@@ -34,7 +34,7 @@ const ReportPage = () => {
   }, []);
 
   return (
-    <SafeAreaView style={{backgroundColor: '#ebebeb96', ...styles.container}}>
+    <SafeAreaView style={{...styles.container, backgroundColor: '#ebebeb96'}}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <HomeHeader username={user?.name} supervisorname={'Waleed'} />
         <View style={style.mainview}>

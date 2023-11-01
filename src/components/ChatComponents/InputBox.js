@@ -55,6 +55,7 @@ const InputBox = ({ receiverID, submit }) => {
     if (newMessage.length > 0 || baseimages.length > 0 || longitude) {
       if (baseimages.length > 0) {
         if (Platform.OS === 'ios') {
+          console.log(baseimages);
           uploadImages(baseimages[0][0]);
         }else {
           uploadImages(baseimages[0]);
@@ -116,14 +117,15 @@ const InputBox = ({ receiverID, submit }) => {
 
       if (Platform.OS === 'ios') {
         const base = await Promise.all(arr.map(async (img) => {
-          const data = await fetch(img.path);
+          console.log(arr[0].path);
+          const data = await fetch(arr[0].path);
           const blob = await data.blob();
           return new Promise((resolve) => {
             const reader = new FileReader();
             reader.readAsDataURL(blob);
             reader.onloadend = () => {
               const base64data = reader.result;
-              resolve(base);
+              resolve(base64data);
             };
           });
         }));
@@ -272,3 +274,4 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 });
+
