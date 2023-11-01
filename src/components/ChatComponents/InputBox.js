@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, Image, FlatList } from 'react-native';
+import { View, TextInput, StyleSheet, Image, FlatList, Platform } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { openPicker } from '@baronha/react-native-multiple-image-picker';
@@ -12,17 +12,16 @@ import { useAuth } from '../../contexts/AuthContext';
 import { post } from '../../WebService/RequestBuilder';
 import globalConstants from '../../config/globalConstants';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import RNFetchBlob from 'rn-fetch-blob';
+import { log } from 'console';
 
 const InputBox = ({ receiverID, submit }) => {
   const navigation = useNavigation();
-  const { user, token } = useAuth();
-
   const [newMessage, setNewMessage] = useState('');
-  // const [images, setImages] = useState('');
   const [images, setImages] = useState([]);
   const [baseimages, setbaseimages] = useState([]);
-
-  // console.log('baseimages', baseimages);
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
 
   const currentTimeStamp = () => {
     const currentDate = new Date();
@@ -30,8 +29,6 @@ const InputBox = ({ receiverID, submit }) => {
     return timestamp;
   };
   const timestamp = currentTimeStamp();
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
 
   const uploadImages = async (baseimages) => {
     try {
@@ -49,27 +46,6 @@ const InputBox = ({ receiverID, submit }) => {
       }).catch((err) => {
         console.log(err);
       })
-      // axios({
-      //   method: 'POST',
-      //   url: POST_ADD_MESSAGE,
-      //   headers: {
-      //     'Authorization': `Bearer ${token}`,
-      //   },
-      //   data: data,
-      // })
-      //   .then(response => {
-      //     console.log('DONE', response?.data.message);
-      //     submit(response?.data.message)
-      //     setImages('')
-      //     setbaseimages('')
-      //   })
-      //   .catch(error => {
-      //     console.log(
-      //       '🚀 ~ file: ChatScreen.js ~~ InputBox.js ~~ line 49 ~ uploadImages ~ error',
-      //       error,
-      //     );
-      //   });
-
     } catch (error) {
       console.error(error);
     }
@@ -78,7 +54,11 @@ const InputBox = ({ receiverID, submit }) => {
   const onSend = () => {
     if (newMessage.length > 0 || baseimages.length > 0 || longitude) {
       if (baseimages.length > 0) {
-        uploadImages(baseimages[0][0]);
+        if (Platform.OS === 'ios') {
+          uploadImages(baseimages[0][0]);
+        }else {
+          uploadImages(baseimages[0]);
+        }   
       } else {
         let data = {
           receiver_id: receiverID,
@@ -122,7 +102,7 @@ const InputBox = ({ receiverID, submit }) => {
         maxVideo: 1,
         doneTitle: 'Done',
         singleSelectedMode,
-        isCrop: true,
+        isCrop: false,
       });
       const crop = response.crop;
       if (crop) {
@@ -132,43 +112,48 @@ const InputBox = ({ receiverID, submit }) => {
       }
 
       setImages(prev => [...prev, response])
-
-      // const baseArray = await Promise.all(response.map(async (img) => {
-      //   const data = await fetch('file://' + img.path);
-      //   const blob = await data.blob();
-      //   return new Promise((resolve) => {
-      //     const reader = new FileReader();
-      //     reader.readAsDataURL(blob);
-      //     reader.onloadend = () => {
-      //       const base64data = reader.result;
-      //       resolve(base64data);
-      //     };
-      //   });
-      // }));
-      // setbaseimages(baseArray[0])
-
       let arr = [response]
-      const base = await Promise.all(arr.map(async (img) => {
-        const data = await fetch(img.path);
-        const blob = await data.blob();
-        return new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = () => {
-            const base64data = reader.result;
-            resolve(base64data);
-          };
+
+      if (Platform.OS === 'ios') {
+        const base = await Promise.all(arr.map(async (img) => {
+          const data = await fetch(img.path);
+          const blob = await data.blob();
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+              const base64data = reader.result;
+              resolve(base);
+            };
+          });
+        }));
+        setbaseimages(prev => [...prev, base])
+      } else {
+        getImageBaser64ToAndroid(arr[0].realPath)
+        .then((base64Image) => {
+          if (base64Image) {
+            setbaseimages(prev => [...prev, base64Image])
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
         });
-      }));
-
-      setbaseimages(prev => [...prev, base])
-
+      }
+     
     } catch (e) {
       console.log('e', e);
      }
   };
- 
   
+  const getImageBaser64ToAndroid = async (imagePath) => {
+    try {
+      const base64Data = await RNFetchBlob.fs.readFile(imagePath, 'base64');
+      return base64Data;
+    } catch (error) {
+      console.error('Error converting image to base64:', error);
+      return null;
+    }
+  };
 
   return (
     <>
@@ -192,7 +177,7 @@ const InputBox = ({ receiverID, submit }) => {
 
         <View style={styles.attachmentsContainer}>
           <Image
-            source={{ uri: images[0].path }}
+            source={{ uri: Platform.OS === 'ios' ? images[0].path : `file://${images[0].realPath}` }}
             style={styles.selectedImage}
             resizeMode="contain"
           />

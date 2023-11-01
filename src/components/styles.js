@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
     width: wwidth,
     height: wheight,
     backgroundColor: "#fff",
-    paddingBottom: 75
+    // paddingBottom: 75
   },
 
   // Start Top Container style image with Text

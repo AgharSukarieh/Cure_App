@@ -34,7 +34,7 @@ const ReportPage = () => {
   }, []);
 
   return (
-    <SafeAreaView style={{ ...styles.container, backgroundColor: '#ebebeb96' }}>
+    <SafeAreaView style={{backgroundColor: '#ebebeb96', ...styles.container}}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <HomeHeader username={user?.name} supervisorname={'Waleed'} />
         <View style={style.mainview}>
@@ -82,6 +82,7 @@ const style = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 15,
     top: -20,
+    height:'100%'
   },
   searchView: {
     width: '90%',
@@ -108,7 +109,8 @@ const style = StyleSheet.create({
     marginTop: 15,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    
   },
   card: {
     width: '45%',

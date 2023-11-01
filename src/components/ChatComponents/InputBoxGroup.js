@@ -12,6 +12,7 @@ import { POST_ADD_MESSAGE, POST_GROUP_MESSAGE } from '../../Provider/ApiRequest'
 import { useAuth } from '../../contexts/AuthContext';
 import { post } from '../../WebService/RequestBuilder';
 import globalConstants from '../../config/globalConstants';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const InputBox = ({ receiverID, submit }) => {
   const navigation = useNavigation();
@@ -48,27 +49,6 @@ const InputBox = ({ receiverID, submit }) => {
       }).catch((err) => {
         console.log(err);
       })
-      // axios({
-      //   method: 'POST',
-      //   url: POST_ADD_MESSAGE,
-      //   headers: {
-      //     'Authorization': `Bearer ${token}`,
-      //   },
-      //   data: data,
-      // })
-      //   .then(response => {
-      //     console.log('DONE', response?.data.message);
-      //     submit(response?.data.message)
-      //     setImages('')
-      //     setbaseimages('')
-      //   })
-      //   .catch(error => {
-      //     console.log(
-      //       '🚀 ~ file: ChatScreen.js ~~ InputBox.js ~~ line 49 ~ uploadImages ~ error',
-      //       error,
-      //     );
-      //   });
-
     } catch (error) {
       console.error(error);
     }
@@ -77,7 +57,11 @@ const InputBox = ({ receiverID, submit }) => {
   const onSend = () => {
     if (newMessage.length > 0 || baseimages.length > 0 || longitude) {
       if (baseimages.length > 0) {
-        uploadImages(baseimages[0][0]);
+        if (Platform.OS === 'ios') {
+          uploadImages(baseimages[0][0]);
+        }else {
+          uploadImages(baseimages[0]);
+        } 
       } else {
         let data = {
           receiver_id: receiverID,
@@ -88,7 +72,7 @@ const InputBox = ({ receiverID, submit }) => {
         post(globalConstants.group_chat.send_mess, data, null).then((res) => {
           submit(res.message)
           setNewMessage('');
-          setImages('');
+          setImages([]);
           setLatitude('');
           setLongitude('');
         }).catch((err) => {
@@ -121,7 +105,7 @@ const InputBox = ({ receiverID, submit }) => {
         maxVideo: 1,
         doneTitle: 'Done',
         singleSelectedMode,
-        isCrop: true,
+        isCrop: false,
       });
       const crop = response.crop;
       if (crop) {
@@ -129,26 +113,49 @@ const InputBox = ({ receiverID, submit }) => {
         response.width = crop.width;
         response.height = crop.height;
       }
+
       setImages(prev => [...prev, response])
       let arr = [response]
-      const base = await Promise.all(arr.map(async (img) => {
-        const data = await fetch(img.path);
-        const blob = await data.blob();
-        return new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = () => {
-            const base64data = reader.result;
-            resolve(base64data);
-          };
+
+      if (Platform.OS === 'ios') {
+        const base = await Promise.all(arr.map(async (img) => {
+          const data = await fetch(img.path);
+          const blob = await data.blob();
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+              const base64data = reader.result;
+              resolve(base);
+            };
+          });
+        }));
+        setbaseimages(prev => [...prev, base])
+      } else {
+        getImageBaser64ToAndroid(arr[0].realPath)
+        .then((base64Image) => {
+          if (base64Image) {
+            setbaseimages(prev => [...prev, base64Image])
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
         });
-      }));
-
-      setbaseimages(prev => [...prev, base])
-
+      }
+     
     } catch (e) {
       console.log('e', e);
      }
+  };
+
+  const getImageBaser64ToAndroid = async (imagePath) => {
+    try {
+      const base64Data = await RNFetchBlob.fs.readFile(imagePath, 'base64');
+      return base64Data;
+    } catch (error) {
+      console.error('Error converting image to base64:', error);
+      return null;
+    }
   };
 
   return (
@@ -173,7 +180,7 @@ const InputBox = ({ receiverID, submit }) => {
 
         <View style={styles.attachmentsContainer}>
           <Image
-            source={{ uri: images[0].path }}
+            source={{uri: Platform.OS === 'ios' ? images[0].path : `file://${images[0].realPath}`}}
             style={styles.selectedImage}
             resizeMode="contain"
           />
