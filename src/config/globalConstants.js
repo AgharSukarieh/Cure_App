@@ -58,11 +58,13 @@ export default {
     get_conv: 'get-single-chat-list',
     get_mess: 'get-single-chat-messages',
     send_mess: 'single_chat_message_mobile',
+    seen_chat: 'seen-chat',
   },
   group_chat: {
     get_conv: 'get-group-chat-list',
     get_mess: 'get-group-chat-messages',
     send_mess: 'group_chat_message_mobile',
+    seen_chat: 'seen-group',
   },
   get_user_to_chat: 'get-search-results',
 };

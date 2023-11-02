@@ -1,86 +1,68 @@
 import ChatListItem from '../../components/ChatComponents/ChatListItem';
 import React, { useEffect, useState } from 'react';
-// import { chatListDemo } from '../../DemoData';
-import { FlatList, SafeAreaView } from 'react-native';
-// import {
-//   Pusher,
-//   PusherMember,
-//   PusherChannel,
-//   PusherEvent,
-// } from '@pusher/pusher-websocket-react-native';
+import { FlatList, SafeAreaView, View } from 'react-native';
 import GoBack from '../../components/GoBack';
 import { styles } from '../../components/styles';
 import { useNavigation } from '@react-navigation/native';
-import TableView from '../../General/TableView';
 import globalConstants from '../../config/globalConstants';
 import { useAuth } from '../../contexts/AuthContext';
 import { usePusher } from '../../contexts/PusherContext';
-// import axios from 'axios';
-// import { GET_USER_CHATS } from '../../Provider/ApiRequest';
-// import { Text } from 'react-native';
-// import { get } from '../../WebService/RequestBuilder';
+import { get } from '../../WebService/RequestBuilder';
 
-// import { Pusher, PusherEvent } from '@pusher/pusher-websocket-react-native';
-// const apiKey = '7d3cf02011bb653450a0';
-// const cluster = 'mt1';
-// const pusher = new Pusher({
-//   apiKey,
-//   cluster
-// });
+const getConvEndpoint = globalConstants.single_chat.get_conv;
 
 const ChatsScreen = () => {
-  const getConvEndpoint = globalConstants.single_chat.get_conv;
   const navigation = useNavigation();
-  // const pusher = Pusher.getInstance();
   const { user } = useAuth();
-  const {dataConv} = usePusher();
-  const [messId, setmessId] = useState(0);
-  // const [chats, setChats] = useState([]);
+  const {data} = usePusher();
+  const [chats, setChats] = useState([]);
+  const [page, setPage] = useState(1);
 
-  // const sendpusher = async () => {
-  //   await pusher.init({
-  //     apiKey: "7d3cf02011bb653450a0",
-  //     cluster: "mt1"
-  //   });
-  //   await pusher.connect();
-  //   await pusher.subscribe({
-  //     channelName: "pharmaceuticals",
-  //     onEvent: (event: PusherEvent) => {
-  //       console.log('222222222222222');
-  //       console.log(`Event received: ${event}`);
-  //       let newMessage = JSON.parse(event.data)
-  //       if (user.id == newMessage.receiver_id || user.id == newMessage.sender_id) {
-  //         console.log('***********');
-  //           setmessId(); 
-  //           setmessId(user.id); 
-  //       }
-  //     }
-  //   });
-  //   // console.log(pusher.connectionState);
-  // }
+  const getChats = (page) => {
+    get(getConvEndpoint, null, {page: page}).then((res) => {
+      if (chats?.length > 0) {
+        if (!(page > 1)) {
+          setChats([])
+        }
+        setChats((prev) => [...prev, ...res.data]);
+      }else {
+        setChats(res.data)
+      }
+    }).catch((err) => {
 
-  // useEffect(() => {
-  //   sendpusher()
-  // }, []);
+    })
+  }
+
+  useEffect(() => {
+    setChats((prev) => [...prev])
+    setPage(1)
+    getChats(1)
+  }, [data]);
+
+  const renderList = () => {
+    setChats((prev) => [...prev])
+    setPage(1)
+    getChats(1)
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <GoBack text={'Chats'} addButton addButtonFunc={() => {
         navigation.navigate('ContactsScreen')
         }} />
-      <TableView
-          apiEndpoint={getConvEndpoint}
-          enablePullToRefresh
-          params={{id: messId}}
-          renderItem={({ item }) => <ChatListItem chat={item}/>}
-        />
 
-      {/* <FlatList 
+      <FlatList 
         data={chats}
-        renderItem={({ item }) => <ChatListItem chat={item} />}
+        renderItem={({ item }) => <ChatListItem chat={item} func={renderList}/>}
+        keyExtractor={(item, index) => index.toString()}
         style={{ backgroundColor: 'white' }}
+        onEndReached={() => 
+          {
+            setPage(page + 1)
+            getChats(page + 1)
+          }}
         showsVerticalScrollIndicator={false}
-      /> */}
+      />
 
     </SafeAreaView>
   );

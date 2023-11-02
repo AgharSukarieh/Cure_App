@@ -41,7 +41,7 @@ const ContactsScreen = ({ route, navigation }) => {
             />
             <TouchableOpacity onPress={() => {
               get_users();
-              }}>
+            }}>
               <FontAwesome name="search" size={26} color="grey" />
             </TouchableOpacity>
             

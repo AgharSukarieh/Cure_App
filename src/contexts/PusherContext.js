@@ -13,9 +13,7 @@ export const usePusher = () => useContext(PusherContext);
 export const PusherProvider = ({ children }) => {
   const pusher = Pusher.getInstance();
   const [data, setData] = useState(null);
-  const [dataConv, setDataConv] = useState(null);
   const {user} = useAuth();
-  const [dataGroup, setDataGroup] = useState(null);
   const [dataForGroup, setDataForGroup] = useState(null);
 
   const connectPusher = async () => {
@@ -31,16 +29,12 @@ export const PusherProvider = ({ children }) => {
         let newMessage = JSON.parse(event.data)
         if (newMessage.isGroup == 0) {
           if (user.id == newMessage.receiver_id || user.id == newMessage.sender_id) {
-            if (user.id != newMessage.sender_id) {
-              setDataConv(newMessage)
-              setData(newMessage)
-            }else {
-              setData(newMessage)
-            }
+            setData(newMessage)
           }
         }else {
-          setDataGroup(newMessage)
+          setDataForGroup(newMessage)
         }
+        // setData(newMessage)
       }
     });
   };
@@ -49,11 +43,8 @@ export const PusherProvider = ({ children }) => {
     connectPusher();
   }, []);
 
-
-
   const pusherContextValue = {
     data,
-    dataConv,
     dataForGroup
   };
 

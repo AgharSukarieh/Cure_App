@@ -11,53 +11,54 @@ import React, { useEffect, useState } from 'react';
 import bg from '../../../assets/BG.png'
 import Message from '../../components/ChatComponents/Message';
 import InputBox from '../../components/ChatComponents/InputBox';
-// import {
-//   Pusher,
-//   PusherMember,
-//   PusherChannel,
-//   PusherEvent,
-// } from '@pusher/pusher-websocket-react-native';
 import GoBack from '../../components/GoBack';
-import TableView from '../../General/TableView';
 import { useAuth } from '../../contexts/AuthContext';
 import globalConstants from '../../config/globalConstants';
 import { usePusher } from '../../contexts/PusherContext';
+import { get } from '../../WebService/RequestBuilder';
 const getMessagesEndpoint = globalConstants.single_chat.get_mess;
+const putSeenMessagesEndpoint = globalConstants.single_chat.seen_chat
 
 const ChatScreen = ({ route, navigation }) => {
-  const { id, name, user_id } = route.params;
-  // const pusher = Pusher.getInstance();
+  const { id, name, user_id, func} = route.params;
   const { user } = useAuth();
   const {data} = usePusher();
+  const [chats, setChats] = useState([]);
+  const [page, setPage] = useState(1);
 
-  const [messId, setmessId] = useState(id);
+  const [chatIdNew, setchatIdNew] = useState(id);
 
-  // const sendpusher = async () => {
-  //   await pusher.init({
-  //     apiKey: "7d3cf02011bb653450a0",
-  //     cluster: "mt1"
-  //   });
-  //   await pusher.connect();
-  //   await pusher.subscribe({
-  //     channelName: "pharmaceuticals",
-  //     onEvent: (event: PusherEvent) => {
-  //       console.log(`Event received: ${event}`);
-  //       let newMessage = JSON.parse(event.data)
-  //       if (user.id == newMessage.receiver_id || user.id == newMessage.sender_id) {
-  //         if(user_id == newMessage.receiver_id || user_id == newMessage.sender_id){
-  //           console.log('my message', user.id);
-  //           setmessId(); 
-  //           setmessId(id); 
-  //         }
-  //       }
-  //     }
-  //   });
-  // }
+  const getChats = (page) => {
+    get(getMessagesEndpoint, null, {page: page, chat_id: chatIdNew}).then((res) => {
+      if (chats?.length > 0) {
+        if (!(page > 1)) {
+          setChats([])
+        }
+        setChats((prev) => [...prev, ...res.data]);
+      }else {
+        setChats(res.data)
+      }
+    }).catch((err) => {
 
-  // useEffect(() => {
-  //   console.log("ssssssssssssssssssssss");
-  //   sendpusher()
-  // }, []);
+    })
+  }
+
+  const putSeen = () => {
+    if (chatIdNew) {
+      get(putSeenMessagesEndpoint, null, {chat_id: chatIdNew}).then((res) => {
+        func()
+      }).catch((err) => {
+
+      })
+    }
+  }
+
+  useEffect(() => {
+    setChats((prev) => [...prev])
+    setPage(1)
+    getChats(1)
+    putSeen()
+  }, [data, chatIdNew]);
 
   return (
     <SafeAreaView style={{width: '100%', height: '100%',}}>
@@ -68,24 +69,23 @@ const ChatScreen = ({ route, navigation }) => {
         style={styles.bg}>
        
       <ImageBackground source={bg} style={styles.bg}>
-      {messId ? <TableView
-          isInverted
-          isNotChat={false}
-          apiEndpoint={getMessagesEndpoint}
-          enablePullToRefresh={false}
-          params={{chat_id: messId}}
-          renderItem={({ item }) => <Message message={item} currentUserId={user?.id} />}
-        /> : <View style={{flex: 1}}/>}
-        {/* <FlatList
-          data={messages}
-          renderItem={({ item }) => <Message message={item} currentUserId={user?.id} />}
-          style={styles.list}
-          inverted
-          showsVerticalScrollIndicator={false}
-        /> */}
-        <InputBox receiverID={user_id} submit={(id) => {
-          if (messId == null) {
-            setmessId(id);
+        <FlatList 
+        data={chats}
+        inverted
+        renderItem={({ item }) => <Message message={item} currentUserId={user?.id} />}
+        keyExtractor={(item, index) => index.toString()}
+        style={{ backgroundColor: 'white' }}
+        onEndReached={() => 
+          {
+            setPage(page + 1)
+            getChats(page + 1)
+          }}
+        showsVerticalScrollIndicator={false}
+      />
+        <InputBox receiverID={user_id} submit={(ids) => {
+          if (chatIdNew == null) {
+            console.log(ids);
+            setchatIdNew(ids);
           }
         }}/>
 

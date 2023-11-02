@@ -9,64 +9,58 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import bg from '../../../assets/BG.png'
-// import {
-//     Pusher,
-//     PusherMember,
-//     PusherChannel,
-//     PusherEvent,
-// } from '@pusher/pusher-websocket-react-native';
 import GoBack from '../../components/GoBack';
 import GroupMessage from '../../components/ChatComponents/groupMessage';
 import InputBoxGroup from '../../components/ChatComponents/InputBoxGroup';
 import globalConstants from '../../config/globalConstants';
-import TableView from '../../General/TableView';
 import { usePusher } from '../../contexts/PusherContext';
+import { get } from '../../WebService/RequestBuilder';
 const getMessagesEndpoint = globalConstants.group_chat.get_mess;
+const putSeenMessagesEndpoint = globalConstants.group_chat.seen_chat
 
 const GroupPage = ({ route, navigation }) => {
-    // const pusher = Pusher.getInstance();
-    const { group_id, name } = route.params;
-    const [messId, setmessId] = useState(group_id);
+    const { group_id, name, func } = route.params;
     const {dataForGroup} = usePusher();
+    const [chats, setChats] = useState([]);
+    const [page, setPage] = useState(1);
 
-    // isMyGroup(group_id)
-    // const [shouldUpdate, setShouldUpdate] = useState(false);
+    const getChats = (page) => {
+        get(getMessagesEndpoint, null, {page: page, group_id: group_id}).then((res) => {
+            if (chats?.length > 0) {
+                if (!(page > 1)) {
+                    setChats([])
+                }
+                setChats((prev) => [...prev, ...res.data]);
+            }else {
+                setChats(res.data)
+            }
+        }).catch((err) => {
 
-    // useEffect(() => {
-    //     if (data && data.receiver_id === group_id) {
-    //       setShouldUpdate(true);
-    //     } else {
-    //       setShouldUpdate(false);
-    //     }
-    // }, [data]);
+        })
+    }
 
+    const putSeen = () => {
+        get(putSeenMessagesEndpoint, null, {group_id: group_id}).then((res) => {
+            func()
+        }).catch((err) => {
 
+        })
+      }
 
-    // const sendpusher = async () => {
-    //     await pusher.init({
-    //         apiKey: "7d3cf02011bb653450a0",
-    //         cluster: "mt1"
-    //     });
-    //     await pusher.connect();
-    //     await pusher.subscribe({
-    //         channelName: "pharmaceuticals",
-    //         onEvent: (event: PusherEvent) => {
-    //             console.log(`Event received: ${event}`);
-    //             let newMessage = JSON.parse(event.data)
-    //             if (group_id == newMessage.receiver_id ) {
-    //                 console.log('my message', group_id);
-    //                 setmessId(); 
-    //                 setmessId(group_id); 
-    //             }
-    //         }
-    //     });
-    // }
-
-    // useEffect(() => {
-    //     sendpusher()
-    // }, []);
+    useEffect(() => {
+        if (dataForGroup?.receiver_id == group_id) {
+            setChats((prev) => [...prev])
+            setPage(1)
+            getChats(1)
+            putSeen()
+        }
+    }, [dataForGroup]);
 
     
+
+    useEffect(() => {
+        getChats(1)
+    }, []);
 
     return (
         <SafeAreaView style={{width: '100%', height: '100%',}}>
@@ -76,23 +70,18 @@ const GroupPage = ({ route, navigation }) => {
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 140}
             style={styles.bg}>
             <ImageBackground source={bg} style={styles.bg}>
-                {/* <FlatList
-                    data={messages}
-                    renderItem={({ item }) => <GroupMessage message={item} />}
-                    style={styles.list}
+                <FlatList
+                    data={chats}
                     inverted
+                    renderItem={({ item }) => <GroupMessage message={item} />}
+                    keyExtractor={(item, index) => index.toString()}
+                    onEndReached={() => 
+                    {
+                        setPage(page + 1)
+                        getChats(page + 1)
+                    }}
                     showsVerticalScrollIndicator={false}
-                /> */}
-
-                <TableView
-                isInverted
-                isNotChat={false}
-                apiEndpoint={getMessagesEndpoint}
-                enablePullToRefresh={false}
-                params={{group_id: messId}}
-                renderItem={({ item }) => <GroupMessage message={item} />}
                 />
-
                 <InputBoxGroup receiverID={group_id} submit={(msg) => {}} />
             </ImageBackground>
         </KeyboardAvoidingView>

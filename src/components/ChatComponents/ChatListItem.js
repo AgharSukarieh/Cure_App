@@ -8,42 +8,42 @@ import moment from 'moment';
 Ionicons.loadFont();
 dayjs.extend(relativeTime);
 
-const ChatListItem = ({ chat }) => {
-  const currentTime = new Date();
-  const timeDifference = (currentTime - chat?.updated_at) / (1000 * 60 * 60); // Time difference in hours
-  const isMessageRead = timeDifference >= 2;
-  // console.log('isMessageRead', isMessageRead);
+const ChatListItem = ({ chat, func }) => {
+
+  var lastSeen = chat?.last_message?.seen_at;
+
   const navigation = useNavigation();
+
   return (
     <Pressable
       onPress={() =>
-        navigation.navigate('ChatScreen', {
+        {
+          navigation.navigate('ChatScreen', {
           id: chat?.id,
           name: chat?.name,
-          user_id: chat?.user_id
+          user_id: chat?.user_id,
+          func: func
         })
+        // lastSeen = ''
+      }
       }
       style={styles.container}>
       <View style={styles.content}>
         <View style={styles.row}>
           <Text style={styles.name} numberOfLines={1}> {chat?.name} </Text>
-          {isMessageRead
+          {lastSeen
             ?
-            <View style={{ backgroundColor: '#323FA6', width: 22, height: 22, borderRadius: 99, justifyContent: 'center', alignItems: 'center' }}>
-              <Text style={{ color: '#fff' }}>1</Text>
-            </View>
+            <View/>
             :
-            <View style={{ width: 22, height: 22, borderRadius: 99, justifyContent: 'center', alignItems: 'center' }}>
-              <Ionicons name='checkmark-done-outline' color='blue' size={22} />
-            </View>
+            <View style={{ width: 8, height: 8, borderRadius: 4, justifyContent: 'center', alignItems: 'center', backgroundColor:'blue' }}/>
           }
         </View>
         <View style={{ ...styles.row, justifyContent: 'space-between' }}>
-          <Text numberOfLines={2} style={styles.subTitle}>
+          <Text numberOfLines={2} style={{color: lastSeen ? 'gray' : 'black', fontWeight: lastSeen ? '400' : 'bold', marginLeft: 7, }}>
             {chat?.last_message?.text || 'attachments'}
           </Text>
 
-          <Text style={styles.subTitle}>
+          <Text style={{...styles.subTitle,color: lastSeen ? 'gray' : 'black', fontWeight: lastSeen ? '400' : 'bold'}}>
             {dayjs(moment.utc(chat?.updated_at).local().format()).fromNow(true)}
           </Text>
         </View>
@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
   name: {
     flex: 1,
     fontWeight: 'bold',
+    // color: 'black'
   },
   subTitle: {
     color: 'gray',

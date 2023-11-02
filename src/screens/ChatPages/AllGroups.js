@@ -1,75 +1,75 @@
 import React, { useEffect, useState } from 'react';
 import { styles } from '../../components/styles';
 import {
+  FlatList,
   SafeAreaView,
 } from 'react-native';
 import GoBack from '../../components/GoBack';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-dayjs.extend(relativeTime);
-import TableView from '../../General/TableView';
 import globalConstants from '../../config/globalConstants';
 import ChatGroupListItem from '../../components/ChatComponents/ChatGroupListItem';
-// import {
-//   Pusher,
-//   PusherMember,
-//   PusherChannel,
-//   PusherEvent,
-// } from '@pusher/pusher-websocket-react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { usePusher } from '../../contexts/PusherContext';
+import { get } from '../../WebService/RequestBuilder';
+dayjs.extend(relativeTime);
 const getConvEndpoint = globalConstants.group_chat.get_conv;
 
 const AllGroups = () => {
-  // const pusher = Pusher.getInstance();
   const { user } = useAuth();
-  const {data} = usePusher();
-  const [messId, setmessId] = useState(0);
+  const {dataForGroup} = usePusher();
+  const [chats, setChats] = useState([]);
+  const [page, setPage] = useState(1);
 
-  // const sendpusher = async () => {
-  //   await pusher.init({
-  //     apiKey: "7d3cf02011bb653450a0",
-  //     cluster: "mt1"
-  //   });
-  //   console.log(pusher.connectionState);
-  //   // await pusher.connect();
-  //   await pusher.subscribe({
-  //     channelName: "pharmaceuticals",
-  //     onEvent: (event: PusherEvent) => {
-  //       console.log('55555555555555555');
-  //       console.log(`Event received: ${event}`);
-  //       // let newMessage = JSON.parse(event.data)
-  //       // if (user.id == newMessage.receiver_id || user.id == newMessage.sender_id) {
-  //       //   console.log('***********');
-  //           setmessId(); 
-  //           setmessId(user.id); 
-  //       // }
-  //     }
-  //   });
-  //   // console.log(pusher.connectionState);
-  // }
+  const getChats = (page) => {
+    get(getConvEndpoint, null, {page: page}).then((res) => {
+      if (chats?.length > 0) {
+        if (!(page > 1)) {
+          setChats([])
+        }
+        setChats((prev) => [...prev, ...res.data]);
+      }else {
+        setChats(res.data)
+      }
+    }).catch((err) => {
 
-  // useEffect(() => {
-  //   sendpusher()
-  // }, []);
+    })
+  }
+  
+  useEffect(() => {
+    const isReceiverIdInChats = chats.some(chat => chat.id == dataForGroup?.receiver_id);
+    if (isReceiverIdInChats) {
+      setChats((prev) => [...prev])
+      setPage(1)
+      getChats(1)
+    }
+  }, [dataForGroup]);
+
+  const renderList = () => {
+    setChats((prev) => [...prev])
+    setPage(1)
+    getChats(1)
+};
+
+  useEffect(() => {
+    getChats(1)
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <GoBack text={'Groups'} />
-      
-      {/* <FlatList
-        data={data}
-        renderItem={({ item }) => <ChatGroupListItem item={item} />}
-        style={{ backgroundColor: 'white' }}
+    
+      <FlatList 
+        data={chats}
+        renderItem={({ item }) => <ChatGroupListItem item={item} func={renderList}/>}
+        keyExtractor={(item, index) => index.toString()}
+        onEndReached={() => 
+          {
+            setPage(page + 1)
+            getChats(page + 1)
+          }}
         showsVerticalScrollIndicator={false}
-      /> */}
-
-      <TableView
-          apiEndpoint={getConvEndpoint}
-          enablePullToRefresh
-          params={{id: messId}}
-          renderItem={({ item }) => <ChatGroupListItem item={item}/>}
-        />
+      />
     </SafeAreaView>
   );
 };
