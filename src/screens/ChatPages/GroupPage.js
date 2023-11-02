@@ -60,6 +60,7 @@ const GroupPage = ({ route, navigation }) => {
 
     useEffect(() => {
         getChats(1)
+        putSeen()
     }, []);
 
     return (

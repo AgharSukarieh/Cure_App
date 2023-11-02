@@ -26,7 +26,10 @@ const ChatGroupListItem = ({ item, func }) => {
       <Image source={item?.image ? { uri: item?.image } : require('../../../assets/user.png')} style={cardstyles.image} />
         <View style={cardstyles.row}>
           <Text style={cardstyles.name} numberOfLines={1}> {item?.name ?? ''} </Text>
-          <Text numberOfLines={2} style={{...cardstyles.subTitle, color: lastSeen ? 'gray' : 'black', fontWeight: lastSeen ? '400' : 'bold'}}> {item?.last_message?.text || ''}</Text>
+          <View style={{flexDirection: 'row'}}>
+            {!lastSeen && <View style={{height: 8, width: 8, borderRadius: 4, backgroundColor: 'blue', alignSelf: 'center', marginRight: 4}}/>}
+            <Text numberOfLines={2} style={{...cardstyles.subTitle, color: lastSeen ? 'gray' : 'black', fontWeight: lastSeen ? '400' : 'bold', textAlign:'left'}}> {item?.last_message?.text || ''}</Text>
+          </View>
           <Text style={{...cardstyles.subTitle, color: lastSeen ? 'gray' : 'black', fontWeight: lastSeen ? '400' : 'bold'}}> {dayjs(moment.utc(item?.last_message?.created_at).local().format()).fromNow(true)}</Text>
         </View>
     </Pressable>
