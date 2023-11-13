@@ -12,11 +12,9 @@ AntDesign.loadFont();
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
-const AccountTable = ({ data }) => {
-
+const AccountTable = () => {
 
   return (
-    <View style={styles.container}>
       <View style={styles.header}>
         <View style={{ ...styles.headerel, width: '25%' }}>
           <Text style={styles.headerel_tetx}>Pharmacy Amount</Text>
@@ -34,42 +32,13 @@ const AccountTable = ({ data }) => {
           <Text style={styles.headerel_tetx}>Limit</Text>
         </View>
       </View>
-
-      <View style={styles.row}>
-        <View style={{ ...styles.rowel, width: '25%' }}>
-          <Text style={styles.rowel_tetx}>{'-'}</Text>
-        </View>
-        <View style={styles.varLine} />
-        <View style={{ ...styles.rowel, width: '25%' }}>
-          <Text style={styles.rowel_tetx}>{'-'}</Text>
-        </View>
-        <View style={styles.varLine} />
-        <View style={{ ...styles.rowel, width: '25%' }}>
-          <Text style={styles.rowel_tetx}>{'-'}</Text>
-        </View>
-        <View style={styles.varLine} />
-        <View style={{ ...styles.rowel, width: '25%' }}>
-          <Text style={styles.rowel_tetx}>{'-'}</Text>
-        </View>
-      </View>
-    </View>
   );
 };
 
 export default AccountTable;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    alignSelf: 'center',
-    marginTop: 20,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 4,
-    paddingBottom: 4,
-  },
+  
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

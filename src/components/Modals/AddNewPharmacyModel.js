@@ -1,4 +1,4 @@
-import {TouchableOpacity,Text,View,StyleSheet,Modal,ScrollView,FlatList,Image, Alert,} from 'react-native';
+import {TouchableOpacity,Text,View,StyleSheet,Modal,ScrollView,FlatList,Image, Alert, Platform} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Dropdown} from 'react-native-element-dropdown';
@@ -9,6 +9,7 @@ import { uploadFiles, post } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
 import {launchImageLibrary} from 'react-native-image-picker';
 import LoadingScreen from '../LoadingScreen';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
   const [pharmacyName, setPharmacyName] = useState(null);
@@ -21,8 +22,9 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
 
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
+
   const [images, setImages] = useState([]);
-  const [imagesBase64, setImagesBase64] = useState(['']);
+  const [imagesBase64, setImagesBase64] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,7 +49,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
         setLatitude(null)
         setLongitude(null)
         setImages([])
-        setImagesBase64([''])
+        setImagesBase64([])
         hideM()
       }).catch((err) => {
         console.log('....',err);
@@ -106,17 +108,54 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
   };
 
 
+  // const onPicker = async () => {
+  //   try {
+  //     const singleSelectedMode = false;
+  //     const response = await openPicker({
+  //       useCameraButton: true,
+  //       selectedAssets: images,
+  //       isExportThumbnail: true,
+  //       maxVideo: 0,
+  //       doneTitle: 'Done',
+  //       singleSelectedMode,
+  //       isCrop: true,
+  //     });
+  //     const crop = response.crop;
+  //     if (crop) {
+  //       response.path = crop.path;
+  //       response.width = crop.width;
+  //       response.height = crop.height;
+  //     }
+  //     setImages(response);
+
+  //     const baseArray = await Promise.all(response.map(async (img) => {
+  //       const data = await fetch(img.path);
+  //       const blob = await data.blob();
+  //       return new Promise((resolve) => {
+  //         const reader = new FileReader();
+  //         reader.readAsDataURL(blob);
+  //         reader.onloadend = () => {
+  //           const base64data = reader.result;
+  //           resolve(base64data);
+  //         };
+  //       });
+  //     }));
+
+  //     setImagesBase64(baseArray);
+  //     console.log('....', baseArray.length);
+  //   } catch (e) {}
+  // };
+
   const onPicker = async () => {
     try {
-      const singleSelectedMode = false;
+      const singleSelectedMode = true;
       const response = await openPicker({
-        useCameraButton: true,
         selectedAssets: images,
         isExportThumbnail: true,
-        maxVideo: 0,
+        maxVideo: 1,
         doneTitle: 'Done',
         singleSelectedMode,
-        isCrop: true,
+        isCrop: false,
       });
       const crop = response.crop;
       if (crop) {
@@ -124,24 +163,50 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
         response.width = crop.width;
         response.height = crop.height;
       }
-      setImages(response);
 
-      const baseArray = await Promise.all(response.map(async (img) => {
-        const data = await fetch(img.path);
-        const blob = await data.blob();
-        return new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = () => {
-            const base64data = reader.result;
-            resolve(base64data);
-          };
+      setImages([response])
+      let arr = [response]
+
+      if (Platform.OS === 'ios') {
+        const base = await Promise.all(arr.map(async (img) => {
+          console.log(arr[0].path);
+          const data = await fetch(arr[0].path);
+          const blob = await data.blob();
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+              const base64data = reader.result;
+              resolve(base64data);
+            };
+          });
+        }));
+        setImagesBase64([base])
+      } else {
+        getImageBaser64ToAndroid(arr[0].realPath)
+        .then((base64Image) => {
+          if (base64Image) {
+            setImagesBase64([base64Image])
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
         });
-      }));
+      }
+     
+    } catch (e) {
+      console.log('e', e);
+     }
+  };
 
-      setImagesBase64(baseArray);
-      console.log('....', baseArray.length);
-    } catch (e) {}
+  const getImageBaser64ToAndroid = async (imagePath) => {
+    try {
+      const base64Data = await RNFetchBlob.fs.readFile(imagePath, 'base64');
+      return base64Data;
+    } catch (error) {
+      console.error('Error converting image to base64:', error);
+      return null;
+    }
   };
 
   useEffect(() => {
@@ -316,35 +381,35 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
                             marginRight: 5,
                             borderRadius: 7,
                           }}
-                          source={{uri: `file://${item.path}`}}
+                          source={{ uri: Platform.OS === 'ios' ? images[0].path : `file://${images[0].realPath}` }}
                         />
 
                         <TouchableOpacity
-                        key={item.position}
-                          style={{position: 'absolute', top: 5, right: 5}}
-                          onPress={async () => {
-                            const arr = images.filter(
-                              items =>
-                                items.localIdentifier !== item.localIdentifier,
-                            );
-                            setImages(arr);
+                          key={item.position}
+                            style={{position: 'absolute', top: 5, right: 5}}
+                            onPress={async () => {
+                              // const arr = images.filter(
+                              //   items =>
+                              //     items.localIdentifier !== item.localIdentifier,
+                              // );
+                              // setImages(arr);
+                              setImages([]);
+                            //   const baseArray = await Promise.all(arr.map(async (img) => {
+                            //   const data = await fetch(img.path);
+                            //   const blob = await data.blob();
+                            //   return new Promise((resolve) => {
+                            //     const reader = new FileReader();
+                            //     reader.readAsDataURL(blob);
+                            //     reader.onloadend = () => {
+                            //       const base64data = reader.result;
+                            //       resolve(base64data);
+                            //     };
+                            //   });
+                            // }));
 
-                            const baseArray = await Promise.all(arr.map(async (img) => {
-        const data = await fetch(img.path);
-        const blob = await data.blob();
-        return new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = () => {
-            const base64data = reader.result;
-            resolve(base64data);
-          };
-        });
-      }));
-
-      setImagesBase64(baseArray.length > 0 ? baseArray.length : ['']);
-      console.log('....', baseArray);
-
+                            // setImagesBase64(baseArray.length > 0 ? baseArray : []);
+                            setImagesBase64([]);
+                            // console.log('....', baseArray);
                           }}>
                           <AntDesign
                             style={styles.icon}
@@ -396,34 +461,6 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
 
 export default AddNewPharmacyModel;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const styles = StyleSheet.create({
   iconPassword: {
     position: 'absolute',
@@ -470,18 +507,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#0707078c',
+    
   },
   ModalView: {
     backgroundColor: '#fff',
     borderRadius: 10,
     width: '95%',
-    height: '70%',
+    height: '75%',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
     padding: 20,
+    overflow: 'hidden'
   },
   card: {
     shadowColor: '#7189FF',

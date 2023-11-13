@@ -15,7 +15,7 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea }) => {
     const [arealist, setarealist] = useState([])
 
     const getcity = () => {
-        setcitylist(cityArea.areas);
+        setcitylist(cityArea.cities);
     }
     const getArea = (id) => {
         const arr = [];

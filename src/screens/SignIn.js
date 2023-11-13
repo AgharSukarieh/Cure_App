@@ -12,9 +12,10 @@ const SignIn = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   // medicalSuper300@gmail.com
   // saleAdmin@gmail.com
+  //medical_test@mailinator.com 
   // medical_test@mailinator.com -> FV
-  const [email, setemail] = useState('medical_test@mailinator.com');
-  const [password, setPassword] = useState('123');
+  const [email, setemail] = useState('waleed11@waleed.com');
+  const [password, setPassword] = useState('123456789');
   const { login } = useAuth();
 
   const LoginPress = async () => {

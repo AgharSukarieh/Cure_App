@@ -62,18 +62,20 @@ import {
           label: cityArea.cities[i].name
         })
       }
-  
-      var count = Object.keys(cityArea.areas).length
-      let areaArray = []
-      for (var i = 0; i < count; i++) {
-        areaArray.push({
-          value: cityArea.areas[i].id,
-          label: cityArea.areas[i].name
-        })
-      }
-  
       setCitiesData(cityArray)
-      setAreasData(areaArray)
+    }
+  
+    const getAreas = (id) => {
+      let areaArray = [];
+      cityArea?.areas?.forEach((area) => {
+        if (area.city_id == id) {
+          areaArray.push({
+            value: area.id,
+            label: area.name
+          });
+        }
+      });
+      setAreasData(areaArray);
     }
   
     useEffect(() => {
@@ -109,6 +111,7 @@ import {
               onBlur={() => { }}
               onChange={item => {
                 setCityValue(item.value);
+                getAreas(item.value);
                 setFilter((prev) => ({
                   ...prev,
                   cityId: item.value

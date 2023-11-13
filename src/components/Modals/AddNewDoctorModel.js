@@ -16,7 +16,6 @@ import { get, post } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
 
 const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
-
   const [doctorName, setDoctorName] = useState('');
   const [classification, setClassification] = useState('');
   const [address, setAddress] = useState('');

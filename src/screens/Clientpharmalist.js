@@ -18,13 +18,30 @@ import PharmacyHeaderTable from '../components/Tables/PharmacyHeaderTable';
 import TableView from '../General/TableView';
 import PharmacyItemTable from '../components/Tables/PharmacyItemTable';
 import { useAuth } from '../contexts/AuthContext';
+import globalConstants from '../config/globalConstants';
+import { get } from '../WebService/RequestBuilder';
 
 const getPharmacyEndpoint = Constants.sales.pharmacy;
 
 const Clientpharmalist = ({ navigation, route, header = true }) => {
+
   const title = route?.params?.title
-  const cityArea = route?.params?.cityArea
+  // const cityArea = route?.params?.cityArea
+
   const { user } = useAuth();
+  const getCityAreaEndpoint = globalConstants.users.cityArea;
+  const [cityArea, setCityArea] = useState(null);
+
+  useEffect(() => {
+    get(`${getCityAreaEndpoint}${user?.id}`)
+      .then(response => {
+        setCityArea(response.data);
+      })
+      .catch(err => {
+        console.error(err);
+      })
+  }, []);
+
 
   const [modal, setModal] = useState(false);
   const [scModal, setScModal] = useState(false);
@@ -37,32 +54,34 @@ const Clientpharmalist = ({ navigation, route, header = true }) => {
   const [filter, setFilter] = useState({ user_id: user?.id });
 
   const getCities = () => {
-    if (cityArea) {
-      var count = Object.keys(cityArea.cities).length
-      let cityArray = []
-      for (var i = 0; i < count; i++) {
-        cityArray.push({
-          value: cityArea.cities[i].id,
-          label: cityArea.cities[i].name
-        })
-      }
-      var count = Object.keys(cityArea.areas).length
-      let areaArray = []
-      for (var i = 0; i < count; i++) {
-        areaArray.push({
-          value: cityArea.areas[i].id,
-          label: cityArea.areas[i].name
-        })
-      }
-      setCitiesData(cityArray)
-      setAreasData(areaArray)
+    var count = Object.keys(cityArea.cities).length
+    let cityArray = []
+    for (var i = 0; i < count; i++) {
+      cityArray.push({
+        value: cityArea.cities[i].id,
+        label: cityArea.cities[i].name
+      })
     }
+    setCitiesData(cityArray)
+  }
+
+  const getAreas = (id) => {
+    let areaArray = [];
+    cityArea?.areas?.forEach((area) => {
+      if (area.city_id == id) {
+        areaArray.push({
+          value: area.id,
+          label: area.name
+        });
+      }
+    });
+    setAreasData(areaArray);
   }
 
   useEffect(() => {
-    getCities()
-  }, [])
-  console.log(header);
+    if (cityArea) getCities()
+  }, [cityArea])
+
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -106,7 +125,7 @@ const Clientpharmalist = ({ navigation, route, header = true }) => {
           <View
             style={{
               width: '100%',
-              flexDirection: 'row',
+              // flexDirection: 'row',
               alignSelf: 'center',
               justifyContent: 'space-between',
               marginBottom: 10
@@ -129,6 +148,7 @@ const Clientpharmalist = ({ navigation, route, header = true }) => {
                 onBlur={() => { }}
                 onChange={item => {
                   setCityValue(item.value);
+                  getAreas(item.value);
                   setFilter((prev) => ({
                     ...prev,
                     seach_term: item.label
@@ -144,6 +164,7 @@ const Clientpharmalist = ({ navigation, route, header = true }) => {
                 )}
               />
             </View>
+
             <View style={style.container}>
               <Dropdown
                 style={style.dropdown}
@@ -197,13 +218,13 @@ const Clientpharmalist = ({ navigation, route, header = true }) => {
           </TouchableOpacity>
         </View>
 
-        <AddNewPharmacyModel
+       {cityArea &&  <AddNewPharmacyModel
           showM={modal}
           hideM={() => setModal(false)}
           data={cityArea}
           submit={e => { (e !== null) ? submitAddPharmacy(e) : null }}
-        />
-
+         />}
+        
         <SuccessfullyModel
           message={'The pharmacy has been added successfully.'}
           show={scModal}
@@ -238,7 +259,7 @@ export const style = StyleSheet.create({
   },
   container: {
     backgroundColor: 'white',
-    width: '48%',
+    width: '100%',
     marginTop: 15
   },
   rButton: {

@@ -67,18 +67,20 @@ const Sales = ({ navigation }) => {
         label: cityArea.cities[i].name
       })
     }
-
-    var count = Object.keys(cityArea.areas).length
-    let areaArray = []
-    for (var i = 0; i < count; i++) {
-      areaArray.push({
-        value: cityArea.areas[i].id,
-        label: cityArea.areas[i].name
-      })
-    }
-
     setCitiesData(cityArray)
-    setAreasData(areaArray)
+  }
+
+  const getAreas = (id) => {
+    let areaArray = [];
+    cityArea?.areas?.forEach((area) => {
+      if (area.city_id == id) {
+        areaArray.push({
+          value: area.id,
+          label: area.name
+        });
+      }
+    });
+    setAreasData(areaArray);
   }
 
   useEffect(() => {
@@ -114,6 +116,7 @@ const Sales = ({ navigation }) => {
             onBlur={() => { }}
             onChange={item => {
               setCityValue(item.value);
+              getAreas(item.value);
               setFilter((prev) => ({
                 ...prev,
                 city_name: item.label
@@ -168,15 +171,18 @@ const Sales = ({ navigation }) => {
       <View style={{ width: '90%', flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-between', marginBottom: 6, }}>
         <View style={{ ...style.container, marginTop: 0 }}>
           <Text style={{ ...styles.calenderText, marginBottom: 5 }}>From</Text>
+
           <TouchableOpacity
             style={styles.filterbutton}
             onPress={() => {
               setOpen(true);
+              console.log('from');
             }}>
             <Text style={styles.filterbuttontext}>
               {calenderFrom != '' ? calenderFrom : 'YYYY-MM-DD'}
             </Text>
           </TouchableOpacity>
+
           <DatePicker
             modal
             mode="date"
@@ -206,7 +212,10 @@ const Sales = ({ navigation }) => {
 
         <View style={{ ...style.container, marginTop: 0 }}>
           <Text style={{ ...styles.calenderText, marginBottom: 5 }}>To</Text>
-          <TouchableOpacity style={styles.filterbutton} onPress={() => { setOpen2(true); }}>
+          <TouchableOpacity style={styles.filterbutton} onPress={() => { 
+            setOpen2(true);
+            console.log('to'); 
+            }}>
             <Text style={styles.filterbuttontext}>
               {calenderTo != '' ? calenderTo : 'YYYY-MM-DD'}
             </Text>

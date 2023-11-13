@@ -83,14 +83,6 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
       })
     }
 
-    var count = Object.keys(cityArea.areas).length
-    let areaArray = []
-    for (var i = 0; i < count; i++) {
-      areaArray.push({
-        value: cityArea.areas[i].id,
-        label: cityArea.areas[i].name
-      })
-    }
     var count = Object.keys(specialty).length
     let specialtyArray = []
     for (var i = 0; i < count; i++) {
@@ -100,10 +92,22 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
       })
     }
     setCitiesData(cityArray)
-    setAreasData(areaArray)
     setSpecialtyData(specialtyArray)
   }
 
+  const getAreas = (id) => {
+    let areaArray = [];
+    cityArea?.areas?.forEach((area) => {
+      if (area.city_id == id) {
+        areaArray.push({
+          value: area.id,
+          label: area.name
+        });
+      }
+    });
+    setAreasData(areaArray);
+  }
+  
   useEffect(() => {
     if (cityArea) getCities()
   }, [cityArea])
@@ -181,6 +185,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
               onBlur={() => { }}
               onChange={item => {
                 setCityValue(item.value);
+                getAreas(item.value);
                 setFilter((prev) => ({
                   ...prev,
                   seach_term: item.label
@@ -286,8 +291,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
           <AntDesign name="plus" size={30} color={'#fff'} />
         </TouchableOpacity>
       </View>
-
-      <AddNewDoctorModel
+      {cityArea && <AddNewDoctorModel
         show={modal}
         cityArea={cityArea}
         hide={() => {
@@ -296,7 +300,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
         submit={e => {
           e !== null ? submitAddDoctor(e) : null;
         }}
-      />
+      />}
 
       <SuccessfullyModel
         show={scModal}

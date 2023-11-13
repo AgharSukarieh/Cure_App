@@ -15,8 +15,12 @@ import Input from '../../components/Input';
 import AccountTable from '../../components/Tables/AccountTable';
 import PaymentMethodModel from '../../components/Modals/PaymentMethodModel';
 import DatePicker from 'react-native-date-picker';
+import TableView from '../../General/TableView';
+import globalConstants from '../../config/globalConstants';
+import CollectMoneyItemTable from '../../components/Tables/CollectMoneyItemTable';
 
 Feather.loadFont();
+const getPharmacyCollectMoney = globalConstants.sales.collection;
 
 const AccountInfo = ({ item }) => {
 
@@ -47,51 +51,125 @@ const AccountInfo = ({ item }) => {
   };
 
   return (
-    <SafeAreaView>
-      <ScrollView
+    <View style={{ height:'100%'}}>
+      {/* <ScrollView
         showsVerticalScrollIndicator={false}
-        style={{ marginHorizontal: 20 }}>
-        <>
+        style={{ marginHorizontal: 15}}
+        > */}
           <View style={{ width: '99%', height: 1, backgroundColor: '#000', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
-          <AccountTable data={''} />
-          <View
-            style={{
-              ...style.container,
-              justifyContent: 'center',
-              marginTop: 30,
-              marginBottom: 70,
-            }}>
-            <TouchableOpacity
-              style={style.newbtn}
-              onPress={() => {
-                setModal(true);
-              }}>
-              <Text
-                style={{ color: '#fff', fontSize: 18, paddingHorizontal: 50 }}>
-                Payment Method
-              </Text>
-            </TouchableOpacity>
+          
+          <View style={style.containerTable}>
+            <AccountTable />
+            <TableView
+              apiEndpoint={getPharmacyCollectMoney}
+              enablePullToRefresh
+              renderItem={({ item }) => <CollectMoneyItemTable item={item} />}
+            />
           </View>
-          <View>
-            {statusMethod === 1 && (
-              <>
-                {/* Cash */}
+
+          <ScrollView>
+            <View
+              style={{
+                ...style.container,
+                justifyContent: 'center',
+                marginTop: 30,
+                // marginBottom: 70,
+              }}>
+              <TouchableOpacity
+                style={style.newbtn}
+                onPress={() => {
+                  setModal(true);
+                }}>
+                <Text
+                  style={{ color: '#fff', fontSize: 18, paddingHorizontal: 50 }}>
+                  Payment Method
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              {statusMethod === 1 && (
+                <>
+                  <Input
+                    lable={'Payment value'}
+                    isNumeric
+                    setData={setCashPaymentValue}
+                    style={{ ...styles.inputModel, backgroundColor: 'white' }}
+                    value={cashPaymentValue}
+                  />
+                  <View style={styles.inbutContainer}>
+                    <Text style={styles.label}>Payment Date</Text>
+                    <TouchableOpacity
+                      style={styles.filterbutton}
+                      onPress={() => {
+                        setOpen(true);
+                      }}>
+                      <Text style={styles.filterbuttontext}>
+                        {calenderPaymentDate != '' ? calenderPaymentDate : '-- -- -- -- --'}
+                      </Text>
+                    </TouchableOpacity>
+                    <DatePicker
+                      modal
+                      mode="date"
+                      format="YYYY-MM-DD"
+                      open={open}
+                      date={date}
+                      onConfirm={data => {
+                        setOpen(false);
+                        setDate(data);
+                        const formattedDate =
+                          data.getFullYear() +
+                          '-' +
+                          (data.getMonth() + 1) +
+                          '-' +
+                          data.getDate();
+                        setCalenderPaymentDate(formattedDate);
+                      }}
+                      onCancel={() => {
+                        setOpen(false);
+                      }}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      ...style.container,
+                      justifyContent: 'center',
+                      marginTop: 30,
+                      marginBottom: 70,
+                    }}>
+                    <TouchableOpacity
+                      style={style.newbtn}
+                      onPress={() => {
+                        submitCashMethod();
+                      }}>
+                      <Text
+                        style={{
+                          color: '#fff',
+                          fontSize: 18,
+                          paddingHorizontal: 50,
+                        }}>
+                        Submit
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </>
+              )}
+
+              {statusMethod === 2 && <>
                 <Input
-                  lable={'Payment value'}
-                  setData={setCashPaymentValue}
+                  lable={'Check Number'}
+                  setData={setCheckNumber}
                   style={{ ...styles.inputModel, backgroundColor: 'white' }}
-                  value={cashPaymentValue}
+                  value={checkNumber}
                 />
-                {/*  */}
                 <View style={styles.inbutContainer}>
-                  <Text style={styles.label}>Payment Date</Text>
+                  <Text style={styles.label}>Check Date</Text>
                   <TouchableOpacity
                     style={styles.filterbutton}
                     onPress={() => {
                       setOpen(true);
                     }}>
                     <Text style={styles.filterbuttontext}>
-                      {calenderPaymentDate != '' ? calenderPaymentDate : '-- -- -- -- --'}
+                      {calenderDateOfCheck != '' ? calenderDateOfCheck : '-- -- -- -- --'}
                     </Text>
                   </TouchableOpacity>
                   <DatePicker
@@ -102,21 +180,53 @@ const AccountInfo = ({ item }) => {
                     date={date}
                     onConfirm={data => {
                       setOpen(false);
-                      setDate(data);
+                      setDateOfCheck(data);
                       const formattedDate =
                         data.getFullYear() +
                         '-' +
                         (data.getMonth() + 1) +
                         '-' +
                         data.getDate();
-                      setCalenderPaymentDate(formattedDate);
+                      setCalenderDateOfCheck(formattedDate);
                     }}
                     onCancel={() => {
                       setOpen(false);
                     }}
                   />
                 </View>
-                {/*  */}
+                <View style={styles.inbutContainer}>
+                  <Text style={styles.label}>Due Date</Text>
+                  <TouchableOpacity
+                    style={styles.filterbutton}
+                    onPress={() => {
+                      setOpenD(true);
+                    }}>
+                    <Text style={styles.filterbuttontext}>
+                      {calenderDateOfDueCheck != '' ? calenderDateOfDueCheck : '-- -- -- -- --'}
+                    </Text>
+                  </TouchableOpacity>
+                  <DatePicker
+                    modal
+                    mode="date"
+                    format="YYYY-MM-DD"
+                    open={openD}
+                    date={date}
+                    onConfirm={data => {
+                      setOpenD(false);
+                      setDateOfDueCheck(data);
+                      const formattedDate =
+                        data.getFullYear() +
+                        '-' +
+                        (data.getMonth() + 1) +
+                        '-' +
+                        data.getDate();
+                      setCalenderDateOfDueCheck(formattedDate);
+                    }}
+                    onCancel={() => {
+                      setOpenD(false);
+                    }}
+                  />
+                </View>
                 <View
                   style={{
                     ...style.container,
@@ -127,7 +237,7 @@ const AccountInfo = ({ item }) => {
                   <TouchableOpacity
                     style={style.newbtn}
                     onPress={() => {
-                      submitCashMethod();
+                      submitCheckMethod();
                     }}>
                     <Text
                       style={{
@@ -139,113 +249,14 @@ const AccountInfo = ({ item }) => {
                     </Text>
                   </TouchableOpacity>
                 </View>
-              </>
-            )}
-            {statusMethod === 2 && <>
-              {/* Check */}
-              <Input
-                lable={'Check Number'}
-                setData={setCheckNumber}
-                style={{ ...styles.inputModel, backgroundColor: 'white' }}
-                value={checkNumber}
-              />
+              </>}
+            </View>
+          </ScrollView>
+          
 
-              {/*  */}
-              <View style={styles.inbutContainer}>
-                <Text style={styles.label}>Check Date</Text>
-                <TouchableOpacity
-                  style={styles.filterbutton}
-                  onPress={() => {
-                    setOpen(true);
-                  }}>
-                  <Text style={styles.filterbuttontext}>
-                    {calenderDateOfCheck != '' ? calenderDateOfCheck : '-- -- -- -- --'}
-                  </Text>
-                </TouchableOpacity>
-                <DatePicker
-                  modal
-                  mode="date"
-                  format="YYYY-MM-DD"
-                  open={open}
-                  date={date}
-                  onConfirm={data => {
-                    setOpen(false);
-                    setDateOfCheck(data);
-                    const formattedDate =
-                      data.getFullYear() +
-                      '-' +
-                      (data.getMonth() + 1) +
-                      '-' +
-                      data.getDate();
-                    setCalenderDateOfCheck(formattedDate);
-                  }}
-                  onCancel={() => {
-                    setOpen(false);
-                  }}
-                />
-              </View>
-              {/*  */}
-              {/*  */}
-              <View style={styles.inbutContainer}>
-                <Text style={styles.label}>Due Date</Text>
-                <TouchableOpacity
-                  style={styles.filterbutton}
-                  onPress={() => {
-                    setOpenD(true);
-                  }}>
-                  <Text style={styles.filterbuttontext}>
-                    {calenderDateOfDueCheck != '' ? calenderDateOfDueCheck : '-- -- -- -- --'}
-                  </Text>
-                </TouchableOpacity>
-                <DatePicker
-                  modal
-                  mode="date"
-                  format="YYYY-MM-DD"
-                  open={openD}
-                  date={date}
-                  onConfirm={data => {
-                    setOpenD(false);
-                    setDateOfDueCheck(data);
-                    const formattedDate =
-                      data.getFullYear() +
-                      '-' +
-                      (data.getMonth() + 1) +
-                      '-' +
-                      data.getDate();
-                    setCalenderDateOfDueCheck(formattedDate);
-                  }}
-                  onCancel={() => {
-                    setOpenD(false);
-                  }}
-                />
-              </View>
-              {/*  */}
-              <View
-                style={{
-                  ...style.container,
-                  justifyContent: 'center',
-                  marginTop: 30,
-                  marginBottom: 70,
-                }}>
-                <TouchableOpacity
-                  style={style.newbtn}
-                  onPress={() => {
-                    submitCheckMethod();
-                  }}>
-                  <Text
-                    style={{
-                      color: '#fff',
-                      fontSize: 18,
-                      paddingHorizontal: 50,
-                    }}>
-                    Submit
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </>}
-          </View>
-        </>
-      </ScrollView>
+          {/* <View style={{height: 60}}/> */}
+      {/* </ScrollView> */}
+
       <PaymentMethodModel
         show={modal}
         hide={() => {
@@ -255,7 +266,8 @@ const AccountInfo = ({ item }) => {
           setStatusMethod(e);
         }}
       />
-    </SafeAreaView>
+
+    </View>
   );
 };
 
@@ -278,5 +290,17 @@ export const style = StyleSheet.create({
     justifyContent: 'flex-end',
     marginVertical: 10,
     marginHorizontal: 20,
+  },
+  containerTable: {
+    flex: 1,
+    width: '95%',
+    height:200,
+    alignSelf: 'center',
+    marginTop: 20,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 4,
+    // paddingBottom: 4,
   },
 });
