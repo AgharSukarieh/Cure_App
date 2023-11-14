@@ -44,11 +44,8 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
   }
 
   const getDoctors = async () => {
-    get(Constants.doctor.allDoctors, null, { user_id: user.id, area_id: area.area_id, limit: 1000, seach_term: specialitiesValue })
+    get(Constants.doctor.doctor_speciality, null, {area_id: area.area_id, limit: 1000, speciality_id: specialitiesValue })
       .then((res) => {
-        console.log('====================================');
-        console.log(res.data);
-        console.log('====================================');
         var count = Object.keys(res.data).length
         let doctorsArray = []
         for (var i = 0; i < count; i++) {
@@ -89,9 +86,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
       notes: note
     }
     post(Constants.visit.medical, data).then((res) => {
-      console.log('@@@@@@@@@@@@@@@@@@@@', res);
       if (res.code == 200) {
-        console.log('#@#@#', res);
         const sampleProductsData = {
           visit_id: res.id,
           'product_ids[]': selected

@@ -93,12 +93,12 @@ const Sales = ({ navigation }) => {
       <View
         style={{
           width: '90%',
-          flexDirection: 'row',
+          // flexDirection: 'row',
           alignSelf: 'center',
           justifyContent: 'space-between',
           marginBottom: 10,
         }}>
-        <View style={{ ...style.container, backgroundColor: 'white', }}>
+        <View style={{ ...style.container, backgroundColor: 'white', width: '100%', }}>
           <Dropdown
             style={style.dropdown}
             placeholderStyle={style.placeholderStyle}
@@ -133,7 +133,7 @@ const Sales = ({ navigation }) => {
           />
         </View>
 
-        <View style={{ ...style.container, backgroundColor: 'white', }}>
+        <View style={{ ...style.container, backgroundColor: 'white', width: '100%', }}>
           <Dropdown
             style={style.dropdown}
             placeholderStyle={style.placeholderStyle}

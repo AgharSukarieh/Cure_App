@@ -47,9 +47,11 @@ const Sal_rep_pharm = ({ navigation, route }) => {
       <Text style={style.reportPageText}>{item.title}</Text>
     </TouchableOpacity>
   );
+
   return (
-    <SafeAreaView style={{ height: '100%', flex: 1, flexDirection: 'column', alignContent: 'space-around', backgroundColor: '#fff' }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#fff' }}>
       <GoBack text={item?.name} />
+      {console.log(item)}
       <View style={style.containerSignIn} >
         <FlatList
           data={data}
@@ -59,8 +61,10 @@ const Sal_rep_pharm = ({ navigation, route }) => {
           showsHorizontalScrollIndicator={false}
         />
       </View>
-      <View style={{ paddingTop: 60 }}>
-        {index == 1 ? <AccountInfo item={item} /> : null}
+
+      {/* style={{ paddingTop: 60 }} marginBottom: 100 */}
+      <View style={{flex:1}}>  
+        {index == 1 && <AccountInfo item={item}/>}
         {index == 2 ? <Inventory item={item} area={area} /> : null}
         {index == 3 ? <Order item={item} area={area} date={date} /> : null}
         {index == 4 ? <Return item={item} /> : null}
@@ -72,6 +76,7 @@ const Sal_rep_pharm = ({ navigation, route }) => {
           </>
           : null}
       </View>
+
     </SafeAreaView>
   );
 };

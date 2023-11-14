@@ -18,12 +18,16 @@ import DatePicker from 'react-native-date-picker';
 import TableView from '../../General/TableView';
 import globalConstants from '../../config/globalConstants';
 import CollectMoneyItemTable from '../../components/Tables/CollectMoneyItemTable';
+import { get, post } from '../../WebService/RequestBuilder';
 
 Feather.loadFont();
 const getPharmacyCollectMoney = globalConstants.sales.collection;
 
 const AccountInfo = ({ item }) => {
-
+  console.log('====================================');
+  console.log(item);
+  console.log('====================================');
+  
   const [modal, setModal] = useState(false);
   const [statusMethod, setStatusMethod] = useState(null);
   const [open, setOpen] = useState(false);
@@ -33,7 +37,6 @@ const AccountInfo = ({ item }) => {
   const [date, setDate] = useState(new Date());
   const [calenderPaymentDate, setCalenderPaymentDate] = useState('');
 
-
   const [checkNumber, setCheckNumber] = useState(null);
 
   const [dateOfCheck, setDateOfCheck] = useState(new Date());
@@ -42,53 +45,59 @@ const AccountInfo = ({ item }) => {
   const [dateOfDueCheck, setDateOfDueCheck] = useState(new Date());
   const [calenderDateOfDueCheck, setCalenderDateOfDueCheck] = useState('');
 
-  const submitCashMethod = () => {
-    console.log('---', date, cashPaymentValue, calenderPaymentDate);
+  const [lastCollect, setLastCollect] = useState(null);
+
+  const collect_money = async (data) => {
+    await post(globalConstants.sales.collection, data, null).then((res) => {
+
+    }).catch((err) => {
+
+    }).finally(() => {
+
+    })
+  }
+
+  const submitCashMethod = async () => {
+    const data = {
+      payment: cashPaymentValue,
+      payment_method: 'cash',
+      pharmacy_id: item?.id,
+    }
+    await collect_money(data);
   };
 
   const submitCheckMethod = () => {
 
   };
 
+  const getLastPayment = async () => {
+    await get(getPharmacyCollectMoney, null, {limit: 1}).then((res)=>{
+      if (res?.data?.length > 0 ) {
+        setLastCollect(res.data[0]);
+      }
+    }).catch((err) => {}).finally(() => {})
+  }
+
+  useEffect(() => {
+    getLastPayment()
+  }, []);
+
   return (
     <View style={{ height:'100%'}}>
-      {/* <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={{ marginHorizontal: 15}}
-        > */}
           <View style={{ width: '99%', height: 1, backgroundColor: '#000', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
-          
-          <View style={style.containerTable}>
-            <AccountTable />
-            <TableView
-              apiEndpoint={getPharmacyCollectMoney}
-              enablePullToRefresh
-              renderItem={({ item }) => <CollectMoneyItemTable item={item} />}
-            />
-          </View>
-
-          <ScrollView>
-            <View
-              style={{
-                ...style.container,
-                justifyContent: 'center',
-                marginTop: 30,
-                // marginBottom: 70,
-              }}>
-              <TouchableOpacity
-                style={style.newbtn}
-                onPress={() => {
-                  setModal(true);
-                }}>
-                <Text
-                  style={{ color: '#fff', fontSize: 18, paddingHorizontal: 50 }}>
-                  Payment Method
-                </Text>
+          <AccountTable item={lastCollect}/>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            
+            <View style={{...style.container, justifyContent: 'center', marginTop: 30}}>
+              <TouchableOpacity style={style.newbtn} onPress={() => { setModal(true) }} >
+                <Text style={{ color: '#fff', fontSize: 18, paddingHorizontal: 50 }}>Payment Method</Text>
               </TouchableOpacity>
             </View>
+
             <View>
               {statusMethod === 1 && (
                 <>
+
                   <Input
                     lable={'Payment value'}
                     isNumeric
@@ -96,6 +105,7 @@ const AccountInfo = ({ item }) => {
                     style={{ ...styles.inputModel, backgroundColor: 'white' }}
                     value={cashPaymentValue}
                   />
+
                   <View style={styles.inbutContainer}>
                     <Text style={styles.label}>Payment Date</Text>
                     <TouchableOpacity
@@ -129,6 +139,7 @@ const AccountInfo = ({ item }) => {
                       }}
                     />
                   </View>
+
                   <View
                     style={{
                       ...style.container,
@@ -151,6 +162,7 @@ const AccountInfo = ({ item }) => {
                       </Text>
                     </TouchableOpacity>
                   </View>
+
                 </>
               )}
 
@@ -251,21 +263,18 @@ const AccountInfo = ({ item }) => {
                 </View>
               </>}
             </View>
+
           </ScrollView>
-          
 
-          {/* <View style={{height: 60}}/> */}
-      {/* </ScrollView> */}
-
-      <PaymentMethodModel
-        show={modal}
-        hide={() => {
-          setModal(false);
-        }}
-        submit={e => {
-          setStatusMethod(e);
-        }}
-      />
+          <PaymentMethodModel
+            show={modal}
+            hide={() => {
+              setModal(false);
+            }}
+            submit={e => {
+              setStatusMethod(e);
+            }}
+          />
 
     </View>
   );

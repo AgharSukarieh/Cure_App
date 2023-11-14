@@ -41,10 +41,10 @@ const ReportPage = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <HomeHeader username={user?.name} supervisorname={'Waleed'} />
         <View style={style.mainview}>
-          <View style={style.searchView}>
+          {/* <View style={style.searchView}>
             <TextInput placeholder='Search ....' />
             <FontAwesome name="search" size={26} color="grey" />
-          </View>
+          </View> */}
           <View style={style.cardsView}>
             <TouchableOpacity style={style.card} onPress={() => { navigation.navigate('Sales', { cityArea: cityArea, user_id: user?.id }); }}>
               <Image source={require('../../../assets/sales.png')} style={{ ...style.cardimage, marginLeft: 15 }} resizeMode='contain' />
@@ -85,7 +85,7 @@ const style = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 15,
     top: -20,
-    height:'100%'
+    height:'70%'
   },
   searchView: {
     width: '90%',

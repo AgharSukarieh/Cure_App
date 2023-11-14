@@ -47,6 +47,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     paddingLeft: 10,
     borderRadius: 5,
+    color: '#000000'
   },
   inputModel: {
     height: 40,

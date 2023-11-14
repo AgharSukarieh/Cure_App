@@ -7,14 +7,13 @@ import {
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-
 AntDesign.loadFont();
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
 
-const AccountTable = () => {
-
+const AccountTable = ({item}) => {
+  
   return (
+    <View style={styles.container}>
+
       <View style={styles.header}>
         <View style={{ ...styles.headerel, width: '25%' }}>
           <Text style={styles.headerel_tetx}>Pharmacy Amount</Text>
@@ -32,13 +31,46 @@ const AccountTable = () => {
           <Text style={styles.headerel_tetx}>Limit</Text>
         </View>
       </View>
+
+      <View style={styles.row}>
+            <View style={{ ...styles.rowel, width: '25%' }}>
+            <Text style={styles.rowel_tetx}>{item?.amount}</Text>
+            </View>
+            <View style={styles.varLine} />
+            <View style={{ ...styles.rowel, width: '25%' }}>
+            {item?.created_at && <Text style={{...styles.rowel_tetx, fontSize:13}}>{new Intl.DateTimeFormat("en-US", { year: "numeric", month: "numeric", day: "numeric" }).format(new Date(item?.created_at))}</Text>}
+            </View>
+            <View style={styles.varLine} />
+            <View style={{ ...styles.rowel, width: '25%' }}>
+            <Text style={styles.rowel_tetx}>{item?.method}</Text>
+            </View>
+            <View style={styles.varLine} />
+            <View style={{ ...styles.rowel, width: '25%' }}>
+            <Text style={styles.rowel_tetx}>{item?.price_ceiling}</Text>
+            </View>
+        </View>
+
+    </View>
+      
   );
 };
 
 export default AccountTable;
 
 const styles = StyleSheet.create({
-  
+  container: {
+    // flex: 1,
+    width: '95%',
+    // height:200,
+    alignSelf: 'center',
+    marginTop: 20,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 4,
+    // paddingBottom: 4,
+    marginBottom:10
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -68,7 +100,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     marginTop: 10,
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
     borderStyle: 'dashed',
     marginBottom: 3
   },

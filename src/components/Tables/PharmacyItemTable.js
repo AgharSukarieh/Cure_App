@@ -23,7 +23,7 @@ const PharmacyItemTable = ({ item }) => {
 
                 <View style={{ ...styles.filtterel, }}>
                     <TouchableOpacity style={styles.filtterbtn} onPress={() => { }}>
-                        <Text style={styles.filtterbtntext}>{item?.address}</Text>
+                        <Text style={styles.filtterbtntext}>{item?.area}</Text>
                     </TouchableOpacity>
                 </View>
 

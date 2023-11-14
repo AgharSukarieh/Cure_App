@@ -31,7 +31,8 @@ export default {
   doctor: {
     speciality: 'doctor/speciality',
     allDoctors: 'sales/doctor',
-    specialArea: 'sales/doctor/areas/'
+    specialArea: 'sales/doctor/areas/',
+    doctor_speciality: 'doctor/speciality-area',
   },
   plans: {
     get_plans: 'plans'
