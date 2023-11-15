@@ -51,7 +51,6 @@ const Sal_rep_pharm = ({ navigation, route }) => {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#fff' }}>
       <GoBack text={item?.name} />
-      {console.log(item)}
       <View style={style.containerSignIn} >
         <FlatList
           data={data}
@@ -104,7 +103,7 @@ export const style = StyleSheet.create({
     width: '95%',
     alignSelf: 'center',
     backgroundColor: '#E4E1E1',
-    borderRadius: 25
+    borderRadius: 25, marginBottom: 15
   },
   Sal_rep_pharmButton: {
     backgroundColor: '#469ED8',

@@ -83,7 +83,7 @@ const Order = ({ navigation, route, item, area, date }) => {
         </ScrollView>
       </View>
 
-      <AddNewOrderModel show={modal} hide={() => { setModal(false) }} submit={(e) => { submit2(e) }} item={item} />
+      <AddNewOrderModel show={modal} hide={() => { setModal(false) }} submit={(e) => { submit2(e) }} item={item} func={getOrders}/>
     </SafeAreaView>
   );
 };

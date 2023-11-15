@@ -16,10 +16,8 @@ import { Dropdown } from 'react-native-element-dropdown';
 import OrdersAfterAddTable from '../../components/Tables/OrdersAfterAddTable';
 import Constants from '../../config/globalConstants';
 import { get, post } from '../../WebService/RequestBuilder';
-import { useAuth } from '../../contexts/AuthContext';
 
-const AddNewOrderModel = ({ show, hide, submit, item }) => {
-  const { user } = useAuth();
+const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
   const [productsData, setProductsData] = useState([])
   const [productValue, setProductValue] = useState(null)
   const [productLabel, setProductLabel] = useState(null)
@@ -32,21 +30,16 @@ const AddNewOrderModel = ({ show, hide, submit, item }) => {
   const [orderData, setOrderData] = useState([]);
 
   const submitBtn = () => {
-    console.log('QQQ', total_price);
     if (orderData.length > 0) {
-      // submit(data);
       const data = {
-        user_id: user.id,
         pharmacy_id: item.pharmacy_id,
         payment_method: 0,
-        total_price: total_price,
+        // total_price: total_price,
         products: orderData
       }
-      post(Constants.orders.add_order, data).then((res) => {
-        // console.log('rrrrrrrrrrrrrrrrrrrrrrrrrrrrr', res);
-      }).catch((err) => {
-
-      }).finally(() => { })
+      post(Constants.orders.add_order, data).then((res) => {  
+        func()
+      }).catch((err) => {}).finally(() => { })
       hide();
       setOrderData([])
       set_total_price(0)
@@ -74,32 +67,32 @@ const AddNewOrderModel = ({ show, hide, submit, item }) => {
 
   const afterAddAmount = () => {
     setBouns(0.0);
-    const product = productsArray.find(product => product.id === productValue);
+    const product = productsArray.find(product => product?.id === productValue);
 
-    if (product.bonuse != null && product.bonuse?.quantity_required && parseFloat(amount) >= product.bonuse?.quantity_required) {
+    if (product?.bonuse != null && product?.bonuse?.quantity_required && parseFloat(amount) >= product?.bonuse?.quantity_required) {
       var bonuse = 0.0;
       var price = 0.0;
 
-      switch (product.bonuse?.type) {
+      switch (product?.bonuse?.type) {
         case 'Fix':
-          bonuse = (parseFloat(amount) / product.bonuse?.quantity_required) * product.bonuse?.bonuse
+          bonuse = (parseFloat(amount) / product?.bonuse?.quantity_required) * product?.bonuse?.bonuse
           setBouns(bonuse.toFixed(3));
-          price = parseFloat(product.price_tax) * parseFloat(amount);
+          price = parseFloat(product?.price_tax) * parseFloat(amount);
           console.log(price);
           set_total_price_product(price)
           break;
         case 'Percentage':
-          bonuse = parseFloat(amount) * (product.bonuse?.bonuse / 100)
+          bonuse = parseFloat(amount) * (product?.bonuse?.bonuse / 100)
           setBouns(bonuse.toFixed(3));
-          price = parseFloat(product.price_tax) * parseFloat(amount);
+          price = parseFloat(product?.price_tax) * parseFloat(amount);
           set_total_price_product(price)
           break;
         case 'Discount':
-          const beforeDiscountPrice = parseFloat(amount) * product.price_tax
-          const afterDiscountPrice = beforeDiscountPrice - (product.bonuse?.bonuse)
+          const beforeDiscountPrice = parseFloat(amount) * product?.price_tax
+          const afterDiscountPrice = beforeDiscountPrice - (product?.bonuse?.bonuse)
           const priceOfBouns = beforeDiscountPrice - afterDiscountPrice
           setBouns(priceOfBouns);
-          price = parseFloat(product.price_tax) * parseFloat(amount);
+          price = parseFloat(product?.price_tax) * parseFloat(amount);
           set_total_price_product(price)
           break;
         default:
@@ -107,7 +100,7 @@ const AddNewOrderModel = ({ show, hide, submit, item }) => {
       }
     } else {
       var price = 0.0;
-      price = parseFloat(product.price_tax) * parseFloat(amount);
+      price = parseFloat(product?.price_tax) * parseFloat(amount);
       console.log(price);
       set_total_price_product(price)
     }
@@ -200,6 +193,7 @@ const AddNewOrderModel = ({ show, hide, submit, item }) => {
                   onEndEditing={afterAddAmount}
                   style={styles.inputModel}
                   value={amount}
+                  isNumeric
                 />
 
 
