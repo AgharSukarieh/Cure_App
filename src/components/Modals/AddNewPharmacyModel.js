@@ -230,7 +230,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
             }}>
             <AntDesign
               name="close"
-              color="#7189FF"
+              color="#469ED8"
               size={35}
               style={{alignSelf: 'flex-end'}}
             />
@@ -322,8 +322,8 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
                   viewStyle={{width: '90%'}}
                 />
 
-                <TouchableOpacity style={{marginTop: 40, width: '90%',height: 50, backgroundColor: latitude ? '#7189FF' : '#fff', borderWidth:2,borderColor: '#7189FF',borderRadius:5, justifyContent:'center'}} onPress={() => {getCurrentLocation()}}>
-                  <Text style={{marginBottom: 5, color: latitude ? '#fff' : '#7189FF', textAlign:'center', fontSize:17, fontWeight:'bold'}}>
+                <TouchableOpacity style={{marginTop: 40, width: '90%',height: 50, backgroundColor: latitude ? '#469ED8' : '#fff', borderWidth:2,borderColor: '#469ED8',borderRadius:5, justifyContent:'center'}} onPress={() => {getCurrentLocation()}}>
+                  <Text style={{marginBottom: 5, color: latitude ? '#fff' : '#469ED8', textAlign:'center', fontSize:17, fontWeight:'bold'}}>
                     Location
                   </Text>
                 </TouchableOpacity>
@@ -338,7 +338,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
                     style={{
                       ...styles.newbtn,
                       backgroundColor: 'white',
-                      borderColor: '#7189FF',
+                      borderColor: '#469ED8',
                       borderWidth: 2,
                     }}
                     onPress={() => {
@@ -351,7 +351,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
                       }}>
                       <Text
                         style={{
-                          color: '#7189FF',
+                          color: '#469ED8',
                           fontSize: 18,
                           paddingHorizontal: 50,
                           textAlign: 'center',
@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     height: 50,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
@@ -523,7 +523,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden'
   },
   card: {
-    shadowColor: '#7189FF',
+    shadowColor: '#469ED8',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
@@ -538,7 +538,7 @@ const styles = StyleSheet.create({
   phname: {
     fontSize: 25,
     textTransform: 'capitalize',
-    color: '#7189FF',
+    color: '#469ED8',
   },
   phlocation: {
     marginHorizontal: 15,
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
   item_name: {
     fontSize: 20,
     textTransform: 'capitalize',
-    color: '#7189FF',
+    color: '#469ED8',
   },
   item_info: {
     justifyContent: 'center',
@@ -559,7 +559,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   newbtn: {
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     height: 50,
     paddingVertical: 5,
     paddingHorizontal: 4,
@@ -569,7 +569,7 @@ const styles = StyleSheet.create({
   },
   inputModel: {
     height: 40,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     borderWidth: 1,
     paddingLeft: 10,
     borderRadius: 5,

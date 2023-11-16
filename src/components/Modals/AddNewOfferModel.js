@@ -34,7 +34,7 @@ const AddNewOfferModel = ({ show, hide, submit, item }) => {
             <View style={style.ModalContainer}>
                 <View style={style.ModalView}>
                     <TouchableOpacity onPress={() => { hide() }}>
-                        <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
+                        <AntDesign name="close" color='#469ED8' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
                     
                     <Text style={style.maintitle}>Add new Offer</Text>
@@ -44,7 +44,7 @@ const AddNewOfferModel = ({ show, hide, submit, item }) => {
                             {/* Components */}
                             </View>
                             <View style={style.card}>
-                                <TouchableOpacity style={{ ...styles.btn, backgroundColor: '#7189FF' }} onPress={() => { submitBtn() }}>
+                                <TouchableOpacity style={{ ...styles.btn, backgroundColor: '#469ED8' }} onPress={() => { submitBtn() }}>
                                     <Text style={{ fontSize: 18, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>submit</Text>
                                 </TouchableOpacity>
                             </View>
@@ -80,10 +80,10 @@ const style = StyleSheet.create({
     maintitle: {
         fontSize: 25,
         textTransform: 'capitalize',
-        color: '#7189FF'
+        color: '#469ED8'
     },
     newbtn: {
-        backgroundColor: '#7189FF',
+        backgroundColor: '#469ED8',
         paddingVertical: 5,
         paddingHorizontal: 8,
         borderRadius: 7,

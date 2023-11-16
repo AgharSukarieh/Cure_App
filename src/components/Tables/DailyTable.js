@@ -26,15 +26,15 @@ const DailyTable = ({ data, refresh }) => {
                 <View style={{ ...styles.headerel, width: '40%', }}>
                     <Text style={styles.headerel_tetx}>Dr. name</Text>
                 </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
+                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
                 <View style={{ ...styles.headerel, width: '23%', }}>
                     <Text style={styles.headerel_tetx}>Specialty</Text>
                 </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
+                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
                 <View style={{ ...styles.headerel, width: '22%', }}>
                     <Text style={styles.headerel_tetx}>Time</Text>
                 </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
+                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
                 <View style={{ ...styles.headerel, width: '15%', }}>
                     <Text style={styles.headerel_tetx}>...</Text>
                 </View>
@@ -43,34 +43,34 @@ const DailyTable = ({ data, refresh }) => {
             <>
                 {data ?
                     data.map((item, index) => (
-                        <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} key={index}>
+                        <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} key={index}>
                             <View style={{ ...styles.filtterel, width: '40%', }}>
-                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item.doctor_id?.doc_name}</Text>
+                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} onPress={() => { }}>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#469ED8' }}>{item.doctor_id?.doc_name}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
+                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#469ED8', alignSelf: 'center' }} />
 
                             <View style={{ ...styles.filtterel, width: '23%', }}>
-                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF', textTransform: 'uppercase' }}>{item.doctor_id?.sp_abbr}</Text>
+                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} onPress={() => { }}>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#469ED8', textTransform: 'uppercase' }}>{item.doctor_id?.sp_abbr}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
+                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#469ED8', alignSelf: 'center' }} />
 
                             <View style={{ ...styles.filtterel, width: '22%', }}>
-                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{moment(item.time_of_visit).format('h:m A')}</Text>
+                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} onPress={() => { }}>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#469ED8' }}>{moment(item.time_of_visit).format('h:m A')}</Text>
                                 </TouchableOpacity>
                             </View>
 
-                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
+                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#469ED8', alignSelf: 'center' }} />
                             <View style={{ ...styles.filtterel, flexDirection: 'row', width: '15%', justifyContent: 'space-between' }} >
                                 <TouchableOpacity style={{ marginHorizontal: 0 }} onPress={() => { rowModal(item) }}>
                                     <AntDesign name="infocirlceo" color='gold' size={17} />
                                 </TouchableOpacity>
                                 <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => { editrowModal(item) }}>
-                                    <AntDesign name="edit" color={index % 2 == 0 ? '#fff' : '#7189FF'} size={17} />
+                                    <AntDesign name="edit" color={index % 2 == 0 ? '#fff' : '#469ED8'} size={17} />
                                 </TouchableOpacity>
                             </View>
 
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '98%',
         alignSelf: 'center',
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
         borderBottomWidth: 1,
         marginTop: 10,
         paddingVertical: 7
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 1,
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
     },
     headerel_tetx: {
         textAlign: 'center',
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '98%',
         alignSelf: 'center',
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
         borderWidth: 1,
         marginTop: 10,
         borderRadius: 7,
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '98%',
         alignSelf: 'center',
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
         borderBottomWidth: 1,
         marginTop: 10,
         paddingVertical: 7,
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4
     },
     filtterbtn: {
-        backgroundColor: '#7189FF',
+        backgroundColor: '#469ED8',
         width: '90%',
         paddingVertical: 5,
         borderRadius: 7
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '100%',
         borderWidth: 1,
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
         marginTop: 10,
         borderRadius: 7
     },

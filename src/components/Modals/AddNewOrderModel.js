@@ -147,7 +147,7 @@ const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
             }}>
             <AntDesign
               name="close"
-              color="#7189FF"
+              color="#469ED8"
               size={35}
               style={{ alignSelf: 'flex-end' }}
             />
@@ -216,7 +216,7 @@ const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
                 <TouchableOpacity
                   style={{
                     ...style.btn,
-                    backgroundColor: '#7189FF',
+                    backgroundColor: '#469ED8',
                     height: 45,
                     marginRight: 40,
                   }}
@@ -237,7 +237,7 @@ const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
                 <TouchableOpacity
                   style={{
                     ...style.btn,
-                    backgroundColor: '#7189FF',
+                    backgroundColor: '#469ED8',
                     height: 45,
                     paddingHorizontal: 25,
                   }}
@@ -298,7 +298,7 @@ const style = StyleSheet.create({
     paddingHorizontal: 8,
   },
   btn: {
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     alignSelf: 'center',
     borderRadius: 7,
     padding: 7,
@@ -311,10 +311,10 @@ const style = StyleSheet.create({
   maintitle: {
     fontSize: 25,
     textTransform: 'capitalize',
-    color: '#7189FF',
+    color: '#469ED8',
   },
   newbtn: {
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     paddingVertical: 5,
     paddingHorizontal: 8,
     borderRadius: 7,

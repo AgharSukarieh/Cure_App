@@ -121,7 +121,7 @@ const AddNewInventoryModel = ({show, hide, submit}) => {
             }}>
             <AntDesign
               name="close"
-              color="#7189FF"
+              color="#469ED8"
               size={35}
               style={{alignSelf: 'flex-end'}}
             />
@@ -223,7 +223,7 @@ const AddNewInventoryModel = ({show, hide, submit}) => {
                 <TouchableOpacity
                   style={{
                     ...styles.btn,
-                    backgroundColor: '#7189FF',
+                    backgroundColor: '#469ED8',
                     height: 45,
                   }}
                   onPress={() => {
@@ -282,10 +282,10 @@ const style = StyleSheet.create({
   maintitle: {
     fontSize: 25,
     textTransform: 'capitalize',
-    color: '#7189FF',
+    color: '#469ED8',
   },
   newbtn: {
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     paddingVertical: 5,
     paddingHorizontal: 8,
     borderRadius: 7,
@@ -311,7 +311,7 @@ const style = StyleSheet.create({
   },
   dropdown: {
     height: 42,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 8,

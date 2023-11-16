@@ -168,7 +168,7 @@ const Sales = ({ navigation }) => {
         </View>
       </View>
 
-      <View style={{ width: '90%', flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-between', marginBottom: 6, }}>
+      <View style={{ width: '90%', alignSelf: 'center',flexDirection:'row', justifyContent: 'space-between', marginBottom: 6, }}>
         <View style={{ ...style.container, marginTop: 0 }}>
           <Text style={{ ...styles.calenderText, marginBottom: 5 }}>From</Text>
 
@@ -176,7 +176,6 @@ const Sales = ({ navigation }) => {
             style={styles.filterbutton}
             onPress={() => {
               setOpen(true);
-              console.log('from');
             }}>
             <Text style={styles.filterbuttontext}>
               {calenderFrom != '' ? calenderFrom : 'YYYY-MM-DD'}
@@ -192,12 +191,7 @@ const Sales = ({ navigation }) => {
             onConfirm={data => {
               setOpen(false);
               setDate(data);
-              const formattedDate =
-                data.getFullYear() +
-                '-' +
-                (data.getMonth() + 1) +
-                '-' +
-                data.getDate();
+              const formattedDate = data.getFullYear() + '-' + (data.getMonth() + 1) + '-' + data.getDate();
               setCalenderFrom(formattedDate);
               setFilter((prev) => ({
                 ...prev,
@@ -208,44 +202,44 @@ const Sales = ({ navigation }) => {
               setOpen(false);
             }}
           />
+          
         </View>
 
         <View style={{ ...style.container, marginTop: 0 }}>
-          <Text style={{ ...styles.calenderText, marginBottom: 5 }}>To</Text>
-          <TouchableOpacity style={styles.filterbutton} onPress={() => { 
-            setOpen2(true);
-            console.log('to'); 
-            }}>
-            <Text style={styles.filterbuttontext}>
-              {calenderTo != '' ? calenderTo : 'YYYY-MM-DD'}
-            </Text>
-          </TouchableOpacity>
-          <DatePicker
-            modal
-            mode="date"
-            format="YYYY-MM-DD"
-            open={open2}
-            date={date2}
-            minimumDate={date}
-            onConfirm={data => {
-              setOpen2(false);
-              setDate2(data);
-              const formattedDate =
-                data.getFullYear() +
-                '-' +
-                (data.getMonth() + 1) +
-                '-' +
-                data.getDate();
-              setCalenderTo(formattedDate);
-              setFilter((prev) => ({
-                ...prev,
-                dateTo: formattedDate
-              }))
-            }}
-            onCancel={() => {
-              setOpen(false);
-            }}
-          />
+            <Text style={{ ...styles.calenderText, marginBottom: 5 }}>To</Text>
+
+            <TouchableOpacity
+              style={styles.filterbutton}
+              onPress={() => {
+                setOpen2(true);
+              }}>
+              <Text style={styles.filterbuttontext}>
+                {calenderTo != '' ? calenderTo : 'YYYY-MM-DD'}
+              </Text>
+            </TouchableOpacity>
+
+            <DatePicker
+              modal
+              mode="date"
+              format="YYYY-MM-DD"
+              open={open2}
+              date={date2}
+              onCancel={() => {
+                setOpen2(false)
+                console.log('F')
+              }}
+              onConfirm={data => {
+                setOpen2(false);
+                setDate2(data);
+                const formattedDate = data.getFullYear() + '-' + (data.getMonth() + 1) + '-' + data.getDate();
+                setCalenderTo(formattedDate);
+                setFilter((prev) => ({
+                  ...prev,
+                  dateTo: formattedDate
+                }))
+              }}
+            />
+          
         </View>
 
       </View>

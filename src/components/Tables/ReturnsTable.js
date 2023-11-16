@@ -11,7 +11,7 @@ import moment from 'moment';
 
 AntDesign.loadFont();
 
-const ReturnsTable = ({data}) => {
+const ReturnsTable = ({data, func}) => {
   const [modal, setModal] = useState(false);
   const [rowdata, setrowdata] = useState('');
 
@@ -29,19 +29,19 @@ const ReturnsTable = ({data}) => {
           <Text style={styles.headerel_tetx}>Order</Text>
         </View>
 
-        <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
+        <View style={{width: 1, height: '100%', backgroundColor: '#469ED8'}} />
 
         <View style={{...styles.headerel, width: '25%'}}>
           <Text style={styles.headerel_tetx}>Total Price</Text>
         </View>
 
-        <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
+        <View style={{width: 1, height: '100%', backgroundColor: '#469ED8'}} />
 
         <View style={{...styles.headerel, width: '12%'}}>
           <Text style={styles.headerel_tetx}>Date</Text>
         </View>
 
-        <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
+        <View style={{width: 1, height: '100%', backgroundColor: '#469ED8'}} />
 
         <View style={{...styles.headerel, width: '12%'}}>
           <Text style={styles.headerel_tetx}>View</Text>
@@ -54,7 +54,7 @@ const ReturnsTable = ({data}) => {
           <View
             style={{
               ...styles.row,
-              backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff',
+              backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff',
             }}
             key={index}>
 
@@ -100,13 +100,16 @@ const ReturnsTable = ({data}) => {
           </View>
         ))
       ) : null }
+
       <ReturnModel
         show={modal}
         hide={() => {
           setModal(false);
         }}
         data={rowdata}
+        func={func}
       />
+      
     </View>
   );
 };
@@ -123,7 +126,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     // borderWidth: 1,
     marginTop: 10,
     borderRadius: 7,
@@ -135,7 +138,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // borderWidth: 0.6,
     paddingHorizontal: 1,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
   },
   headerel_tetx: {
     textAlign: 'center',
@@ -148,7 +151,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     borderWidth: 1,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     marginTop: 10,
     borderRadius: 7,
   },

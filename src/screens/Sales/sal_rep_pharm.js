@@ -4,11 +4,9 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StyleSheet,
-  ScrollView,
 } from 'react-native';
 import React, { useState } from 'react';
 import { styles } from '../../components/styles';
-import Moment from 'moment';
 import GoBack from '../../components/GoBack';
 import { put } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
@@ -61,7 +59,6 @@ const Sal_rep_pharm = ({ navigation, route }) => {
         />
       </View>
 
-      {/* style={{ paddingTop: 60 }} marginBottom: 100 */}
       <View style={{flex:1}}>  
         {index == 1 && <AccountInfo item={item}/>}
         {index == 2 ? <Inventory item={item} area={area} /> : null}

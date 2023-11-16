@@ -203,27 +203,27 @@ import {
   
           <View style={{ ...style.container, marginTop: 0 }}>
             <Text style={{ ...styles.calenderText, marginBottom: 5 }}>To</Text>
-            <TouchableOpacity style={styles.filterbutton} onPress={() => { setOpen2(true); }}>
+
+            <TouchableOpacity
+              style={styles.filterbutton}
+              onPress={() => {
+                setOpen2(true);
+              }}>
               <Text style={styles.filterbuttontext}>
                 {calenderTo != '' ? calenderTo : 'YYYY-MM-DD'}
               </Text>
             </TouchableOpacity>
+
             <DatePicker
               modal
               mode="date"
               format="YYYY-MM-DD"
               open={open2}
               date={date2}
-              minimumDate={date}
               onConfirm={data => {
                 setOpen2(false);
                 setDate2(data);
-                const formattedDate =
-                  data.getFullYear() +
-                  '-' +
-                  (data.getMonth() + 1) +
-                  '-' +
-                  data.getDate();
+                const formattedDate = data.getFullYear() + '-' + (data.getMonth() + 1) + '-' + data.getDate();
                 setCalenderTo(formattedDate);
                 setFilter((prev) => ({
                   ...prev,
@@ -231,9 +231,10 @@ import {
                 }))
               }}
               onCancel={() => {
-                setOpen(false);
+                setOpen2(false);
               }}
             />
+          
           </View>
   
         </View>

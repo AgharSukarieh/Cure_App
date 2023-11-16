@@ -16,11 +16,11 @@ const DoctorlistModal = ({ show, hide, data, submit }) => {
             <View style={styles.ModalContainer}>
                 <View style={styles.ModalView}>
                     <TouchableOpacity onPress={() => { hide() }}>
-                        <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
+                        <AntDesign name="close" color='#469ED8' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
 
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <AntDesign name="infocirlce" color='#7189FF' size={30} />
+                        <AntDesign name="infocirlce" color='#469ED8' size={30} />
                         <Text style={styles.maintitle}>INFO</Text>
                     </View>
 

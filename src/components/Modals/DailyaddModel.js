@@ -119,7 +119,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
         <View style={style.ModalView}>
 
           <TouchableOpacity onPress={() => { hide() }}>
-            <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
+            <AntDesign name="close" color='#469ED8' size={35} style={{ alignSelf: 'flex-end' }} />
           </TouchableOpacity>
 
           <Text style={style.maintitle}>Add new</Text>
@@ -271,7 +271,7 @@ const style = StyleSheet.create({
   maintitle: {
     fontSize: 25,
     textTransform: 'capitalize',
-    color: '#7189FF'
+    color: '#469ED8'
   },
   card: {
     marginVertical: 15,
@@ -291,7 +291,7 @@ const style = StyleSheet.create({
   },
   dropdown: {
     height: 50,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,

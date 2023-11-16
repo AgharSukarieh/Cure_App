@@ -20,11 +20,11 @@ const ClientpharmaTable = ({ data }) => {
                 <View style={styles.headerel}>
                     <Text style={styles.headerel_tetx}>name</Text>
                 </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
+                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
                 <View style={styles.headerel}>
                     <Text style={styles.headerel_tetx}>location</Text>
                 </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
+                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
                 <View style={{ ...styles.headerel, }}>
                     <Text style={styles.headerel_tetx}>class</Text>
                 </View>
@@ -33,24 +33,24 @@ const ClientpharmaTable = ({ data }) => {
             <>
                 {data ?
                     data.map((item, index) => (
-                        <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} key={index}>
+                        <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} key={index}>
                             <View style={{ ...styles.filtterel, }}>
-                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item?.pharmacy_name}</Text>
+                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} onPress={() => { }}>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#469ED8' }}>{item?.pharmacy_name}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
+                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#469ED8', alignSelf: 'center' }} />
 
                             <View style={{ ...styles.filtterel, }}>
-                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item?.address}</Text>
+                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} onPress={() => { }}>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#469ED8' }}>{item?.address}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#7189FF', alignSelf: 'center' }} />
+                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#469ED8', alignSelf: 'center' }} />
 
                             <View style={{ ...styles.filtterel, }}>
-                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#7189FF' }}>{item?.class}</Text>
+                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} onPress={() => { }}>
+                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#469ED8' }}>{item?.class}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '98%',
         alignSelf: 'center',
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
         borderBottomWidth: 1,
         marginTop: 10,
         paddingVertical: 7
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         // borderWidth: 0.6,
         paddingHorizontal: 1,
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
     },
     headerel_tetx: {
         textAlign: 'center',
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '98%',
         alignSelf: 'center',
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
         borderWidth: 1,
         marginTop: 10,
         borderRadius: 7,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '98%',
         alignSelf: 'center',
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
         borderBottomWidth: 1,
         marginTop: 10,
         paddingVertical: 7,
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4
     },
     filtterbtn: {
-        backgroundColor: '#7189FF',
+        backgroundColor: '#469ED8',
         width: '90%',
         paddingVertical: 5,
         borderRadius: 7
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '100%',
         borderWidth: 1,
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
         marginTop: 10,
         borderRadius: 7
     },

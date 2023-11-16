@@ -251,7 +251,7 @@ export default AccountInfo;
 
 export const style = StyleSheet.create({
   newbtn: {
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     height: 40,
     paddingVertical: 5,
     paddingHorizontal: 4,

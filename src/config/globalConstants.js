@@ -53,7 +53,8 @@ export default {
     get_orders: 'user-orders',
   },
   return: {
-    get_returns: 'return-orders'
+    get_returns: 'return-orders',
+    add_returns: 'return-product',
   },
   single_chat: {
     get_conv: 'get-single-chat-list',

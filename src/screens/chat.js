@@ -64,7 +64,7 @@ const Chat = () => {
 
                             />
                             <TouchableOpacity style={styles.send} onPress={() => { }}>
-                                <Feather name="send" color={'#7189FF'} size={30} style={{ marginHorizontal: 0 }} />
+                                <Feather name="send" color={'#469ED8'} size={30} style={{ marginHorizontal: 0 }} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         marginVertical: 5
     },
     message2: {
-        backgroundColor: '#7189FF',
+        backgroundColor: '#469ED8',
         paddingVertical: 10,
         paddingLeft: 10,
         paddingRight: 20,
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignSelf: 'center',
         borderWidth: 1,
-        borderColor: "#7189FF",
+        borderColor: "#469ED8",
         marginBottom: 10,
         borderRadius: 7
     },

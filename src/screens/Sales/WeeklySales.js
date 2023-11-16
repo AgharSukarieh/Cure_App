@@ -143,7 +143,7 @@ const goToDaily = () => {
                                     <View style={style.header}>
                                         <Text style={style.dayt}>{Moment(item).format('dd')}</Text>
                                     </View>
-                                    <View style={{ ...style.day, backgroundColor: !weeklyscdata.find(sc => Moment(sc.date).format('yyyy-M-D') === Moment(item).format('yyyy-M-D')) ? '#7383d1' : '#7189FF' }}>
+                                    <View style={{ ...style.day, backgroundColor: !weeklyscdata.find(sc => Moment(sc.date).format('yyyy-M-D') === Moment(item).format('yyyy-M-D')) ? '#7383d1' : '#469ED8' }}>
                                         <Text style={style.dayd}>{Moment(item).format('D')}</Text>
                                         <Text style={style.dayn}>{areaName}</Text>
                                     </View>
@@ -177,7 +177,7 @@ export const style = StyleSheet.create({
         borderRadius: 3
     },
     day: {
-        backgroundColor: '#7189FF',
+        backgroundColor: '#469ED8',
         width: '100%',
         height: '60%',
         justifyContent: 'center',
@@ -211,7 +211,7 @@ export const style = StyleSheet.create({
         marginVertical: 8,
         fontSize: 30,
         textTransform: 'capitalize',
-        color: '#7189FF',
+        color: '#469ED8',
         fontWeight: '700'
     }
 })

@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // borderWidth: 0.6,
     paddingHorizontal: 1,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
   },
   headerel_tetx: {
     textAlign: 'center',

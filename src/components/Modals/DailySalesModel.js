@@ -53,7 +53,7 @@ const DailySalesModel = ({ show, hide, data, submit ,id }) => {
             <View style={style.ModalContainer}>
                 <View style={style.ModalView}>
                     <TouchableOpacity onPress={() => { hide() }}>
-                        <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
+                        <AntDesign name="close" color='#469ED8' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
 
                     <Text style={style.maintitle}>Add new Order</Text>
@@ -125,7 +125,7 @@ const style = StyleSheet.create({
     maintitle: {
         fontSize: 25,
         textTransform: 'capitalize',
-        color: '#7189FF'
+        color: '#469ED8'
     },
     card: {
         marginVertical: 15,

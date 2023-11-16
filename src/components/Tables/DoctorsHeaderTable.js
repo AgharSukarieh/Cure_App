@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '98%',
     alignSelf: 'center',
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     marginTop: 10,
     paddingVertical: 7,
     borderColor: '#000',
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 1,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
   },
   headerel_tetx: {
     textAlign: 'center',

@@ -91,7 +91,7 @@ export const style = StyleSheet.create({
         alignItems: 'center'
     },
     newbtn: {
-        backgroundColor: '#7189FF',
+        backgroundColor: '#469ED8',
         paddingVertical: 5,
         paddingHorizontal: 18,
         borderRadius: 13,

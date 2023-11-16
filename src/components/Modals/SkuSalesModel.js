@@ -18,7 +18,7 @@ const SkuSalesModel = ({ show, hide, data, submit }) => {
             <View style={styles.ModalContainer}>
                 <View style={styles.ModalView}>
                     <TouchableOpacity onPress={() => { hide() }}>
-                        <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
+                        <AntDesign name="close" color='#469ED8' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={styles.card}>
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     lable: {
         marginBottom: 5,
         fontSize: 22,
-        color: '#7189FF',
+        color: '#469ED8',
         textTransform: 'capitalize'
     },
     value: {

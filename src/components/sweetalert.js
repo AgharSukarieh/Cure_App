@@ -21,7 +21,7 @@ const Sweetalert = ({ show, hide, title, }) => {
         >
             <View style={style.ModalContainer}>
                 <View style={style.ModalView}>
-                    <AntDesign name="checkcircle" color='#7189FF' size={55} style={{ alignSelf: 'center' }} />
+                    <AntDesign name="checkcircle" color='#469ED8' size={55} style={{ alignSelf: 'center' }} />
                     <View style={{ width: '100%', alignSelf: 'center', justifyContent: 'center', alignItems: 'center', marginTop: 16 }}>
                         <Text style={{ fontSize: 20, color: '#000', textTransform: 'capitalize' }}>{title}</Text>
                     </View>

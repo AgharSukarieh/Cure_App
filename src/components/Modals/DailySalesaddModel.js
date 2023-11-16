@@ -101,7 +101,7 @@ const DailySalesaddModel = ({ show, hide, submit, date, area }) => {
                             </View>
 
                             <View style={style.card}>
-                                <TouchableOpacity disabled={pharam != '' ? false : true} style={{ ...styles.btn, backgroundColor: pharam != '' ? '#7189FF' : '#ddd' }} onPress={() => { submit2() }}>
+                                <TouchableOpacity disabled={pharam != '' ? false : true} style={{ ...styles.btn, backgroundColor: pharam != '' ? '#469ED8' : '#ddd' }} onPress={() => { submit2() }}>
                                     <Text style={{ fontSize: 18, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>Start Visit</Text>
                                 </TouchableOpacity>
                             </View>

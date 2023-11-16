@@ -25,7 +25,7 @@ const ChatPage = ({ navigation, route }) => {
           }
           return <AntDesign name={iconName} color={color} size={size} />;
         },
-        tabBarActiveTintColor: '#7189FF',
+        tabBarActiveTintColor: '#469ED8',
         tabBarInactiveTintColor: 'gray',
       })}>
       {/* <Tab.Screen name="ChatsScreen" component={ChatsScreen} options={{ headerShown: false }}/> */}

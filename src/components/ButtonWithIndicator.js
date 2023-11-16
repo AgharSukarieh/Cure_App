@@ -29,7 +29,7 @@ const ButtonWithIndicator = ({ text, clickable = true, onClick, style, hBorder =
 
   const RenderButton = () => {
       return (
-        <View style={[styles.buttonContainer, {backgroundColor: isClickable ? (isClicked ? '#AAAAAA' : '#7189FF') : '#777777', borderWidth: hBorder ? 2 : 0}, style]}>
+        <View style={[styles.buttonContainer, {backgroundColor: isClickable ? (isClicked ? '#AAAAAA' : '#469ED8') : '#777777', borderWidth: hBorder ? 2 : 0}, style]}>
           <ButtonContent/>
         </View>
       );

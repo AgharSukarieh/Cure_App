@@ -96,7 +96,7 @@ const Weekly = ({ navigation, route }) => {
                         return (
                             <View key={weekIndex} style={style.weekContainer}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 15 }}>
-                                    <FontAwesome name='calendar-o' size={18} color="#7189FF" />
+                                    <FontAwesome name='calendar-o' size={18} color="#469ED8" />
                                     <Text style={style.weekHeader}>Week {weekIndex + 1}</Text>
                                 </View>
                                 <View style={{ width: '100%', height: 1, borderTopWidth: 1, borderStyle: 'dashed', marginBottom: 6 }} />
@@ -112,7 +112,7 @@ const Weekly = ({ navigation, route }) => {
                                                 key={dayIndex}
                                                 style={{
                                                     ...style.dayCard,
-                                                    backgroundColor: hasDataForDay ? '#7189FF' : '#7383d1',
+                                                    backgroundColor: hasDataForDay ? '#469ED8' : '#7383d1',
                                                 }}
                                                 onLongPress={() => { edit(day) }}
                                                 onPress={() => {
@@ -175,8 +175,8 @@ export const style = StyleSheet.create({
         marginBottom: 16,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#7189FF',
-        shadowColor: "#7189FF",
+        borderColor: '#469ED8',
+        shadowColor: "#469ED8",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 6,

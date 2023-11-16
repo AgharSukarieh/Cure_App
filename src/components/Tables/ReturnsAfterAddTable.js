@@ -24,11 +24,11 @@ const ReturnsAfterAddTable = ({data}) => {
         <View style={{...styles.headerel, width: '30%'}}>
           <Text style={styles.headerel_tetx}>Batch #</Text>
         </View>
-        <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
+        <View style={{width: 1, height: '100%', backgroundColor: '#469ED8'}} />
         <View style={styles.headerel}>
           <Text style={styles.headerel_tetx}>Expired Date</Text>
         </View>
-        <View style={{width: 1, height: '100%', backgroundColor: '#7189FF'}} />
+        <View style={{width: 1, height: '100%', backgroundColor: '#469ED8'}} />
         <View style={styles.headerel}>
           <Text style={styles.headerel_tetx}>Amount</Text>
         </View>
@@ -38,7 +38,7 @@ const ReturnsAfterAddTable = ({data}) => {
           <View
             style={{
               ...styles.row,
-              backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff',
+              backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff',
             }}
             key={index}>
             <View style={{...styles.rowel, width: '30.1%'}}>
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     // borderWidth: 1,
     marginTop: 10,
     borderRadius: 7,
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // borderWidth: 0.6,
     paddingHorizontal: 1,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
   },
   headerel_tetx: {
     textAlign: 'center',
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     borderWidth: 1,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     marginTop: 10,
     borderRadius: 7,
   },

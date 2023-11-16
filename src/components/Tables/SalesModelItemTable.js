@@ -10,7 +10,7 @@ const SalesModelItemTable = ({item}) => {
         style={{
           width: '99%',
           height: 0.5,
-          backgroundColor: '#7189FF',
+          backgroundColor: '#469ED8',
           alignSelf: 'center',
           marginVertical: 10,
           borderRadius: 22,
@@ -52,7 +52,7 @@ export default SalesModelItemTable;
 
 const styles = StyleSheet.create({
     card: {
-        shadowColor: "#7189FF",
+        shadowColor: "#469ED8",
         shadowOffset: { width: 0, height: 1, },
         shadowOpacity: 0.22,
         shadowRadius: 2.22,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     phname: {
         fontSize: 25,
         textTransform: 'capitalize',
-        color: '#7189FF',
+        color: '#469ED8',
         textAlign:'center'
     },
     phlocation: {
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     item_name: {
         fontSize: 20,
         textTransform: 'capitalize',
-        color: '#7189FF'
+        color: '#469ED8'
     },
     item_info: {
         justifyContent: 'center',

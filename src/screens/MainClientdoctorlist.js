@@ -95,7 +95,7 @@ export const style = StyleSheet.create({
     justifyContent: 'space-between',
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
   },
   munebtn: {
     width: '33.2%',
@@ -107,14 +107,14 @@ export const style = StyleSheet.create({
   munebtn2: {
     width: '33.2%',
     height: '100%',
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     justifyContent: 'center',
     alignItems: 'center',
   },
   muneheader: { color: '#000', fontSize: 17, color: '#000' },
   muneheader2: { color: '#000', fontSize: 17, color: '#fff' },
   newbtn: {
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     paddingVertical: 5,
     paddingHorizontal: 8,
     borderRadius: 7,

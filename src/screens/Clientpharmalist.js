@@ -263,7 +263,7 @@ export const style = StyleSheet.create({
     marginTop: 15
   },
   rButton: {
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     height: 50,
     width: 50,
     justifyContent: 'center',

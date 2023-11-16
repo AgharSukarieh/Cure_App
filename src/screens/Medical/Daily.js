@@ -79,7 +79,7 @@ export const style = StyleSheet.create({
         marginBottom: 25,
     },
     newbtn: {
-        backgroundColor: '#7189FF',
+        backgroundColor: '#469ED8',
         width: '25%',
         paddingVertical: 5,
         borderRadius: 7,

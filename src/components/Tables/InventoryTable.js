@@ -23,22 +23,22 @@ const InventoryTable = ({ data }) => {
                 <View style={{ ...styles.headerel, width: '30%', }}>
                     <Text style={styles.headerel_tetx}>Items</Text>
                 </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
+                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
                 <View style={styles.headerel}>
                     <Text style={styles.headerel_tetx}>Availability</Text>
                 </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
+                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
                 <View style={styles.headerel}>
                     <Text style={styles.headerel_tetx}>Last Order</Text>
                 </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#7189FF' }} />
+                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
                 <View style={{ ...styles.headerel, width: '12%', }}>
                     <Text style={styles.headerel_tetx}>Info</Text>
                 </View>
             </View>
-            {data?.order_details.length > 0 ?
+            {data?.order_details?.length > 0 ?
                 data?.order_details.map((item, index) => (
-                    <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#7189FF' : '#fff' }} key={index}>
+                    <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} key={index}>
                         <View style={{ ...styles.rowel, width: '30.1%', }}>
                             <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item?.product?.name}</Text>
                         </View>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
         marginTop: 10,
         borderRadius: 7,
         paddingVertical: 7
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 1,
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
     },
     headerel_tetx: {
         textAlign: 'center',
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '100%',
         borderWidth: 1,
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
         marginTop: 10,
         borderRadius: 7
     },

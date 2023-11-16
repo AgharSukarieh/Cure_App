@@ -10,47 +10,19 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { styles } from '../../components/styles';
-import GoBack from '../../components/GoBack';
 import InventoryTable from '../../components/Tables/InventoryTable';
 import Feather from 'react-native-vector-icons/Feather';
 import AddNewInventoryModel from '../../components/Modals/AddNewInventoryModel';
 import { get } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
-// import {Dropdown} from 'react-native-element-dropdown';
-// import AntDesign from 'react-native-vector-icons/AntDesign';
 import ScanBarcodeAndQRModel from '../../components/Modals/ScanBarcodeAndQRModel';
-
 Feather.loadFont();
 
 const Inventory = ({ navigation, item }) => {
-
-  // const area = route.params.area;
-  // const [barcode, setBarcode] = useState(); 
   const [modal, setModal] = useState(false);
   const [qrmodal, setqrModal] = useState(false);
   const [rows, setRows] = useState(null);
-  // const [productFromBarcode, setProductFromBarcode] = useState(null);
   const [showTable, setShowTable] = useState(false)
-  // const [productsData, setProductsData] = useState([])
-  // const [productValue, setProductValue] = useState(null)
-
-  // const getProducts = async() => {
-  //   get(Constants.product.products, null, {limit: 10000})
-  //   .then((res) => { 
-  //       var count = Object.keys(res.data).length
-  //       let productsArray = []
-  //       for (var i = 0; i < count; i++ ){
-  //           productsArray.push({
-  //            value: res.data[i].id,
-  //            label: res.data[i].name
-  //           })
-  //       }
-  //       setProductsData(productsArray);
-  //   })
-  //   .catch((err) => {})
-  //   .finally(() => {
-  //   })
-  // }
 
   const getInventory = () => {
     const parms = {
@@ -104,6 +76,7 @@ const Inventory = ({ navigation, item }) => {
             status = true
           }
         });
+
         if (status) {
           setShowTable(true)
         } else {
@@ -116,38 +89,8 @@ const Inventory = ({ navigation, item }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <GoBack text={'Inventory'} /> */}
-
       <View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10 }}>
-          {/* <Dropdown
-          style={style.dropdown}
-                  placeholderStyle={style.placeholderStyle}
-                  selectedTextStyle={style.selectedTextStyle}
-                  inputSearchStyle={style.inputSearchStyle}
-                  iconStyle={style.iconStyle}
-                  data={productsData}
-                  search
-                  maxHeight={300}
-                  labelField="label"
-                  valueField="value"
-                  placeholder={!productValue ? 'Select Product' : '...'}
-                  searchPlaceholder="Search..."
-                  value={productValue}
-                  onBlur={() => {}}
-                  onChange={item => {
-                    setProductValue(item.label);
-                    endEditing(item.label)
-                  }}
-                  renderLeftIcon={() => (
-                    <AntDesign
-                      style={styles.icon}
-                      color={productValue ? 'blue' : 'black'}
-                      name="Safety"
-                      size={20}
-                    />
-          )}
-        /> */}
           <TouchableOpacity
             style={style.newbtn}
             onPress={() => {
@@ -187,6 +130,7 @@ const Inventory = ({ navigation, item }) => {
           endEditing(e);
         }}
       />
+
     </SafeAreaView>
   );
 };
@@ -195,7 +139,7 @@ export default Inventory;
 
 export const style = StyleSheet.create({
   newbtn: {
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     paddingVertical: 5,
     paddingHorizontal: 8,
     borderRadius: 7,
@@ -207,7 +151,7 @@ export const style = StyleSheet.create({
   },
   dropdown: {
     height: 42,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 8,

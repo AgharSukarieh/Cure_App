@@ -74,7 +74,7 @@ const OrderModel = ({show, hide, data, submit, id}) => {
             }}>
             <AntDesign
               name="close"
-              color="#7189FF"
+              color="#469ED8"
               size={35}
               style={{alignSelf: 'flex-end'}}
             />
@@ -226,7 +226,7 @@ const style = StyleSheet.create({
   maintitle: {
     fontSize: 25,
     textTransform: 'capitalize',
-    color: '#7189FF',
+    color: '#469ED8',
   },
   card: {
     marginVertical: 15,
@@ -243,7 +243,7 @@ const style = StyleSheet.create({
     justifyContent: 'space-between',
     width: '98%',
     alignSelf: 'center',
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     borderWidth: 1,
     marginTop: 10,
     borderRadius: 7,
@@ -254,7 +254,7 @@ const style = StyleSheet.create({
     justifyContent: 'space-between',
     width: '98%',
     alignSelf: 'center',
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     borderBottomWidth: 1,
     marginTop: 10,
     paddingVertical: 7,
@@ -262,7 +262,7 @@ const style = StyleSheet.create({
   },
   filtterel: {
     borderRadius: 10,
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
   },
   row: {
     flexDirection: 'row',

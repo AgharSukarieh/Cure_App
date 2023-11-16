@@ -42,7 +42,7 @@ const SkueditModel = ({ show, hide, submit, data }) => {
             }}>
             <AntDesign
               name="close"
-              color="#7189FF"
+              color="#469ED8"
               size={35}
               style={{ alignSelf: 'flex-end' }}
             />
@@ -100,7 +100,7 @@ const style = StyleSheet.create({
   maintitle: {
     fontSize: 25,
     textTransform: 'capitalize',
-    color: '#7189FF',
+    color: '#469ED8',
   },
   card: {
     marginVertical: 15,

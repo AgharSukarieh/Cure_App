@@ -29,7 +29,7 @@ useEffect(() => {
             <View style={styles.ModalContainer}>
                 <View style={styles.ModalView}>
                     <TouchableOpacity onPress={() => { hide() }}>
-                        <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
+                        <AntDesign name="close" color='#469ED8' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
 
                     <Text style={styles.phname}>{data?.pharmacy}</Text>
@@ -42,7 +42,7 @@ useEffect(() => {
                                 
                                 <View key={index} style={styles.card}>
                                     <Text style={styles.item_name}>{item?.product?.name}</Text>
-                                    <View style={{ width: '99%', height: 0.5, backgroundColor: '#7189FF', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
+                                    <View style={{ width: '99%', height: 0.5, backgroundColor: '#469ED8', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 }}>
                                         <View style={styles.item_info}>
                                             <Text style={styles.item_itemtitle}>Barcode</Text>
@@ -83,7 +83,7 @@ useEffect(() => {
                     <View style={{ marginVertical: 10, marginTop: 20}}>
                         <View style={{...styles.card, backgroundColor: '#cccccf' }}>
                                     {/* <TouchableOpacity onPress={() => {calc()}}> */}
-                                        <Text style={{...styles.item_name, color: '#7189FF', fontWeight: 'bold'}}>Total Cost</Text>
+                                        <Text style={{...styles.item_name, color: '#469ED8', fontWeight: 'bold'}}>Total Cost</Text>
                                     {/* </TouchableOpacity> */}
                                      
                                     <View style={{ width: '99%', height: 0.5, backgroundColor: 'black', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
         padding: 20
     },
     card: {
-        shadowColor: "#7189FF",
+        shadowColor: "#469ED8",
         shadowOffset: { width: 0, height: 1, },
         shadowOpacity: 0.22,
         shadowRadius: 2.22,
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     phname: {
         fontSize: 25,
         textTransform: 'capitalize',
-        color: '#7189FF'
+        color: '#469ED8'
     },
     phlocation: {
         marginHorizontal: 15,
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     item_name: {
         fontSize: 20,
         textTransform: 'capitalize',
-        color: '#7189FF'
+        color: '#469ED8'
     },
     item_info: {
         justifyContent: 'center',

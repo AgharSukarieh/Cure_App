@@ -27,7 +27,7 @@ const InventoryModel = ({show, hide, data}) => {
             }}>
             <AntDesign
               name="close"
-              color="#7189FF"
+              color="#469ED8"
               size={35}
               style={{alignSelf: 'flex-end'}}
             />
@@ -56,7 +56,7 @@ const InventoryModel = ({show, hide, data}) => {
             <Text style={styles.titleInfo}>Expired Date :  </Text>
             <Text style={styles.phname}>{ moment(data?.product?.expiry_date).format('DD /MM/ YYYY')}</Text>
           </View>
-          <View style={{ width: '99%', height: 0.5, backgroundColor: '#7189FF', alignSelf: 'center', marginTop: 20, borderRadius: 22 }} />
+          <View style={{ width: '99%', height: 0.5, backgroundColor: '#469ED8', alignSelf: 'center', marginTop: 20, borderRadius: 22 }} />
           </>
           }
 
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   phname: {
     fontSize: 18,
     textTransform: 'capitalize',
-    color: '#7189FF',
+    color: '#469ED8',
     justifyContent: 'center',
     width: '50%'
   },
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   card: {
-    shadowColor: '#7189FF',
+    shadowColor: '#469ED8',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   item_name: {
     fontSize: 20,
     textTransform: 'capitalize',
-    color: '#7189FF',
+    color: '#469ED8',
   },
   item_info: {
     justifyContent: 'center',

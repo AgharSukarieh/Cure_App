@@ -49,7 +49,7 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea }) => {
             <View style={style.ModalContainer}>
                 <View style={style.ModalView}>
                     <TouchableOpacity onPress={() => { hide() }}>
-                        <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
+                        <AntDesign name="close" color='#469ED8' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
                     <Text style={style.title}>{data.item}</Text>
                     < View style={style.filterContainer}>
@@ -154,7 +154,7 @@ const style = StyleSheet.create({
     },
     title: {
         fontSize: 25,
-        color: '#7189FF',
+        color: '#469ED8',
     },
     filterContainer: {
         marginVertical: 20,
@@ -168,7 +168,7 @@ const style = StyleSheet.create({
         marginTop: 10
     },
     btn: {
-        backgroundColor: '#7189FF',
+        backgroundColor: '#469ED8',
         width: '90%',
         alignSelf: 'center',
         borderRadius: 13,

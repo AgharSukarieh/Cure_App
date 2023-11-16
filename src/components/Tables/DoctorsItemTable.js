@@ -49,7 +49,7 @@ const DoctorsItemTable = ({ item, cityArea }) => {
                 <View style={styles.verticalline} />
                 <View style={{ ...styles.filtterel, flexDirection: 'row', width: '15%', justifyContent: 'space-around', alignItems: 'center' }} >
                     <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => { rowModal(item) }}>
-                        <AntDesign name="infocirlce" color='#7189FF' size={20} />
+                        <AntDesign name="infocirlce" color='#469ED8' size={20} />
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => { EdModal(item) }}>
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '98%',
         alignSelf: 'center',
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
         borderWidth: 1,
         marginTop: 10,
         borderRadius: 7,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '98%',
         alignSelf: 'center',
-        borderColor: '#7189FF',
+        borderColor: '#469ED8',
         borderBottomWidth: 1,
         marginTop: 10,
         paddingVertical: 7,

@@ -36,8 +36,7 @@ const EditProfle = () => {
                     <Input lable={'Name'} setData={setname} value={name} placeholder={'Name'} />
                     <Input lable={'Email'} setData={setemail} value={email} placeholder={'Email'} />
                     <Input lable={'Phone'} setData={setphone} value={phone} placeholder={'Phone'} />
-                    <Button text={'Submit'} handleClick={() => { }} />
-
+                    {/* <Button text={'Submit'} handleClick={ () => {} } /> */}
                 </View>
 
             </ScrollView>

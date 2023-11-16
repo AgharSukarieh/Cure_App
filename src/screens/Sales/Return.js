@@ -18,13 +18,11 @@ import Input from '../../components/Input';
 import ReturnsAfterAddTable from '../../components/Tables/ReturnsAfterAddTable';
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-
 import { SAL_GET_PRODUCT_BY_BARCODE } from '../../Provider/ApiRequest';
 import { get } from '../../WebService/RequestBuilder';
 import globalConstants from '../../config/globalConstants';
 import { TextInput } from 'react-native';
 import ReturnsTable from '../../components/Tables/ReturnsTable';
-
 Feather.loadFont();
 
 const Return = ({ navigation, route, item }) => {
@@ -36,45 +34,19 @@ const Return = ({ navigation, route, item }) => {
   const [returnData, setReturnData] = useState([]);
   const [notInStore, setNotInStore] = useState(false);
   const [totalReturnsStatus, setTotalReturnsStatus] = useState(false);
-
-  // const [productsData, setProductsData] = useState([])
-  // const [productValue, setProductValue] = useState(null)
-  // const [productsArray, setProductsArray] = useState([])
-
   const [dateEx, setDateEx] = useState('');
-
   const [code, setCode] = useState(null);
 
-  // const getProducts = async() => {
-  //   get(globalConstants.product.products, null, {limit: 10000})
-  //   .then((res) => { 
-  //     // setProductsArray(res.data);
-  //       // var count = Object.keys(res.data).length
-  //       // let productsArray = []
-  //       // for (var i = 0; i < count; i++ ) {
-  //       //     productsArray.push({
-  //       //      value: res.data[i].id,
-  //       //      label: res.data[i].name
-  //       //     })
-  //       // }
-  //       // setProductsData(productsArray);
-  //   })
-  //   .catch((err) => {})
-  //   .finally(() => {
-  //   })
-  // }
-
   const endEditing = () => {
-    // const product = productsArray.find(product => product.id === productValue);
     const parms = {
-      batch_number_or_barcode: code, //'FGT78954G',
-      expiry_date: dateEx, //'2027-06-01',
-      pharmacy_id: item?.pharmacy_id, //2
+      batch_number_or_barcode: code, //"12332133"
+      expiry_date: dateEx,
+      pharmacy_id: item?.pharmacy_id,
     }
 
     if (dateEx != null && dateEx != '') {
       get(globalConstants.return.get_returns, null, parms).then((res) => {
-        if ((res.return_orders.length > 0)) {
+        if ((res?.return_orders?.length > 0)) {
           setDataForScan(res.return_orders);
         } else {
           setDataForScan(null);
@@ -85,148 +57,64 @@ const Return = ({ navigation, route, item }) => {
     }
   }
 
-  // useEffect(() => {
-  //   // getProducts();
-  // }, [])
-
-  const scan = () => {
-    // To Start Scanning
-    if (Platform.OS === 'android') {
-      async function requestCameraPermission() {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.CAMERA,
-            {
-              title: 'Camera Permission',
-              message: 'App needs permission for camera access',
-            },
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            // If CAMERA Permission is granted
-            // setCode('');
-            // setOpneScanner(true);
-            setModal(true);
-          } else {
-            alert('CAMERA permission denied');
-          }
-        } catch (err) {
-          alert('Camera permission err', err);
-          console.warn(err);
-        }
-      }
-      // Calling the camera permission function
-      requestCameraPermission();
-    } else {
-      setDataForScan(null);
-      // setOpneScanner(true);
-      setModal(true);
-    }
-  };
-
   const submitAfterGetBarcode = dataforscan => {
     setCode(dataforscan)
-
-    // // setDataForScan(dataforscan);
-    // const data = {
-    //   batch_number: 1234,
-    //   expired_date: '10/3/2023',
-    //   amount: 4,
-    // };
-    // setDataForScan(data);
-    // checIfProductInOurStore(data);
-    // console.log(`Api for: ${dataforscan}`);
-    //   axios({
-    //     method: 'GET',
-    //     url: SAL_GET_PRODUCT_BY_BARCODE,
-    //     params: {barcode: dataforscan},
-    //   })
-    //     .then(response => {
-    //       console.log(response.data);
-    //     })
-    //     .catch(error => {
-    //       console.log(error);
-    //     });
-
   };
 
-  const checIfProductInOurStore = (data) => {
-    // API for chech...
-    const dataFromAPI = {
-      batch_number: 1235,
-      expired_date: '10/3/2021',
-      amount: 4,
-      last_order_date: '12/2/2022',
-    };
-    if (
-      dataFromAPI?.batch_number === data?.batch_number || dataFromAPI?.expired_date === data?.expired_date
-    ) {
-      setPrductInOurStore(dataFromAPI);
-      setNotInStore(false);
-    }
-    else {
-      setPrductInOurStore(null);
-      setNotInStore(true);
-    }
-  };
 
-  const addBtn = () => {
-    const data = { ...dataForScan, notes: notes };
-    const dd = [...returnData, data];
-    setReturnData(dd);
-    setDataForScan(null);
-    setPrductInOurStore(null);
-    setNotes('');
-  };
 
-  const submit = () => {
-    // API
-    setTotalReturnsStatus(true)
-  }
+  // const checIfProductInOurStore = (data) => {
+  //   const dataFromAPI = {
+  //     batch_number: 1235,
+  //     expired_date: '10/3/2021',
+  //     amount: 4,
+  //     last_order_date: '12/2/2022',
+  //   };
+  //   if (dataFromAPI?.batch_number === data?.batch_number || dataFromAPI?.expired_date === data?.expired_date) {
+  //     setPrductInOurStore(dataFromAPI);
+  //     setNotInStore(false);
+  //   } else {
+  //     setPrductInOurStore(null);
+  //     setNotInStore(true);
+  //   }
+  // };
+
+  // const addBtn = () => {
+  //   const data = { ...dataForScan, notes: notes };
+  //   const dd = [...returnData, data];
+  //   setReturnData(dd);
+  //   setDataForScan(null);
+  //   setPrductInOurStore(null);
+  //   setNotes('');
+  // };
+
+  // const submit = () => {
+  //   setTotalReturnsStatus(true)
+  // }
 
   return (
     <SafeAreaView style={styles.container}>
-
+      
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10 }}>
-        <TouchableOpacity
-          style={style.newbtn}
-          onPress={() => {
-            // scan();
-            setModal(true)
-          }}>
-          <Text style={{ color: '#fff', fontSize: 18, paddingHorizontal: 10 }}>
-            Scan
-          </Text>
+        <TouchableOpacity style={style.newbtn} onPress={() => { setModal(true) }}>
+          <Text style={{ color: '#fff', fontSize: 18, paddingHorizontal: 10 }}>Scan</Text>
         </TouchableOpacity>
+
+        <View style={{ width: '40%' , marginRight:10}}>
+          <TextInput
+            style={{ marginLeft: 10, width: '100%', height: 40, borderWidth: 1, borderColor: '#000', marginTop: 10, borderRadius: 5, paddingHorizontal: 10 }}
+            placeholder='batch number or barcode'
+            onChangeText={text => setCode(text)}
+            onEndEditing={endEditing}
+            value={code}
+          />
+        </View>
+
       </View>
+
       <View style={{ width: '90%', height: 1, backgroundColor: '#000', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
+      
       <View style={{ width: '50%' }}>
-        {/* <Dropdown
-            style={style.dropdown}
-                  placeholderStyle={style.placeholderStyle}
-                  selectedTextStyle={style.selectedTextStyle}
-                  inputSearchStyle={style.inputSearchStyle}
-                  iconStyle={style.iconStyle}
-                  data={productsData}
-                  search
-                  maxHeight={300}
-                  labelField="label"
-                  valueField="value"
-                  placeholder={!productValue ? 'Select Product' : '...'}
-                  searchPlaceholder="Search..."
-                  value={productValue}
-                  onBlur={() => {}}
-                  onChange={item => {
-                    setProductValue(item.value);
-                  }}
-                  renderLeftIcon={() => (
-                    <AntDesign
-                      style={styles.icon}
-                      color={productValue ? 'blue' : 'black'}
-                      name="Safety"
-                      size={20}
-                    />
-            )}
-          /> */}
         <TextInput
           style={{ marginLeft: 10, width: '100%', height: 40, borderWidth: 1, borderColor: '#000', marginTop: 10, borderRadius: 5, paddingHorizontal: 10 }}
           placeholder='YYYY-MM-DD'
@@ -236,16 +124,10 @@ const Return = ({ navigation, route, item }) => {
       </View>
 
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={{ marginBottom: 40, marginHorizontal: 20 }}>
-        {/*  */}
-        <View>
-          {dataForScan && <ReturnsTable data={dataForScan} />}
-        </View>
-        {/*  */}
+      <ScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: 40, marginHorizontal: 20 }}>
 
 
+        {dataForScan && <ReturnsTable data={dataForScan} func={endEditing}/>}
 
         {
           // dataForScan && (
@@ -286,7 +168,7 @@ const Return = ({ navigation, route, item }) => {
           //       style={{
           //         width: '99%',
           //         height: 1,
-          //         backgroundColor: '#7189FF',
+          //         backgroundColor: '#469ED8',
           //         alignSelf: 'center',
           //         marginTop: 20,
           //         borderRadius: 22,
@@ -378,7 +260,7 @@ const Return = ({ navigation, route, item }) => {
           style={{
             width: '99%',
             height: 1,
-            backgroundColor: '#7189FF',
+            backgroundColor: '#469ED8',
             alignSelf: 'center',
             marginTop: 10,
             borderRadius: 22,
@@ -413,7 +295,7 @@ const Return = ({ navigation, route, item }) => {
 
       {/* { totalReturnsStatus && <View style={{ marginTop: 20, width: '90%', marginHorizontal: '5%'}}>
                         <View style={{...style.card, backgroundColor: '#cccccf' }}>
-                                    <Text style={{color: '#7189FF', fontWeight: 'bold'}}>Total Returns</Text>
+                                    <Text style={{color: '#469ED8', fontWeight: 'bold'}}>Total Returns</Text>
                                     <View style={{ width: '99%', height: 0.5, backgroundColor: 'black', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
                                     <View style={{ flexDirection: 'row', justifyContent: 'center', paddingHorizontal: 15 }}>  
                                         <View style={styles.item_info}>
@@ -441,7 +323,7 @@ export default Return;
 
 export const style = StyleSheet.create({
   newbtn: {
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     paddingVertical: 5,
     paddingHorizontal: 8,
     borderRadius: 7,
@@ -466,7 +348,7 @@ export const style = StyleSheet.create({
   phname: {
     fontSize: 18,
     textTransform: 'capitalize',
-    color: '#7189FF',
+    color: '#469ED8',
     justifyContent: 'center',
     width: '50%',
   },
@@ -479,7 +361,7 @@ export const style = StyleSheet.create({
     marginHorizontal: 20,
   },
   card: {
-    shadowColor: "#7189FF",
+    shadowColor: "#469ED8",
     shadowOffset: { width: 0, height: 1, },
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
@@ -493,7 +375,7 @@ export const style = StyleSheet.create({
   },
   dropdown: {
     height: 42,
-    borderColor: '#7189FF',
+    borderColor: '#469ED8',
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 8,

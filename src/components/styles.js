@@ -67,7 +67,7 @@ export const styles = StyleSheet.create({
 
   // Button Style
   button: {
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     padding: 10,
     borderRadius: 5,
     borderWidth: 1,
@@ -105,7 +105,7 @@ export const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#7189FF',
+    color: '#469ED8',
   },
   imageButtonContainer: {
     width: '100%',
@@ -145,7 +145,7 @@ export const styles = StyleSheet.create({
     height: 150,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     borderRadius: 10,
     marginBottom: 10
   },
@@ -156,7 +156,7 @@ export const styles = StyleSheet.create({
     height: 150,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     borderRadius: 10,
     marginBottom: 20
   },
@@ -179,7 +179,7 @@ export const styles = StyleSheet.create({
   },
   rightText: {
     fontSize: 17,
-    color: '#7189FF',
+    color: '#469ED8',
   },
   helloText: {
     color: '#253274',
@@ -254,7 +254,7 @@ export const styles = StyleSheet.create({
     borderColor: '#A5BECC'
   },
   btn: {
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     width: '95%',
     alignSelf: 'center',
     borderRadius: 15,

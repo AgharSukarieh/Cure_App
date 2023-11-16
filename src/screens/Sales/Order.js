@@ -7,8 +7,6 @@ import {
   StyleSheet
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import GoBack from '../../components/GoBack';
-// import {salesdata} from '../../helpers/data';
 import OrderTable from '../../components/Tables/OrderTable';
 import Feather from 'react-native-vector-icons/Feather';
 import AddNewOrderModel from '../../components/Modals/AddNewOrderModel';
@@ -17,13 +15,10 @@ import { get } from '../../WebService/RequestBuilder';
 import { useAuth } from '../../contexts/AuthContext';
 import moment from 'moment';
 import { styles } from '../../components/styles';
-
 Feather.loadFont();
 
 const Order = ({ navigation, route, item, area, date }) => {
   const { user } = useAuth();
-
-
   const [modal, setModal] = useState(false)
   const [rows, setRows] = useState([])
 
@@ -39,7 +34,6 @@ const Order = ({ navigation, route, item, area, date }) => {
 
     }).finally(() => { })
   }
-
 
   useEffect(() => {
     getOrders();
@@ -92,7 +86,7 @@ export default Order;
 
 export const style = StyleSheet.create({
   newbtn: {
-    backgroundColor: '#7189FF',
+    backgroundColor: '#469ED8',
     paddingVertical: 5,
     paddingHorizontal: 8,
     borderRadius: 7,

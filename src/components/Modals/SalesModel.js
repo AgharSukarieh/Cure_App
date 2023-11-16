@@ -22,7 +22,7 @@ const SalesModel = ({ show, hide, data }) => {
                 <View style={styles.ModalView}>
 
                     <TouchableOpacity onPress={() => { hide() }}>
-                        <AntDesign name="close" color='#7189FF' size={35} style={{ alignSelf: 'flex-end' }} />
+                        <AntDesign name="close" color='#469ED8' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
                     <Text style={styles.phname}>{data?.pharmacy}</Text>
                     <Text style={styles.phlocation}>{data?.area}</Text>
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         padding: 20
     },
     card: {
-        shadowColor: "#7189FF",
+        shadowColor: "#469ED8",
         shadowOffset: { width: 0, height: 1, },
         shadowOpacity: 0.22,
         shadowRadius: 2.22,
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     phname: {
         fontSize: 25,
         textTransform: 'capitalize',
-        color: '#7189FF',
+        color: '#469ED8',
         textAlign:'center'
     },
     tableContainer: {
@@ -97,6 +97,6 @@ const styles = StyleSheet.create({
       item_name: {
         fontSize: 20,
         textTransform: 'capitalize',
-        color: '#7189FF'
+        color: '#469ED8'
     },
 })
