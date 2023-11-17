@@ -4,7 +4,7 @@ import { styles } from './styles';
 import Icon from 'react-native-vector-icons/Feather';
 
 Icon.loadFont()
-const Input = ({ lable, placeholder, isPassword, isNumeric = false, setData, onEndEditing, labelStyle = styles.label, viewStyle = styles.inbutContainer, style = styles.input, value = null, multiline = false, numberOfLines = 1 }) => {
+const Input = ({ lable, placeholder, isEditable = true, isPassword, isNumeric = false, setData, onEndEditing, labelStyle = styles.label, viewStyle = styles.inbutContainer, style = styles.input, value = null, multiline = false, numberOfLines = 1 }) => {
   const [showEye, setShowEye] = useState(false);
   return (
     <View style={{ ...styles.inbutContainer, ...viewStyle }}>
@@ -19,28 +19,14 @@ const Input = ({ lable, placeholder, isPassword, isNumeric = false, setData, onE
         numberOfLines={numberOfLines}
         placeholder={placeholder}
         keyboardType={isNumeric ? 'numeric' : 'default'}
+        editable={isEditable}
       />
       {isPassword && (
-        <>
-          {!showEye ? (
-            <TouchableOpacity
-              onPress={() => setShowEye(!showEye)}
-              style={styles.iconPassword}>
-              <Icon name="eye" size={20} color="black" />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.iconPasswordHide}
-              onPress={() => setShowEye(!showEye)}>
-              <Icon
-                name="eye-off"
-                size={20}
-                color="black"
-                style={styles.iconPassword}
-              />
-            </TouchableOpacity>
-          )}
-        </>
+        <TouchableOpacity
+          onPress={() => setShowEye(!showEye)}
+          style={styles.iconPassword}>
+          <Icon name={!showEye ? "eye-off" : "eye"} size={20} color="black" />
+        </TouchableOpacity>
       )}
     </View>
   );

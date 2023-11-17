@@ -132,6 +132,7 @@ const Clientpharmalist = ({ navigation, route, header = true }) => {
             }}>
             <View style={style.container}>
               <Dropdown
+                itemTextStyle={{color:'#000000'}}
                 style={style.dropdown}
                 placeholderStyle={style.placeholderStyle}
                 selectedTextStyle={style.selectedTextStyle}
@@ -167,6 +168,7 @@ const Clientpharmalist = ({ navigation, route, header = true }) => {
 
             <View style={style.container}>
               <Dropdown
+                itemTextStyle={{color:'#000000'}}
                 style={style.dropdown}
                 placeholderStyle={style.placeholderStyle}
                 selectedTextStyle={style.selectedTextStyle}

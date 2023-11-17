@@ -166,6 +166,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 
                 <View style={{ ...styles.container, marginTop: 40 }}>
                   <Dropdown
+                    itemTextStyle={{color:'#000000'}}
                     style={styles.dropdown}
                     placeholderStyle={styles.placeholderStyle}
                     selectedTextStyle={styles.selectedTextStyle}
@@ -197,6 +198,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 
                 <View style={{ ...styles.container, marginTop: 40 }}>
                   <Dropdown
+                    itemTextStyle={{color:'#000000'}}
                     style={styles.dropdown}
                     placeholderStyle={styles.placeholderStyle}
                     selectedTextStyle={styles.selectedTextStyle}
@@ -227,6 +229,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 
                 <View style={{ ...styles.container, marginTop: 40 }}>
                   <Dropdown
+                    itemTextStyle={{color:'#000000'}}
                     style={styles.dropdown}
                     placeholderStyle={styles.placeholderStyle}
                     selectedTextStyle={styles.selectedTextStyle}

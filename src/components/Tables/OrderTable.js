@@ -34,7 +34,7 @@ const OrderTable = ({data}) => {
         </View>
         <View style={{width: 1, height: '100%', backgroundColor: '#469ED8'}} />
         <View style={styles.headerel}>
-          <Text style={styles.headerel_tetx}>Total Price</Text>
+          <Text style={styles.headerel_tetx}>Status</Text>
         </View>
         {/* <View style={{width: 1, height: '100%', backgroundColor: '#469ED8'}} />
         <View style={styles.headerel}>
@@ -47,13 +47,14 @@ const OrderTable = ({data}) => {
       </View>
       {data ? (
         data.map((item, index) => (
+          
           <View
             style={{
               ...styles.row,
               backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff',
             }}
             key={index}>
-
+              
             <View style={styles.rowel}>
               {item?.order_details?.slice(0, 5).map((row, index2) => (
                 <Text

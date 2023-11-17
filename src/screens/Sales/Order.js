@@ -30,6 +30,9 @@ const Order = ({ navigation, route, item, area, date }) => {
     }
     get(Constants.orders.get_orders, null, params).then((res) => {
       setRows(res.data)
+      // console.log('====================================');
+      // console.log(res.data);
+      // console.log('====================================');
     }).catch((res) => {
 
     }).finally(() => { })
@@ -38,24 +41,6 @@ const Order = ({ navigation, route, item, area, date }) => {
   useEffect(() => {
     getOrders();
   }, []);
-
-  // const submit2 = (data) => {
-  //   const testData = {
-  //     id: 1,
-  //     pharm_name: 'test pharm 1',
-  //     location: 'Jabal Weibdeh',
-  //     items: [
-  //         {
-  //             item_id: 1,
-  //             item_name: 'test item 1',
-  //             items_sum: 12,
-  //             bonus: 0,
-  //             price: 20
-  //         }
-  //     ]
-  // }
-  //   setRows([...rows,testData])
-  // }
 
   return (
     <SafeAreaView style={styles.container}>

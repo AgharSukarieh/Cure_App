@@ -100,6 +100,7 @@ const Sales = ({ navigation }) => {
         }}>
         <View style={{ ...style.container, backgroundColor: 'white', width: '100%', }}>
           <Dropdown
+            itemTextStyle={{color:'#000000'}}
             style={style.dropdown}
             placeholderStyle={style.placeholderStyle}
             selectedTextStyle={style.selectedTextStyle}
@@ -135,6 +136,7 @@ const Sales = ({ navigation }) => {
 
         <View style={{ ...style.container, backgroundColor: 'white', width: '100%', }}>
           <Dropdown
+            itemTextStyle={{color:'#000000'}}
             style={style.dropdown}
             placeholderStyle={style.placeholderStyle}
             selectedTextStyle={style.selectedTextStyle}

@@ -38,6 +38,8 @@ const ContactsScreen = ({ route, navigation }) => {
               placeholder='Search ....'
               value={txt} 
               onChangeText={handleTextChange}
+              placeholderTextColor={'#808080'}
+              style={{color:'#000000'}}
             />
             <TouchableOpacity onPress={() => {
               get_users();
@@ -50,7 +52,7 @@ const ContactsScreen = ({ route, navigation }) => {
       <FlatList
         data={allnewusers}
         renderItem={({ item }) => <ContactListItem user={item} />}
-        style={{ backgroundColor: 'white' }}
+        style={{ backgroundColor: '#FFFFFF' }}
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>

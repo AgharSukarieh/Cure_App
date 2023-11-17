@@ -13,10 +13,14 @@ import RNFetchBlob from 'rn-fetch-blob';
 
 const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
   const [pharmacyName, setPharmacyName] = useState(null);
-  const [classification, setClassification] = useState('');
+  // const [classification, setClassification] = useState('');
+
+  const [classificationData, setClassificationData] = useState([]);
+  const [classificationValue, setClassificationValue] = useState(null);
 
   const [citiesData, setCitiesData] = useState([]);
   const [cityValue, setCityValue] = useState(null);
+
   const [areasData, setAreasData] = useState([]);
   const [areaValue, setAreaValue] = useState(null);
 
@@ -36,14 +40,14 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
         activate_status: 1,
         city_id: cityValue,
         area_id: areaValue,
-        classification: classification,
+        classification: classificationValue,
         latitude: latitude,
         longitude: longitude,
         images: imagesBase64
       };
       post(Constants.sales.pharmacy, bodyData).then((res) => {  
         setPharmacyName(null)
-        setClassification(null)
+        setClassificationValue(null)
         setCityValue(null)
         setAreaValue(null)
         setLatitude(null)
@@ -75,6 +79,20 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
       }
   }
  
+  const getClassification = () => {
+    const data = ['A', 'B', 'C', 'D']
+    var count = Object.keys(data).length
+    let classificationArray = []
+    for (var i = 0; i < count; i++ ){
+      classificationArray.push({
+              value: data[i],
+              label: data[i]
+          })
+    }
+    setClassificationData(classificationArray)
+  }
+   
+
   const getArea = (id) => {
     const arr = [];
     data.areas.forEach((area) => {
@@ -211,6 +229,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
 
   useEffect(() => {
     getCities()
+    getClassification()
   }, [])
 
   return (
@@ -247,6 +266,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
 
                 <View style={styles.container}>
                  <Dropdown
+              itemTextStyle={{color:'#000000'}}
               style={styles.dropdown}
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
@@ -278,6 +298,7 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
 
                 <View style={{...styles.container, marginTop: 40}}>
                 <Dropdown
+              itemTextStyle={{color:'#000000'}}
               style={styles.dropdown}
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
@@ -306,6 +327,37 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
             />
                 </View>
 
+                <View style={{...styles.container, marginTop: 40}}>
+                  <Dropdown
+                    itemTextStyle={{color:'#000000'}}
+                    style={styles.dropdown}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={classificationData}
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!classificationValue ? 'Select Classification' : '...'}
+                    searchPlaceholder="Search..."
+                    value={classificationValue}
+                    onBlur={() => {}}
+                    onChange={item => {
+                      setClassificationValue(item.value);
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color={classificationValue ? 'blue' : 'black'}
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
+                  />
+                </View>
+
                 <Input
                   lable={'Pharmacy Name'}
                   setData={setPharmacyName}
@@ -314,13 +366,13 @@ const AddNewPharmacyModel = ({showM, hideM, submit, data}) => {
                   viewStyle={{width: '90%'}}
                 />
 
-                <Input
+                {/* <Input
                   lable={'Classification'}
                   setData={setClassification}
                   style={{...styles.inputModel, backgroundColor: 'white'}}
                   value={classification}
                   viewStyle={{width: '90%'}}
-                />
+                /> */}
 
                 <TouchableOpacity style={{marginTop: 40, width: '90%',height: 50, backgroundColor: latitude ? '#469ED8' : '#fff', borderWidth:2,borderColor: '#469ED8',borderRadius:5, justifyContent:'center'}} onPress={() => {getCurrentLocation()}}>
                   <Text style={{marginBottom: 5, color: latitude ? '#fff' : '#469ED8', textAlign:'center', fontSize:17, fontWeight:'bold'}}>

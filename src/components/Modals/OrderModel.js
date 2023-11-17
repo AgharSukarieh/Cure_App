@@ -90,7 +90,7 @@ useEffect(() => {
                                    
                                     <View style={{ flexDirection: 'row', justifyContent: 'center', paddingHorizontal: 15 }}>  
                                         <View style={styles.item_info}>
-                                            <Text style={{fontSize: 20, fontWeight:'bold', color: 'black'}}>{totalPrice} JOD</Text>
+                                            <Text style={{fontSize: 20, fontWeight:'bold', color: 'black'}}>{data?.total_price} JOD</Text>
                                         </View> 
                                     </View>
                         </View>

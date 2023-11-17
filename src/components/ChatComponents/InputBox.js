@@ -3,7 +3,6 @@ import { View, TextInput, StyleSheet, Image, FlatList, Platform } from 'react-na
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { openPicker } from '@baronha/react-native-multiple-image-picker';
-import GetLocation from 'react-native-get-location';
 import { useNavigation } from '@react-navigation/native';
 import MapMH from './Map';
 // import axios from 'axios';
@@ -14,6 +13,7 @@ import globalConstants from '../../config/globalConstants';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import RNFetchBlob from 'rn-fetch-blob';
 import { log } from 'console';
+import GetLocation from 'react-native-get-location'
 
 const InputBox = ({ receiverID, submit }) => {
   const navigation = useNavigation();
@@ -90,7 +90,7 @@ const InputBox = ({ receiverID, submit }) => {
         setLongitude(location.longitude);
       })
       .catch(error => {
-        console.warn(code, message);
+        console.log(error);
       });
   };
 
@@ -250,6 +250,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'lightgray',
+    color:'#000000'
   },
   send: {
     backgroundColor: 'royalblue',

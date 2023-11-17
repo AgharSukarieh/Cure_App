@@ -6,6 +6,7 @@ import {
   Modal,
   ScrollView,
   TextInput,
+  Alert,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -38,6 +39,7 @@ const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
         products: orderData
       }
       post(Constants.orders.add_order, data).then((res) => {  
+        Alert.alert(res?.message ?? '')
         func()
       }).catch((err) => {}).finally(() => { })
       hide();
@@ -159,6 +161,7 @@ const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
               <View style={style.card}>
 
                 <Dropdown
+                  itemTextStyle={{color:'#000000'}}
                   style={style.dropdown}
                   placeholderStyle={style.placeholderStyle}
                   selectedTextStyle={style.selectedTextStyle}

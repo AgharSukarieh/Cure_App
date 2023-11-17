@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#800020',
   },
   activeLabel: {
-    color: 'black',
+    color: '#000000',
   },
   middleTab: {
     backgroundColor: '#004776',
@@ -220,6 +220,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 11,
     fontWeight: 'bold',
+    color: '#748c94'
   },
 });
 

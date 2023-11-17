@@ -141,6 +141,7 @@ const AddNewInventoryModel = ({show, hide, submit}) => {
               <View style={style.card}>
                 {/* <View style={style.container}> */}
                   <Dropdown
+                    itemTextStyle={{color:'#000000'}}
                     style={style.dropdown}
                     placeholderStyle={style.placeholderStyle}
                     selectedTextStyle={style.selectedTextStyle}

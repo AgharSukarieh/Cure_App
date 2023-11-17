@@ -128,6 +128,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
             <View style={{ marginVertical: 10 }}>
               <View style={style.container}>
                 <Dropdown
+                  itemTextStyle={{color:'#000000'}}
                   style={style.dropdown}
                   placeholderStyle={style.placeholderStyle}
                   selectedTextStyle={style.selectedTextStyle}
@@ -159,6 +160,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
 
               <View style={style.container}>
                 <Dropdown
+                  itemTextStyle={{color:'#000000'}}
                   style={style.dropdown}
                   placeholderStyle={style.placeholderStyle}
                   selectedTextStyle={style.selectedTextStyle}

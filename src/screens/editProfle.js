@@ -30,12 +30,12 @@ const EditProfle = () => {
     return (
         <SafeAreaView style={{ ...styles.container, backgroundColor: '#ebebeb96' }}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <GoBack text={'Edit Profile'} />
+                <GoBack text={'Profile'} />
                 <View style={style.inputContainer}>
-                    <Text style={style.inputheader}>Edit Your Profile</Text>
-                    <Input lable={'Name'} setData={setname} value={name} placeholder={'Name'} />
-                    <Input lable={'Email'} setData={setemail} value={email} placeholder={'Email'} />
-                    <Input lable={'Phone'} setData={setphone} value={phone} placeholder={'Phone'} />
+                    <Text style={style.inputheader}>Your Profile</Text>
+                    <Input lable={'Name'} setData={setname} value={name} placeholder={'Name'} isEditable = {false}/>
+                    <Input lable={'Email'} setData={setemail} value={email} placeholder={'Email'} isEditable = {false}/>
+                    <Input lable={'Phone'} setData={setphone} value={phone} placeholder={'Phone'} isEditable = {false}/>
                     {/* <Button text={'Submit'} handleClick={ () => {} } /> */}
                 </View>
 

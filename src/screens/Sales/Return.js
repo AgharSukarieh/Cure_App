@@ -23,24 +23,24 @@ import { get } from '../../WebService/RequestBuilder';
 import globalConstants from '../../config/globalConstants';
 import { TextInput } from 'react-native';
 import ReturnsTable from '../../components/Tables/ReturnsTable';
+import DatePicker from 'react-native-date-picker';
 Feather.loadFont();
 
 const Return = ({ navigation, route, item }) => {
 
   const [modal, setModal] = useState(false);
   const [dataForScan, setDataForScan] = useState(null);
-  const [notes, setNotes] = useState('');
-  const [prductInOurStore, setPrductInOurStore] = useState(null);
-  const [returnData, setReturnData] = useState([]);
-  const [notInStore, setNotInStore] = useState(false);
-  const [totalReturnsStatus, setTotalReturnsStatus] = useState(false);
-  const [dateEx, setDateEx] = useState('');
+  // const [dateEx, setDateEx] = useState('');
   const [code, setCode] = useState(null);
 
-  const endEditing = () => {
+  const [open, setOpen] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [dateEx, setDateEx] = useState('');
+
+  const endEditing = (date_) => {
     const parms = {
       batch_number_or_barcode: code, //"12332133"
-      expiry_date: dateEx,
+      expiry_date: date_,
       pharmacy_id: item?.pharmacy_id,
     }
 
@@ -103,9 +103,9 @@ const Return = ({ navigation, route, item }) => {
         <View style={{ width: '40%' , marginRight:10}}>
           <TextInput
             style={{ marginLeft: 10, width: '100%', height: 40, borderWidth: 1, borderColor: '#000', marginTop: 10, borderRadius: 5, paddingHorizontal: 10 }}
-            placeholder='batch number or barcode'
+            placeholder='batch / barcode'
             onChangeText={text => setCode(text)}
-            onEndEditing={endEditing}
+            onEndEditing={() => endEditing(dateEx)}
             value={code}
           />
         </View>
@@ -114,20 +114,48 @@ const Return = ({ navigation, route, item }) => {
 
       <View style={{ width: '90%', height: 1, backgroundColor: '#000', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
       
-      <View style={{ width: '50%' }}>
+      {/* <View style={{ width: '50%' }}>
         <TextInput
           style={{ marginLeft: 10, width: '100%', height: 40, borderWidth: 1, borderColor: '#000', marginTop: 10, borderRadius: 5, paddingHorizontal: 10 }}
           placeholder='YYYY-MM-DD'
           onChangeText={text => setDateEx(text)}
           onEndEditing={endEditing}
         />
-      </View>
+      </View> */}
+
+            <TouchableOpacity
+              style={{...styles.filterbutton, width: '50%', marginHorizontal: 15, borderRadius:7, borderColor: '#000000'}}
+              onPress={() => {
+                setOpen(true);
+              }}>
+              <Text style={styles.filterbuttontext}>
+                {dateEx != '' ? dateEx : 'YYYY-MM-DD'}
+              </Text>
+            </TouchableOpacity>
+
+            <DatePicker
+              modal
+              mode="date"
+              format="YYYY-MM-DD"
+              open={open}
+              date={date}
+              onCancel={() => {
+                setOpen(false)
+              }}
+              onConfirm={data => {
+                setOpen(false);
+                setDate(data);
+                const formattedDate = data.getFullYear() + '-' + (data.getMonth() + 1) + '-' + data.getDate();
+                setDateEx(formattedDate);
+                endEditing(formattedDate)
+              }}
+            />
 
 
       <ScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: 40, marginHorizontal: 20 }}>
 
 
-        {dataForScan && <ReturnsTable data={dataForScan} func={endEditing}/>}
+        {dataForScan && <ReturnsTable data={dataForScan} func={() => endEditing(dateEx)}/>}
 
         {
           // dataForScan && (

@@ -207,6 +207,7 @@ export const styles = StyleSheet.create({
   },
   filterbuttontext: {
     textAlign: 'center',
+    color: '#808080'
   },
   calenderContainer: {
     flexDirection: 'row',

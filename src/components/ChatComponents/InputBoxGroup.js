@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 18,
-
+    color:'#000000',
     flex: 1,
     backgroundColor: 'white',
     padding: 5,

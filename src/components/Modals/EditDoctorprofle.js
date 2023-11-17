@@ -167,6 +167,7 @@ import {
   
                   <View style={{ ...styles.container, marginTop: 40 }}>
                     <Dropdown
+                      itemTextStyle={{color:'#000000'}}
                       style={styles.dropdown}
                       placeholderStyle={styles.placeholderStyle}
                       selectedTextStyle={styles.selectedTextStyle}
@@ -198,6 +199,7 @@ import {
   
                   <View style={{ ...styles.container, marginTop: 40 }}>
                     <Dropdown
+                      itemTextStyle={{color:'#000000'}}
                       style={styles.dropdown}
                       placeholderStyle={styles.placeholderStyle}
                       selectedTextStyle={styles.selectedTextStyle}
@@ -228,6 +230,7 @@ import {
   
                   <View style={{ ...styles.container, marginTop: 40 }}>
                     <Dropdown
+                      itemTextStyle={{color:'#000000'}}
                       style={styles.dropdown}
                       placeholderStyle={styles.placeholderStyle}
                       selectedTextStyle={styles.selectedTextStyle}

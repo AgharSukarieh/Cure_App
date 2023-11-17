@@ -52,7 +52,7 @@ apiClient.interceptors.response.use(
   },
   error => {
     hideLoadingIndicator();
-    Alert.alert('Error', error.message);
+    // Alert.alert('Error', error.message);
     return Promise.reject(error);
   },
 );
@@ -62,7 +62,12 @@ const request = async (method, url, data = null, params = {}) => {
     const response = await apiClient.request({ method, url, data, params });
     return response.data;
   } catch (error) {
-    Alert.alert(error.response?.data?.message || error.message)
+    const isUnauthenticated = error?.message?.includes('401')
+    if(isUnauthenticated) {
+      Alert.alert("Please log out and log in again")
+    } else {
+      Alert.alert(error.response?.data?.message || error.message)
+    }
     throw new Error(error.response?.data?.message || error.message);
   }
 };

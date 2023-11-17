@@ -169,6 +169,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
           }}>
           <View style={style.container}>
             <Dropdown
+              itemTextStyle={{color:'#000000'}}
               style={style.dropdown}
               placeholderStyle={style.placeholderStyle}
               selectedTextStyle={style.selectedTextStyle}
@@ -204,6 +205,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 
           <View style={style.container}>
             <Dropdown
+              itemTextStyle={{color:'#000000'}}
               style={style.dropdown}
               placeholderStyle={style.placeholderStyle}
               selectedTextStyle={style.selectedTextStyle}
@@ -239,6 +241,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 
         <View style={{ ...style.container, width: '100%' }}>
           <Dropdown
+            itemTextStyle={{color:'#000000'}}
             style={style.dropdown}
             placeholderStyle={style.placeholderStyle}
             selectedTextStyle={style.selectedTextStyle}
@@ -382,5 +385,9 @@ export const style = StyleSheet.create({
   iconStyle: {
     width: 20,
     height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
   },
 });
