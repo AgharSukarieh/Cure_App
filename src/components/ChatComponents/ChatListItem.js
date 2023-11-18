@@ -5,12 +5,13 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
+import { useAuth } from '../../contexts/AuthContext';
 Ionicons.loadFont();
 dayjs.extend(relativeTime);
 
 const ChatListItem = ({ chat, func }) => {
-
-  var lastSeen = chat?.last_message?.seen_at;
+  const {user} = useAuth()
+  var lastSeen = chat?.last_message?.sender_id == user.id ? '2023-11-17' : chat?.last_message?.seen_at;
 
   const navigation = useNavigation();
 

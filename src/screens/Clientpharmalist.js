@@ -205,6 +205,7 @@ const Clientpharmalist = ({ navigation, route, header = true }) => {
         </View>
 
         <View style={style.containerTable}>
+          {console.log(filter)}
           <PharmacyHeaderTable />
           <TableView
             apiEndpoint={getPharmacyEndpoint}

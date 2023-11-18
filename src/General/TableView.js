@@ -3,7 +3,6 @@ import { View, Text, FlatList, ActivityIndicator, RefreshControl, Image } from '
 import { getPage } from '../WebService/RequestBuilder';
 
 const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = false, onEndReached = true, isInverted=false, isNotChat=true }) => {
-  // console.log('##########################',params);
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -24,6 +23,25 @@ const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = fals
       } else {
         setData(prevData => [...prevData, ...newData]);
         setPage(prevPage => prevPage + 1);
+      }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const fetchDataIfParamsBecomNotEmpty = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await getPage(apiEndpoint, 1, 10, params);
+      const newData = response.data;
+      if (newData.length === 0) {
+        setHasMoreData(false);
+      } else {
+        setData(prevData => [...prevData, ...newData]);
+        setPage(2);
       }
     } catch (error) {
       setError(error.message);
@@ -56,6 +74,7 @@ const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = fals
     setData([]);
     setPage(1);
     setHasMoreData(true);
+    fetchDataIfParamsBecomNotEmpty()
   }, [params]);
 
   const renderFooter = () => {
