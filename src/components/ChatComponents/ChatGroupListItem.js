@@ -28,9 +28,9 @@ const ChatGroupListItem = ({ item, func }) => {
           <Text style={cardstyles.name} numberOfLines={1}> {item?.name ?? ''} </Text>
           <View style={{flexDirection: 'row'}}>
             {!lastSeen && <View style={{height: 8, width: 8, borderRadius: 4, backgroundColor: 'blue', alignSelf: 'center', marginRight: 4}}/>}
-            <Text numberOfLines={2} style={{...cardstyles.subTitle, color: lastSeen ? 'gray' : 'black', fontWeight: lastSeen ? '400' : 'bold', textAlign:'left'}}> {item?.last_message?.text || ''}</Text>
+            <Text numberOfLines={2} style={{...cardstyles.subTitle, color: lastSeen ? '#808080' : '#000000', fontWeight: lastSeen ? '400' : 'bold', textAlign:'left'}}> {item?.last_message?.text || ''}</Text>
           </View>
-          <Text style={{...cardstyles.subTitle, color: lastSeen ? 'gray' : 'black', fontWeight: lastSeen ? '400' : 'bold'}}> {dayjs(moment.utc(item?.last_message?.created_at).local().format()).fromNow(true)}</Text>
+          <Text style={{...cardstyles.subTitle, color: lastSeen ? '#808080' : '#000000', fontWeight: lastSeen ? '400' : 'bold'}}> {dayjs(moment.utc(item?.last_message?.created_at).local().format()).fromNow(true)}</Text>
         </View>
     </Pressable>
   );
@@ -66,6 +66,7 @@ const cardstyles = StyleSheet.create({
   name: {
     // flex: 1,
     fontWeight: 'bold',
+    color:'#808080'
   },
   subTitle: {
     color: 'gray',

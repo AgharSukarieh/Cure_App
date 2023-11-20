@@ -102,8 +102,9 @@ const Return = ({ navigation, route, item }) => {
 
         <View style={{ width: '40%' , marginRight:10}}>
           <TextInput
-            style={{ marginLeft: 10, width: '100%', height: 40, borderWidth: 1, borderColor: '#000', marginTop: 10, borderRadius: 5, paddingHorizontal: 10 }}
+            style={{ marginLeft: 10, width: '100%', height: 40, borderWidth: 1, borderColor: '#000', marginTop: 10, borderRadius: 5, paddingHorizontal: 10, color:'#000000' }}
             placeholder='batch / barcode'
+            placeholderTextColor={'#808080'}
             onChangeText={text => setCode(text)}
             onEndEditing={() => endEditing(dateEx)}
             value={code}
@@ -416,9 +417,11 @@ export const style = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
+    color:'#808080'
   },
   selectedTextStyle: {
     fontSize: 16,
+    color:'#000000'
   },
   iconStyle: {
     width: 20,
@@ -427,6 +430,7 @@ export const style = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+    color:'#000000'
   },
   textinput: {
     height: 60,

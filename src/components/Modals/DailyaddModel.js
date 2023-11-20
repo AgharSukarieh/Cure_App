@@ -43,8 +43,8 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
       })
   }
 
-  const getDoctors = async () => {
-    get(Constants.doctor.doctor_speciality, null, {area_id: area.area_id, limit: 1000, speciality_id: specialitiesValue })
+  const getDoctors = async (specialityId) => {
+    get(Constants.doctor.doctor_speciality, null, {area_id: area.area_id, limit: 1000, speciality_id: specialityId })
       .then((res) => {
         var count = Object.keys(res.data).length
         let doctorsArray = []
@@ -145,7 +145,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
                   onBlur={() => { }}
                   onChange={item => {
                     setSpecialitiesValue(item.value);
-                    getDoctors();
+                    getDoctors(item.value);
                   }}
                   renderLeftIcon={() => (
                     <AntDesign
@@ -191,6 +191,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
 
               <View style={style.container}>
                 <MultiSelect
+                itemTextStyle={{color:'#000000'}}
                   style={style.dropdown}
                   placeholderStyle={style.placeholderStyle}
                   selectedStyle={style.selectedStyle}
@@ -226,6 +227,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
                 <TextInput
                   onChangeText={(text) => { setnote(text) }}
                   placeholder='Note'
+                  placeholderTextColor={'#808080'}
                   style={{ ...styles.drop, height: 60, paddingHorizontal: 10 }}
                   maxLength={300}
                   multiline
@@ -312,9 +314,11 @@ const style = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
+    color:'#808080'
   },
   selectedTextStyle: {
     fontSize: 16,
+    color:'#000000'
   },
   iconStyle: {
     width: 20,
@@ -323,6 +327,7 @@ const style = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+    color:'#000000'
   },
   selectedStyle: {
     borderRadius: 7,

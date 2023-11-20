@@ -17,7 +17,11 @@ import Constants from '../../config/globalConstants';
 
 const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
   const [doctorName, setDoctorName] = useState('');
-  const [classification, setClassification] = useState('');
+  // const [classification, setClassification] = useState('');
+
+  const [classificationData, setClassificationData] = useState([]);
+  const [classificationValue, setClassificationValue] = useState(null);
+
   const [address, setAddress] = useState('');
 
   const [latitude, setLatitude] = useState('');
@@ -38,7 +42,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
       area_id: areaValue,
       speciality_id: specialtyValue,
       address: address,
-      classification: classification,
+      classification: classificationValue,
       longitude: longitude,
       latitude: latitude
     }
@@ -118,9 +122,23 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
       .finally(() => { })
   }
 
+  const getClassification = () => {
+    const data = ['A', 'B', 'C', 'D']
+    var count = Object.keys(data).length
+    let classificationArray = []
+    for (var i = 0; i < count; i++ ){
+      classificationArray.push({
+              value: data[i],
+              label: data[i]
+          })
+    }
+    setClassificationData(classificationArray)
+  }
+
   useEffect(() => {
     if (cityArea) getCities();
     getSpeciality();
+    getClassification();
   }, [])
 
   return (
@@ -158,6 +176,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 
                 <Input
                   lable={'Doctor Name'}
+                  placeholderStyle={{color:'#808080'}}
                   setData={setDoctorName}
                   style={{ ...styles.inputModel, backgroundColor: 'white' }}
                   value={doctorName}
@@ -257,17 +276,51 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
                     )}
                   />
                 </View>
+                
+                <View style={{...styles.container, marginTop: 40}}>
+                  <Dropdown
+                    itemTextStyle={{color:'#000000'}}
+                    style={styles.dropdown}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={classificationData}
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!classificationValue ? 'Select Classification' : '...'}
+                    searchPlaceholder="Search..."
+                    value={classificationValue}
+                    onBlur={() => {}}
+                    onChange={item => {
+                      setClassificationValue(item.value);
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color={classificationValue ? 'blue' : 'black'}
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
+                  />
+                </View>
 
-                <Input
+                {/* <Input
                   lable={'Classification'}
                   setData={setClassification}
+                  placeholderStyle={{color:'#808080'}}
                   style={{ ...styles.inputModel, backgroundColor: 'white' }}
                   value={classification}
                   viewStyle={{ width: '90%' }}
-                />
+                /> */}
+
                 <Input
                   lable={'Address'}
                   setData={setAddress}
+                  placeholderStyle={{color:'#808080'}}
                   style={{ ...styles.inputModel, backgroundColor: 'white' }}
                   value={address}
                   viewStyle={{ width: '90%' }}
@@ -346,9 +399,16 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
+    color:'#808080'
   },
   selectedTextStyle: {
     fontSize: 16,
+    color:'#000000'
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+    color:'#000000'
   },
   iconStyle: {
     width: 20,
@@ -424,5 +484,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingLeft: 10,
     borderRadius: 5,
+    color: '#000000'
   },
 });

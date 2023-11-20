@@ -546,9 +546,16 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
+    color:'#808080'
   },
   selectedTextStyle: {
     fontSize: 16,
+    color:'#000000'
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+    color:'#000000'
   },
   iconStyle: {
     width: 20,
@@ -625,5 +632,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingLeft: 10,
     borderRadius: 5,
+    color:'#000000'
   },
 });

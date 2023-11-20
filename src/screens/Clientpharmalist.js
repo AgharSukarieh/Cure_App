@@ -92,6 +92,7 @@ const Clientpharmalist = ({ navigation, route, header = true }) => {
             <TextInput
               style={styles.searchinput}
               placeholder="Search"
+              placeholderTextColor={'#808080'}
               onChangeText={text => {
                 setSearch(text)
                 setFilter((prev) => ({
@@ -304,9 +305,11 @@ export const style = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
+    color:'#808080'
   },
   selectedTextStyle: {
     fontSize: 16,
+    color:'#000000'
   },
   iconStyle: {
     width: 20,
@@ -315,5 +318,6 @@ export const style = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+    color:'#000000'
   },
 });

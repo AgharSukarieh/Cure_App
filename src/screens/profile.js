@@ -36,7 +36,7 @@ const Profile = () => {
                     <View style={style.cardsView}>
                         <TouchableOpacity style={style.card} onPress={() => { navigation.navigate('EditProfle') }}>
                             <Icon name="user" color='#3A97D6' size={32} style={{ marginHorizontal: 5 }} />
-                            <Text style={style.cardtext}>Edit Profile</Text>
+                            <Text style={style.cardtext}>View Profile</Text>
                         </TouchableOpacity>
 
                     </View>

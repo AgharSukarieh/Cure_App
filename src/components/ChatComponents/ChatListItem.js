@@ -40,11 +40,11 @@ const ChatListItem = ({ chat, func }) => {
           }
         </View>
         <View style={{ ...styles.row, justifyContent: 'space-between' }}>
-          <Text numberOfLines={2} style={{color: lastSeen ? 'gray' : 'black', fontWeight: lastSeen ? '400' : 'bold', marginLeft: 7, }}>
+          <Text numberOfLines={2} style={{color: lastSeen ? '#808080' : '#000000', fontWeight: lastSeen ? '400' : 'bold', marginLeft: 7, }}>
             {chat?.last_message?.text || 'attachments'}
           </Text>
 
-          <Text style={{...styles.subTitle,color: lastSeen ? 'gray' : 'black', fontWeight: lastSeen ? '400' : 'bold'}}>
+          <Text style={{...styles.subTitle,color: lastSeen ? '#808080' : '#000000', fontWeight: lastSeen ? '400' : 'bold'}}>
             {dayjs(moment.utc(chat?.updated_at).local().format()).fromNow(true)}
           </Text>
         </View>
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   name: {
     flex: 1,
     fontWeight: 'bold',
-    // color: 'black'
+    color: '#808080'
   },
   subTitle: {
     color: 'gray',

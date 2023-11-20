@@ -208,7 +208,7 @@ const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
                   }}>Bouns
                   </Text>
                   <View style={{ height: 40, borderWidth: 1, justifyContent: 'center', padding: 10, borderRadius: 5, borderColor: '#000' }}>
-                    <Text style={{ color: 'black' }}>{bouns}</Text>
+                    <Text style={{ color: '#000000' }}>{bouns}</Text>
                   </View>
                 </View>
 
@@ -351,9 +351,11 @@ const style = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
+    color:'#808080'
   },
   selectedTextStyle: {
     fontSize: 16,
+    color:'#000000'
   },
   iconStyle: {
     width: 20,
@@ -362,6 +364,7 @@ const style = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+    color:'#000000'
   },
   textinput: {
     height: 60,

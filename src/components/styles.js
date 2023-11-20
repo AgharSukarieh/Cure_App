@@ -55,6 +55,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     paddingLeft: 10,
     borderRadius: 5,
+    color:'#000000'
   },
   inputError: {
     height: 60,
@@ -252,7 +253,8 @@ export const styles = StyleSheet.create({
     width: '100%',
     height: 40,
     borderRadius: 7,
-    borderColor: '#A5BECC'
+    borderColor: '#A5BECC',
+    color:'#000000'
   },
   btn: {
     backgroundColor: '#469ED8',
@@ -278,6 +280,7 @@ export const styles = StyleSheet.create({
   },
   searchinput: {
     width: '85%',
+    color:'#000000'
   },
   logoutbtn: {
     backgroundColor: '#db2323',

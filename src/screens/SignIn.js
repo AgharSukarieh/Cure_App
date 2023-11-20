@@ -10,8 +10,8 @@ const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const SignIn = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
-  // hussein@gmail.com
-  const [email, setemail] = useState('hussienSale@gmail.com');
+  // hussein@gmail.com  hussienSale@gmail.com
+  const [email, setemail] = useState('medformAdmin@admin.com');
   const [password, setPassword] = useState('123456789');
   const { login } = useAuth();
 
@@ -50,15 +50,11 @@ const SignIn = ({ navigation }) => {
           <Input lable={'PASSWORD'} setData={setPassword} isPassword={true} placeholder={'PASSWORD'} />
           <Button text={'Sign In'} handleClick={() => LoginPress()} />
           <View style={{ width: '85%', alignSelf: 'center' }}>
-            <Text style={{ textAlign: 'center', fontSize: 16 }}>
+            <Text style={{ textAlign: 'center', fontSize: 16, color: '#808080', lineHeight:25 }}>
               By Signing in you Agree to Our{' '}
-              <TouchableOpacity onPress={() => console.log('Terms pressed')}>
-                <Text style={{ textDecorationLine: 'underline', marginHorizontal: 2, textAlign: 'center', fontSize: 16, color: 'red' }}>Terms & Conditions</Text>
-              </TouchableOpacity>
-              and
-              <TouchableOpacity onPress={() => console.log('Privacy Policy')}>
-                <Text style={{ textDecorationLine: 'underline', marginHorizontal: 2, textAlign: 'center', fontSize: 16, color: 'red' }}>Privacy Policy</Text>
-              </TouchableOpacity>
+                <Text onPress={() => console.log('Terms pressed')} style={{ textDecorationLine: 'underline', marginHorizontal: 2, textAlign: 'center', fontSize: 16, color: 'red' }}>Terms & Conditions</Text>
+                {' '}and{' '}
+                <Text onPress={() => console.log('Privacy Policy')} style={{ textDecorationLine: 'underline', marginHorizontal: 2, textAlign: 'center', fontSize: 16, color: 'red' }}>Privacy Policy</Text>
             </Text>
           </View>
         </View>

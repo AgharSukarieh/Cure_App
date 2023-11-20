@@ -286,9 +286,11 @@ import {
     },
     placeholderStyle: {
       fontSize: 16,
+      color:'#808080'
     },
     selectedTextStyle: {
       fontSize: 16,
+      color:'#000000'
     },
     iconStyle: {
       width: 20,
@@ -297,6 +299,7 @@ import {
     inputSearchStyle: {
       height: 40,
       fontSize: 16,
+      color:'#000000'
     },
     tableContainer: {
       flex: 1,
