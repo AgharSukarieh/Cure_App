@@ -11,7 +11,7 @@ const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SignIn = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   // hussein@gmail.com  hussienSale@gmail.com
-  const [email, setemail] = useState('medformAdmin@admin.com');
+  const [email, setemail] = useState('farah@gmail.com');
   const [password, setPassword] = useState('123456789');
   const { login } = useAuth();
 

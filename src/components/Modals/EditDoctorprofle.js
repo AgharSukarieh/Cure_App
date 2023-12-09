@@ -15,7 +15,7 @@ import {
   import { get, post } from '../../WebService/RequestBuilder';
   import Constants from '../../config/globalConstants';
   
-  const EditDoctorprofle = ({ show, hide, submit, cityArea }) => {
+  const EditDoctorprofle = ({ show, hide, submit, cityArea, specialtyData }) => {
   
     const [doctorName, setDoctorName] = useState('');
     const [classification, setClassification] = useState('');
@@ -28,7 +28,6 @@ import {
     const [cityValue, setCityValue] = useState(null);
     const [areasData, setAreasData] = useState([]);
     const [areaValue, setAreaValue] = useState(null);
-    const [specialtyData, setSpecialtyData] = useState([]);
     const [specialtyValue, setSpecialtyValue] = useState(null);
   
     const submitData = async () => {
@@ -100,29 +99,9 @@ import {
       setAreasData(areaArray)
     }
   
-    const getSpeciality = async () => {
-      await get(Constants.doctor.speciality)
-        .then((res) => {
-          var count = Object.keys(res.speciality).length
-          let specialtyArray = []
-          for (var i = 0; i < count; i++) {
-            specialtyArray.push({
-              value: res.speciality[i].id,
-              label: res.speciality[i].name
-            })
-          }
-          setSpecialtyData(specialtyArray)
-        })
-        .catch((err) => {
-          Alert.alert('Error', err.message || '')
-        })
-        .finally(() => { })
-    }
-  
     useEffect(() => {
       if (cityArea) getCities();
-      getSpeciality();
-    }, [])
+    }, [cityArea])
   
     return (
       <Modal
@@ -228,7 +207,7 @@ import {
                     />
                   </View>
   
-                  <View style={{ ...styles.container, marginTop: 40 }}>
+                 {specialtyData && specialtyData.length > 0 && <View style={{ ...styles.container, marginTop: 40 }}>
                     <Dropdown
                       itemTextStyle={{color:'#000000'}}
                       style={styles.dropdown}
@@ -257,7 +236,7 @@ import {
                         />
                       )}
                     />
-                  </View>
+                  </View>}
   
                   <Input
                     lable={'Classification'}

@@ -34,6 +34,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 
 
   const [cityArea, setCityArea] = useState(null);
+
   useEffect(() => {
     get(`${getCityAreaEndpoint}${user?.id}`)
       .then(response => {
@@ -45,6 +46,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
   }, []);
 
   const [specialty, setspecialityarray] = useState([]);
+
   useEffect(() => {
     get(Constants.doctor.speciality)
       .then(response => {
@@ -82,7 +84,10 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
         label: cityArea.cities[i].name
       })
     }
+    setCitiesData(cityArray)
+  }
 
+  const getSpecialty = () => {
     var count = Object.keys(specialty).length
     let specialtyArray = []
     for (var i = 0; i < count; i++) {
@@ -91,7 +96,6 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
         label: specialty[i].name
       })
     }
-    setCitiesData(cityArray)
     setSpecialtyData(specialtyArray)
   }
 
@@ -108,6 +112,10 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
     setAreasData(areaArray);
   }
   
+  useEffect(() => {
+    if (specialty) getSpecialty()
+  }, [specialty])
+
   useEffect(() => {
     if (cityArea) getCities()
   }, [cityArea])
@@ -283,7 +291,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
           apiEndpoint={getDoctorsEndpoint}
           enablePullToRefresh
           params={filter}
-          renderItem={({ item }) => <DoctorsItemTable item={item} cityArea={cityArea} />}
+          renderItem={({ item }) => <DoctorsItemTable item={item} cityArea={cityArea} specialtyData={specialtyData}/>}
         />
       </View>
 
@@ -295,6 +303,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
           <AntDesign name="plus" size={30} color={'#fff'} />
         </TouchableOpacity>
       </View>
+
       {cityArea && <AddNewDoctorModel
         show={modal}
         cityArea={cityArea}
