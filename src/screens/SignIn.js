@@ -42,7 +42,7 @@ const SignIn = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <View style={style.content}>
         <View style={style.imagediv}>
-          <Image source={require('../../assets/logo.png')} style={style.image} resizeMode='contain' />
+          <Image source={require('../../assets/logo__.png')} style={style.image} resizeMode="center" />
         </View>
         <View style={style.inputContainer}>
           <Text style={style.inputheader}>Sign In to Continue</Text>
@@ -79,8 +79,8 @@ export default SignIn;
 
 const style = StyleSheet.create({
   content: { flex: 1, justifyContent: 'flex-start', backgroundColor: '#ebebeb96' },
-  imagediv: { width: '100%', height: '35%', },
-  image: { width: '100%', height: '100%', },
+  imagediv: { width: '100%', height: '35%', justifyContent:"center", alignItems:"center" },
+  image: { width: "50%", height: "50%", }, 
   inputContainer: {
     alignSelf: 'center',
     backgroundColor: '#fff',
