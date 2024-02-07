@@ -112,10 +112,10 @@ import {
               onChange={item => {
                 setCityValue(item.value);
                 getAreas(item.value);
-                setFilter((prev) => ({
-                  ...prev,
-                  cityId: item.value
-                }))
+                // setFilter((prev) => ({
+                //   ...prev,
+                //   cityId: item.value
+                // }))
               }}
               renderLeftIcon={() => (
                 <AntDesign
@@ -149,7 +149,7 @@ import {
                 setAreaValue(item.value);
                 setFilter((prev) => ({
                   ...prev,
-                  areaId: item.value
+                  area_id: item.value
                 }))
               }}
               renderLeftIcon={() => (

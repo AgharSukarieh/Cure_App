@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, Dimensions, Modal, ScrollView, FlatList } from 'react-native';
 import React from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Constants from '../../config/globalConstants';
@@ -7,7 +7,7 @@ import SalesModelItemTable from '../Tables/SalesModelItemTable';
 
 
 const SalesModel = ({ show, hide, data }) => {
-    const getOrderDetailsEndpoint = Constants.users.order_details + data?.id;
+    // const getOrderDetailsEndpoint = Constants.users.order_details + data?.id;
 
     return (
         <Modal
@@ -28,10 +28,16 @@ const SalesModel = ({ show, hide, data }) => {
                     <Text style={styles.phlocation}>{data?.area}</Text>
 
                     <View style={styles.tableContainer}>
-                        <TableView
+                        {/* <TableView
                             apiEndpoint={getOrderDetailsEndpoint} 
                             renderItem={({ item }) => <SalesModelItemTable item={item} />} 
+                        /> */}
+
+                        <FlatList
+                            data={data.order_details}
+                            renderItem={({ item }) => <SalesModelItemTable item={item} />}
                         />
+
                         <View style={styles.card}>
                             <Text style={{...styles.item_name, color: '#000000'}}>Total Price</Text>
                             <Text style={styles.item_name}>{data?.total_price}</Text>

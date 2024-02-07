@@ -4,8 +4,8 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 
 
 const CollectionsModel = ({ show, hide, data }) => {
-
-    const pers = (data?.amount / data?.credit_amount) * 100
+    const pers = ((data?.amount / data?.credit_amount) * 100).toFixed(2);
+    // const formattedDate = data?.created_at ? new Date(data?.created_at).toISOString().split('T')[0] : '';
 
     return (
         <Modal
@@ -44,7 +44,7 @@ const CollectionsModel = ({ show, hide, data }) => {
 
                         <View style={styles.verticalline} />
                         <View style={{ ...styles.rowel, width: '33%', }}>
-                            <Text style={styles.rowel_tetx}>{data?.check_number ?? ''}</Text>
+                            <Text style={styles.rowel_tetx}>{data?.check_number ?? '-'}</Text>
                         </View>
 
                         <View style={styles.verticalline} />

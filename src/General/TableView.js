@@ -67,7 +67,7 @@ const TableView = ({ apiEndpoint, renderItem, params, enablePullToRefresh = fals
   };
 
   useEffect(() => {
-    fetchData();
+    // fetchData();
   }, []);
 
   useEffect(() => {

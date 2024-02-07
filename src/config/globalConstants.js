@@ -51,6 +51,7 @@ export default {
   orders: {
     add_order: 'orders',
     get_orders: 'user-orders',
+    sales_order: 'sales/orders'
   },
   return: {
     get_returns: 'return-orders',
