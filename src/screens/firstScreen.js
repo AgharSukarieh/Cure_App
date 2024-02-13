@@ -9,8 +9,8 @@ const FirstScreen = ({ navigation }) => {
             <View style={style.container}>
                 <View style={{ height: '70%', width: '100%', }}>
                     <ImageBackground source={require('../../assets/fback.png')} style={{ width: '100%', height: '100%', }} resizeMode="stretch" >
-                        <View style={{ width: '100%', height: '50%', }}>
-                            <Image source={require('../../assets/logo2.png')} style={{ width: '100%', height: '100%', }} resizeMode="cover" />
+                        <View style={{ width: '100%', height: '50%', justifyContent:"center", alignItems: 'center'}}>
+                            <Image source={require('../../assets/logo2.png')} style={{ width: 150, height: 150}} resizeMode="contain" />
                         </View>
                         <Text style={style.header}>Best Medical Reps App</Text>
                         <Text style={style.textbody}>Are you a medical representative looking to revolutionize your sales and stay ahead in the highly competitive pharmaceutical and healthcare industry? Look no further! MedRep Connect is the all-in-one app designed exclusively for medical representatives like you, bringing efficiency, convenience, and success right to your fingertips.</Text>

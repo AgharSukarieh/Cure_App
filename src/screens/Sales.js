@@ -19,7 +19,7 @@ import Constants from '../config/globalConstants';
 import { get } from '../WebService/RequestBuilder';
 import { useAuth } from '../contexts/AuthContext';
 
-const getSalesEndpoint = Constants.visit.sales;
+const getSalesEndpoint = Constants.orders.sales_order;
 console.log(getSalesEndpoint);
 Feather.loadFont();
 
@@ -118,10 +118,10 @@ const Sales = ({ navigation }) => {
             onChange={item => {
               setCityValue(item.value);
               getAreas(item.value);
-              setFilter((prev) => ({
-                ...prev,
-                city_name: item.label
-              }))
+              // setFilter((prev) => ({
+              //   ...prev,
+              //   city_name: item.label
+              // }))
             }}
             renderLeftIcon={() => (
               <AntDesign
@@ -155,7 +155,7 @@ const Sales = ({ navigation }) => {
               setAreaValue(item.value);
               setFilter((prev) => ({
                 ...prev,
-                area_name: item.label
+                area_id: item.value
               }))
             }}
             renderLeftIcon={() => (

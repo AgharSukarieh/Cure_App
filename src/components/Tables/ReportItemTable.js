@@ -7,7 +7,7 @@ const ReportItemTable = ({ item }) => {
             <View style={styles.row}>
 
                 <View style={{ ...styles.rowel, width: '25%', }}>
-                    <Text style={styles.rowel_tetx}>{item?.name}</Text>
+                    <Text style={styles.rowel_tetx}>{item?.product}</Text>
                 </View>
 
                 <View style={styles.verticalline} />

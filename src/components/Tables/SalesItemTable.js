@@ -16,7 +16,7 @@ const SalesItemTable = ({ item }) => {
         <>
             <View style={styles.row}>
                 <View style={{ ...styles.rowel, width: '30.1%', }}>
-                    <Text style={styles.rowel_tetx}>{item?.name}</Text>
+                    <Text style={styles.rowel_tetx}>{item?.pharmacy}</Text>
                 </View>
                 <View style={styles.verticalline} />
                 <View style={styles.rowel}>
@@ -24,7 +24,7 @@ const SalesItemTable = ({ item }) => {
                 </View>
                 <View style={styles.verticalline} />
                 <View style={styles.rowel}>
-                    <Text style={styles.rowel_tetx}>{new Date(item?.start_visit).toISOString().split('T')[0]}</Text>
+                    <Text style={styles.rowel_tetx}>{new Date(item?.created_at).toISOString().split('T')[0]}</Text>
                 </View>
                 <View style={styles.verticalline} />
                 <View style={{ ...styles.rowel, width: '12%', }}>

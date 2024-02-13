@@ -5,7 +5,7 @@ const SalesModelItemTable = ({item}) => {
 
   return (
     <View style={styles.card}>
-      <Text style={styles.item_name}>{item?.name}</Text>
+      <Text style={styles.item_name}>{item?.product.name}</Text>
       <View
         style={{
           width: '99%',
@@ -30,17 +30,17 @@ const SalesModelItemTable = ({item}) => {
 
         <View style={styles.item_info}>
           <Text style={styles.item_itemtitle}>Bonus</Text>
-          <Text style={styles.item_item}>{item?.bonuse}</Text>
+          <Text style={styles.item_item}>{item?.bonus}</Text>
         </View>
 
         <View style={styles.item_info}>
           <Text style={styles.item_itemtitle}>Price</Text>
-          <Text style={styles.item_item}>{item?.price}</Text>
+          <Text style={styles.item_item}>{item?.product.price}</Text>
         </View>
 
         <View style={styles.item_info}>
           <Text style={styles.item_itemtitle}>Price Tax</Text>
-          <Text style={styles.item_item}>{item?.price_tax}</Text>
+          <Text style={styles.item_item}>{item?.product.price_tax}</Text>
         </View>
 
       </View>
