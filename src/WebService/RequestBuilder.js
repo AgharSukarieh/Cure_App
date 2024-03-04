@@ -31,9 +31,9 @@ apiClient.interceptors.request.use(
     showLoadingIndicator();
     config.headers['Accept'] = 'application/json';
     config.headers['Content-Type'] = 'multipart/form-data';
-    console.log('----------API config Start------');
-    console.log(config);
-    console.log('----------API config End------');
+    // console.log('----------API config Start------');
+    // console.log(config);
+    // console.log('----------API config End------');
     return config;
   },
   error => {
@@ -44,9 +44,9 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   response => {
-    console.log('----------API Response Start------');
-    console.log(response.data);
-    console.log('----------API Response End------');
+    // console.log('----------API Response Start------');
+    // console.log(response.data);
+    // console.log('----------API Response End------');
     hideLoadingIndicator();
     return response;
   },

@@ -9,11 +9,14 @@ import { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import Constants from '../../config/globalConstants';
 import { get } from '../../WebService/RequestBuilder';
-import LoadingScreen from '../../components/LoadingScreen';
+import LoadingScreen from '../../components/LoadingScreen'; 
 
 const DailySales = ({ navigation, route }) => {
 
     const { user } = useAuth();
+
+    
+
     const title = route.params.title
     const date = route.params.date
     const area = route.params.area

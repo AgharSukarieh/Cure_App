@@ -8,10 +8,25 @@ import Moment from 'moment';
 import Constants from '../../config/globalConstants';
 import { useAuth } from '../../contexts/AuthContext';
 import { get, post } from '../../WebService/RequestBuilder';
+import GetLocation from 'react-native-get-location';
 
 const DailySalesaddModel = ({ show, hide, submit, date, area }) => {
     const { user } = useAuth();
 
+    const [location, setlocation] = useState([]);
+    useEffect(() => {
+        GetLocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 60000,
+        })
+            .then(location => {
+                setlocation(location);
+                // longitude,latitude
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }, [user])
     const [pharmacy_list, setpharmacy_list] = useState([]);
     const [pharam, setpharam] = useState(null)
 
@@ -35,10 +50,15 @@ const DailySalesaddModel = ({ show, hide, submit, date, area }) => {
     const submit2 = () => {
         const body = {
             sale_id: user.sales.id,
-            pharmacy_id: pharam.id
+            pharmacy_id: pharam.id,
+            longitude: location.longitude,
+            latitude: location.latitude
         }
         post(Constants.visit.sales, body, null)
             .then((res) => {
+                console.log('====================================');
+                console.log('DailySalesaddModel.js ~~ submit2 ~~ res ', res);
+                console.log('====================================');
                 submit(true)
             })
             .catch((err) => { })

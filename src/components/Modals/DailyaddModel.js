@@ -6,9 +6,27 @@ import Constants from '../../config/globalConstants';
 import { get, post } from '../../WebService/RequestBuilder';
 import { useAuth } from '../../contexts/AuthContext';
 import { MultiSelect, Dropdown } from 'react-native-element-dropdown';
+import GetLocation from 'react-native-get-location';
 
 const DailyaddModel = ({ show, hide, area, submit, date }) => {
   const { user } = useAuth();
+
+
+  const [location, setlocation] = useState([]);
+  useEffect(() => {
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 60000,
+    })
+      .then(location => {
+        setlocation(location);
+        // longitude,latitude
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [user])
+
   const [selected, setSelected] = useState([]);
   const [productData, setProductData] = useState([])
   const [specialitiesData, setSpecialitiesData] = useState([])
@@ -44,7 +62,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
   }
 
   const getDoctors = async (specialityId) => {
-    get(Constants.doctor.doctor_speciality, null, {area_id: area.area_id, limit: 1000, speciality_id: specialityId })
+    get(Constants.doctor.doctor_speciality, null, { area_id: area.area_id, limit: 1000, speciality_id: specialityId })
       .then((res) => {
         var count = Object.keys(res.data).length
         let doctorsArray = []
@@ -83,13 +101,15 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
     const data = {
       medical_id: user?.medicals.id,
       doctor_id: doctorsValue,
-      notes: note
+      notes: note,
+      longitude: location.longitude,
+      latitude: location.latitude
     }
     post(Constants.visit.medical, data).then((res) => {
       if (res.code == 200) {
         const sampleProductsData = {
           visit_id: res.id,
-          'product_ids[]': selected
+          'product_ids[]': selected, 
         }
         post(Constants.product.sample_products, sampleProductsData).then((res) => {
           submit(true)
@@ -128,7 +148,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
             <View style={{ marginVertical: 10 }}>
               <View style={style.container}>
                 <Dropdown
-                  itemTextStyle={{color:'#000000'}}
+                  itemTextStyle={{ color: '#000000' }}
                   style={style.dropdown}
                   placeholderStyle={style.placeholderStyle}
                   selectedTextStyle={style.selectedTextStyle}
@@ -160,7 +180,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
 
               <View style={style.container}>
                 <Dropdown
-                  itemTextStyle={{color:'#000000'}}
+                  itemTextStyle={{ color: '#000000' }}
                   style={style.dropdown}
                   placeholderStyle={style.placeholderStyle}
                   selectedTextStyle={style.selectedTextStyle}
@@ -191,7 +211,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
 
               <View style={style.container}>
                 <MultiSelect
-                itemTextStyle={{color:'#000000'}}
+                  itemTextStyle={{ color: '#000000' }}
                   style={style.dropdown}
                   placeholderStyle={style.placeholderStyle}
                   selectedStyle={style.selectedStyle}
@@ -314,11 +334,11 @@ const style = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
-    color:'#808080'
+    color: '#808080'
   },
   selectedTextStyle: {
     fontSize: 16,
-    color:'#000000'
+    color: '#000000'
   },
   iconStyle: {
     width: 20,
@@ -327,7 +347,7 @@ const style = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
-    color:'#000000'
+    color: '#000000'
   },
   selectedStyle: {
     borderRadius: 7,

@@ -5,7 +5,7 @@ import {
   SafeAreaView,
   StyleSheet,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { styles } from '../../components/styles';
 import GoBack from '../../components/GoBack';
 import { put } from '../../WebService/RequestBuilder';
@@ -15,12 +15,27 @@ import AccountInfo from './AccountInfo';
 import Inventory from './Inventory';
 import Order from './Order';
 import Return from './Return';
+import GetLocation from 'react-native-get-location';
 
 const Sal_rep_pharm = ({ navigation, route }) => {
 
   const item = route.params.item;
   const area = route.params.area;
   const date = route.params.date;
+
+  const [location, setlocation] = useState([]);
+  useEffect(() => {
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 60000,
+    })
+      .then(location => {
+        setlocation(location);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [])
 
   const [index, setindex] = useState(1);
 
@@ -33,7 +48,11 @@ const Sal_rep_pharm = ({ navigation, route }) => {
   ];
 
   const endVisit = async () => {
-    await put(Constants.visit.sales + `/${item?.id}`)
+    const data = {
+      "longitude": location.longitude,
+      "latitude": location.latitude
+    }
+    await put(Constants.visit.sales + `/${item?.id}`, data, data)
       .then((res) => {
         navigation.goBack();
       })
@@ -47,7 +66,7 @@ const Sal_rep_pharm = ({ navigation, route }) => {
   );
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <GoBack text={item?.name} />
       <View style={style.containerSignIn} >
         <FlatList
@@ -59,8 +78,8 @@ const Sal_rep_pharm = ({ navigation, route }) => {
         />
       </View>
 
-      <View style={{flex:1}}>  
-        {index == 1 && <AccountInfo item={item}/>}
+      <View style={{ flex: 1 }}>
+        {index == 1 && <AccountInfo item={item} />}
         {index == 2 ? <Inventory item={item} area={area} /> : null}
         {index == 3 ? <Order item={item} area={area} date={date} /> : null}
         {index == 4 ? <Return item={item} /> : null}

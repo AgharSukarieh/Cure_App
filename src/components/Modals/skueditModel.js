@@ -15,16 +15,43 @@ import { styles } from '../styles';
 import moment from 'moment';
 import Constants from '../../config/globalConstants';
 import { put } from '../../WebService/RequestBuilder';
+import GetLocation from 'react-native-get-location';
 
 const SkueditModel = ({ show, hide, submit, data }) => {
 
+  console.log('====================================');
+  console.log('sdsd', data?.id);
+  console.log('====================================');
+  const [location, setlocation] = useState([]);
+  useEffect(() => {
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 60000,
+    })
+      .then(location => {
+        setlocation(location);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [])
+
   const endVisit = async () => {
-    await put(Constants.visit.medical + `/${data?.id}`)
+    const data = {
+      "longitude": location.longitude,
+      "latitude": location.latitude
+    }
+    await put(Constants.visit.medical + `/${data?.id}`, data, data)
       .then((res) => {
+        console.log('====================================');
+        console.log('res', res);
+        console.log('====================================');
         hide();
       })
       .catch((err) => { })
       .finally(() => { })
+
+
   }
 
   return (
