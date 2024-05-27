@@ -35,7 +35,7 @@ const AllGroups = () => {
 
     })
   }
-  
+
   useEffect(() => {
     const isReceiverIdInChats = chats.some(chat => chat.id == dataForGroup?.receiver_id);
     if (isReceiverIdInChats) {
@@ -58,12 +58,12 @@ const AllGroups = () => {
   return (
     <SafeAreaView style={styles.container}>
       <GoBack text={'Groups'} />
-    
-      <FlatList 
+
+      <FlatList
         data={chats}
         renderItem={({ item }) => <ChatGroupListItem item={item} func={renderList}/>}
         keyExtractor={(item, index) => index.toString()}
-        onEndReached={() => 
+        onEndReached={() =>
           {
             setPage(page + 1)
             getChats(page + 1)

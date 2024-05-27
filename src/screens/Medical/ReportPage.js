@@ -24,6 +24,7 @@ const ReportPage = () => {
     get(`${getCityAreaEndpoint}${user?.id}`)
       .then(response => {
         setCityArea(response.data);
+        console.log(`${getCityAreaEndpoint}${user?.id}`);
         console.log('====================================');
         console.log(response.data);
         console.log('====================================');
@@ -113,7 +114,7 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    
+
   },
   card: {
     width: '45%',

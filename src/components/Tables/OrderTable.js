@@ -47,14 +47,14 @@ const OrderTable = ({data}) => {
       </View>
       {data ? (
         data.map((item, index) => (
-          
+
           <View
             style={{
               ...styles.row,
               backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff',
             }}
             key={index}>
-              
+
             <View style={styles.rowel}>
               {item?.order_details?.slice(0, 5).map((row, index2) => (
                 <Text

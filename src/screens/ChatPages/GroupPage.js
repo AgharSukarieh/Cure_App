@@ -56,7 +56,7 @@ const GroupPage = ({ route, navigation }) => {
         }
     }, [dataForGroup]);
 
-    
+
 
     useEffect(() => {
         getChats(1)
@@ -76,12 +76,12 @@ const GroupPage = ({ route, navigation }) => {
                     inverted
                     renderItem={({ item }) => <GroupMessage message={item} />}
                     keyExtractor={(item, index) => index.toString()}
-                    onEndReached={() => 
+                    onEndReached={() =>
                     {
                         setPage(page + 1)
                         getChats(page + 1)
                     }}
-                    showsVerticalScrollIndicator={false}
+                    showsVerticalScrollIndicator={true}
                 />
                 <InputBoxGroup receiverID={group_id} submit={(msg) => {}} />
             </ImageBackground>

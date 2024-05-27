@@ -67,15 +67,15 @@ const ChatScreen = ({ route, navigation }) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 70}
         style={styles.bg}>
-       
+
       <ImageBackground source={bg} style={styles.bg}>
-        <FlatList 
+        <FlatList
         data={chats}
         inverted
         renderItem={({ item }) => <Message message={item} currentUserId={user?.id} />}
         keyExtractor={(item, index) => index.toString()}
         style={{ backgroundColor: 'white' }}
-        onEndReached={() => 
+        onEndReached={() =>
           {
             setPage(page + 1)
             getChats(page + 1)
@@ -84,13 +84,13 @@ const ChatScreen = ({ route, navigation }) => {
       />
         <InputBox receiverID={user_id} submit={(ids) => {
           if (chatIdNew == null) {
-            console.log(ids);
+
             setchatIdNew(ids);
           }
         }}/>
 
       </ImageBackground>
-      
+
     </KeyboardAvoidingView>
     </SafeAreaView>
   );

@@ -88,5 +88,9 @@
   },
   "jest": {
     "preset": "react-native"
+  },
+  "eslintConfig": {
+    "extends": [],
+    "rules": {}
   }
 }

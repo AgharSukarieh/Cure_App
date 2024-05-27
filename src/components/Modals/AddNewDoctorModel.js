@@ -276,7 +276,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
                     )}
                   />
                 </View>
-                
+
                 <View style={{...styles.container, marginTop: 40}}>
                   <Dropdown
                     itemTextStyle={{color:'#000000'}}

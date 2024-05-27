@@ -35,7 +35,7 @@ export const deleteData = createAsyncThunk('api/deleteData', async (id) => {
 //   'appCities/addCity',
 //   async (params, {rejectWithValue}) => {
 //     try {
-//       const response = await RequestBuilder({
+//      \\\\\\\ const response = await RequestBuilder({
 //         endPoint: '/cities',
 //         method: 'post',
 //         params: params,
