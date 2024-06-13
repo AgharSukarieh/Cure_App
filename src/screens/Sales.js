@@ -34,8 +34,9 @@ const Sales = ({ navigation }) => {
 	const [cityArea, setCityArea] = useState(null);
 
 	useEffect(() => {
-		get(`${getCityAreaEndpoint}${user?.id}`)
-			.then(response => {
+		get(`${getCityAreaEndpoint}${user?.id}`,{
+			date_start:date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
+		}).then(response => {
 				console.log( "REPONSE", response.data.areas);
 				console.log(`"URL", ${getCityAreaEndpoint}${user?.id}`);
 				setCityArea(response.data);
@@ -89,6 +90,9 @@ const Sales = ({ navigation }) => {
 	useEffect(() => {
 		if (cityArea) getCities();
 	}, [cityArea]);
+
+
+
 
 	return (
 		<SafeAreaView style={{ ...styles.container, backgroundColor: "#ebebeb96" }}>

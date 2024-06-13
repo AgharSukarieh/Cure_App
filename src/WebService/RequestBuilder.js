@@ -72,11 +72,12 @@ const request = async (method, url, data = null, params = {}) => {
   }
 };
 
+
 const createApiFunction = method =>
   async (url, data = null, params = {}) => {
     const response = await request(method, url, data, params);
     return response;
-  };
+};
 
 export const get = createApiFunction('get');
 export const post = createApiFunction('post');

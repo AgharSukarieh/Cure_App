@@ -121,6 +121,9 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 	useEffect(() => {
 		if (cityArea) getCities();
 	}, [cityArea]);
+	useEffect(() => {
+		console.log("FILTER CLIENT DOCTOR LIST", filter);
+	}, [filter]);
 
 	const submitAddDoctor = data => {
 		if (data == true) {
@@ -198,10 +201,12 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 							}}
 							onChange={item => {
 								setCityValue(item.value);
+								setAreaValue(null)
 								getAreas(item.value);
 								setFilter((prev) => ({
 									...prev,
-									seach_term: item.label,
+									city_id: item.value,
+									area_id: null
 								}));
 							}}
 							renderLeftIcon={() => (
@@ -237,7 +242,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 								setAreaValue(item.value);
 								setFilter((prev) => ({
 									...prev,
-									seach_term: item.label,
+									area_id: item.value,
 								}));
 							}}
 							renderLeftIcon={() => (
