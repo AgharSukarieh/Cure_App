@@ -32,7 +32,7 @@ const AllGroups = () => {
         setChats(res.data)
       }
     }).catch((err) => {
-
+console.log(err)
     })
   }
 

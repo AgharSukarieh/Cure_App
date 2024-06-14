@@ -34,13 +34,13 @@ const Sales = ({ navigation }) => {
 	const [cityArea, setCityArea] = useState(null);
 
 	useEffect(() => {
-		get(`${getCityAreaEndpoint}${user?.id}`,{
-			date_start:date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
+		get(`${getCityAreaEndpoint}${user?.id}`, {
+			date_start: date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
 		}).then(response => {
-				console.log( "REPONSE", response.data.areas);
-				console.log(`"URL", ${getCityAreaEndpoint}${user?.id}`);
-				setCityArea(response.data);
-			})
+			console.log("REPONSE", response.data.areas);
+			console.log(`"URL", ${getCityAreaEndpoint}${user?.id}`);
+			setCityArea(response.data);
+		})
 			.catch(err => {
 				console.error(err);
 			});
@@ -77,7 +77,7 @@ const Sales = ({ navigation }) => {
 	const getAreas = (id) => {
 		let areaArray = [];
 		cityArea?.areas?.forEach((area) => {
-			if (area.city_id == id || area.id == 'all') {
+			if (area.city_id == id || area.id == "all") {
 				areaArray.push({
 					value: area.id,
 					label: area.name,
@@ -91,7 +91,11 @@ const Sales = ({ navigation }) => {
 		if (cityArea) getCities();
 	}, [cityArea]);
 
-
+	useEffect(() => {
+		console.log("===============================================");
+		console.log(filter);
+		console.log("===============================================");
+	}, [filter]);
 
 
 	return (
@@ -126,10 +130,11 @@ const Sales = ({ navigation }) => {
 						onChange={item => {
 							setCityValue(item.value);
 							getAreas(item.value);
-							// setFilter((prev) => ({
-							//   ...prev,
-							//   city_name: item.label
-							// }))
+							setFilter((prev) => ({
+								...prev,
+								city_id: item.value,
+								area_id: null,
+							}));
 						}}
 						renderLeftIcon={() => (
 							<AntDesign

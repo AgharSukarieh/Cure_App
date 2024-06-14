@@ -6,11 +6,11 @@ import {
 	Text,
 	TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styles } from "../components/styles";
 import GoBack from "../components/GoBack";
 import Feather from "react-native-vector-icons/Feather";
-import { useEffect } from "react";
+
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import SuccessfullyModel from "../components/Modals/SuccessfullyModel";
@@ -119,6 +119,10 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 	}, [specialty]);
 
 	useEffect(() => {
+		console.log(filter)
+	}, [filter]);
+
+	useEffect(() => {
 		if (cityArea) getCities();
 	}, [cityArea]);
 	useEffect(() => {
@@ -146,7 +150,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 							setSearch(text);
 							setFilter((prev) => ({
 								...prev,
-								seach_term: text,
+								search_term: text,
 							}));
 						}}
 						value={search}
@@ -154,7 +158,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 					<TouchableOpacity
 						onPress={() => {
 							setSearch(null);
-							setFilter(null);
+							setFilter({ user_id: user?.id });
 							setCityValue(null);
 							setAreaValue(null);
 							setSpecialtyValue(null);
@@ -279,7 +283,7 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 							setSpecialtyValue(item.value);
 							setFilter((prev) => ({
 								...prev,
-								seach_term: item.label,
+								speciality_id: item.value,
 							}));
 						}}
 						renderLeftIcon={() => (
