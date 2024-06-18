@@ -27,7 +27,7 @@ const Daily = ({ navigation, route }) => {
     }
 
     const mainrow = (e) => {
-        console.log('cccccccccccccc');
+        // console.log('cccccccccccccc');
         setalert(true)
         getdata()
         setrefr(true)

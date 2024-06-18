@@ -68,6 +68,7 @@ export default {
 		get_mess: "get-group-chat-messages",
 		send_mess: "group_chat_message_mobile",
 		seen_chat: "seen-group",
+		create_group: "add-new-group",
 	},
 	get_user_to_chat: "get-search-results",
 	get_cities: "get-all-cities",

@@ -43,7 +43,6 @@ const ChatsScreen = () => {
 	useFocusEffect(
 
 		React.useCallback(() => {
-			console.log("ITS TAPPED");
 			getChats(1);
 		}, [])
 	);

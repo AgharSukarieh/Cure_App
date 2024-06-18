@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { patch } from "axios";
 import { Alert } from 'react-native';
 
 
@@ -84,6 +84,7 @@ export const post = createApiFunction('post');
 export const put = createApiFunction('put');
 export const del = createApiFunction('delete');
 
+
 export const uploadFiles = async (url, files, body = {}) => {
   try {
     const formData = new FormData();
@@ -103,6 +104,7 @@ export const uploadFiles = async (url, files, body = {}) => {
     const response = await request('post', url, formData, null);
     return response;
   } catch (error) {
+
     throw new Error(error.response?.data?.message || error.message);
   }
 };

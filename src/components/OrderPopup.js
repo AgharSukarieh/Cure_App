@@ -19,7 +19,7 @@ import {
   Offers,
 } from '../helpers/data';
 import Feather from 'react-native-vector-icons/Feather';
-import {styles} from './styles'; 
+import {styles} from './styles';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -56,7 +56,7 @@ const OrderModel = ({show, hide, data, submit, id}) => {
     const handleOffer = id => {};
   };
   const handleCost = text => {
-    console.log(text);
+    // console.log(text);
   };
 
   return (

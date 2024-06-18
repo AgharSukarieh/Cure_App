@@ -19,7 +19,7 @@ const ChatGroupListItem = ({ item, func }) => {
         navigation.navigate('GroupPage', {
           group_id: item?.id,
           name: item?.name,
-          func: func
+          func: func()
         })
       }
       style={{marginHorizontal:14, width:'90%', flexDirection:'row', marginVertical:10}}>
@@ -52,7 +52,7 @@ const cardstyles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     marginRight: 15,
-    
+
   },
   content: {
     flex: 1,

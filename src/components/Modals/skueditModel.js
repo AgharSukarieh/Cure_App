@@ -39,7 +39,7 @@ const SkueditModel = ({ show, hide, submit, data }) => {
 				})
 				.catch(error => {
 					setIsLoading(false);
-					console.log("from sku", error);
+					// console.log("from sku", error);
 					reject(error);
 				});
 		});

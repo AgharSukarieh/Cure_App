@@ -17,7 +17,7 @@ const height = Dimensions.get('window').height
 
 const AddNewOfferModel = ({ show, hide, submit, item }) => {
     const [data, setData] = useState();
-    console.log(item);
+    // console.log(item);
     const submitBtn = () => {
         // submit(data)
         hide()
@@ -36,7 +36,7 @@ const AddNewOfferModel = ({ show, hide, submit, item }) => {
                     <TouchableOpacity onPress={() => { hide() }}>
                         <AntDesign name="close" color='#469ED8' size={35} style={{ alignSelf: 'flex-end' }} />
                     </TouchableOpacity>
-                    
+
                     <Text style={style.maintitle}>Add new Offer</Text>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={{ marginVertical: 0 }}>

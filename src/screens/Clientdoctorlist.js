@@ -119,14 +119,14 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 	}, [specialty]);
 
 	useEffect(() => {
-		console.log(filter)
+		console.log(filter);
 	}, [filter]);
 
 	useEffect(() => {
 		if (cityArea) getCities();
 	}, [cityArea]);
 	useEffect(() => {
-		console.log("FILTER CLIENT DOCTOR LIST", filter);
+		// console.log("FILTER CLIENT DOCTOR LIST", filter);
 	}, [filter]);
 
 	const submitAddDoctor = data => {
@@ -205,12 +205,12 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 							}}
 							onChange={item => {
 								setCityValue(item.value);
-								setAreaValue(null)
+								setAreaValue(null);
 								getAreas(item.value);
 								setFilter((prev) => ({
 									...prev,
 									city_id: item.value,
-									area_id: null
+									area_id: null,
 								}));
 							}}
 							renderLeftIcon={() => (
@@ -305,8 +305,9 @@ const Clientdoctorlist = ({ navigation, route, header = true }) => {
 					apiEndpoint={getDoctorsEndpoint}
 					enablePullToRefresh
 					params={filter}
-					renderItem={({ item }) => <DoctorsItemTable item={item} cityArea={cityArea}
-																specialtyData={specialtyData} />}
+					renderItem={({ item }) =>
+						<DoctorsItemTable user={user} setFilter={setFilter} item={item} cityArea={cityArea}
+										  specialtyData={specialtyData} />}
 				/>
 			</View>
 

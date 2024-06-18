@@ -71,11 +71,9 @@ export const style = StyleSheet.create({
     width: '45%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#469ED8',
     borderRadius: 16,
   },
   Sal_rep_pharmButton2: {
-    backgroundColor: '#469ED8',
     padding: 10,
     width: '45%',
     alignItems: 'center',
@@ -111,8 +109,8 @@ export const style = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  muneheader: { color: '#000', fontSize: 17, color: '#000' },
-  muneheader2: { color: '#000', fontSize: 17, color: '#fff' },
+  muneheader: { fontSize: 17, color: '#000' },
+  muneheader2: { fontSize: 17, color: '#fff' },
   newbtn: {
     backgroundColor: '#469ED8',
     paddingVertical: 5,

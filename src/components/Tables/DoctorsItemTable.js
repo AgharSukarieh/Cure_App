@@ -7,7 +7,7 @@ import DoctorlistModal from '../Modals/DoctorlistModal';
 import EditDoctorprofle from '../Modals/EditDoctorprofle';
 
 
-const DoctorsItemTable = ({ item, cityArea, specialtyData }) => {
+const DoctorsItemTable = ({ item, cityArea, specialtyData ,setFilter,user }) => {
     const [modal, setModal] = useState(false)
     const [rowdata, setrowdata] = useState(false)
     const [edModal, setEdModal] = useState(false);
@@ -59,7 +59,7 @@ const DoctorsItemTable = ({ item, cityArea, specialtyData }) => {
             </View>
 
             <DoctorlistModal show={modal} data={rowdata} hide={() => { setModal(false) }} submit={(e) => { console.log(e) }} />
-            <EditDoctorprofle show={edModal} cityArea={cityArea} specialtyData={specialtyData} hide={() => { setEdModal(false); }} submit={e => {console.log(e)}}/>
+            <EditDoctorprofle item={item} show={edModal} cityArea={cityArea} specialtyData={specialtyData} hide={() => { setEdModal(false); }} submit={e => { setFilter({ user_id: user?.id });}}/>
         </>
     )
 }

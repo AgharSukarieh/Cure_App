@@ -82,6 +82,12 @@ const styles = StyleSheet.create({
     },
     card: {
         width: '100%',
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		borderWidth: 1,
+		padding: 10,
         marginVertical: 10
     },
     lable: {

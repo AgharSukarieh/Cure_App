@@ -69,7 +69,7 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
 
 		get(Constants.doctor.doctor_speciality, null, { limit: 1000, speciality_id: specialityId })
 			.then((res) => {
-				console.log(res);
+				// console.log(res);
 				var count = Object.keys(res.data).length;
 				let doctorsArray = [];
 				for (var i = 0; i < count; i++) {
@@ -114,15 +114,15 @@ const DailyaddModel = ({ show, hide, area, submit, date }) => {
 			latitude: location.latitude,
 		};
 		post(Constants.visit.medical, data).then((res) => {
-			console.log("Response from Medical", res);
-			console.log("=====================================================");
+			// console.log("Response from Medical", res);
+			// console.log("=====================================================");
 
 			const sampleProductsData = {
 				visit_id: res.data.id,
 				"product_ids[]": selected,
 			};
 			post(Constants.product.sample_products, sampleProductsData).then((res) => {
-				console.log("RESPONSE FROM SAMPLE PRODUCTS", res);
+				// console.log("RESPONSE FROM SAMPLE PRODUCTS", res);
 				submit(true);
 			}).catch((err) => {
 			}).finally(() => {

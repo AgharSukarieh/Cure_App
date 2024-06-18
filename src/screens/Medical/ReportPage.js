@@ -24,10 +24,10 @@ const ReportPage = () => {
     get(`${getCityAreaEndpoint}${user?.id}`)
       .then(response => {
         setCityArea(response.data);
-        console.log(`${getCityAreaEndpoint}${user?.id}`);
-        console.log('====================================');
-        console.log(response.data);
-        console.log('====================================');
+        // console.log(`${getCityAreaEndpoint}${user?.id}`);
+        // console.log('====================================');
+        // console.log(response.data);
+        // console.log('====================================');
       })
       .catch(err => {
         console.error(err);

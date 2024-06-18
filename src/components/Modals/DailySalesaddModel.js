@@ -56,9 +56,9 @@ const DailySalesaddModel = ({ show, hide, submit, date, area }) => {
         }
         post(Constants.visit.sales, body, null)
             .then((res) => {
-                console.log('====================================');
-                console.log('DailySalesaddModel.js ~~ submit2 ~~ res ', res);
-                console.log('====================================');
+                // console.log('====================================');
+                // console.log('DailySalesaddModel.js ~~ submit2 ~~ res ', res);
+                // console.log('====================================');
                 submit(true)
             })
             .catch((err) => { })

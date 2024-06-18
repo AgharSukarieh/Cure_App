@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 import SelectDropdown from 'react-native-select-dropdown';
 import Feather from 'react-native-vector-icons/Feather';
 import { styles } from './styles';
+import { get } from "../WebService/RequestBuilder";
+import Constants from "../config/globalConstants";
 
 const Weeklyareaedit = ({ show, hide, data, submit, cityArea }) => {
 
@@ -13,22 +15,46 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea }) => {
     const [areaValue, setAreaValue] = useState('');
     const [citylist, setcitylist] = useState([])
     const [arealist, setarealist] = useState([])
+	const [citiesData, setCitiesData] = useState([]);
+	const [citiesList, setCityList] = useState([]);
+	const [areasData, setAreasData] = useState([]);
+	const getCities = () => {
+		// setCitiesData(citiesList);
+	};
 
-    const getcity = () => {
-        setcitylist(cityArea.cities);
-    }
-    const getArea = (id) => {
-        const arr = [];
-        cityArea.areas.forEach((area) => {
-            if (area.city_id == id) {
-                arr.push(area);
-            }
-        });
-        setarealist(arr);
-    }
+	const loadCities = () => {
+		// call api to get cities
+		get(Constants.get_cities).then((response) => {
+			const list = [];
+			response.forEach((city) => {
+					list.push({
+						value: city.id,
+						label: city.name,
+					});
+				},
+			);
+			setCityList(response);
+			setCitiesData(list);
+		});
+	};
+	const getArea = (id) => {
+		citiesList.forEach((city) => {
+			if (city.id == id) {
+				// console.log(city.areas);
+				const list = [];
+				city.areas.forEach((area) => {
+					list.push({
+						value: area.id,
+						label: area.name,
+					});
+				});
+				setAreasData(list);
+			}
+		});
+	};
 
     useEffect(() => {
-        getcity()
+		loadCities()
     }, [])
 
     const submit22 = () => {
@@ -58,16 +84,17 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea }) => {
                             buttonStyle={{ ...styles.drop, flexDirection: 'row-reverse' }}
                             buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                             defaultButtonText='Select'
-                            data={citylist}
+                            data={citiesData}
                             onSelect={(selectedItem, index) => {
-                                setCityValue(selectedItem.id);
-                                getArea(selectedItem.id);
+                                setCityValue(selectedItem.value);
+                                getArea(selectedItem.value);
                             }}
                             rowTextForSelection={(item, index) => {
                                 return (
                                     <>
+
                                         <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                            {item.name}
+                                            {item.label}
                                         </Text>
                                     </>
                                 );
@@ -76,7 +103,7 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea }) => {
                                 return (
                                     <>
                                         <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                            {selectedItem.name}
+                                            {selectedItem.label}
                                         </Text>
                                     </>
                                 );
@@ -93,15 +120,15 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea }) => {
                                     buttonStyle={{ ...styles.drop, flexDirection: 'row-reverse' }}
                                     buttonTextStyle={{ color: "#000", fontSize: 15, fontWeight: '600', marginTop: 0 }}
                                     defaultButtonText='Select'
-                                    data={arealist}
+                                    data={areasData}
                                     onSelect={(selectedItem, index) => {
-                                        setAreaValue(selectedItem.id)
+                                        setAreaValue(selectedItem.value)
                                     }}
                                     rowTextForSelection={(item, index) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {item.name}
+                                                    {item.label}
                                                 </Text>
                                             </>
                                         );
@@ -110,7 +137,7 @@ const Weeklyareaedit = ({ show, hide, data, submit, cityArea }) => {
                                         return (
                                             <>
                                                 <Text style={{ fontSize: 16, paddingHorizontal: 0, color: "#000", fontWeight: '600' }}>
-                                                    {selectedItem.name}
+                                                    {selectedItem.label}
                                                 </Text>
                                             </>
                                         );

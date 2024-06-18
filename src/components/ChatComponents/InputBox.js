@@ -52,7 +52,7 @@ const InputBox = ({ receiverID, submit }) => {
 
 
 
-				console.log(err);
+				// console.log(err);
 			});
 		} catch (error) {
 			console.error(error);
@@ -105,7 +105,7 @@ const InputBox = ({ receiverID, submit }) => {
 			timeout: 60000,
 		})
 			.then(location => {
-				console.log(location.latitude, location.longitude);
+				// console.log(location.latitude, location.longitude);
 				setLatitude(location.latitude);
 				setLongitude(location.longitude);
 

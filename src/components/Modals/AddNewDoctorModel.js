@@ -89,7 +89,6 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 			.catch(error => {
 				setIsLoading(false);
 				console.log(error);
-
 			});
 	};
 
@@ -115,7 +114,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 	const getArea = (id) => {
 		citiesList.forEach((city) => {
 			if (city.id == id) {
-				console.log(city.areas);
+				// console.log(city.areas);
 				const list = [];
 				city.areas.forEach((area) => {
 					list.push({
