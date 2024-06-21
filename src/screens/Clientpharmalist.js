@@ -228,6 +228,8 @@ const Clientpharmalist = ({ navigation, route, header = true }) => {
 					showM={modal}
 					hideM={() => setModal(false)}
 					data={cityArea}
+					user={user}
+					setFilter={setFilter}
 					submit={e => {
 						(e !== null) ? submitAddPharmacy(e) : null;
 					}}

@@ -23,7 +23,7 @@ import LoadingScreen from "../LoadingScreen";
 import RNFetchBlob from "rn-fetch-blob";
 import MapView, { Marker } from "react-native-maps";
 
-const AddNewPharmacyModel = ({ showM, hideM, submit, data }) => {
+const AddNewPharmacyModel = ({ showM, hideM, submit, data,setFilter,user }) => {
 	const [pharmacyName, setPharmacyName] = useState(null);
 	// const [classification, setClassification] = useState('');
 
@@ -67,6 +67,7 @@ const AddNewPharmacyModel = ({ showM, hideM, submit, data }) => {
 				setImages([]);
 				setImagesBase64([]);
 				hideM();
+				setFilter({ user_id: user?.id });
 			}).catch((err) => {
 				console.log("....", err);
 			}).finally(() => {

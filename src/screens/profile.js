@@ -15,7 +15,9 @@ const Profile = () => {
     const navigation = useNavigation();
     const { logout, role, user } = useAuth();
     const date = new Date().toLocaleDateString();
-
+	useEffect(() => {
+		console.log(user);
+	}, []);
 
     const LogoutPress = async () => {
         await logout()
@@ -30,7 +32,7 @@ const Profile = () => {
     return (
         <SafeAreaView style={{ ...styles.container, backgroundColor: '#ebebeb96' }}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <HomeHeader username={user?.name} supervisorname={'Waleed'} />
+                <HomeHeader username={user?.name} supervisorname={user.distributor_name} />
                 <View style={style.mainview}>
 
                     <View style={style.cardsView}>

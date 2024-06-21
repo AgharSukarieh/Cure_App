@@ -40,7 +40,7 @@ const ReportPage = () => {
   return (
     <SafeAreaView style={{...styles.container, backgroundColor: '#ebebeb96'}}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <HomeHeader username={user?.name} supervisorname={'Waleed'} />
+        <HomeHeader username={user?.name} supervisorname={user.distributor_name} />
         <View style={style.mainview}>
           {/* <View style={style.searchView}>
             <TextInput placeholder='Search ....' />
@@ -69,7 +69,9 @@ const ReportPage = () => {
             </TouchableOpacity>
             <TouchableOpacity style={style.card} onPress={() => role == 'sales' ? navigation.navigate('Collection') : navigation.navigate('FrequencyReport') }>
               <Image source={require('../../../assets/soc.png')} style={{ ...style.cardimage, marginLeft: 0 }} resizeMode='contain' />
-              <Text style={{...style.cardtext, textAlign: 'center'}}>Frequency Report</Text>
+              <Text style={{...style.cardtext, textAlign: 'center'}}>
+				  {role == 'sales' ? 'Collection' : 'Frequency Report'}
+			  </Text>
             </TouchableOpacity>
           </View>
         </View>

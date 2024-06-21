@@ -7,7 +7,7 @@ import {store} from './src/store';
 
 const AppWithAuthProvider = () => (
   <AuthProvider>
-      <Provider store={store}>
+      <Provider  store={store}>
         <App />
       </Provider>
   </AuthProvider>

@@ -52,10 +52,14 @@ const DailyMedicalItemTable = ({ item }) => {
                     <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => { rowModal(item) }}>
                         <AntDesign name="infocirlce" color='#469ED8' size={20} />
                     </TouchableOpacity>
+					{item.end_visit==null && (
+						<TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => { editrowModal(item) }}>
+							<Feather name="edit" color='#000' size={17} />
+						</TouchableOpacity>
+					)
 
-                    <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => { editrowModal(item) }}>
-                        <Feather name="edit" color='#000' size={17} />
-                    </TouchableOpacity>
+					}
+
                 </View>
 
             </View>
