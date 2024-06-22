@@ -41,7 +41,7 @@ export default function App() {
 	) : (
 		<PusherProvider>
 			<NavigationContainer>
-				<Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={setRoot()}>
+				<Stack.Navigator screenOptions={{ headerShown: false ,orientation:'portrait'}} initialRouteName={setRoot()}>
 					<Stack.Screen name="FirstScreen" component={FirstScreen} />
 					<Stack.Screen name="BottomTabs" component={BottomTabs} />
 					<Stack.Screen name="SignIn" component={SignIn} />
