@@ -141,12 +141,10 @@ const AddNewPharmacyModel = ({ showM, hideM, submit, data,setFilter,user }) => {
 				setIsLoading(false);
 			})
 			.catch(error => {
-				console.warn(code, message);
 				setIsLoading(false);
+				console.log(error);
 			});
-
 	};
-
 
 	const onPicker = async () => {
 		try {

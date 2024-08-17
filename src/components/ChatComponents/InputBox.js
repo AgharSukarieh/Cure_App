@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TextInput, StyleSheet, Image, FlatList, Platform, ActivityIndicator } from "react-native";
+import { View, TextInput, StyleSheet, Image, FlatList, Platform, ActivityIndicator, Text } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { openPicker } from "@baronha/react-native-multiple-image-picker";
@@ -16,7 +16,7 @@ import { log } from "console";
 import GetLocation from "react-native-get-location";
 
 
-const InputBox = ({ receiverID, submit }) => {
+const InputBox = ({ receiverID, submit,getChat }) => {
 	const navigation = useNavigation();
 	const [newMessage, setNewMessage] = useState("");
 	const [images, setImages] = useState([]);
@@ -32,9 +32,7 @@ const InputBox = ({ receiverID, submit }) => {
 	const timestamp = currentTimeStamp();
 
 	const uploadImages = async (baseimages) => {
-
 		try {
-
 			let data = {
 				text: "",
 				receiver_id: receiverID,
@@ -46,32 +44,39 @@ const InputBox = ({ receiverID, submit }) => {
 				setNewMessage("");
 				setImages([]);
 				setbaseimages([]);
-
-
+				getChat();
+				setLoading(false);
 			}).catch((err) => {
-
-
-
-				// console.log(err);
+				console.log(err);
+				setLoading(false);
 			});
 		} catch (error) {
-			console.error(error);
 
-
+			setLoading(false);
 		}
 	};
 
 	const onSend = () => {
 		setLoading(true);
+		console.log(newMessage,);
+		console.log(baseimages,);
+		console.log(latitude,);
+		console.log(longitude,);
+
+		if(newMessage =='' && baseimages.length == 0 && latitude == "" && longitude == ""){
+			setLoading(false);
+			return;
+		}
 		if (newMessage.length > 0 || baseimages.length > 0 || longitude) {
+			setImages([]);
 			if (baseimages.length > 0) {
 				if (Platform.OS === "ios") {
-					console.log(baseimages);
+
 					uploadImages(baseimages[0][0]);
 				} else {
 					uploadImages(baseimages[0]);
 				}
-				setLoading(false);
+
 
 			} else {
 				let data = {
@@ -80,6 +85,8 @@ const InputBox = ({ receiverID, submit }) => {
 					longitude: longitude,
 					text: newMessage,
 				};
+
+
 				post(globalConstants.single_chat.send_mess, data, null).then((res) => {
 					submit(res?.message?.chat_id);
 					setNewMessage("");
@@ -87,7 +94,7 @@ const InputBox = ({ receiverID, submit }) => {
 					setLatitude("");
 					setLongitude("");
 					setLoading(false);
-
+					getChat();
 				}).catch((err) => {
 					console.log(err);
 					setLoading(false);

@@ -17,12 +17,14 @@ import Constants from "../../config/globalConstants";
 import MapView, { Marker } from "react-native-maps";
 import LoadingScreen from "../LoadingScreen";
 
+
 const EditDoctorprofle = ({ show, hide, submit, cityArea, specialtyData, item }) => {
+	const [classificationData, setClassificationData] = useState([]);
+	const [classificationValue, setClassificationValue] = useState(item.classification);
 	if (show) {
 		console.log(item);
 	}
 	const [doctorName, setDoctorName] = useState(item.name);
-	const [classification, setClassification] = useState(item.classification);
 	const [address, setAddress] = useState(item.address);
 	const [isLoading, setIsLoading] = useState(false);
 	const [latitude, setLatitude] = useState(Number(item.latitude ?? null));
@@ -35,6 +37,7 @@ const EditDoctorprofle = ({ show, hide, submit, cityArea, specialtyData, item })
 	const [specialtyValue, setSpecialtyValue] = useState(item.speciality_id);
 
 	const submitData = async () => {
+		setIsLoading(true);
 		const body = {
 			name: doctorName,
 			activate_status: 1,
@@ -42,18 +45,20 @@ const EditDoctorprofle = ({ show, hide, submit, cityArea, specialtyData, item })
 			area_id: areaValue,
 			speciality_id: specialtyValue,
 			address: address,
-			classification: classification,
+			classification: classificationValue,
 			longitude: longitude,
 			latitude: latitude,
 			_method: "PATCH",
 		};
-		await post(Constants.doctor.allDoctors +`/${item.id}`, body)
+		await post(Constants.doctor.allDoctors + `/${item.id}`, body)
 			.then((res) => {
+				setIsLoading(false);
 				submit(true);
 				hide();
 			})
 			.catch((err) => {
-			console.log(err);
+				setIsLoading(false);
+				console.log(err);
 				// Alert.alert("Error", err.message || "");
 				// submit(false);
 				// hide();
@@ -64,7 +69,18 @@ const EditDoctorprofle = ({ show, hide, submit, cityArea, specialtyData, item })
 	const getCities = () => {
 		// setCitiesData(citiesList);
 	};
-
+	const getClassification = () => {
+		const data = ["A", "B", "C", "D"];
+		var count = Object.keys(data).length;
+		let classificationArray = [];
+		for (var i = 0; i < count; i++) {
+			classificationArray.push({
+				value: data[i],
+				label: data[i],
+			});
+		}
+		setClassificationData(classificationArray);
+	};
 	const loadCities = async () => {
 		// call api to get cities
 		await get(Constants.get_cities).then((response) => {
@@ -98,6 +114,9 @@ const EditDoctorprofle = ({ show, hide, submit, cityArea, specialtyData, item })
 	};
 	useEffect(() => {
 		loadCities();
+		getClassification();
+		loadCities();
+
 	}, []);
 	useEffect(() => {
 		if (citiesList.length > 0) {
@@ -269,13 +288,38 @@ const EditDoctorprofle = ({ show, hide, submit, cityArea, specialtyData, item })
 										/>
 									</View>}
 
-								<Input
-									lable={"Classification"}
-									setData={setClassification}
-									style={{ ...styles.inputModel, backgroundColor: "white" }}
-									value={classification}
-									viewStyle={{ width: "90%" }}
-								/>
+
+								<View style={{ ...styles.container, marginTop: 40 }}>
+									<Dropdown
+										itemTextStyle={{ color: "#000000" }}
+										style={styles.dropdown}
+										placeholderStyle={styles.placeholderStyle}
+										selectedTextStyle={styles.selectedTextStyle}
+										inputSearchStyle={styles.inputSearchStyle}
+										iconStyle={styles.iconStyle}
+										data={classificationData}
+										search
+										maxHeight={300}
+										labelField="label"
+										valueField="value"
+										placeholder={!classificationValue ? "Select Classification" : "..."}
+										searchPlaceholder="Search..."
+										value={classificationValue}
+										onBlur={() => {
+										}}
+										onChange={item => {
+											setClassificationValue(item.value);
+										}}
+										renderLeftIcon={() => (
+											<AntDesign
+												style={styles.icon}
+												color={classificationValue ? "blue" : "black"}
+												name="Safety"
+												size={20}
+											/>
+										)}
+									/>
+								</View>
 								<Input
 									lable={"Address"}
 									setData={setAddress}

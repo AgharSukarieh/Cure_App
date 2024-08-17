@@ -25,9 +25,7 @@ const ChatScreen = ({ route, navigation }) => {
   const {data} = usePusher();
   const [chats, setChats] = useState([]);
   const [page, setPage] = useState(1);
-
   const [chatIdNew, setchatIdNew] = useState(id);
-
   const getChats = (page) => {
     get(getMessagesEndpoint, null, {page: page, chat_id: chatIdNew}).then((res) => {
       if (chats?.length > 0) {
@@ -47,9 +45,7 @@ const ChatScreen = ({ route, navigation }) => {
     if (chatIdNew) {
       get(putSeenMessagesEndpoint, null, {chat_id: chatIdNew}).then((res) => {
         func()
-      }).catch((err) => {
-
-      })
+      }).catch((err) => {})
     }
   }
 
@@ -82,7 +78,7 @@ const ChatScreen = ({ route, navigation }) => {
           }}
         showsVerticalScrollIndicator={false}
       />
-        <InputBox receiverID={user_id} submit={(ids) => {
+        <InputBox receiverID={user_id} getChat={getChats} submit={(ids) => {
           if (chatIdNew == null) {
 
             setchatIdNew(ids);
