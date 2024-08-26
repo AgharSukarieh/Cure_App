@@ -1,199 +1,263 @@
-import { TouchableOpacity, Text, View, StyleSheet, Dimensions, ScrollView } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import SkuModel from '../Modals/skuModel';
-import moment from 'moment';
-import SkueditModel from '../Modals/skueditModel';
+import { TouchableOpacity, Text, View, StyleSheet, Dimensions, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import SkuModel from "../Modals/skuModel";
+import moment from "moment";
+import SkueditModel from "../Modals/skueditModel";
 
 const DailyTable = ({ data, refresh }) => {
 
-    const [modal, setModal] = useState(false)
-    const [editmodal, seteditmodal] = useState(false)
-    const [rowdata, setrowdata] = useState(false)
+	const [modal, setModal] = useState(false);
+	const [editmodal, seteditmodal] = useState(false);
+	const [rowdata, setrowdata] = useState(false);
 
-    const rowModal = (rowdata) => {
-        setrowdata(rowdata)
-        setModal(true)
-    }
-    const editrowModal = (rowdata) => {
-        setrowdata(rowdata)
-        seteditmodal(true)
-    }
+	const rowModal = (rowdata) => {
+		setrowdata(rowdata);
+		setModal(true);
+	};
+	const editrowModal = (rowdata) => {
+		setrowdata(rowdata);
+		seteditmodal(true);
+	};
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={{ ...styles.headerel, width: '40%', }}>
-                    <Text style={styles.headerel_tetx}>Dr. name</Text>
-                </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
-                <View style={{ ...styles.headerel, width: '23%', }}>
-                    <Text style={styles.headerel_tetx}>Specialty</Text>
-                </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
-                <View style={{ ...styles.headerel, width: '22%', }}>
-                    <Text style={styles.headerel_tetx}>Time</Text>
-                </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
-                <View style={{ ...styles.headerel, width: '15%', }}>
-                    <Text style={styles.headerel_tetx}>...</Text>
-                </View>
-            </View>
+	return (
+		<View style={styles.container}>
+			<View style={styles.header}>
+				<View style={{ ...styles.headerel, width: "40%" }}>
+					<Text style={styles.headerel_tetx}>Dr. name</Text>
+				</View>
+				<View style={{ width: 1, height: "100%", backgroundColor: "#469ED8" }} />
+				<View style={{ ...styles.headerel, width: "23%" }}>
+					<Text style={styles.headerel_tetx}>Specialty</Text>
+				</View>
+				<View style={{ width: 1, height: "100%", backgroundColor: "#469ED8" }} />
+				<View style={{ ...styles.headerel, width: "22%" }}>
+					<Text style={styles.headerel_tetx}>Time</Text>
+				</View>
+				<View style={{ width: 1, height: "100%", backgroundColor: "#469ED8" }} />
+				<View style={{ ...styles.headerel, width: "15%" }}>
+					<Text style={styles.headerel_tetx}>...</Text>
+				</View>
+			</View>
 
-            <>
-                {data ?
-                    data.map((item, index) => (
-                        <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} key={index}>
-                            <View style={{ ...styles.filtterel, width: '40%', }}>
-                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#469ED8' }}>{item.doctor_id?.doc_name}</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#469ED8', alignSelf: 'center' }} />
+			<>
+				{data ?
+					data.map((item, index) => (
+						<View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? "#469ED8" : "#fff" }}
+							  key={index}>
+							<View style={{ ...styles.filtterel, width: "40%" }}>
+								<TouchableOpacity style={{
+									...styles.filtterbtn,
+									backgroundColor: index % 2 == 0 ? "#469ED8" : "#fff",
+								}} onPress={() => {
+								}}>
+									<Text style={{
+										...styles.filtterbtntext,
+										color: index % 2 == 0 ? "#fff" : "#469ED8",
+									}}>{item.doctor_id?.doc_name}</Text>
+								</TouchableOpacity>
+							</View>
+							<View style={{
+								width: 1,
+								height: "80%",
+								backgroundColor: index % 2 == 0 ? "#fff" : "#469ED8",
+								alignSelf: "center",
+							}} />
 
-                            <View style={{ ...styles.filtterel, width: '23%', }}>
-                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#469ED8', textTransform: 'uppercase' }}>{item.doctor_id?.sp_abbr}</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#469ED8', alignSelf: 'center' }} />
+							<View style={{ ...styles.filtterel, width: "23%" }}>
+								<TouchableOpacity style={{
+									...styles.filtterbtn,
+									backgroundColor: index % 2 == 0 ? "#469ED8" : "#fff",
+								}} onPress={() => {
+								}}>
+									<Text style={{
+										...styles.filtterbtntext,
+										color: index % 2 == 0 ? "#fff" : "#469ED8",
+										textTransform: "uppercase",
+									}}>{item.doctor_id?.sp_abbr}</Text>
+								</TouchableOpacity>
+							</View>
+							<View style={{
+								width: 1,
+								height: "80%",
+								backgroundColor: index % 2 == 0 ? "#fff" : "#469ED8",
+								alignSelf: "center",
+							}} />
 
-                            <View style={{ ...styles.filtterel, width: '22%', }}>
-                                <TouchableOpacity style={{ ...styles.filtterbtn, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} onPress={() => { }}>
-                                    <Text style={{ ...styles.filtterbtntext, color: index % 2 == 0 ? '#fff' : '#469ED8' }}>{moment(item.time_of_visit).format('h:m A')}</Text>
-                                </TouchableOpacity>
-                            </View>
+							<View style={{ ...styles.filtterel, width: "22%" }}>
+								<TouchableOpacity style={{
+									...styles.filtterbtn,
+									backgroundColor: index % 2 == 0 ? "#469ED8" : "#fff",
+								}} onPress={() => {
+								}}>
+									<Text style={{
+										...styles.filtterbtntext,
+										color: index % 2 == 0 ? "#fff" : "#469ED8",
+									}}>{moment(item.time_of_visit).format("h:m A")}</Text>
+								</TouchableOpacity>
+							</View>
 
-                            <View style={{ width: 1, height: '80%', backgroundColor: index % 2 == 0 ? '#fff' : '#469ED8', alignSelf: 'center' }} />
-                            <View style={{ ...styles.filtterel, flexDirection: 'row', width: '15%', justifyContent: 'space-between' }} >
-                                <TouchableOpacity style={{ marginHorizontal: 0 }} onPress={() => { rowModal(item) }}>
-                                    <AntDesign name="infocirlceo" color='gold' size={17} />
-                                </TouchableOpacity>
-                                <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => { editrowModal(item) }}>
-                                    <AntDesign name="edit" color={index % 2 == 0 ? '#fff' : '#469ED8'} size={17} />
-                                </TouchableOpacity>
-                            </View>
+							<View style={{
+								width: 1,
+								height: "80%",
+								backgroundColor: index % 2 == 0 ? "#fff" : "#469ED8",
+								alignSelf: "center",
+							}} />
+							<View style={{
+								...styles.filtterel,
+								flexDirection: "row",
+								width: "15%",
+								justifyContent: "space-between",
+							}}>
+								<TouchableOpacity style={{ marginHorizontal: 0 }} onPress={() => {
+									rowModal(item);
+								}}>
+									<AntDesign name="infocirlceo" color="gold" size={17} />
+								</TouchableOpacity>
+								<TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => {
+									editrowModal(item);
+								}}>
+									<AntDesign name="edit" color={index % 2 == 0 ? "#fff" : "#469ED8"} size={17} />
+								</TouchableOpacity>
+							</View>
 
 
-                        </View>
-                    ))
-                    :
-                    <View style={{ width: '100%', height: 70, justifyContent: 'center', alignItems: 'center', borderWidth: 1 }}>
-                        <Text style={{ textTransform: 'capitalize', fontSize: 25 }}>no available data</Text>
-                    </View>
-                }
-            </>
-            <SkuModel show={modal} data={rowdata} hide={() => { setModal(false) }} submit={(e) => { console.log(e) }} />
-            <SkueditModel show={editmodal} data={rowdata} hide={() => { seteditmodal(false) }} submit={(e) => { refresh() }} />
-        </View >
-    );
+						</View>
+					))
+					:
+					<View style={{
+						width: "100%",
+						height: 70,
+						justifyContent: "center",
+						alignItems: "center",
+						borderWidth: 1,
+					}}>
+						<Text style={{ textTransform: "capitalize", fontSize: 25 }}>no available data</Text>
+					</View>
+				}
+			</>
+			<SkuModel show={modal} data={rowdata} hide={() => {
+				setModal(false);
+			}} submit={(e) => {
+				console.log(e);
+			}} />
+			<SkueditModel show={editmodal} data={rowdata} hide={() => {
+				seteditmodal(false);
+			}} reload={(e) => {
+				refresh();
+			}}
+			submit={(e) => {
+				refresh();
+			}} />
+		</View>
+	);
 };
 
 export default DailyTable;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: '98%',
-        alignSelf: 'center',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '98%',
-        alignSelf: 'center',
-        borderColor: '#469ED8',
-        borderBottomWidth: 1,
-        marginTop: 10,
-        paddingVertical: 7
-    },
-    headerel: {
-        width: '24%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 1,
-        borderColor: '#469ED8',
-    },
-    headerel_tetx: {
-        textAlign: 'center',
-        fontSize: 17,
-        textTransform: 'capitalize',
-        color: '#000'
-    },
-    filtterrow1: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '98%',
-        alignSelf: 'center',
-        borderColor: '#469ED8',
-        borderWidth: 1,
-        marginTop: 10,
-        borderRadius: 7,
-        paddingVertical: 7
-    },
-    filtterrow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '98%',
-        alignSelf: 'center',
-        borderColor: '#469ED8',
-        borderBottomWidth: 1,
-        marginTop: 10,
-        paddingVertical: 7,
-        borderRadius: 7
-    },
-    filtterel: {
-        width: '29%',
-        justifyContent: 'center',
-        alignItems: 'center', 
-        paddingVertical: 10,
-        paddingHorizontal: 4
-    },
-    filtterbtn: {
-        backgroundColor: '#469ED8',
-        width: '90%',
-        paddingVertical: 5,
-        borderRadius: 7
-    },
-    filtterbtn2: {
-        width: '32%',
-        paddingVertical: 5,
-        borderRadius: 7
-    },
-    filtterbtntext: {
-        textAlign: 'center',
-        fontSize: 15,
-        textTransform: 'capitalize',
-        color: '#fff',
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        borderWidth: 1,
-        borderColor: '#469ED8',
-        marginTop: 10,
-        borderRadius: 7
-    },
-    rowel: {
-        width: '29%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 4
-    },
-    rowel_tetx: {
-        textAlign: 'center',
-        fontSize: 15,
-        textTransform: 'capitalize',
-        color: '#000',
-        height: 20,
-    },
-    rowel_tetx2: {
-        textAlign: 'center',
-        fontSize: 15,
-        textTransform: 'capitalize',
-        color: '#fff',
-        height: 20,
-    }
-})
+	container: {
+		flex: 1,
+		width: "98%",
+		alignSelf: "center",
+	},
+	header: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "98%",
+		alignSelf: "center",
+		borderColor: "#469ED8",
+		borderBottomWidth: 1,
+		marginTop: 10,
+		paddingVertical: 7,
+	},
+	headerel: {
+		width: "24%",
+		justifyContent: "center",
+		alignItems: "center",
+		paddingHorizontal: 1,
+		borderColor: "#469ED8",
+	},
+	headerel_tetx: {
+		textAlign: "center",
+		fontSize: 17,
+		textTransform: "capitalize",
+		color: "#000",
+	},
+	filtterrow1: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "98%",
+		alignSelf: "center",
+		borderColor: "#469ED8",
+		borderWidth: 1,
+		marginTop: 10,
+		borderRadius: 7,
+		paddingVertical: 7,
+	},
+	filtterrow: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "98%",
+		alignSelf: "center",
+		borderColor: "#469ED8",
+		borderBottomWidth: 1,
+		marginTop: 10,
+		paddingVertical: 7,
+		borderRadius: 7,
+	},
+	filtterel: {
+		width: "29%",
+		justifyContent: "center",
+		alignItems: "center",
+		paddingVertical: 10,
+		paddingHorizontal: 4,
+	},
+	filtterbtn: {
+		backgroundColor: "#469ED8",
+		width: "90%",
+		paddingVertical: 5,
+		borderRadius: 7,
+	},
+	filtterbtn2: {
+		width: "32%",
+		paddingVertical: 5,
+		borderRadius: 7,
+	},
+	filtterbtntext: {
+		textAlign: "center",
+		fontSize: 15,
+		textTransform: "capitalize",
+		color: "#fff",
+	},
+	row: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "100%",
+		borderWidth: 1,
+		borderColor: "#469ED8",
+		marginTop: 10,
+		borderRadius: 7,
+	},
+	rowel: {
+		width: "29%",
+		justifyContent: "center",
+		alignItems: "center",
+		paddingVertical: 10,
+		paddingHorizontal: 4,
+	},
+	rowel_tetx: {
+		textAlign: "center",
+		fontSize: 15,
+		textTransform: "capitalize",
+		color: "#000",
+		height: 20,
+	},
+	rowel_tetx2: {
+		textAlign: "center",
+		fontSize: 15,
+		textTransform: "capitalize",
+		color: "#fff",
+		height: 20,
+	},
+});

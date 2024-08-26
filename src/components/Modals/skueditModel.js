@@ -17,9 +17,10 @@ import Constants from "../../config/globalConstants";
 import { put } from "../../WebService/RequestBuilder";
 import GetLocation from "react-native-get-location";
 import LoadingScreen from "../LoadingScreen";
+import { patch, post } from "axios";
 
 
-const SkueditModel = ({ show, hide, submit, data }) => {
+const SkueditModel = ({ show, hide, submit, data ,reload}) => {
 
 
 	const [location, setlocation] = useState([]);
@@ -60,16 +61,19 @@ const SkueditModel = ({ show, hide, submit, data }) => {
 	const endVisit = async () => {
 		const ll = await getLocation();
 		const locationData = {
-			"longitude": location.longitude,
-			"latitude": location.latitude,
-			"ll": ll,
+			"longitude": ll.longitude,
+			"latitude": ll.latitude,
+			"_method": "patch",
 		};
+		console.log(locationData);
 
-		await put(Constants.visit.medical + `/${data.id}`, locationData)
+		await put(Constants.visit.medical + `/${data.id}?longitude=${ll.longitude}&latitude=${ll.latitude}`, )
 			.then((res) => {
 				hide();
+				reload();
 			})
 			.catch((err) => {
+				console.log(err);
 			})
 			.finally(() => {
 			});
