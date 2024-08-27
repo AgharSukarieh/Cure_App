@@ -6,7 +6,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import SkuModel from '../Modals/skuModel';
 import SkueditModel from '../Modals/skueditModel';
 
-const DailyMedicalItemTable = ({ item }) => {
+const DailyMedicalItemTable = ({ item,refresh }) => {
     const [modal, setModal] = useState(false)
     const [editmodal, seteditmodal] = useState(false)
     const [rowdata, setrowdata] = useState(false)
@@ -64,7 +64,7 @@ const DailyMedicalItemTable = ({ item }) => {
 
             </View>
             <SkuModel show={modal} data={rowdata} hide={() => { setModal(false) }} submit={(e) => { console.log(e) }} />
-            <SkueditModel show={editmodal} data={rowdata} hide={() => { seteditmodal(false) }} submit={(e) => { }} />
+            <SkueditModel show={editmodal} reload={(e)=>refresh()} data={rowdata} hide={() => { seteditmodal(false) }} submit={(e) => { }} />
         </>
     )
 }

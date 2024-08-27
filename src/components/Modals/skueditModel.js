@@ -20,7 +20,7 @@ import LoadingScreen from "../LoadingScreen";
 import { patch, post } from "axios";
 
 
-const SkueditModel = ({ show, hide, submit, data ,reload}) => {
+const SkueditModel = ({ show, hide, submit, data,reload}) => {
 
 
 	const [location, setlocation] = useState([]);
@@ -71,6 +71,8 @@ const SkueditModel = ({ show, hide, submit, data ,reload}) => {
 			.then((res) => {
 				hide();
 				reload();
+				// reload page
+
 			})
 			.catch((err) => {
 				console.log(err);
