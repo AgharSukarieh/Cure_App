@@ -34,15 +34,14 @@ const Sales = ({ navigation }) => {
 	const [cityArea, setCityArea] = useState(null);
 
 	useEffect(() => {
-		get(`${getCityAreaEndpoint}${user?.id}`, {
-			date_start: date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
-		}).then(response => {
+		get(`${getCityAreaEndpoint}${user?.id}`).then(response => {
 			console.log("REPONSE", response.data.areas);
 			console.log(`"URL", ${getCityAreaEndpoint}${user?.id}`);
 			setCityArea(response.data);
 		})
 			.catch(err => {
-				console.error(err);
+				console.log(`${getCityAreaEndpoint}${user?.id}`)
+				console.error("aaa",err);
 			});
 
 	}, []);

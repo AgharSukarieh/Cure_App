@@ -149,7 +149,7 @@ const InputBox = ({ receiverID, submit }) => {
 						}
 					})
 					.catch((error) => {
-						console.error("Error:", error);
+						console.error("Error2:", error);
 					});
 			}
 

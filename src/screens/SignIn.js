@@ -1,4 +1,4 @@
-import { Alert, View, SafeAreaView, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+import { Alert, View, SafeAreaView, KeyboardAvoidingView,StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { styles } from '../components/styles';
 import TopView from '../components/TopView';
@@ -39,7 +39,11 @@ const SignIn = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+  
+
+    <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    style={styles.container}>
       <View style={style.content}>
         <View style={style.imagediv}>
           <Image source={require('../../assets/logo__.png')} style={style.image} resizeMode="contain" />
@@ -71,7 +75,9 @@ const SignIn = ({ navigation }) => {
           <Text style={styles.buttonText}>Sign in</Text>
         </TouchableOpacity>
       </View> */}
-    </SafeAreaView>
+
+    </KeyboardAvoidingView>
+
   );
 };
 

@@ -168,7 +168,7 @@ const InputBox = ({ receiverID, submit,getChat }) => {
 						}
 					})
 					.catch((error) => {
-						console.error("Error:", error);
+						console.error("Error1:", error);
 					});
 			}
 

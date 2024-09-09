@@ -190,7 +190,7 @@ const AddNewPharmacyModel = ({ showM, hideM, submit, data,setFilter,user }) => {
 						}
 					})
 					.catch((error) => {
-						console.error("Error:", error);
+						console.error("Error3:", error);
 					});
 			}
 
