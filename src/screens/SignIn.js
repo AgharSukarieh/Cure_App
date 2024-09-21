@@ -1,4 +1,4 @@
-import { Alert, View, SafeAreaView, KeyboardAvoidingView,StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+import { Alert, View, SafeAreaView, KeyboardAvoidingView,StyleSheet, Image, Text, TouchableOpacity, Linking } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { styles } from '../components/styles';
 import TopView from '../components/TopView';
@@ -56,9 +56,11 @@ const SignIn = ({ navigation }) => {
           <View style={{ width: '85%', alignSelf: 'center' }}>
             <Text style={{ textAlign: 'center', fontSize: 16, color: '#808080', lineHeight:25 }}>
               By Signing in you Agree to Our{' '}
-                <Text onPress={() => console.log('Terms pressed')} style={{ textDecorationLine: 'underline', marginHorizontal: 2, textAlign: 'center', fontSize: 16, color: 'red' }}>Terms & Conditions</Text>
+                <Text onPress={() => Linking.openURL('https://cure.dev2.prodevr.com/terms.php')}
+                 style={{ textDecorationLine: 'underline', marginHorizontal: 2, textAlign: 'center', fontSize: 16, color: 'red' }}>Terms & Conditions</Text>
                 {' '}and{' '}
-                <Text onPress={() => console.log('Privacy Policy')} style={{ textDecorationLine: 'underline', marginHorizontal: 2, textAlign: 'center', fontSize: 16, color: 'red' }}>Privacy Policy</Text>
+                <Text onPress={() => Linking.openURL('https://cure.dev2.prodevr.com/privacy_policy.php')}
+                   style={{ textDecorationLine: 'underline', marginHorizontal: 2, textAlign: 'center', fontSize: 16, color: 'red' }}>Privacy Policy</Text>
             </Text>
           </View>
         </View>
