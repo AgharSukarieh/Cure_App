@@ -72,6 +72,32 @@ export const AuthProvider = ({ children }) => {
         setIsLoading(false);
       });
   };
+  const register = async (name,email, password) => {
+    setIsLoading(true);
+    await post(Constants.auth.register, {name, email, password })
+      .then(res => {
+        console.log("Register ",res);
+        // const token = res.token;
+        // const userData = res.user;
+        // const role = res.user.role;
+
+        // storeJsonData(Constants.storageTokenKeyName, token);
+        // storeJsonData(Constants.userData, userData);
+        // storeJsonData(Constants.role, role);
+
+        // setToken(token);
+        // setAuthToken(token);
+        // setUser(userData);
+        // setRole(role);
+        // setIsLoggedIn(true);
+      })
+      .catch(err => {
+        console.error('err3', err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   const logout = async () => {
     setIsLoading(true);
@@ -104,6 +130,7 @@ export const AuthProvider = ({ children }) => {
     user,
     role,
     login,
+    register,
     logout,
   };
 

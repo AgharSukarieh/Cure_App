@@ -19,6 +19,8 @@ import PresentImage from "./src/screens/ChatPages/PresentImage";
 import { PusherProvider } from "./src/contexts/PusherContext";
 import AddGroup from "./src/screens/ChatPages/AddGroup";
 import AllGroups from "./src/screens/ChatPages/AllGroups";
+import Register from "./src/screens/SignUp";
+import SignUp from "./src/screens/SignUp";
 
 export default function App() {
 
@@ -45,6 +47,7 @@ export default function App() {
 					<Stack.Screen name="FirstScreen" component={FirstScreen} />
 					<Stack.Screen name="BottomTabs" component={BottomTabs} />
 					<Stack.Screen name="SignIn" component={SignIn} />
+					<Stack.Screen name="SignUp" component={SignUp} />
 					<Stack.Screen name="SignUpPharmacy" component={SignUpPharmacy} />
 					<Stack.Screen name="SignInPharmacy" component={SignInPharmacy} />
 					<Stack.Screen name="ConfirmProfile" component={ConfirmProfile} />

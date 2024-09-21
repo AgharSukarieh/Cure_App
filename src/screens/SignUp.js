@@ -8,25 +8,27 @@ import { useAuth } from '../contexts/AuthContext';
 import LoadingScreen from '../components/LoadingScreen';
 const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const SignIn = ({ navigation }) => {
+const SignUp = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   // farah@gmail.com 123456789
-  const [email, setemail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login } = useAuth();
+  const [email, setemail] = useState('asemsmadi1122@gmail.com');
+  const [name, setName] = useState('asem alsmadi');
+  const [password, setPassword] = useState('test12343');
+  const { register } = useAuth();
 
-  const LoginPress = async () => {
+  const RegisterPress = async () => {
     setIsLoading(true);
     if (email != '' && password != '') {
       if (regex.test(email)) {
-        await login(email, password)
-          .then(() => {
+        await register(name,email, password)
+          .then((e) => {
             setIsLoading(false);
-            navigation.navigate('BottomTabs');
+            console.table(e);
           })
           .catch(err => {
             setIsLoading(false);
-            Alert.alert('login error', err.response.data.message);
+            console.table(err.response);
+            Alert.alert('login error', err);
           });
       } else {
         setIsLoading(false);
@@ -49,10 +51,11 @@ const SignIn = ({ navigation }) => {
           <Image source={require('../../assets/logo__.png')} style={style.image} resizeMode="contain" />
         </View>
         <View style={style.inputContainer}>
-          <Text style={style.inputheader}>Sign In to Continue</Text>
-          <Input lable={'Email'} setData={setemail} placeholder={'Email'} />
-          <Input lable={'PASSWORD'} setData={setPassword} isPassword={true} placeholder={'PASSWORD'} />
-          <Button text={'Sign In'} handleClick={() => LoginPress()} />
+          <Text style={style.inputheader}>Sign Up to Continue</Text>
+          <Input lable={'Full Name'} setData={setName}  placeholder={'Full Name'} />
+          <Input lable={'Email'} setData={setemail}  placeholder={'Email'} />
+          <Input lable={'PASSWORD'} setData={setPassword}  isPassword={true} placeholder={'PASSWORD'} />
+          <Button text={'Sign Up'} handleClick={() => RegisterPress()} />
           <View style={{ width: '85%', alignSelf: 'center' }}>
             <Text style={{ textAlign: 'center', fontSize: 16, color: '#808080', lineHeight:25 }}>
               By Signing in you Agree to Our{' '}
@@ -64,42 +67,33 @@ const SignIn = ({ navigation }) => {
             </Text>
           </View>
 
-          <View style={{ width: '85%', alignSelf: 'center' }}>
-  <Text style={{ textAlign: 'center', fontSize: 16, color: '#808080', lineHeight: 25 }}>
-    Don't Have An Account?{' '}
-    <Text
-      onPress={() => navigation.navigate('SignUp')}
-      style={{ color: '#469ED8' }}
-    >
-      Register
-    </Text>
-  </Text>
-</View>
+
+          {<View style={{ width: '85%', alignSelf: 'center' }}>
+            <Text style={{ textAlign: 'center', fontSize: 16, color: '#808080', lineHeight:25 }}>
+             Have An Account ? <Text onPress={()=>{
+              navigation.navigate('SignIn')
+             }} style={{color:'#469ED8'}}>Sign In</Text>
+            </Text>
+          </View> }
+
+          
         </View>
       </View>
 
       {isLoading && <LoadingScreen />}
 
-      {/* <View style={styles.checkPharmacy}>
-        <Text style={styles.checkPharmacyText}>Are you a pharmacy?</Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('SignInPharmacy')}
-          activeOpacity={0.7}
-          style={styles.signInPharmacyStyle}>
-          <Text style={styles.buttonText}>Sign in</Text>
-        </TouchableOpacity>
-      </View> */}
+    
 
     </KeyboardAvoidingView>
 
   );
 };
 
-export default SignIn;
+export default SignUp;
 
 const style = StyleSheet.create({
   content: { flex: 1, justifyContent: 'flex-start', backgroundColor: '#ebebeb96' },
-  imagediv: { width: 200, height: '35%', justifyContent:"center", alignItems:"center",  alignSelf: 'center'},
+  imagediv: { width: 200, height: '30%', justifyContent:"center", alignItems:"center",  alignSelf: 'center'},
   image: { width: 200, height: 200, }, 
   inputContainer: {
     alignSelf: 'center',

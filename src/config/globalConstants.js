@@ -13,6 +13,7 @@ export default {
 	auth: {
 		login: "login",
 		logout: "logout",
+		register: "register",
 	},
 	sales: {
 		pharmacy: "sales/pharamcy",

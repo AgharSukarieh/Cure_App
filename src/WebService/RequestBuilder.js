@@ -1,5 +1,6 @@
 import axios, { patch } from "axios";
 import { Alert } from 'react-native';
+import { err } from "react-native-svg/lib/typescript/xml";
 
 
 const apiClient = axios.create({
@@ -68,6 +69,7 @@ const request = async (method, url, data = null, params = {}) => {
     } else {
       Alert.alert(error.response?.data?.message || error.message)
     }
+
     throw new Error(error.response?.data?.message || error.message);
   }
 };
