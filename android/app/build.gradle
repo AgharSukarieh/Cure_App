@@ -1,6 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
-apply plugin: "kotlin-android" 
+apply plugin: "kotlin-android"
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 import com.android.build.OutputFile
@@ -95,9 +95,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.pharmacy"
+    namespace "com.cscpharmacy"
     defaultConfig {
-        applicationId "com.pharmacy"
+        applicationId "com.cscpharmacy"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -120,15 +120,22 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+         release {
+                    if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
+                        storeFile file(MYAPP_UPLOAD_STORE_FILE)
+                        storePassword MYAPP_UPLOAD_STORE_PASSWORD
+                        keyAlias MYAPP_UPLOAD_KEY_ALIAS
+                        keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+                    }
+                }
     }
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            // Use the release keystore for production signing.
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
