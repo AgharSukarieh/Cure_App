@@ -1,4 +1,4 @@
-import { View, Dimensions, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput, Image } from 'react-native';
+import { View, Alert,Dimensions, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput, Image } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { styles } from '../components/styles';
 import { useNavigation } from '@react-navigation/native';
@@ -13,7 +13,7 @@ const getCityAreaEndpoint = Constants.users.cityArea;
 
 const Profile = () => {
     const navigation = useNavigation();
-    const { logout, role, user } = useAuth();
+    const { logout, role, user ,deleteAccount} = useAuth();
     const date = new Date().toLocaleDateString();
 	useEffect(() => {
 		console.log(user);
@@ -29,6 +29,21 @@ const Profile = () => {
             });
     };
 
+    
+      const confirmDelete = () => {
+        Alert.alert(
+          "Confirm Deletion",
+          "Are you sure you want to delete your account?",
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            { text: "OK", onPress: () => deleteAccount() },
+          ],
+          { cancelable: false }
+        );
+      };
     return (
         <SafeAreaView style={{ ...styles.container, backgroundColor: '#ebebeb96' }}>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -45,6 +60,10 @@ const Profile = () => {
                     <TouchableOpacity style={style.logbtn} onPress={() => { LogoutPress() }}>
                         <Icon name="log-out" color='#e94343bf' size={25} style={{ marginHorizontal: 2 }} />
                         <Text style={style.cardtext2}>Logout</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={style.logbtn} onPress={() => { confirmDelete() }}>
+                        <Icon name="delete" color='#e94343bf' size={25} style={{ marginHorizontal: 2 }} />
+                        <Text style={style.cardtext2}>Delete Account</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>

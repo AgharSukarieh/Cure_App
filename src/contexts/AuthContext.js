@@ -11,6 +11,7 @@ import {
   clearAuthToken,
   setAuthToken
 } from '../WebService/RequestBuilder';
+import { Alert } from 'react-native';
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -76,20 +77,9 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true);
     await post(Constants.auth.register, {name, email, password })
       .then(res => {
-        console.log("Register ",res);
-        // const token = res.token;
-        // const userData = res.user;
-        // const role = res.user.role;
-
-        // storeJsonData(Constants.storageTokenKeyName, token);
-        // storeJsonData(Constants.userData, userData);
-        // storeJsonData(Constants.role, role);
-
-        // setToken(token);
-        // setAuthToken(token);
-        // setUser(userData);
-        // setRole(role);
-        // setIsLoggedIn(true);
+          if(res.data == 'success'){
+            Alert.alert("Your Account Has Been Registered Successfully")
+          }
       })
       .catch(err => {
         console.error('err3', err);
@@ -123,6 +113,31 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(false);
   };
 
+  const deleteAccount = async () => {
+    setIsLoading(true);
+    await post(Constants.auth.delete_account)
+      .then(res => {
+      console.log(res);
+        removeStoreData(Constants.storageTokenKeyName);
+        removeStoreData(Constants.userData);
+        removeStoreData(Constants.role);
+        clearAuthToken();
+        setToken(null);
+        setIsLoggedIn(false);
+        setUser(null);
+        setRole(null);
+      })
+      .catch(err => {
+        console.error('err4', err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+
+    setIsLoading(false);
+  };
+  
+
   const authContextValue = {
     isLoading,
     isLoggedIn,
@@ -132,7 +147,8 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-  };
+    deleteAccount
+    };
 
   return (
     <AuthContext.Provider value={authContextValue}>

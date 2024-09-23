@@ -11,9 +11,9 @@ const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SignUp = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   // farah@gmail.com 123456789
-  const [email, setemail] = useState('asemsmadi1122@gmail.com');
-  const [name, setName] = useState('asem alsmadi');
-  const [password, setPassword] = useState('test12343');
+  const [email, setemail] = useState('');
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
   const { register } = useAuth();
 
   const RegisterPress = async () => {
@@ -23,12 +23,11 @@ const SignUp = ({ navigation }) => {
         await register(name,email, password)
           .then((e) => {
             setIsLoading(false);
-            console.table(e);
+           
           })
           .catch(err => {
             setIsLoading(false);
-            console.table(err.response);
-            Alert.alert('login error', err);
+      
           });
       } else {
         setIsLoading(false);
@@ -36,7 +35,7 @@ const SignUp = ({ navigation }) => {
       }
     } else {
       setIsLoading(false);
-      Alert.alert('Make sure to enter Email and Password');
+      Alert.alert('Make sure to enter Email and Name and Password');
     }
   };
 
@@ -52,9 +51,9 @@ const SignUp = ({ navigation }) => {
         </View>
         <View style={style.inputContainer}>
           <Text style={style.inputheader}>Sign Up to Continue</Text>
-          <Input lable={'Full Name'} setData={setName}  placeholder={'Full Name'} />
+          <Input lable={'Full Name'} setData={setName}   placeholder={'Full Name'} />
           <Input lable={'Email'} setData={setemail}  placeholder={'Email'} />
-          <Input lable={'PASSWORD'} setData={setPassword}  isPassword={true} placeholder={'PASSWORD'} />
+          <Input lable={'PASSWORD'} setData={setPassword}    isPassword={true} placeholder={'PASSWORD'} />
           <Button text={'Sign Up'} handleClick={() => RegisterPress()} />
           <View style={{ width: '85%', alignSelf: 'center' }}>
             <Text style={{ textAlign: 'center', fontSize: 16, color: '#808080', lineHeight:25 }}>

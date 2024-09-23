@@ -14,6 +14,7 @@ export default {
 		login: "login",
 		logout: "logout",
 		register: "register",
+		delete_account:'delete-account'
 	},
 	sales: {
 		pharmacy: "sales/pharamcy",

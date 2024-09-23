@@ -64,13 +64,21 @@ const request = async (method, url, data = null, params = {}) => {
     return response.data;
   } catch (error) {
     const isUnauthenticated = error?.message?.includes('401')
-    if(isUnauthenticated) {
+    if (isUnauthenticated) {
       Alert.alert("Please log out and log in again")
     } else {
       Alert.alert(error.response?.data?.message || error.message)
     }
-
-    throw new Error(error.response?.data?.message || error.message);
+    is_422_error = error?.message?.includes('422')
+    if (is_422_error) {
+      if (error.response.data.errors != undefined) {
+        for (errorItem in error.response.data.errors) {
+          Alert.alert(error.response.data.errors[errorItem][0])
+        }
+      }
+    }else{
+      throw new Error(error.response?.data?.message || error.message);
+    }
   }
 };
 
@@ -79,7 +87,7 @@ const createApiFunction = method =>
   async (url, data = null, params = {}) => {
     const response = await request(method, url, data, params);
     return response;
-};
+  };
 
 export const get = createApiFunction('get');
 export const post = createApiFunction('post');
