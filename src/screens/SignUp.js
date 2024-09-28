@@ -1,4 +1,4 @@
-import { Alert, View, SafeAreaView, KeyboardAvoidingView,StyleSheet, Image, Text, TouchableOpacity, Linking } from 'react-native';
+import { Alert, View, SafeAreaView,Dimensions, KeyboardAvoidingView,StyleSheet, Image, Text, TouchableOpacity, Linking } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { styles } from '../components/styles';
 import TopView from '../components/TopView';
@@ -6,6 +6,9 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingScreen from '../components/LoadingScreen';
+import GoBack from '../components/GoBack';
+const wwidth = Dimensions.get('window').width
+const wheight = Dimensions.get('window').height
 const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const SignUp = ({ navigation }) => {
@@ -41,11 +44,14 @@ const SignUp = ({ navigation }) => {
 
   return (
   
+<SafeAreaView style={styles.container}>
 
     <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    style={styles.container}>
-      <View style={style.content}>
+    >
+  <GoBack style="" text="Sign in" />
+  <View style={{ width: '100%', height: '100%',backgroundColor:"#ebebeb96" }}>
+    
         <View style={style.imagediv}>
           <Image source={require('../../assets/logo__.png')} style={style.image} resizeMode="contain" />
         </View>
@@ -84,6 +90,7 @@ const SignUp = ({ navigation }) => {
     
 
     </KeyboardAvoidingView>
+    </SafeAreaView>
 
   );
 };
@@ -91,9 +98,16 @@ const SignUp = ({ navigation }) => {
 export default SignUp;
 
 const style = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: wwidth,
+    height: wheight,
+    backgroundColor: "#fff",
+    // paddingBottom: 75
+  },
   content: { flex: 1, justifyContent: 'flex-start', backgroundColor: '#ebebeb96' },
-  imagediv: { width: 200, height: '30%', justifyContent:"center", alignItems:"center",  alignSelf: 'center'},
-  image: { width: 200, height: 200, }, 
+  imagediv: { width: 200, height: '20%', justifyContent:"center", alignItems:"center",  alignSelf: 'center'},
+  image: { width: 100, height: 100, }, 
   inputContainer: {
     alignSelf: 'center',
     backgroundColor: '#fff',
