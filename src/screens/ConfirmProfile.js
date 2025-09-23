@@ -1,4 +1,4 @@
-import { View, SafeAreaView, ScrollView } from 'react-native';
+import { View, SafeAreaView, ScrollView, I18nManager } from 'react-native';
 import React, { useState } from 'react';
 import { styles } from '../components/styles';
 import TopView from '../components/TopView';
@@ -6,8 +6,11 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import { useNavigation } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { useTranslation } from 'react-i18next';
 
 const ConfirmProfile = () => {
+  const { t } = useTranslation();
+  const isRTL = I18nManager.isRTL;
   const [username, setUsername] = useState('');
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
@@ -29,26 +32,26 @@ const ConfirmProfile = () => {
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <KeyboardAwareScrollView> 
-          <TopView text={'Confirm your profile'} />
-          <Input lable={'USERNAME'} setData={setUsername} />
-          <Input lable={'FIRSTNAME'} setData={setFirstname} />
-          <Input lable={'LASTNAME'} setData={setLastname} />
-          <Input lable={'EMAIL'} setData={setEmail} />
+          <TopView text={t('confirmProfile.headerTitle')} />
+          <Input lable={t('confirmProfile.username')} setData={setUsername} />
+          <Input lable={t('confirmProfile.firstname')} setData={setFirstname} />
+          <Input lable={t('confirmProfile.lastname')} setData={setLastname} />
+          <Input lable={t('confirmProfile.email')} setData={setEmail} />
           <Input
-            lable={'NEW PASSWORD'}
+            lable={t('confirmProfile.newPassword')}
             setData={setNewPassword}
             isPassword={true}
           />
           <Input
-            lable={'CONFIRM PASSWORD'}
+            lable={t('confirmProfile.confirmPassword')}
             setData={setConfirmPassword}
             isPassword={true}
           />
-          <Input lable={'PHONE'} setData={setPhone} />
-          <Input lable={'ADDRESS'} setData={setAddress} />
-          <Input lable={'STATUS'} setData={setStatus} />
+          <Input lable={t('confirmProfile.phone')} setData={setPhone} />
+          <Input lable={t('confirmProfile.address')} setData={setAddress} />
+          <Input lable={t('confirmProfile.status')} setData={setStatus} />
 
-          <Button text={'Confirm'} handleClick={handleConfirm} />
+          <Button text={t('confirmProfile.confirm')} handleClick={handleConfirm} />
 
         </KeyboardAwareScrollView>
       </ScrollView>

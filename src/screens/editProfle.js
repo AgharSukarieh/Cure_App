@@ -1,4 +1,4 @@
-import { View, Dimensions, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput, Image } from 'react-native';
+import { View, Dimensions, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput, Image, I18nManager } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { styles } from '../components/styles';
 import { useNavigation } from '@react-navigation/native';
@@ -9,12 +9,15 @@ import HomeHeader from '../components/homeHeader';
 import GoBack from '../components/GoBack';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import { useTranslation } from 'react-i18next';
 
 
 const wheight = Dimensions.get('window').height
 const getCityAreaEndpoint = Constants.users.cityArea;
 
 const EditProfle = () => {
+    const { t } = useTranslation();
+    const isRTL = I18nManager.isRTL;r
     const navigation = useNavigation();
     const { user } = useAuth();
     const [name, setname] = useState('');
@@ -30,12 +33,12 @@ const EditProfle = () => {
     return (
         <SafeAreaView style={{ ...styles.container, backgroundColor: '#ebebeb96' }}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <GoBack text={'Profile'} />
+                <GoBack text={t('editProfile.headerTitle')} />
                 <View style={style.inputContainer}>
-                    <Text style={style.inputheader}>Your Profile</Text>
-                    <Input lable={'Name'} setData={setname} value={name} placeholder={'Name'} isEditable = {false}/>
-                    <Input lable={'Email'} setData={setemail} value={email} placeholder={'Email'} isEditable = {false}/>
-                    <Input lable={'Phone'} setData={setphone} value={phone} placeholder={'Phone'} isEditable = {false}/>
+                    <Text style={[style.inputheader, isRTL && style.rtlText]}>{t('editProfile.yourProfile')}</Text>
+                    <Input lable={t('editProfile.name')} setData={setname} value={name} placeholder={t('editProfile.name')} isEditable = {false}/>
+                    <Input lable={t('editProfile.email')} setData={setemail} value={email} placeholder={t('editProfile.email')} isEditable = {false}/>
+                    <Input lable={t('editProfile.phone')} setData={setphone} value={phone} placeholder={t('editProfile.phone')} isEditable = {false}/>
                     {/* <Button text={'Submit'} handleClick={ () => {} } /> */}
                 </View>
 
@@ -55,6 +58,11 @@ const style = StyleSheet.create({
         borderRadius: 15,
         paddingVertical: 12
     },
-    inputheader: { fontSize: 17, fontWeight: '600', marginHorizontal: 10, color: '#000' }
+    inputheader: { fontSize: 17, fontWeight: '600', marginHorizontal: 10, color: '#000' },
+    // أنماط RTL
+    rtlText: {
+        textAlign: 'right',
+        writingDirection: 'rtl',
+    },
 });
 export default EditProfle;

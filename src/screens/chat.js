@@ -1,14 +1,17 @@
-import { View, Text, Dimensions, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Image, TextInput, KeyboardAvoidingView } from 'react-native';
+import { View, Text, Dimensions, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Image, TextInput, KeyboardAvoidingView, Platform, I18nManager } from 'react-native';
 import React, { useState, useRef } from 'react';
 import GoBack from '../components/GoBack';
 import { caht } from '../helpers/data';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Feather from 'react-native-vector-icons/Feather';
+import { useTranslation } from 'react-i18next';
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
 const Chat = () => {
+    const { t } = useTranslation();
+    const isRTL = I18nManager.isRTL;
     const id = 1
     const [mindex, setmindex] = useState(-1)
     const scrollViewRef = useRef();
@@ -25,7 +28,7 @@ const Chat = () => {
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.container}>
-                <GoBack text="Chat" />
+                <GoBack text={t("chat.headerTitle")} />
                 <View style={{ width: '100%', height: '100%', }}>
                     <View style={styles.messagebox}>
                         <ScrollView ref={scrollViewRef}
@@ -54,13 +57,13 @@ const Chat = () => {
                     <View style={styles.sendbox}>
                         <View style={styles.sendbox2}>
                             <TextInput
-                                placeholder='Message ...' 
+                                placeholder={t("chat.typeMessage")} 
                                 multiline={true}
 
                                 numberOfLines={10}
                                 textAlignVertical='top'
                                 onContentSizeChange={handleContentSizeChange}
-                                style={{ ...styles.messageinput, height: textInputHeight }}
+                                style={{ ...styles.messageinput, height: textInputHeight, textAlign: isRTL ? 'right' : 'left' }}
 
                             />
                             <TouchableOpacity style={styles.send} onPress={() => { }}>

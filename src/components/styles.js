@@ -21,10 +21,10 @@ export const styles = StyleSheet.create({
 
   textRightStyle: {
     textAlign: 'center',
-    width: '80%',
-    fontSize: 30,
-    color: '#000',
-    fontWeight: 'bold',
+    width: '90%',
+    fontSize: 23,
+    color: '#0D38AD',
+    fontWeight: '500',
   },
   // End top Image text style
 

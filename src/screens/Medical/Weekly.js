@@ -1,225 +1,130 @@
+// FileName: screens/WeeklyScreen.js
+
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView, Alert } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { styles } from '../../components/styles';
-import GoBack from '../../components/GoBack';
 import Moment from 'moment';
-import Weeklyareaedit from '../../components/Weeklyareaedit';
-import { useAuth } from '../../contexts/AuthContext';
-import Constants from '../../config/globalConstants';
-import { get, post } from '../../WebService/RequestBuilder';
-import LoadingScreen from '../../components/LoadingScreen';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Feather from 'react-native-vector-icons/Feather';
 
-const Weekly = ({ navigation, route }) => {
-    const { user, role } = useAuth();
-    const data = route.params.data
-    const year = route.params.year
-    const month = route.params.data.id
-    const cityArea = route.params.cityArea
+// --- Mock Components & Data ---
+const GoBack = ({ text, onBack }) => (
+    <TouchableOpacity onPress={onBack} style={styles.header}>
+        <Feather name="chevron-left" size={24} color="#FFF" />
+        <Text style={styles.headerText}>{text}</Text>
+    </TouchableOpacity>
+);
 
-    const [modal, setModal] = useState(false)
-    const [dayinfo, setdayinfo] = useState([])
-    const [weeklyscdata, setweeklyscdata] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+const FAKE_WEEKLY_DATA = [
+    { date: '2025-09-01', area: 'Karrada' }, { date: '2025-09-02', area: 'Mansour' },
+    { date: '2025-09-04', area: 'Al-Adhamiyah' }, { date: '2025-09-08', area: 'Zayouna' },
+    { date: '2025-09-10', area: 'Al-Jadriya' }, { date: '2025-09-15', area: 'Amiriyah' },
+    { date: '2025-09-17', area: 'Iskan' }, { date: '2025-09-18', area: 'Bab Al-Sharqi' },
+];
 
-    function getDaysInMonth() {
-        const daysInMonth = new Date(year, month, 0).getDate();
+const WeeklyScreen = ({ route, navigation }) => {
+    const { monthData, year } = route.params;
+    const [weeklyPlans, setWeeklyPlans] = useState([]);
+
+    useEffect(() => {
+        // In a real app, you would fetch this data based on month and year
+        setWeeklyPlans(FAKE_WEEKLY_DATA);
+    }, [monthData, year]);
+
+    function getDaysInMonth(year, month) {
+        const date = new Date(year, month - 1, 1);
         const days = [];
-        for (let i = 1; i <= daysInMonth; i++) {
-            const date = new Date(year, month - 1, i);
-            days.push(date);
+        while (date.getMonth() === month - 1) {
+            days.push(new Date(date));
+            date.setDate(date.getDate() + 1);
         }
         return days;
     }
 
-    const daysInMarch20232 = getDaysInMonth();
-
-    const getdata = async () => {
-        setIsLoading(true);
-        await get(Constants.plans.get_plans, null, { user_id: user.id, date: Moment(`${data.id}-${year}`, 'M-YYYY').format('yyyy-MM') })
-            .then((res) => {
-                setweeklyscdata(res.data)
-            })
-            .catch((err) => { })
-            .finally(() => {
-                setIsLoading(false);
-            })
-    }
-
-    useEffect(() => {
-        getdata()
-    }, [])
-
-    const edit = (item) => {
-        let data = {
-            item: Moment(item).format('yyyy-MM-DD'),
-        }
-        setdayinfo(data)
-        setModal(true)
-    }
-
-    const submitedit = async (data) => {
-        const body = {
-            user_id: user.id,
-            city_id: data.city,
-            area_id: data.area,
-            date: Moment(dayinfo.item).format('yyyy-MM-DD')
-        }
-        await post(Constants.plans.get_plans, body, null)
-            .then((res) => {
-                getdata()
-            }).catch((err) => {
-
-            }).finally(() => { })
-    }
-
-    const alertarea = () => {
-        Alert.alert('Please Make Sure that you select an area for that day')
-    }
+    const daysOfMonth = getDaysInMonth(year, monthData.id);
     const weeks = [];
-
-
-    // Divide days into groups of 7
-    for (let i = 0; i < daysInMarch20232.length; i += 7) {
-        const weekDays = daysInMarch20232.slice(i, i + 7);
-        weeks.push(weekDays);
+    for (let i = 0; i < daysOfMonth.length; i += 7) {
+        weeks.push(daysOfMonth.slice(i, i + 7));
     }
+
+    const handleDayPress = (day, plan) => {
+        if (!plan) {
+            Alert.alert('No Plan Set', 'Please set an area for this day first by clicking the edit icon.');
+        } else {
+            navigation.navigate('Daily', { day, plan });
+        }
+    };
 
     return (
-        <SafeAreaView style={{ ...styles.container, backgroundColor: '#e3e9e9b3' }}>
+        <SafeAreaView style={styles.container}>
+            <GoBack text={'Weekly Plan'} onBack={() => navigation.goBack()} />
             <ScrollView showsVerticalScrollIndicator={false}>
-                <GoBack text={'Weekly Plan'} isIcon={'calendar-o'} />
-                <Text style={style.lale}>{data.name}</Text>
-
-                <View>
-                    {weeks.map((weekDays, weekIndex) => {
-                        return (
-                            <View key={weekIndex} style={style.weekContainer}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 15 }}>
-                                    <FontAwesome name='calendar-o' size={18} color="#469ED8" />
-                                    <Text style={style.weekHeader}>Week {weekIndex + 1}</Text>
-                                </View>
-                                <View style={{ width: '100%', height: 1, borderTopWidth: 1, borderStyle: 'dashed', marginBottom: 6 }} />
-                                <View style={style.dayContainer}>
-                                    {weekDays.map((day, dayIndex) => {
-                                        // Check if there's data for the current day in weeklyscdata
-                                        const matchingData = weeklyscdata.find(data => Moment(data.date).isSame(day, 'day'));
-                                        const areaName = matchingData ? matchingData.area : 'No Area';
-                                        const hasDataForDay = matchingData !== undefined;
-
-                                        return (
-                                            <TouchableOpacity
-                                                key={dayIndex}
-                                                style={{
-                                                    ...style.dayCard,
-                                                    backgroundColor: hasDataForDay ? '#469ED8' : '#7383d1',
-                                                }}
-                                                onLongPress={() => { edit(day) }}
-                                                onPress={() => {
-                                                    !hasDataForDay
-                                                        ? alertarea()
-                                                        : role == 'sales'
-                                                            ? navigation.navigate('Daily-sales', {
-                                                                title: Moment(day).format('dd  D - M - yyyy'),
-                                                                date: Moment(day).format('yyyy-M-D'),
-                                                                area: matchingData,
-                                                            })
-                                                            : navigation.navigate('Daily-notSales', {
-                                                                title: Moment(day).format('dd  D - M - yyyy'),
-                                                                date: Moment(day).format('yyyy-M-D'),
-                                                                area: matchingData,
-                                                            });
-                                                }}
-                                            >
-                                                <Text style={style.cardtext}>{Moment(day).format('ddd')}</Text>
-                                                <Text style={style.cardtext}>{Moment(day).format('D')}</Text>
-                                                {/* Additional content for the day card */}
-                                            </TouchableOpacity>
-                                        );
-                                    })}
-                                </View>
-                                <View style={{ width: '100%', height: 1, borderTopWidth: 1, borderStyle: 'dashed', marginBottom: 6 }} />
-                                <View style={{ ...style.dayContainer, marginBottom: 6 }}>
-                                    {weekDays.map((day, dayIndex) => {
-                                        const matchingData = weeklyscdata.find(data => Moment(data.date).isSame(day, 'day'));
-                                        const areaName = matchingData ? matchingData.area : 'No Area';
-
-                                        return (
-                                            <TouchableOpacity style={style.dayn} key={dayIndex} onPress={() => { edit(day) }}>
-                                                <Text style={style.dayn2}>{areaName}</Text>
-                                            </TouchableOpacity>
-                                        );
-                                    })}
-                                </View>
-                            </View>
-                        );
-                    })}
-                </View>
-
-
-
+                <Text style={styles.monthTitle}>{monthData.name} {year}</Text>
+                {weeks.map((weekDays, weekIndex) => (
+                    <View key={weekIndex} style={styles.weekContainer}>
+                        <View style={styles.weekHeaderContainer}>
+                            <FontAwesome name='calendar-check-o' size={18} color="#183E9F" />
+                            <Text style={styles.weekHeaderText}>Week {weekIndex + 1}</Text>
+                        </View>
+                        <View style={styles.daysGrid}>
+                            {weekDays.map((day, dayIndex) => {
+                                const plan = weeklyPlans.find(d => Moment(d.date).isSame(day, 'day'));
+                                return (
+                                    <TouchableOpacity
+                                        key={dayIndex}
+                                        style={[styles.dayCard, plan ? styles.dayCardPlanned : styles.dayCardNotPlanned]}
+                                        onPress={() => handleDayPress(day, plan)}
+                                    >
+                                        <View style={styles.dayCardHeader}>
+                                            <Text style={[styles.dayText, plan ? {} : styles.dayTextUnplanned]}>{Moment(day).format('ddd')}</Text>
+                                            <Text style={[styles.dateText, plan ? {} : styles.dateTextUnplanned]}>{Moment(day).format('D')}</Text>
+                                        </View>
+                                        <View style={styles.areaContainer}>
+                                            <Text style={[styles.areaText, plan ? {} : styles.areaTextUnplanned]} numberOfLines={2}>
+                                                {plan ? plan.area : 'Not Planned'}
+                                            </Text>
+                                        </View>
+                                        <TouchableOpacity style={styles.editIcon} onPress={() => Alert.alert("Edit", `Editing plan for ${Moment(day).format("MMM D")}`)}>
+                                            <Feather name="edit-2" size={16} color={plan ? '#183E9F' : '#777'} />
+                                        </TouchableOpacity>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                    </View>
+                ))}
             </ScrollView>
-            {isLoading && <LoadingScreen />}
-            {cityArea && <Weeklyareaedit show={modal} hide={() => { setModal(false) }} data={dayinfo} cityArea={cityArea} submit={(e) => { submitedit(e) }} />}
-        </SafeAreaView >
+        </SafeAreaView>
     );
 };
 
-export default Weekly;
-
-export const style = StyleSheet.create({
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: '#F4F7FC' },
+    header: { flexDirection: 'row', alignItems: 'center', padding: 15, backgroundColor: '#183E9F' },
+    headerText: { color: '#FFF', fontSize: 20, fontWeight: 'bold', marginLeft: 15 },
+    monthTitle: { marginVertical: 15, fontSize: 28, color: '#183E9F', fontWeight: '700', textAlign: 'center' },
     weekContainer: {
-        width: '90%',
-        alignSelf: 'center',
-        backgroundColor: '#fff',
-        marginBottom: 16,
-        borderRadius: 20,
-        borderWidth: 1,
-        borderColor: '#469ED8',
-        shadowColor: "#469ED8",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 6,
+        width: '95%', alignSelf: 'center', backgroundColor: '#FFFFFF', marginBottom: 20,
+        borderRadius: 16, padding: 10, elevation: 4, shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4,
     },
-    weekHeader: {
-        color: '#000',
-        fontSize: 18,
-        fontWeight: '500',
-        marginVertical: 8,
-        marginHorizontal: 10
-    },
-    dayContainer: {
-        flexDirection: 'row',
-        // justifyContent: 'space-between',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-    },
+    weekHeaderContainer: { flexDirection: 'row', alignItems: 'center', paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#EEE' },
+    weekHeaderText: { color: '#183E9F', fontSize: 18, fontWeight: '600', marginLeft: 10 },
+    daysGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', paddingTop: 10 },
     dayCard: {
-        width: '12.5%',
-        marginHorizontal: '1%',
-        height: 50,
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
+        width: '31%', margin: '1.1%', borderRadius: 12, padding: 10,
+        minHeight: 110, justifyContent: 'space-between',
     },
-    lale: {
-        marginHorizontal: 15,
-        marginVertical: 8,
-        fontSize: 30,
-        textTransform: 'capitalize',
-        color: '#000',
-        fontWeight: '700',
-        textAlign: 'center',
-    },
-    cardtext: {
-        color: '#fff'
-    },
-    dayn: {
-        width: '12.5%',
-        marginHorizontal: '1%',
-    },
-    dayn2: {
-        color: '#000',
-        textAlign: 'center'
-    },
-})
+    dayCardPlanned: { backgroundColor: '#E8F0FE', borderWidth: 1, borderColor: '#B0C8F0' },
+    dayCardNotPlanned: { backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E0E0E0' },
+    dayCardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
+    dayText: { fontSize: 14, fontWeight: '600', color: '#183E9F' },
+    dayTextUnplanned: { color: '#777' },
+    dateText: { fontSize: 18, fontWeight: 'bold', color: '#183E9F' },
+    dateTextUnplanned: { color: '#777' },
+    areaContainer: { flex: 1, justifyContent: 'center' },
+    areaText: { fontSize: 14, fontWeight: '500', textAlign: 'center', color: '#333' },
+    areaTextUnplanned: { color: '#999', fontStyle: 'italic' },
+    editIcon: { position: 'absolute', bottom: 5, right: 5, padding: 3 },
+});
+
+export default WeeklyScreen;

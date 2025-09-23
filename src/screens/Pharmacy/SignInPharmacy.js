@@ -13,7 +13,7 @@ const SignInPharmacy = ({navigation}) => {
   // const navigation = useNavigation();
 
   const handleSignIn = () => {
-    // navigation.navigate('ReportPage');
+    navigation.navigate('ReportPage');
     //
   };
 

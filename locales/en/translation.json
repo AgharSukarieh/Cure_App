@@ -1,0 +1,1019 @@
+{
+  "reportPage": {
+    "welcome": "Hello! Welcome back!",
+    "achieved": "Achieved",
+    "remaining": "Remaining",
+    "detail": "Detail",
+    "totalSales": "Total Sales",
+    "totalTarget": "Total Target",
+    "management": "Management",
+    "daily": "Daily",
+    "monthly": "Monthly",
+    "yearly": "Yearly"
+  },
+  "categories": {
+    "clientList": "Client List",
+    "monthlyPlan": "Monthly Plan",
+    "visitReport": "Visit Report",
+    "sales": "Sales"
+  },
+  "moreScreen": {
+    "header": "More",
+    "preferences": "Preferences",
+    "helpSupport": "Help & Support",
+    "about": "About"
+  },
+  "userCard": {
+    "userId": "User ID:",
+    "username": "Username:",
+    "email": "Email:",
+    "phone": "Phone:",
+    "city": "City:",
+    "sampleUsername": "John Doe",
+    "sampleEmail": "Aghar3141@gmail.com",
+    "samplePhone": "0795845552",
+    "sampleCity": "Amman"
+  },
+  "settings": {
+    "notifications": "Notifications",
+    "language": "Language",
+    "darkMode": "Dark mode",
+    "faq": "FAQ",
+    "contactUs": "Contact us",
+    "aboutUs": "About us",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "notifications": "Notifications",
+    "logout": "Logout",
+    "logoutConfirm": "Are you sure you want to logout?"
+  },
+  "terms": {
+    "title": "Terms & Conditions",
+    "welcomeTitle": "Welcome to Terms & Conditions",
+    "welcomeSubtitle": "Please read these terms carefully before using the app",
+    "lastUpdated": "Last updated",
+    "updateDate": "December 2024",
+    "sectionsTitle": "Agreement Terms",
+    "questionsTitle": "Have questions?",
+    "contactInfo": "Contact us for assistance",
+    "agreementText": "By using this app, you agree to these terms and conditions",
+    "sections": {
+      "acceptance": "Acceptance of Terms",
+      "acceptanceContent": "By using the Pharmacy app, you agree to be bound by these terms and conditions. If you do not agree to any of these terms, please do not use the app.",
+      "serviceDescription": "Service Description",
+      "serviceDescriptionContent": "The Pharmacy app provides medication management, prescription services, and inventory tracking. We offer a digital platform to connect pharmacists with customers and facilitate ordering and delivery processes.",
+      "userAccount": "User Account",
+      "userAccountContent": "You are responsible for maintaining the confidentiality of your account information and password. You must notify us immediately of any unauthorized use of your account. We are not liable for any losses resulting from failure to protect your information.",
+      "privacy": "Privacy and Data Protection",
+      "privacyContent": "We respect your privacy and are committed to protecting your personal data in accordance with our privacy policy. We may collect and use your information to provide services and improve your app experience.",
+      "payment": "Payment and Billing",
+      "paymentContent": "All payments are processed through secure channels. We accept cash on delivery and electronic payments. Prices are subject to change without prior notice. Payments are non-refundable except in specific cases.",
+      "liability": "Liability and Warranties",
+      "liabilityContent": "We provide the service as is without express or implied warranties. We will not be liable for any direct or indirect damages resulting from app usage. The user assumes full responsibility for their use of the app.",
+      "termination": "Service Termination",
+      "terminationContent": "Either party may terminate this agreement at any time. We reserve the right to suspend or terminate your account if you violate these terms. Upon termination, all services will cease immediately.",
+      "changes": "Terms Modification",
+      "changesContent": "We reserve the right to modify these terms and conditions at any time. You will be notified of any significant changes. Continued use of the app after modifications means you agree to the new terms."
+    }
+  },
+  "contactUs": {
+    "title": "Contact Us",
+    "welcomeTitle": "We're here to help",
+    "welcomeSubtitle": "Contact us anytime and we'll be happy to assist you",
+    "contactMethodsTitle": "Contact Methods",
+    "formTitle": "Send us a message",
+    "responseTime": "We usually respond within 24 hours",
+    "methods": {
+      "email": "Email",
+      "emailSubtitle": "support@pharmacy.com",
+      "phone": "Phone",
+      "phoneSubtitle": "+1 234 567 8900",
+      "whatsapp": "WhatsApp",
+      "whatsappSubtitle": "+1 234 567 8900"
+    },
+    "form": {
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "title": "Message Title",
+      "titlePlaceholder": "Enter message title",
+      "message": "Message",
+      "messagePlaceholder": "Write your message here...",
+      "submit": "Send Message"
+    },
+    "errors": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email format",
+      "titleRequired": "Message title is required",
+      "titleTooShort": "Title is too short (minimum 5 characters)",
+      "messageRequired": "Message is required",
+      "messageTooShort": "Message is too short (minimum 10 characters)"
+    },
+    "success": {
+      "title": "Message Sent Successfully",
+      "message": "Thank you! Your message has been sent successfully. We'll get back to you as soon as possible.",
+      "button": "OK"
+    },
+    "error": {
+      "title": "Sending Error",
+      "message": "An error occurred while sending the message. Please try again."
+    }
+  },
+  "aboutUs": {
+    "title": "About Us",
+    "welcomeTitle": "Welcome to Digital Pharmacy World",
+    "welcomeSubtitle": "We provide the best technological solutions for pharmacists and customers",
+    "ourStory": "Our Story",
+    "description": "Pharmacy app is an advanced digital platform that aims to connect pharmacists with customers and facilitate the ordering and delivery process. We believe that technology can make healthcare more accessible and convenient for everyone.",
+    "whyChooseUs": "Why Choose Us?",
+    "ourNumbers": "Our Numbers Speak",
+    "ourTeam": "Our Team",
+    "mission": "Our Mission",
+    "missionText": "We aim to transform the pharmacy experience through advanced technology, making medicines and healthcare accessible to everyone with ease and safety.",
+    "vision": "Our Vision",
+    "visionText": "To be the leading platform in digital pharmacy in the region, providing innovative solutions that contribute to improving the quality of healthcare.",
+    "followUs": "Follow Us",
+    "contactEmail": "info@pharmacy.com",
+    "contactPhone": "+1 234 567 8900",
+    "contactAddress": "Technology Street, Health City, Care Country",
+    "features": {
+      "secure": "Secure & Safe",
+      "secureDesc": "Complete protection for your data and personal information",
+      "fast": "Fast & Efficient",
+      "fastDesc": "Fast and reliable service at all times",
+      "reliable": "Reliable & Available",
+      "reliableDesc": "24/7 service with professional support team",
+      "caring": "Caring & Supportive",
+      "caringDesc": "We care about your health and provide the best care"
+    },
+    "stats": {
+      "users": "Active Users",
+      "pharmacies": "Partner Pharmacies",
+      "orders": "Completed Orders",
+      "satisfaction": "Satisfaction Rate"
+    },
+    "team": {
+      "ceo": "Ahmed Mohammed",
+      "ceoPosition": "Chief Executive Officer",
+      "cto": "Sarah Ahmed",
+      "ctoPosition": "Chief Technology Officer",
+      "cmo": "Mohammed Ali",
+      "cmoPosition": "Chief Marketing Officer"
+    }
+  },
+  "faq": {
+    "title": "FAQ",
+    "welcomeTitle": "Welcome to Help Center",
+    "welcomeSubtitle": "Find answers to your common questions",
+    "categoriesTitle": "Categories",
+    "questionsTitle": "Frequently Asked Questions",
+    "questions": "question",
+    "needHelp": "Need additional help?",
+    "contactUs": "Contact us and we'll be happy to help you",
+    "categories": {
+      "all": "All",
+      "general": "General",
+      "account": "Account",
+      "orders": "Orders",
+      "payment": "Payment",
+      "technical": "Technical"
+    },
+    "general": {
+      "question1": "How can I create a new account?",
+      "answer1": "You can create a new account by clicking the \"Create Account\" button on the login page, then follow the required steps to enter your personal information.",
+      "question2": "How can I reset my password?",
+      "answer2": "You can reset your password by clicking \"Forgot Password\" on the login page, then follow the instructions sent to your email."
+    },
+    "account": {
+      "question1": "How can I update my personal information?",
+      "answer1": "You can update your personal information by going to account settings and modifying the required information, then save the changes.",
+      "question2": "How can I delete my account?",
+      "answer2": "You can delete your account by going to account settings and selecting \"Delete Account\" option, keeping in mind that this action cannot be undone."
+    },
+    "orders": {
+      "question1": "How can I track my order?",
+      "answer1": "You can track your order by going to \"My Orders\" section and selecting the desired order, where you'll find order status details and current location.",
+      "question2": "How can I cancel an order?",
+      "answer2": "You can cancel your order by going to \"My Orders\" section and selecting the desired order, then clicking \"Cancel Order\" if it's still in preparation stage."
+    },
+    "payment": {
+      "question1": "What payment methods are available?",
+      "answer1": "We accept cash on delivery, credit card payment, and electronic payment through digital wallets.",
+      "question2": "Is payment secure?",
+      "answer2": "Yes, all payment transactions are protected with advanced encryption technologies to ensure the security of your financial information."
+    },
+    "technical": {
+      "question1": "The app is not working properly, what should I do?",
+      "answer1": "Try restarting the app first, and if the problem persists, make sure to update the app to the latest version, or contact our technical support team.",
+      "question2": "How can I update the app?",
+      "answer2": "You can update the app through the app store (App Store or Google Play) and search for the app, then click \"Update\" if available."
+    }
+  },
+  "notifications": {
+    "header": "Notifications",
+    "showAll": "Show All",
+    "unreadOnly": "Unread Only",
+    "markAllRead": "Mark All as Read",
+    "noNotifications": "No notifications",
+    "newOrder": "New Order",
+    "newOrderMessage": "New order received from Al-Salam Hospital",
+    "followUpReminder": "Follow-up Reminder",
+    "followUpMessage": "Follow up on King Fahd Hospital order before end of day",
+    "inventoryUpdate": "Inventory Update",
+    "inventoryMessage": "Medical equipment inventory updated successfully",
+    "clientMeeting": "Client Meeting",
+    "meetingMessage": "You have a meeting with Al-Markaz Specialist Hospital representative tomorrow at 10 AM",
+    "specialOffer": "Special Offer",
+    "offerMessage": "Special offer on X-ray equipment for limited time",
+    "timeAgo": {
+      "minutes": "minutes ago",
+      "hours": "hours ago",
+      "days": "days ago"
+    },
+    "filterUnread": "Filter Unread"
+  },
+  "reportsScreen": {
+    "header": "Report",
+    "selectCity": "Select City",
+    "selectArea": "Select Area",
+    "from": "From",
+    "to": "To",
+    "selectStartDate": "Select start date",
+    "selectEndDate": "Select end date"
+  },
+  "tableHeaders": {
+    "name": "Name",
+    "sales": "Sales",
+    "target": "Target",
+    "achievement": "Achievement",
+    "region": "Region",
+    "performance": "Performance",
+    "bonus": "Bonus"
+  },
+  "achievementStatus": {
+    "achieved": "Achieved",
+    "exceeded": "Exceeded",
+    "noc": "NOC"
+  },
+  "locations": {
+    "cities": {
+      "amman": "Amman",
+      "zarqa": "Zarqa",
+      "irbid": "Irbid",
+      "aqaba": "Aqaba"
+    },
+    "areas": {
+      "amman": {
+        "alAbdali": "AlAbdali",
+        "sweifieh": "Sweifieh",
+        "jabalAmman": "Jabal Amman",
+        "tlaaAlAli": "Tlaa Al-Ali"
+      },
+      "zarqa": {
+        "zarqaCity": "Zarqa City",
+        "russeifa": "Russeifa"
+      },
+      "irbid": {
+        "irbidCity": "Irbid City",
+        "ramtha": "Ramtha"
+      },
+      "aqaba": {
+        "aqabaCity": "Aqaba City"
+      }
+    },
+    "regions": {
+      "north": "North",
+      "central": "Central",
+      "south": "South",
+      "east": "East",
+      "west": "West"
+    }
+  },
+  "chatsScreen": {
+    "header": "Chats",
+    "searchPlaceholder": "Search messages, people",
+    "addFriend": "Add Friend",
+    "createGroup": "Create Group"
+  },
+  "signInScreen": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email Address",
+    "passwordLabel": "PASSWORD",
+    "passwordPlaceholder": "**************",
+    "forgotPassword": "Forget password?",
+    "signInButton": "Sign In",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign Up",
+    "footerAgreement": "By Signing in you Agree to Our",
+    "termsAndConditions": "Terms & Conditions",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy"
+  },
+  "signUpScreen": {
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email Address",
+    "passwordLabel": "PASSWORD",
+    "passwordPlaceholder": "**************",
+    "signUpButton": "Sign Up",
+    "signingUpButton": "Signing Up...",
+    "hasAccount": "Already have an account?",
+    "signInLink": "Sign In",
+    "footerAgreement": "By Signing up you Agree to Our",
+    "termsAndConditions": "Terms & Conditions",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy"
+  },
+  "alerts": {
+    "error": "Error",
+    "loginError": "Login Error",
+    "registrationError": "Registration Error",
+    "success": "Success",
+    "fillAllFields": "Please fill all fields",
+    "enterValidEmail": "Enter a valid email",
+    "somethingWentWrong": "Something went wrong",
+    "accountCreated": "Account created successfully!"
+  },
+  "changeLanguageScreen": {
+    "headerTitle": "Change Language",
+    "saveButtonText": "Save",
+    "languages": {
+      "en": { "title": "English", "subtitle": "English" },
+      "ar": { "title": "Arabic", "subtitle": "Arabic" }
+    }
+  },
+  "homeScreen": {
+  "welcomeBack": "Hello! Welcome back!",
+  "userName": "Anas",
+  "detail": "Detail",
+  "achieved": "Achieved",
+  "remaining": "Remaining",
+  "daily": "Daily",
+  "monthly": "Monthly",
+  "yearly": "Yearly",
+  "totalSales": "Total Sales",
+  "totalTarget": "Total Target",
+  "appointments": "Appointments",
+  "medicalReports": "Medical Reports",
+  "medicalServices": "Medical Services",
+  "management": "Management",
+  "clientList": "Client List",
+  "monthlyPlan": "Monthly Plan",
+  "visitReport": "Visit Report",
+  "sales": "Sales",
+  "notifications": "Notifications"
+}
+,
+  "reportsScreen": {
+    "filters": {
+      "selectCity": "Select City",
+      "selectArea": "Select Area",
+      "from": "From",
+      "to": "To"
+    },
+    "table": {
+      "name": "Name",
+      "sales": "Sales",
+      "target": "Target",
+      "achievement": "Achievement",
+      "region": "Region",
+      "performance": "Performance",
+      "bonus": "Bonus"
+    },
+    "achievementStatus": {
+      "achieved": "Achieved",
+      "exceeded": "Exceeded",
+      "noc": "NOC"
+    },
+    "chatScreen": {
+    "title": "Chat",
+    "placeholder": "Message ..."
+  }
+  },
+   "accountInfo": {
+    "collectionsHistory": "Collections History",
+    "noData": "No data to display.",
+    "loading": "Loading...",
+    "addNewPayment": "Add New Payment",
+    "success": "Success",
+    "paymentSubmitted": "Payment has been submitted successfully!",
+    
+    "tableDate": "Date",
+    "tablePaymentMethod": "Payment Method",
+    "tableAmount": "Amount",
+    "tableStatus": "Status",
+    
+    "modalTitle": "Add New Payment",
+    "modalChoosePaymentMethod": "Choose Payment Method",
+    "modalChangePaymentMethod": "Change Payment Method",
+    "modalCash": "Cash",
+    "modalCheck": "Check",
+    "modalPaymentValue": "Payment Value",
+    "modalEnterAmount": "Enter amount",
+    "modalCheckNumber": "Check Number",
+    "modalEnterCheckNumber": "Enter check number",
+    "modalCheckDate": "Check Date",
+    "modalDueDate": "Due Date",
+    "modalSubmit": "Submit",
+    
+    "paymentMethodCash": "Cash",
+    "paymentMethodCheck": "Check",
+    
+    "statusCompleted": "Completed",
+    "statusPending": "Pending"
+  },
+  "onboardingScreen": {
+    "slide1": {
+      "title": "Join Our Amazing Community",
+      "description": "Discover the digital pharmacy world and join a community of distinguished professionals"
+    },
+    "slide2": {
+      "title": "Advanced Inventory Management",
+      "description": "Smart system for managing medicines and inventory with accurate tracking of dates and quantities"
+    },
+    "slide3": {
+      "title": "Comprehensive Financial Reports",
+      "description": "Get detailed reports on sales and profits with smart performance analytics"
+    },
+    "nextButton": "Next",
+    "startButton": "Get Started",
+    "backButton": "Back"
+  },
+  "mainClientDoctorList": {
+    "headerTitle": "Client List",
+    "doctorList": "Doctor List",
+    "pharmacyList": "Pharmacy List"
+  },
+  "addNewDoctorModel": {
+    "doctorName": "Doctor Name",
+    "doctorNamePlaceholder": "Enter doctor name",
+    "selectCity": "Select City",
+    "selectArea": "Select Area",
+    "selectSpecialty": "Select Specialty",
+    "selectClassification": "Select Classification",
+    "address": "Address",
+    "addressPlaceholder": "Enter address",
+    "location": "Location",
+    "getLocation": "Get Location",
+    "submit": "Submit",
+    "search": "Search...",
+    "error": "Error",
+    "success": "Doctor added successfully"
+  },
+  "clientDoctorList": {
+    "headerTitle": "Client List",
+    "searchPlaceholder": "Search by doctor name...",
+    "filterByCity": "Filter by City",
+    "filterByArea": "Filter by Area",
+    "filterBySpecialty": "Filter by Specialty",
+    "allCities": "All Cities",
+    "allAreas": "All Areas",
+    "allSpecialties": "All Specialties",
+    "selectCityFirst": "Select city first",
+    "addNewDoctor": "Add New Doctor",
+    "loading": "Loading...",
+    "noData": "No data available",
+    "doctorName": "Doctor Name",
+    "specialty": "Specialty",
+    "city": "City",
+    "area": "Area",
+    "phone": "Phone",
+    "experience": "Experience",
+    "status": "Status",
+    "years": "years",
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending",
+    "addNewDoctorModal": {
+      "title": "Add New Doctor",
+      "doctorName": "Doctor Name",
+      "doctorNamePlaceholder": "e.g., Dr. John Doe",
+      "phoneNumber": "Phone Number",
+      "phoneNumberPlaceholder": "e.g., 07701234567",
+      "yearsOfExperience": "Years of Experience",
+      "yearsOfExperiencePlaceholder": "e.g., 10",
+      "specialty": "Specialty",
+      "chooseSpecialty": "Choose a specialty",
+      "city": "City",
+      "chooseCity": "Choose city",
+      "area": "Area",
+      "chooseArea": "Choose area",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "nameRequired": "Name is required",
+      "phoneRequired": "Phone is required",
+      "specialtyRequired": "Specialty is required",
+      "cityRequired": "City is required",
+      "successMessage": "Doctor added successfully"
+    }
+  },
+  "clientPharmacyList": {
+    "headerTitle": "Pharmacy List",
+    "searchPlaceholder": "Search by pharmacy name...",
+    "filterByCity": "Filter by City",
+    "filterByArea": "Filter by Area",
+    "allCities": "All Cities",
+    "allAreas": "All Areas",
+    "selectCityFirst": "Select city first",
+    "addNewPharmacy": "Add New Pharmacy",
+    "loading": "Loading...",
+    "noData": "No pharmacies found matching your criteria.",
+    "pharmacyName": "Pharmacy Name",
+    "location": "Location",
+    "category": "Category",
+    "addNewPharmacyModal": {
+      "title": "Add New Pharmacy",
+      "pharmacyName": "Pharmacy Name",
+      "pharmacyNamePlaceholder": "Enter pharmacy name",
+      "category": "Category (Specialty)",
+      "chooseCategory": "Choose a category",
+      "location": "Location",
+      "chooseCity": "Choose a city",
+      "chooseArea": "Choose an area",
+      "submit": "Add Pharmacy",
+      "cancel": "Cancel",
+      "nameRequired": "Name is required",
+      "categoryRequired": "Category is required",
+      "cityRequired": "Location (City) is required",
+      "areaRequired": "Location (Area) is required",
+      "successMessage": "Pharmacy Added Successfully!"
+    }
+  },
+  "medicalReportScreen": {
+    "headerTitle": "Medical Report",
+    "name": "Name",
+    "specialty": "Specialty",
+    "time": "Time",
+    "lastVisit": "Last Visit",
+    "status": "Status",
+    "visited": "Visited",
+    "pending": "Pending",
+    "noVisits": "No visits scheduled for this day.",
+    "loading": "Loading..."
+  },
+  "monthlyPlanSales": {
+    "headerTitle": "Sales Report",
+    "name": "Name",
+    "specialty": "Specialty",
+    "time": "Time",
+    "lastVisit": "Last Visit",
+    "status": "Status",
+    "visited": "Visited",
+    "pending": "Pending",
+    "noVisits": "No visits scheduled for this day.",
+    "loading": "Loading..."
+  },
+  "salesReportPharm": {
+    "headerTitle": "Sales Report",
+    "paymentHistory": "Payment History",
+    "returns": "Returns",
+    "inventory": "Inventory",
+    "monthlyPlan": "Monthly Plan",
+    "orders": "Orders"
+  },
+  "frequencyReport": {
+    "headerTitle": "Frequency Visit Report",
+    "city": "City",
+    "area": "Area",
+    "from": "From",
+    "to": "To",
+    "selectCity": "Select City",
+    "selectArea": "Select Area",
+    "selectCityFirst": "Select city first",
+    "doctorName": "Doctor Name",
+    "targetVisits": "Target Visits",
+    "actualVisits": "Actual Visits",
+    "lastVisit": "Last Visit",
+    "visited": "Visited",
+    "noReports": "No reports found for the selected filters.",
+    "loading": "Loading...",
+    "success": "Success",
+    "visitLogged": "Visit logged for new doctor:"
+  },
+  "sales": {
+    "headerTitle": "Sales",
+    "selectCity": "Select City",
+    "selectArea": "Select Area",
+    "from": "From",
+    "to": "To",
+    "client": "Client",
+    "totalPrice": "Total Price",
+    "status": "Status",
+    "createdAt": "Created At",
+    "delivered": "Delivered",
+    "pending": "Pending",
+    "canceled": "Canceled",
+    "noData": "No sales data found for the selected filters.",
+    "loading": "Loading..."
+  },
+  "accountInfo": {
+    "title": "Account Information",
+    "subtitle": "Manage your account details and payment history",
+    "totalBalance": "Total Balance",
+    "pendingPayments": "Pending Payments",
+    "collectionsHistory": "Collections History",
+    "filter": "Filter",
+    "addNewPayment": "Add New Payment",
+    "noData": "No payment history available",
+    "tableDate": "Date",
+    "tablePaymentMethod": "Payment Method",
+    "tableAmount": "Amount",
+    "tableStatus": "Status",
+    "paymentMethodCash": "Cash",
+    "paymentMethodCheck": "Check",
+    "statusCompleted": "Completed",
+    "statusPending": "Pending",
+    "success": "Success",
+    "paymentSubmitted": "Payment submitted successfully",
+    "modalTitle": "Add New Payment",
+    "modalChoosePaymentMethod": "Choose Payment Method",
+    "modalChangePaymentMethod": "Change Payment Method",
+    "modalCash": "Cash",
+    "modalCheck": "Check",
+    "modalPaymentValue": "Payment Value",
+    "modalEnterAmount": "Enter amount",
+    "modalCheckNumber": "Check Number",
+    "modalEnterCheckNumber": "Enter check number",
+    "modalCheckDate": "Check Date",
+    "modalDueDate": "Due Date",
+    "modalSubmit": "Submit",
+    "filterModalTitle": "Filter Payments",
+    "closeButton": "Close",
+    "closeFilterModal": "Close filter modal",
+    "all": "All",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "selectStartDate": "Select start date",
+    "selectEndDate": "Select end date",
+    "applyFilters": "Apply Filters",
+    "clearFilters": "Clear Filters",
+    "invalidDateRange": "Invalid date range",
+    "startDateAfterEndDate": "Start date must be before end date"
+  },
+  "dailySales": {
+    "headerTitle": "Daily Sales",
+    "searchPlaceholder": "Search for pharmacy or location...",
+    "addPharmacy": "Add New Pharmacy",
+    "pharmacyName": "Pharmacy Name",
+    "pharmacyLocation": "Pharmacy Location (City - Area)",
+    "phoneNumber": "Phone Number",
+    "add": "Add",
+    "close": "Close",
+    "noPharmacies": "No pharmacies match the search.",
+    "pharmacies": {
+      "alTaj": "Al-Taj Pharmacy",
+      "alNahdi": "Al-Nahdi Pharmacy",
+      "alMuttahida": "Al-Muttahida Pharmacy",
+      "zahratAlRouda": "Zahrat Al-Rouda Pharmacy",
+      "alMujtama": "Al-Mujtama Pharmacy"
+    },
+    "locations": {
+      "ammanUniversity": "Amman - University Street",
+      "zarqaPrinceRashid": "Zarqa - Prince Rashid District",
+      "irbidMedical": "Irbid - Al-Sharq Medical Complex",
+      "ammanJabal": "Amman - Jabal Amman",
+      "saltOldTown": "Salt - Old Town"
+    }
+  },
+  "inventory": {
+    "headerTitle": "Inventory",
+    "searchPlaceholder": "Search by name or barcode...",
+    "noProduct": "Product not found in this inventory.",
+    "errorLoading": "An error occurred while loading data.",
+    "productNotFound": "Product not found.",
+    "searchError": "An error occurred while searching for the product.",
+    "emptyState": "Search for a product or use the scanner to view inventory details"
+  },
+  "order": {
+    "headerTitle": "Order Management",
+    "headerSubtitle": "View and track all your orders",
+    "totalOrders": "Total Orders",
+    "pending": "Pending",
+    "delivered": "Delivered",
+    "orders": "Orders",
+    "status": "Status",
+    "details": "Details",
+    "deliveredStatus": "Delivered",
+    "pendingStatus": "Processing",
+    "canceledStatus": "Canceled",
+    "moreProducts": "more products",
+    "newOrder": "New Order",
+    "addNewOrder": "Add New Order",
+    "products": "Products",
+    "selectProduct": "Select Product",
+    "availableOffers": "Available Offers",
+    "costAndPrice": "Cost and Public Price",
+    "enterPrice": "Enter Price",
+    "cancel": "Cancel",
+    "save": "Save",
+    "pharmacy": "Pharmacy",
+    "location": "Location",
+    "orderDate": "Order Date",
+    "totalAmount": "Total Amount",
+    "quantity": "Quantity",
+    "bonus": "Bonus",
+    "price": "Price",
+    "priceWithTax": "Price with Tax",
+    "expiryDate": "Expiry Date",
+    "selectProductAndPrice": "Please select an item and enter the cost.",
+    "pharmacies": {
+      "alNahdi": "Al-Nahdi Pharmacy",
+      "alTaj": "Al-Taj Pharmacy",
+      "alDawa": "Al-Dawa Pharmacy",
+      "alMuttahida": "Al-Muttahida Pharmacy"
+    },
+    "cities": {
+      "riyadh": "Riyadh",
+      "jeddah": "Jeddah",
+      "dammam": "Dammam"
+    },
+    "products": {
+      "aspirin": "Aspirin 100mg",
+      "panadol": "Panadol Extra",
+      "vitaminC": "Vitamin C 500mg",
+      "ibuprofen": "Ibuprofen 400mg"
+    },
+    "offers": {
+      "discount10": "10% Discount",
+      "buy1Get1": "Buy 1 Get 1",
+      "freeShipping": "Free Shipping"
+    },
+    "currency": "SAR",
+    "orders": "Orders",
+    "status": "Status",
+    "details": "Details"
+  },
+  "return": {
+    "headerTitle": "Return",
+    "scan": "Scan",
+    "batchBarcode": "Batch / Barcode",
+    "selectDate": "Select Date",
+    "error": "Error"
+  },
+  "weeklySales": {
+    "headerTitle": "Weekly Plan",
+    "noArea": "No Area",
+    "week": "Week",
+    "selectAreaFor": "Select area for",
+    "cancel": "Cancel",
+    "alert": "Alert",
+    "selectAreaFirst": "Please make sure to select an area for this day first."
+  },
+  "reports": {
+    "headerTitle": "Reports",
+    "selectCity": "Select City",
+    "selectArea": "Select Area",
+    "from": "From",
+    "to": "To",
+    "name": "Name",
+    "sales": "Sales",
+    "target": "Target",
+    "achievement": "Achievement",
+    "region": "Region",
+    "performance": "Performance",
+    "bonus": "Bonus",
+    "achieved": "Achieved",
+    "exceeded": "Exceeded",
+    "noc": "NOC"
+  },
+  "collection": {
+    "headerTitle": "Collection",
+    "selectCity": "Select City",
+    "selectArea": "Select Area",
+    "from": "From",
+    "to": "To",
+    "clientName": "Client Name",
+    "cityName": "City Name",
+    "areaName": "Area Name",
+    "amount": "Amount",
+    "date": "Date",
+    "status": "Status",
+    "collected": "Collected",
+    "pending": "Pending",
+    "noData": "No collection data found for the selected filters."
+  },
+  "profile": {
+    "headerTitle": "Profile",
+    "yourProfile": "Your Profile",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "submit": "Submit"
+  },
+  "chat": {
+    "headerTitle": "Chat",
+    "typeMessage": "Type a message...",
+    "send": "Send"
+  },
+  "confirmProfile": {
+    "headerTitle": "Confirm your profile",
+    "username": "USERNAME",
+    "firstname": "FIRSTNAME",
+    "lastname": "LASTNAME",
+    "email": "EMAIL",
+    "newPassword": "NEW PASSWORD",
+    "confirmPassword": "CONFIRM PASSWORD",
+    "phone": "PHONE",
+    "address": "ADDRESS",
+    "status": "STATUS",
+    "confirm": "Confirm"
+  },
+    "editProfile": {
+      "headerTitle": "Profile",
+      "yourProfile": "Your Profile",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "submit": "Submit"
+    },
+    "profile": {
+      "headerTitle": "Profile",
+      "name": "Name",
+      "email": "Email",
+      "dateOfBirth": "Date of Birth",
+      "country": "Country/Region",
+      "password": "Password",
+      "changePassword": "Change Password",
+      "saveChanges": "Save changes",
+      "enterName": "Enter your name",
+      "enterEmail": "Enter your email",
+      "selectCountry": "Select a Country",
+      "savedData": "Saved data"
+    },
+    "common": {
+      "ok": "OK",
+      "back": "Back",
+      "menu": "Menu",
+      "openingMenu": "Opening side menu/drawer...",
+      "error": "Error",
+      "continue": "Continue",
+      "save": "Save"
+    },
+    "bottomTabs": {
+      "home": "Home",
+      "report": "Report",
+      "chat": "Chat",
+      "more": "More"
+    },
+    "chatsScreen": {
+      "header": "Chats",
+      "searchPlaceholder": "Search...",
+      "addFriend": "Add Friend",
+      "createGroup": "Create Group",
+      "groupCreated": "You created the group.",
+      "contactAdded": "You added {{name}}. Say hi!"
+    },
+    "contactsScreen": {
+      "header": "New Chat",
+      "searchPlaceholder": "Search ...."
+    },
+    "chatScreen": {
+      "typeMessage": "Type a message...",
+      "online": "Online now",
+      "lastSeen": "Last seen today",
+      "camera": "Camera",
+      "gallery": "Gallery",
+      "document": "Document",
+      "location": "Location",
+      "contact": "Contact",
+      "send": "Send",
+      "back": "Back",
+      "newGroupCreated": "New group created:",
+      "systemMessage": "System Message",
+      "cameraMessage": "Camera will open soon",
+      "galleryMessage": "Gallery will open soon",
+      "documentMessage": "Document picker will open soon",
+      "locationMessage": "Location will open soon",
+      "contactMessage": "Contacts will open soon",
+      "locationShared": "Location shared",
+      "openInMaps": "Open in Maps",
+      "selectedLocation": "Selected Location",
+      "selectLocation": "Select Location",
+      "sendCurrentLocation": "Send My Current Location",
+      "sendSelectedLocation": "Send Selected Location",
+      "locationHelp": "Tap on the map to select a location or tap the current location button",
+      "selectContact": "Select Contact",
+      "noContacts": "No contacts available"
+    },
+    "addFriend": {
+      "cancel": "Cancel",
+      "newContact": "New contact",
+      "done": "Done",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "country": "Country",
+      "phone": "Phone",
+      "syncContact": "Sync contact to phone",
+      "contactPrefix": "Contact"
+    },
+    "addVisit": {
+      "addNewVisit": "Add New Visit",
+      "selectExistingDoctor": "Select Existing Doctor (Optional)",
+      "chooseFromList": "Choose from list...",
+      "or": "OR",
+      "doctorName": "Doctor Name",
+      "enterDoctorName": "Enter doctor's name",
+      "specialty": "Specialty",
+      "enterSpecialty": "Enter specialty",
+      "time": "Time",
+      "status": "Status",
+      "pending": "Pending",
+      "visited": "Visited",
+      "confirmVisit": "Confirm Visit",
+      "missingInfo": "Missing Information",
+      "fillDoctorInfo": "Please fill in or select a doctor and their specialty."
+    },
+    "addVisitModal": {
+      "logNewVisit": "Log a New Visit",
+      "logVisitExisting": "1. Log Visit for an Existing Doctor",
+      "selectDoctorFromList": "Select a doctor from the list",
+      "search": "Search...",
+      "confirmVisit": "Confirm Visit",
+      "addNewDoctorVisited": "2. Add a New Doctor You Visited",
+      "addNewDoctor": "Add New Doctor",
+      "selectDoctor": "Please select a doctor."
+    },
+    "addDoctor": {
+      "addNewDoctor": "Add New Doctor",
+      "doctorName": "Doctor Name",
+      "doctorNamePlaceholder": "e.g., Dr. John Doe",
+      "phoneNumber": "Phone Number",
+      "phonePlaceholder": "e.g., 07701234567",
+      "address": "Address / Clinic",
+      "addressPlaceholder": "e.g., Karrada, Baghdad",
+      "addDoctorAndLogVisit": "Add Doctor & Log Visit",
+      "validationError": "Validation Error",
+      "requiredFields": "Doctor name and phone number are required."
+    },
+    "forgetPassword": {
+      "forgotPassword": "Forgot Password",
+      "chooseVerification": "Choose Verification Method",
+      "setNewPassword": "Set New Password",
+      "verification": "Verification"
+    },
+   
+    "paymentMethod": {
+      "selectMethod": "Select Payment Method",
+      "selectMethodDesc": "Choose the appropriate method for payment",
+      "cash": "Cash",
+      "cashDesc": "Direct cash payment",
+      "check": "Check",
+      "checkDesc": "Payment by bank check",
+      "footerInfo": "You can change the payment method later"
+    }
+, "auth": {
+    "email": "Email",
+    "emailPlaceholder": "Email Address",
+    "password": "Password",
+    "passwordPlaceholder": "Password",
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signingIn": "Signing In...",
+    "signingUp": "Signing Up...",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "agreeText": "By {{action}} you agree to our",
+    "terms": "Terms & Conditions",
+    "and": "and",
+    "privacy": "Privacy Policy",
+    "forgotPassword": "Forgot password?",
+    "chooseVerification": {
+    "title": "Choose Verification Method",
+    "subtitle": "We'll send you a verification code",
+    "viaSms": "Via SMS"
+  },
+  "forgotPasswordScreen": {
+    "title": "Forgot Password?",
+    "subtitle": "We'll send you a verification code to your phone or email",
+    "phonePlaceholder": "Enter your phone number",
+    "sendOtpButton": "Send OTP",
+    "emptyPhoneAlert": "Please enter your phone number"
+  },
+  "setNewPasswordScreen": {
+    "title": "Set New Password",
+    "subtitle": "Enter your new password",
+    "passwordPlaceholder": "Enter new password",
+    "confirmPasswordPlaceholder": "Confirm new password",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "note": "Password must be at least 6 characters long"
+  },
+  "successUpdatePassword": {
+    "title": "Password Updated Successfully!",
+    "subtitle": "Your password has been updated successfully",
+    "redirecting": "Redirecting to login in {{countdown}} seconds"
+  },
+  "verificationScreen": {
+    "title": "Enter Verification Code",
+    "subtitle": "We sent a code to your phone",
+    "errorIncompleteCode": "Please enter the complete verification code",
+    "codeResentAlert": "Verification code has been resent",
+    "resendAfter": "Resend code after",
+    "resendText": "Didn't receive the code?",
+    "resendLink": "Resend",
+    "verifyButton": "Verify"
+  }
+}
+}

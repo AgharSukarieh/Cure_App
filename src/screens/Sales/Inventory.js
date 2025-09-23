@@ -1,190 +1,249 @@
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   SafeAreaView,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
   TextInput,
-  Alert,
+  ActivityIndicator, // لاستخدامه في حالة التحميل
+  ScrollView,
+  I18nManager,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { styles } from '../../components/styles';
-import InventoryTable from '../../components/Tables/InventoryTable';
 import Feather from 'react-native-vector-icons/Feather';
+import InventoryTable from '../../components/Tables/InventoryTable';
 import AddNewInventoryModel from '../../components/Modals/AddNewInventoryModel';
+import ScanBarcodeAndQRModel from '../../components/Modals/ScanBarcodeAndQRModel';
 import { get } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
-import ScanBarcodeAndQRModel from '../../components/Modals/ScanBarcodeAndQRModel';
+// لاستخدام أبعاد الشاشة في الأنماط
+import { Dimensions } from 'react-native';
+import GoBack from '../../components/GoBack';
+import { useTranslation } from 'react-i18next';
+const { height } = Dimensions.get('window');
 Feather.loadFont();
 
+// شاشة المخزون بتصميم ووظائف محسّنة
 const Inventory = ({ navigation, item }) => {
-  const [modal, setModal] = useState(false);
-  const [qrmodal, setqrModal] = useState(false);
-  const [rows, setRows] = useState(null);
-  const [showTable, setShowTable] = useState(false)
+  const { t } = useTranslation();
+  const isRTL = I18nManager.isRTL;
+  // --- إدارة الحالات ---
+  const [isAddModalVisible, setAddModalVisible] = useState(false);
+  const [isScanModalVisible, setScanModalVisible] = useState(false);
+  const [inventoryData, setInventoryData] = useState(null); // بيانات الجدول
+  const [searchTerm, setSearchTerm] = useState(''); // حالة لمصطلح البحث
+  const [isLoading, setIsLoading] = useState(false); // حالة التحميل
+  const [error, setError] = useState(null); // حالة لعرض الأخطاء
 
-  const getInventory = () => {
-    const parms = {
-      pharmacy_id: item?.pharmacy_id,
-    }
-    get(Constants.inventory.get_inventory, null, parms).then((res) => {
-      setRows(res.pharamcy_last_order)
-    }).catch(() => {
+  // --- طلب البيانات من الشبكة ---
+  const fetchInventoryById = (productId) => {
+    if (!item?.pharmacy_id || !productId) return;
 
-    }).finally(() => {
+    setIsLoading(true);
+    setError(null);
+    setInventoryData(null); // إخفاء الجدول القديم عند بدء بحث جديد
 
-    });
-  }
+    const params = {
+      pharmacy_id: item.pharmacy_id,
+      product_id: productId, // البحث بـ ID المنتج
+    };
 
-  useEffect(() => {
-    if (item) getInventory();
-  }, [item])
-
-  const submit2 = data => {
-    // let dataFromModel = {
-    //   pharm_id: route.params.item.pharm_id.ph_id,
-    //   user_id: route.params.item.user_id,
-    //   item_id: data.productValue,
-    //   availability: data.availability,
-    //   expired_date: data.date,
-    //   batch_number: data.batchNumber,
-    //   time_of_visit: new Date(),
-    // };
-    // axios({
-    //   method: 'POST',
-    //   url: SAL_ADD_IINVENTORY,
-    //   data: dataFromModel,
-    // })
-    //   .then(response => {
-    //     getRows();
-    //   })
-    //   .catch(error => {
-    //     console.log(error)
-    //   });
+    get(Constants.inventory.get_inventory, null, params)
+      .then((res) => {
+        if (res.pharamcy_last_order && res.pharamcy_last_order.order_details?.length > 0) {
+          setInventoryData(res.pharamcy_last_order);
+        } else {
+          // في حال لم يتم العثور على المنتج في المخزون
+          setError(t('inventory.noProduct'));
+        }
+      })
+      .catch((apiError) => {
+        console.error("API Error fetching inventory:", apiError);
+        setError(t('inventory.errorLoading'));
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
-  const endEditing = (value) => {
-    const parms = {
-      seach_term: value,
-    }
-    if (parms.seach_term != null) {
-      get(Constants.product.products, null, parms).then((res) => {
-        let status = false;
-        rows?.order_details?.forEach(element => {
-          if (element.product_id === res.data[0]?.id) {
-            status = true
-          }
-        });
+  // --- التعامل مع نتيجة المسح الضوئي أو البحث اليدوي ---
+  const handleSearch = (searchValue) => {
+    if (!searchValue) return;
 
-        if (status) {
-          setShowTable(true)
+    setIsLoading(true);
+    setError(null);
+    setInventoryData(null);
+
+    const params = {
+      seach_term: searchValue,
+    };
+
+    get(Constants.product.products, null, params)
+      .then((res) => {
+        if (res.data && res.data.length > 0) {
+          const foundProductId = res.data[0]?.id;
+          // بعد العثور على المنتج، ابحث عنه في المخزون
+          fetchInventoryById(foundProductId);
         } else {
-          setShowTable(false)
-          Alert.alert('Not Match')
+          setError(t('inventory.productNotFound'));
+          setIsLoading(false);
         }
-      }).catch(() => { }).finally(() => { });
+      })
+      .catch((apiError) => {
+        console.error("API Error searching products:", apiError);
+        setError(t('inventory.searchError'));
+        setIsLoading(false);
+      });
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return <ActivityIndicator size="large" color="#0A2540" style={styles.centeredMessage} />;
     }
-  }
+    if (error) {
+      return <Text style={[styles.centeredMessage, styles.errorText, isRTL && styles.rtlText]}>{error}</Text>;
+    }
+    if (inventoryData) {
+      return <InventoryTable data={inventoryData} />;
+    }
+    return (
+      <View style={styles.emptyStateContainer}>
+        <Feather name="search" size={40} color="#a0a0a0" />
+        <Text style={[styles.emptyStateText, isRTL && styles.rtlText]}>{t('inventory.emptyState')}</Text>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10 }}>
-          <TouchableOpacity
-            style={style.newbtn}
-            onPress={() => {
-              setqrModal(true);
-            }}>
-            <Text style={{ color: '#fff', fontSize: 18, paddingHorizontal: 5 }}>
-              Scan
-            </Text>
-          </TouchableOpacity>
+      <View style={{}}>
+        <GoBack text={t('inventory.headerTitle')} />
+      </View>
+      <View style={styles.header}>
+        <View style={styles.searchContainer}>
+          <Feather name="search" size={20} color="#888" style={styles.searchIcon} />
+          <TextInput
+            style={[styles.searchInput, isRTL && styles.rtlText]}
+            placeholder={t('inventory.searchPlaceholder')}
+            placeholderTextColor="#888"
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+            onSubmitEditing={() => handleSearch(searchTerm)} // للبحث عند الضغط على "Enter"
+            returnKeyType="search"
+          />
         </View>
-        <View style={{ width: '90%', height: 1, backgroundColor: '#000', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
-
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={{ marginVertical: 10 }}>
-            {showTable ? <InventoryTable data={rows} /> : null}
-          </View>
-        </ScrollView>
-
+        <TouchableOpacity style={styles.scanButton} onPress={() => setScanModalVisible(true)}>
+          <Feather name="maximize" size={22} color="#FFFFFF" />
+        </TouchableOpacity>
       </View>
 
+      {/* --- حاوية المحتوى الديناميكي --- */}
+      <ScrollView contentContainerStyle={styles.contentScrollView}>
+        {renderContent()}
+      </ScrollView>
+
+      {/* --- النماذج (Modals) --- */}
       <AddNewInventoryModel
-        show={modal}
-        hide={() => {
-          setModal(false);
-        }}
-        submit={e => {
-          submit2(e);
+        show={isAddModalVisible}
+        hide={() => setAddModalVisible(false)}
+        submit={(e) => {
+          console.log('Data to submit:', e);
         }}
       />
-
       <ScanBarcodeAndQRModel
-        show={qrmodal}
-        hide={() => {
-          setqrModal(false);
-        }}
-        submit={e => {
-          endEditing(e);
+        show={isScanModalVisible}
+        hide={() => setScanModalVisible(false)}
+        submit={(scannedValue) => {
+          setSearchTerm(scannedValue); // ضع القيمة الممسوحة في شريط البحث
+          handleSearch(scannedValue); // ابدأ البحث مباشرة
         }}
       />
-
     </SafeAreaView>
   );
 };
 
-export default Inventory;
-
-export const style = StyleSheet.create({
-  newbtn: {
-    backgroundColor: '#469ED8',
-    paddingVertical: 5,
-    paddingHorizontal: 8,
-    borderRadius: 7,
+// --- الأنماط الموحدة ---
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F9FA', // لون خلفية هادئ
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  searchContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F1F3F5',
+    borderRadius: 12,
+    height: 45,
+    paddingHorizontal: 10,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: '100%',
+    fontSize: 16,
+    color: '#333',
+  },
+  scanButton: {
+    marginLeft: 10,
+    width: 45,
+    height: 45,
+    borderRadius: 12,
+    backgroundColor: '#0A2540', // لون أساسي قوي
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'flex-end',
-    marginHorizontal: 15,
-    height: 40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  dropdown: {
-    height: 42,
-    borderColor: '#469ED8',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 8,
-    marginLeft: 10,
-    marginRight: 10,
-    marginTop: 20,
-    width: '50%'
+  contentScrollView: {
+    flexGrow: 1,
+    padding: 15,
   },
-  icon: {
-    marginRight: 5,
-  },
-  placeholderStyle: {
+  centeredMessage: {
+    marginTop: 50,
+    textAlign: 'center',
     fontSize: 16,
-    color:'#808080'
+    color: '#666',
   },
-  selectedTextStyle: {
-    fontSize: 16,
-    color:'#000000'
+  errorText: {
+    color: '#D93025', // لون أحمر للأخطاء
+    fontWeight: '500',
   },
-  iconStyle: {
-    width: 20,
-    height: 20,
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    marginTop: height * 0.15, // لدفعه للأسفل قليلاً
   },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
-    color:'#000000'
+  emptyStateText: {
+    marginTop: 15,
+    fontSize: 17,
+    color: '#a0a0a0',
+    textAlign: 'center',
+    lineHeight: 24,
   },
-  textinput: {
-    height: 60,
-    borderColor: 'rgba(37, 50, 116, 0.28)',
-    borderWidth: 1,
-    paddingLeft: 10,
-    borderRadius: 5,
-  }
+  // أنماط RTL
+  rtlText: {
+    textAlign: 'right',
+    writingDirection: 'rtl',
+  },
 });
+
+
+
+export default Inventory;

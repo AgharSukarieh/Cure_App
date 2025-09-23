@@ -10,7 +10,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import globalConstants from "../../config/globalConstants";
 import ChatGroupListItem from "../../components/ChatComponents/ChatGroupListItem";
 import { useAuth } from "../../contexts/AuthContext";
-import { usePusher } from "../../contexts/PusherContext";
 import { get } from "../../WebService/RequestBuilder";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
@@ -20,7 +19,6 @@ const getConvEndpoint = globalConstants.group_chat.get_conv;
 const AllGroups = () => {
 	const navigation = useNavigation();
 	const { user } = useAuth();
-	const { dataForGroup } = usePusher();
 	const [chats, setChats] = useState([]);
 	const [page, setPage] = useState(1);
 
@@ -40,14 +38,6 @@ const AllGroups = () => {
 		});
 	};
 
-	useEffect(() => {
-		const isReceiverIdInChats = chats.some(chat => chat.id == dataForGroup?.receiver_id);
-		if (isReceiverIdInChats) {
-			setChats((prev) => [...prev]);
-			setPage(1);
-			getChats(1);
-		}
-	}, [dataForGroup]);
 
 	const renderList = () => {
 		setChats((prev) => [...prev]);

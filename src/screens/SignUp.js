@@ -1,119 +1,180 @@
-import { Alert, View, SafeAreaView,Dimensions, KeyboardAvoidingView,StyleSheet, Image, Text, TouchableOpacity, Linking } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { styles } from '../components/styles';
-import TopView from '../components/TopView';
-import Input from '../components/Input';
-import Button from '../components/Button';
-import { useAuth } from '../contexts/AuthContext';
-import LoadingScreen from '../components/LoadingScreen';
-import GoBack from '../components/GoBack';
-const wwidth = Dimensions.get('window').width
-const wheight = Dimensions.get('window').height
-const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import React, { useState } from 'react';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  StatusBar,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Alert,
+} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/Feather';
+import { useAuth } from '../contexts/AuthContext'; // ✅ لوجيك التسجيل
 
 const SignUp = ({ navigation }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  // farah@gmail.com 123456789
-  const [email, setemail] = useState('');
-  const [name, setName] = useState('');
+  const { register } = useAuth(); // ✅ استخدم register من الـ context
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { register } = useAuth();
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const RegisterPress = async () => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const handleRegister = async () => {
+    if (!username || !email || !password) {
+      Alert.alert('Error', 'Please fill all fields');
+      return;
+    }
+    if (!regex.test(email)) {
+      Alert.alert('Error', 'Please enter a valid email');
+      return;
+    }
+
     setIsLoading(true);
-    if (email != '' && password != '') {
-      if (regex.test(email)) {
-        await register(name,email, password)
-          .then((e) => {
-            setIsLoading(false);
-           
-          })
-          .catch(err => {
-            setIsLoading(false);
-      
-          });
-      } else {
-        setIsLoading(false);
-        Alert.alert('Make sure to enter a valid email');
-      }
-    } else {
+    try {
+      await register(username, email, password); // ✅ تسجيل المستخدم
+      Alert.alert('Success', 'Account created successfully!');
+      navigation.navigate('SignIn'); // بعد التسجيل اذهب لصفحة تسجيل الدخول
+    } catch (error) {
+      Alert.alert('Registration Error', error?.response?.data?.message || error.message);
+    } finally {
       setIsLoading(false);
-      Alert.alert('Make sure to enter Email and Name and Password');
     }
   };
 
   return (
-  
-<SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="dark-content" backgroundColor={"#E0F2FF"} />
+      <LinearGradient
+        colors={['#E0F2FF', '#A8D5F0', '#6DB3D9']}
+        style={styles.gradientBackground}
+      >
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.container}
+          >
+            <View style={styles.logoContainer}>
+              <Image
+                source={require('../../assets/logo2__.png')} 
+                style={styles.logo}
+              />
+            </View>
 
-    <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-  <GoBack style="" text="Sign in" />
-  <View style={{ width: '100%', height: '100%',backgroundColor:"#ebebeb96" }}>
-    
-        <View style={style.imagediv}>
-          <Image source={require('../../assets/logo__.png')} style={style.image} resizeMode="contain" />
-        </View>
-        <View style={style.inputContainer}>
-          <Text style={style.inputheader}>Sign Up to Continue</Text>
-          <Input lable={'Full Name'} setData={setName}   placeholder={'Full Name'} />
-          <Input lable={'Email'} setData={setemail}  placeholder={'Email'} />
-          <Input lable={'PASSWORD'} setData={setPassword}    isPassword={true} placeholder={'PASSWORD'} />
-          <Button text={'Sign Up'} handleClick={() => RegisterPress()} />
-          <View style={{ width: '85%', alignSelf: 'center' }}>
-            <Text style={{ textAlign: 'center', fontSize: 16, color: '#808080', lineHeight:25 }}>
-              By Signing in you Agree to Our{' '}
-                <Text onPress={() => Linking.openURL('https://cure.dev2.prodevr.com/terms.php')}
-                 style={{ textDecorationLine: 'underline', marginHorizontal: 2, textAlign: 'center', fontSize: 16, color: 'red' }}>Terms & Conditions</Text>
-                {' '}and{' '}
-                <Text onPress={() => Linking.openURL('https://cure.dev2.prodevr.com/privacy_policy.php')}
-                   style={{ textDecorationLine: 'underline', marginHorizontal: 2, textAlign: 'center', fontSize: 16, color: 'red' }}>Privacy Policy</Text>
-            </Text>
-          </View>
+            <View style={styles.card}>
+              <Text style={styles.label}>Username</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your username"
+                placeholderTextColor="#AC9E9E"
+                autoCapitalize="none"
+                value={username}
+                onChangeText={setUsername}
+              />
 
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Email Address"
+                placeholderTextColor="#AC9E9E"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+              />
 
-          {<View style={{ width: '85%', alignSelf: 'center' }}>
-            <Text style={{ textAlign: 'center', fontSize: 16, color: '#808080', lineHeight:25 }}>
-             Have An Account ? <Text onPress={()=>{
-              navigation.navigate('SignIn')
-             }} style={{color:'#469ED8'}}>Sign In</Text>
-            </Text>
-          </View> }
+              <Text style={styles.label}>PASSWORD</Text>
+              <View style={styles.passwordInputContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="**************"
+                  placeholderTextColor="#A9A9A9"
+                  secureTextEntry={!isPasswordVisible}
+                  value={password}
+                  onChangeText={setPassword}
+                />
+                <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+                  <Icon 
+                    name={isPasswordVisible ? 'eye' : 'eye-off'} 
+                    size={18} 
+                    color="#888" 
+                  />
+                </TouchableOpacity>
+              </View>
 
-          
-        </View>
-      </View>
+              <View style={{height: 20}} />
 
-      {isLoading && <LoadingScreen />}
+              <TouchableOpacity style={styles.signInButton} onPress={handleRegister}>
+                <Text style={styles.signInButtonText}>
+                  {isLoading ? 'Signing Up...' : 'Sign Up'}
+                </Text>
+              </TouchableOpacity>
 
-    
+              <TouchableOpacity style={styles.signUpContainer} onPress={() => navigation.navigate('SignIn')}>
+                <Text style={styles.signUpText}>
+                  Already have an account?{' '}
+                  <Text style={styles.signUpLink}>Sign In</Text>
+                </Text>
+              </TouchableOpacity>
+            </View>
 
-    </KeyboardAvoidingView>
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>
+                By Signing up you Agree to Our {'\n'} 
+                <Text style={styles.footerLink} onPress={() => alert('Terms Pressed!')}>
+                  Terms & Conditions
+                </Text>
+                {' and '}
+                <Text style={styles.footerLink} onPress={() => alert('Privacy Pressed!')}>
+                  Privacy Policy
+                </Text>
+              </Text>
+            </View>
+          </KeyboardAvoidingView>
+        </ScrollView>
+      </LinearGradient>
     </SafeAreaView>
-
   );
 };
 
-export default SignUp;
-
-const style = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: wwidth,
-    height: wheight,
-    backgroundColor: "#fff",
-    // paddingBottom: 75
+const styles = StyleSheet.create({
+  safeArea: { flex: 1 },
+  gradientBackground: { flex: 1 },
+  container: { flex: 1, justifyContent: 'space-between', paddingHorizontal: 20 },
+  logoContainer: { alignItems: 'center', marginTop: 30 },
+  logo: { width: 200, height: 200, resizeMode: 'contain' },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 30,
+    padding: 25,
+    marginHorizontal: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 10,
+    marginTop: -50,
+    paddingVertical: 40
   },
-  content: { flex: 1, justifyContent: 'flex-start', backgroundColor: '#ebebeb96' },
-  imagediv: { width: 200, height: '20%', justifyContent:"center", alignItems:"center",  alignSelf: 'center'},
-  image: { width: 100, height: 100, }, 
-  inputContainer: {
-    alignSelf: 'center',
-    backgroundColor: '#fff',
-    width: '95%',
-    borderRadius: 15,
-    paddingVertical: 12
-  },
-  inputheader: { fontSize: 17, fontWeight: '600', marginHorizontal: 10, color: '#000' }
+  label: { fontSize: 12, color: '#555', marginBottom: 5, marginLeft: 5 },
+  input: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#000000ff', borderRadius: 6, paddingHorizontal: 15, paddingVertical: 6, fontSize: 16, marginBottom: 20 },
+  passwordInputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#000000ff', borderRadius: 6, paddingHorizontal: 15 },
+  passwordInput: { flex: 1, paddingVertical: 6, fontSize: 16 },
+  signInButton: { backgroundColor: '#1D9DE5', paddingVertical: 15, borderRadius: 25, alignItems: 'center', marginBottom: 5 },
+  signInButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' },
+  signUpContainer: { alignItems: 'center', marginBottom: 20 },
+  signUpText: { fontSize: 12, color: '#1E1E1E', fontWeight: '400' },
+  signUpLink: { color: '#1C9BE8', fontWeight: 'bold' },
+  footer: { alignItems: 'center', paddingBottom: 20, paddingTop: 10 },
+  footerText: { fontSize: 12, color: '#000000', fontWeight: '400', textAlign: 'center' },
+  footerLink: { fontSize: 12, color: '#15409F', fontWeight: '500', textDecorationLine: 'underline' },
 });
+
+export default SignUp;

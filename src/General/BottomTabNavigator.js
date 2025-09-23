@@ -1,137 +1,101 @@
-import React from "react";
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import React from 'react';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Animated, Image, StatusBar, I18nManager } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import ChatPage from "../screens/ChatPages/ChatPage";
-import Sales from "../screens/Sales";
-import Profile from "../screens/profile";
-import HomeStack from "./HomeStack";
-const pcolor = '#3A97D6'
+import { useIsFocused } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+
+// --- استيراد الشاشات الخاصة بك ---
+
+
+import HomePage from '../screens/Medical/HometPage';
+import Reports from '../screens/Reports';
+import MoreScreen from '../screens/MoreScreen';
+
+import ChatsScreen from '../screens/ChatPages/ChatsScreen';
+
+const pcolor = '#183E9F'; 
 const Tab = createBottomTabNavigator();
 
-// const BottomTabs = ({ navigation }) => {
-
-//     return (
-//         <Tab.Navigator
-//             initialRouteName="Feed"
-//             screenOptions={{
-//                 tabBarStyle: {
-//                     position: 'absolute',
-//                     bottom: 0,
-//                     left: 0,
-//                     right: 0,
-//                     elevation: 0,
-//                     backgroundColor: '#fff',
-//                     borderRadius: 0,
-//                     paddingTop: 20,
-//                     height: 70,
-//                     ...styles.shadow,
-//                 },
-//             }}
-//         >
-//             <Tab.Screen name="HomeStack" component={HomeStack}
-//                 options={{
-//                     tabBarLabel: '',
-//                     tabBarIcon: ({ focused }) => (
-//                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-//                             <Icon name="home" color={focused ? pcolor : '#748c94'} size={30} style={{ marginHorizontal: 2 }} />
-//                             <Text style={{ color: focused ? pcolor : '#748c94', marginTop: 5 }}>Home</Text>
-//                             {focused && <View style={{ width: 50, height: 2, marginTop: 5, top: 10, backgroundColor: pcolor }} />}
-//                         </View>
-//                     ),
-//                     headerShown: false
-//                 }} />
-//             <Tab.Screen name="Sales" component={Sales}
-//                 options={{
-//                     tabBarLabel: '',
-//                     tabBarIcon: ({ focused }) => (
-//                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-//                             <Icon name="box" color={focused ? pcolor : '#748c94'} size={30} style={{ marginHorizontal: 2 }} />
-//                             <Text style={{ color: focused ? pcolor : '#748c94', marginTop: 5 }}>Sales</Text>
-//                             {focused && <View style={{ width: 50, height: 2, marginTop: 5, top: 10, backgroundColor: pcolor }} />}
-//                         </View>
-//                     ),
-//                     headerShown: false
-//                 }} />
-
-//             <Tab.Screen name="ChatPage" component={ChatPage}
-//                 options={{
-//                     tabBarLabel: '',
-//                     tabBarIcon: ({ focused }) => (
-//                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-//                             <Icon name="chatbox-outline" color={focused ? pcolor : '#748c94'} size={30} style={{ marginHorizontal: 2 }} />
-//                             <Text style={{ color: focused ? pcolor : '#748c94', marginTop: 5 }}>Chat</Text>
-//                             {focused && <View style={{ width: 50, height: 2, marginTop: 5, top: 10, backgroundColor: pcolor }} />}
-//                         </View>
-//                     ),
-//                     headerShown: false
-//                 }} />
-//             <Tab.Screen name="Profile" component={Profile}
-//                 options={{
-//                     tabBarLabel: '',
-//                     tabBarIcon: ({ focused }) => (
-//                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-//                             <Icon name="user" color={focused ? pcolor : '#748c94'} size={30} style={{ marginHorizontal: 2 }} />
-//                             <Text style={{ color: focused ? pcolor : '#748c94', marginTop: 5 }}>Profile</Text>
-//                             {focused && <View style={{ width: 50, height: 2, marginTop: 5, top: 10, backgroundColor: pcolor }} />}
-//                         </View>
-//                     ),
-//                     headerShown: false
-//                 }} />
-//         </Tab.Navigator>
-//     );
-// }
-// const styles = StyleSheet.create({
-//     shadow: {
-//         shadowColor: "#000",
-//         shadowOffset: { width: 0, height: 12, },
-//         shadowOpacity: 0.58,
-//         shadowRadius: 16.00,
-//         elevation: 24,
-//     },
-// });
-
-
-// export default BottomTabs
-
-
+// ✅ Wrapper يحافظ على StatusBar لكل تبويب
+const ScreenWithStatusBar = ({ component: Component, backgroundColor, barStyle }) => {
+  const isFocused = useIsFocused();
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      {isFocused && (
+        <StatusBar backgroundColor={backgroundColor} barStyle={barStyle} />
+      )}
+      <Component />
+    </SafeAreaView>
+  );
+};
 
 const BottomTabs = () => {
+  const { t } = useTranslation();
+  const isRTL = I18nManager.isRTL;
+  
   return (
     <Tab.Navigator
-      // initialRouteName="Home"
       screenOptions={{ headerShown: false }}
-      tabBar={props => <CustomTabBar {...props} />}>
+      tabBar={props => <CustomTabBar {...props} />}
+    >
       <Tab.Screen
         name="Home"
-        component={HomeStack}
+        children={() => (
+          <ScreenWithStatusBar
+            component={HomePage}
+            backgroundColor="#69b4ddff"
+            barStyle="light-content"
+          />
+        )}
         options={{
-          tabBarLabel: 'Home',
-          tabBarImage: 'home',
+          tabBarLabel: t('bottomTabs.home'),
+          iconDefault: require('../../assets/icons/home_unfoces.png'),
+          iconFocused: require("../../assets/icons/home_foces.png"),
         }}
       />
       <Tab.Screen
-        name="Sales"
-        component={Sales}
+        name="Report"
+        children={() => (
+          <ScreenWithStatusBar
+            component={Reports}
+            backgroundColor="#F8F9FA"
+            barStyle="dark-content"
+          />
+        )}
         options={{
-          tabBarLabel: 'Sales',
-          tabBarImage: 'box',
+          tabBarLabel: t('bottomTabs.report'),
+          iconDefault: require('../../assets/icons/report_unfoces.png'),
+          iconFocused: require("../../assets/icons/report_foces.png"),
         }}
       />
       <Tab.Screen
-        name="ChatPage"
-        component={ChatPage}
+        name="Chat"
+        children={() => (
+          <ScreenWithStatusBar
+            component={ChatsScreen}
+            backgroundColor="#ffffff"
+            barStyle="dark-content"
+          />
+        )}
         options={{
-          tabBarLabel: 'Chat',
-          tabBarImage: "message-circle",
+          tabBarLabel: t('bottomTabs.chat'),
+          iconDefault: require('../../assets/icons/chat.png'),
+          iconFocused: require("../../assets/icons/chat_foces.png"),
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={Profile}
+        name="MoreScreen"
+        children={() => (
+          <ScreenWithStatusBar
+            component={MoreScreen}
+            backgroundColor="#ffffff"
+            barStyle="dark-content"
+          />
+        )}
         options={{
-          tabBarLabel: 'Profile',
-          tabBarImage: 'user',
+          tabBarLabel: t('bottomTabs.more'),
+          iconDefault: require('../../assets/icons/more_unfocues.png'),
+          iconFocused: require("../../assets/icons/more_focues.png"),
         }}
       />
     </Tab.Navigator>
@@ -139,88 +103,113 @@ const BottomTabs = () => {
 };
 
 const CustomTabBar = ({ state, descriptors, navigation }) => {
-  const isChatPageActive = state.routes[state.index].name === "ChatPage";
-
-  if (isChatPageActive) {
-    return null;
-  }
-
+  const { t } = useTranslation();
+  const isRTL = I18nManager.isRTL;
+  
   return (
-    <View style={{ backgroundColor: '#fff' }}>
-      <SafeAreaView>
-        <View style={styles.tabBar}>
-          {state.routes.map((route, index) => {
-            const { options } = descriptors[route.key];
-            const isFocused = state.index === index;
+    <View style={styles.tabBarContainer}>
+      <View style={[styles.tabBar, isRTL && styles.rtlTabBar]}>
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key];
+          const isFocused = state.index === index;
 
-            const onPress = () => {
-              const event = navigation.emit({
-                type: 'tabPress',
-                target: route.key,
-                canPreventDefault: true,
-              });
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name);
+            }
+          };
 
-              if (!isFocused && !event.defaultPrevented) {
-                navigation.navigate(route.name);
-              }
-            };
-            return (
-              <TouchableOpacity
-                key={index}
-                style={[styles.tabItem, isFocused]}
-                onPress={onPress}>
-                <Icon name={options.tabBarImage} color={isFocused ? pcolor : '#748c94'} size={25} style={styles.tabImage} />
-                <Text
-                  style={[styles.tabLabel, isFocused && styles.activeLabel]}>
-                  {options.tabBarLabel}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </SafeAreaView>
+          return (
+            <TouchableOpacity
+              key={index}
+              style={styles.tabItem}
+              onPress={onPress}
+              accessibilityRole="button"
+              accessibilityState={isFocused ? { selected: true } : {}}
+            >
+              <Animated.View style={[styles.tabButton, isFocused ? styles.activeTabButton : {}]}>
+                <Image
+                  source={isFocused ? options.iconFocused : options.iconDefault}
+                  style={styles.icon}
+                />
+                {isFocused && (
+                  <Text style={[styles.activeLabel, isRTL && styles.rtlText]}>{options.tabBarLabel}</Text>
+                )}
+              </Animated.View>
+              {!isFocused && (
+                 <Text style={[styles.inactiveLabel, isRTL && styles.rtlText]}>{options.tabBarLabel}</Text>
+              )}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  tabBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    elevation: 5,
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: 80,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 }, 
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+  },
   tabBar: {
     flexDirection: 'row',
-    height: 60,
-    backgroundColor: '#fff',
-    borderBottomColor: 'transparent',
+    height: '100%',
   },
   tabItem: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  activeTab: {
-    backgroundColor: '#800020',
+  tabButton: {
+    flexDirection: 'column', 
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 15,
+  },
+  activeTabButton: {
+    backgroundColor: pcolor,
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
   },
   activeLabel: {
-    color: '#000000',
-  },
-  middleTab: {
-    backgroundColor: '#004776',
-    borderRadius: 45,
-    borderWidth: 9,
-    borderColor: '#E8E8EA',
-    height: 90,
-    width: 90,
-    marginTop: -20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  tabImage: {
-    width: 25,
-    height: 25,
-  },
-  tabLabel: {
-    marginTop: 4,
-    fontSize: 11,
+    color: '#FFFFFF',
     fontWeight: 'bold',
-    color: '#748c94'
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  inactiveLabel: {
+    color: '#B0B0B0',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  rtlTabBar: {
+    flexDirection: 'row-reverse',
+  },
+  rtlText: {
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
 });
 

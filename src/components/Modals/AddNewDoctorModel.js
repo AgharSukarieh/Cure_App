@@ -6,6 +6,8 @@ import {
 	Modal,
 	ScrollView,
 	Alert,
+	Dimensions,
+	I18nManager,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -16,20 +18,21 @@ import { get, post } from "../../WebService/RequestBuilder";
 import Constants from "../../config/globalConstants";
 import MapView, { Marker } from "react-native-maps";
 import LoadingScreen from "../LoadingScreen";
+import { useTranslation } from 'react-i18next';
+
+const { width, height } = Dimensions.get('window');
 
 const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
+	const { t } = useTranslation();
+	const isRTL = I18nManager.isRTL;
+	
 	const [doctorName, setDoctorName] = useState("");
-	// const [classification, setClassification] = useState('');
-
 	const [classificationData, setClassificationData] = useState([]);
 	const [classificationValue, setClassificationValue] = useState(null);
-
 	const [address, setAddress] = useState("");
-
 	const [latitude, setLatitude] = useState("");
 	const [longitude, setLongitude] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
-
 	const [citiesData, setCitiesData] = useState([]);
 	const [citiesList, setCityList] = useState([]);
 	const [cityValue, setCityValue] = useState(null);
@@ -52,27 +55,29 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 		};
 		await post(Constants.doctor.allDoctors, body)
 			.then((res) => {
+				Alert.alert(t('addNewDoctorModel.success'), "");
 				submit(true);
 				hide();
 			})
 			.catch((err) => {
-				Alert.alert("Error", err.message || "");
+				Alert.alert(t('addNewDoctorModel.error'), err.message || "");
 				submit(false);
 				hide();
 			})
 			.finally(() => {
-				// reset data
-				setDoctorName("");
-				setClassificationValue(null);
-				setAddress("");
-				setLatitude("");
-				setLongitude("");
-				setCityValue(null);
-				setAreaValue(null);
-				setSpecialtyValue(null);
-				setLatitude("");
-				setLongitude("");
+				resetForm();
 			});
+	};
+
+	const resetForm = () => {
+		setDoctorName("");
+		setClassificationValue(null);
+		setAddress("");
+		setLatitude("");
+		setLongitude("");
+		setCityValue(null);
+		setAreaValue(null);
+		setSpecialtyValue(null);
 	};
 
 	const getCurrentLocation = () => {
@@ -92,29 +97,23 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 			});
 	};
 
-	const getCities = () => {
-		// setCitiesData(citiesList);
-	};
-
 	const loadCities = () => {
-		// call api to get cities
 		get(Constants.get_cities).then((response) => {
 			const list = [];
 			response.forEach((city) => {
-					list.push({
-						value: city.id,
-						label: city.name,
-					});
-				},
-			);
+				list.push({
+					value: city.id,
+					label: city.name,
+				});
+			});
 			setCityList(response);
 			setCitiesData(list);
 		});
 	};
+
 	const getArea = (id) => {
 		citiesList.forEach((city) => {
 			if (city.id == id) {
-				// console.log(city.areas);
 				const list = [];
 				city.areas.forEach((area) => {
 					list.push({
@@ -141,9 +140,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 				setSpecialtyData(specialtyArray);
 			})
 			.catch((err) => {
-				Alert.alert("Error", err.message || "");
-			})
-			.finally(() => {
+				Alert.alert(t('addNewDoctorModel.error'), err.message || "");
 			});
 	};
 
@@ -161,7 +158,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 	};
 
 	useEffect(() => {
-		if (cityArea) getCities();
+		if (cityArea) loadCities();
 		getSpeciality();
 		getClassification();
 		loadCities();
@@ -176,40 +173,34 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 			onSwipeComplete={() => setModalVisible2(false)}>
 			<View style={styles.ModalContainer}>
 				<View style={styles.ModalView}>
-
 					<TouchableOpacity
 						onPress={() => {
 							submit(null);
 							hide();
-						}}>
+						}}
+						style={[styles.closeButton, isRTL && styles.rtlCloseButton]}>
 						<AntDesign
 							name="close"
 							color="#469ED8"
-							size={35}
+							size={width * 0.08}
 							style={{ alignSelf: "flex-end" }}
 						/>
 					</TouchableOpacity>
 
-					<View style={{ marginTop: 10, marginBottom: 20 }}>
+					<View style={styles.scrollContainer}>
 						<ScrollView showsVerticalScrollIndicator={false}>
-							<View
-								style={{
-									width: "100%",
-									justifyContent: "center",
-									alignItems: "center",
-									marginBottom: 20,
-								}}>
-
+							<View style={styles.formContainer}>
 								<Input
-									lable={"Doctor Name"}
+									lable={t('addNewDoctorModel.doctorName')}
+									placeholder={t('addNewDoctorModel.doctorNamePlaceholder')}
 									placeholderStyle={{ color: "#808080" }}
 									setData={setDoctorName}
-									style={{ ...styles.inputModel, backgroundColor: "white" }}
+									style={[styles.inputModel, { backgroundColor: "white" }]}
 									value={doctorName}
 									viewStyle={{ width: "90%" }}
 								/>
 
-								<View style={{ ...styles.container, marginTop: 40 }}>
+								<View style={[styles.container, { marginTop: height * 0.02 }]}>
 									<Dropdown
 										itemTextStyle={{ color: "#000000" }}
 										style={styles.dropdown}
@@ -219,30 +210,29 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 										iconStyle={styles.iconStyle}
 										data={citiesData}
 										search
-										maxHeight={300}
+										maxHeight={height * 0.3}
 										labelField="label"
 										valueField="value"
-										placeholder={!cityValue ? "Select City" : "..."}
-										searchPlaceholder="Search..."
+										placeholder={!cityValue ? t('addNewDoctorModel.selectCity') : "..."}
+										searchPlaceholder={t('addNewDoctorModel.search')}
 										value={cityValue}
-										onBlur={() => {
-										}}
+										onBlur={() => {}}
 										onChange={item => {
 											setCityValue(item.value);
 											getArea(item.value);
 										}}
 										renderLeftIcon={() => (
 											<AntDesign
-												style={styles.icon}
+												style={[styles.icon, isRTL && styles.rtlIcon]}
 												color={cityValue ? "blue" : "black"}
 												name="Safety"
-												size={20}
+												size={width * 0.05}
 											/>
 										)}
 									/>
 								</View>
 
-								<View style={{ ...styles.container, marginTop: 40 }}>
+								<View style={[styles.container, { marginTop: height * 0.02 }]}>
 									<Dropdown
 										itemTextStyle={{ color: "#000000" }}
 										style={styles.dropdown}
@@ -252,29 +242,28 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 										iconStyle={styles.iconStyle}
 										data={areasData}
 										search
-										maxHeight={300}
+										maxHeight={height * 0.3}
 										labelField="label"
 										valueField="value"
-										placeholder={!areaValue ? "Select Area" : "..."}
-										searchPlaceholder="Search..."
+										placeholder={!areaValue ? t('addNewDoctorModel.selectArea') : "..."}
+										searchPlaceholder={t('addNewDoctorModel.search')}
 										value={areaValue}
-										onBlur={() => {
-										}}
+										onBlur={() => {}}
 										onChange={item => {
 											setAreaValue(item.value);
 										}}
 										renderLeftIcon={() => (
 											<AntDesign
-												style={styles.icon}
+												style={[styles.icon, isRTL && styles.rtlIcon]}
 												color={areaValue ? "blue" : "black"}
 												name="Safety"
-												size={20}
+												size={width * 0.05}
 											/>
 										)}
 									/>
 								</View>
 
-								<View style={{ ...styles.container, marginTop: 40 }}>
+								<View style={[styles.container, { marginTop: height * 0.02 }]}>
 									<Dropdown
 										itemTextStyle={{ color: "#000000" }}
 										style={styles.dropdown}
@@ -284,29 +273,28 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 										iconStyle={styles.iconStyle}
 										data={specialtyData}
 										search
-										maxHeight={300}
+										maxHeight={height * 0.3}
 										labelField="label"
 										valueField="value"
-										placeholder={!specialtyValue ? "Select Specialty" : "..."}
-										searchPlaceholder="Search..."
+										placeholder={!specialtyValue ? t('addNewDoctorModel.selectSpecialty') : "..."}
+										searchPlaceholder={t('addNewDoctorModel.search')}
 										value={specialtyValue}
-										onBlur={() => {
-										}}
+										onBlur={() => {}}
 										onChange={item => {
 											setSpecialtyValue(item.value);
 										}}
 										renderLeftIcon={() => (
 											<AntDesign
-												style={styles.icon}
+												style={[styles.icon, isRTL && styles.rtlIcon]}
 												color={specialtyValue ? "blue" : "black"}
 												name="Safety"
-												size={20}
+												size={width * 0.05}
 											/>
 										)}
 									/>
 								</View>
 
-								<View style={{ ...styles.container, marginTop: 40 }}>
+								<View style={[styles.container, { marginTop: height * 0.02 }]}>
 									<Dropdown
 										itemTextStyle={{ color: "#000000" }}
 										style={styles.dropdown}
@@ -316,105 +304,73 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 										iconStyle={styles.iconStyle}
 										data={classificationData}
 										search
-										maxHeight={300}
+										maxHeight={height * 0.3}
 										labelField="label"
 										valueField="value"
-										placeholder={!classificationValue ? "Select Classification" : "..."}
-										searchPlaceholder="Search..."
+										placeholder={!classificationValue ? t('addNewDoctorModel.selectClassification') : "..."}
+										searchPlaceholder={t('addNewDoctorModel.search')}
 										value={classificationValue}
-										onBlur={() => {
-										}}
+										onBlur={() => {}}
 										onChange={item => {
 											setClassificationValue(item.value);
 										}}
 										renderLeftIcon={() => (
 											<AntDesign
-												style={styles.icon}
+												style={[styles.icon, isRTL && styles.rtlIcon]}
 												color={classificationValue ? "blue" : "black"}
 												name="Safety"
-												size={20}
+												size={width * 0.05}
 											/>
 										)}
 									/>
 								</View>
 
-								{/* <Input
-                  lable={'Classification'}
-                  setData={setClassification}
-                  placeholderStyle={{color:'#808080'}}
-                  style={{ ...styles.inputModel, backgroundColor: 'white' }}
-                  value={classification}
-                  viewStyle={{ width: '90%' }}
-                /> */}
-
 								<Input
-									lable={"Address"}
+									lable={t('addNewDoctorModel.address')}
+									placeholder={t('addNewDoctorModel.addressPlaceholder')}
 									setData={setAddress}
 									placeholderStyle={{ color: "#808080" }}
-									style={{ ...styles.inputModel, backgroundColor: "white" }}
+									style={[styles.inputModel, { backgroundColor: "white" }]}
 									value={address}
 									viewStyle={{ width: "90%" }}
 								/>
 
-								<TouchableOpacity style={{
-									marginTop: 40,
-									width: "90%",
-									height: 50,
-									backgroundColor: latitude ? "#469ED8" : "#fff",
-									borderWidth: 2,
-									borderColor: "#469ED8",
-									borderRadius: 5,
-									justifyContent: "center",
-								}} onPress={() => {
-									getCurrentLocation();
-								}}>
-									<Text style={{
-										marginBottom: 5,
+								<TouchableOpacity 
+									style={[styles.locationButton, { 
+										backgroundColor: latitude ? "#469ED8" : "#fff",
+										marginTop: height * 0.02,
+									}]} 
+									onPress={getCurrentLocation}>
+									<Text style={[styles.locationButtonText, {
 										color: latitude ? "#fff" : "#469ED8",
-										textAlign: "center",
-										fontSize: 17,
-										fontWeight: "bold",
-									}}>
-										Location
+									}]}>
+										{t('addNewDoctorModel.getLocation')}
 									</Text>
 								</TouchableOpacity>
-								{(latitude && longitude) &&
+
+								{(latitude && longitude) && (
 									<MapView
 										style={styles.map}
 										initialRegion={{
 											latitude: latitude,
 											longitude: longitude,
-											latitudeDelta: 0.005,  // Adjust these values to control zoom level
-											longitudeDelta: 0.005, // Adjust these values to control zoom level
+											latitudeDelta: 0.005,
+											longitudeDelta: 0.005,
 										}}
 										showsUserLocation={true}>
 										<Marker
 											coordinate={{ latitude: latitude, longitude: longitude }}
 										/>
-									</MapView>}
-								<View
-									style={{
-										...styles.container,
-										justifyContent: "center",
-										marginTop: 30,
-										marginBottom: 70,
-									}}>
-									<TouchableOpacity style={styles.newbtn} onPress={() => {
-										submitData();
-									}}>
-										<Text
-											style={{
-												color: "#fff",
-												fontSize: 18,
-												paddingHorizontal: 50,
-												textAlign: "center",
-												fontWeight: "bold",
-											}}>
-											Submit
+									</MapView>
+								)}
+
+								<View style={[styles.submitContainer, { marginTop: height * 0.02 }]}>
+									<TouchableOpacity style={styles.submitButton} onPress={submitData}>
+										<Text style={styles.submitButtonText}>
+											{t('addNewDoctorModel.submit')}
 										</Text>
 									</TouchableOpacity>
 								</View>
-
 							</View>
 						</ScrollView>
 					</View>
@@ -428,53 +384,6 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 export default AddNewDoctorModel;
 
 const styles = StyleSheet.create({
-	iconPassword: {
-		position: "absolute",
-		right: "3%",
-		height: 35,
-		width: 35,
-	},
-	container: {
-		backgroundColor: "white",
-		width: "90%",
-		marginTop: 15,
-	},
-	dropdown: {
-		height: 50,
-		borderColor: "#469ED8",
-		borderWidth: 1,
-		borderRadius: 8,
-		paddingHorizontal: 8,
-	},
-	icon: {
-		marginRight: 5,
-	},
-	label: {
-		position: "absolute",
-		backgroundColor: "white",
-		left: 22,
-		top: 8,
-		zIndex: 999,
-		paddingHorizontal: 8,
-		fontSize: 14,
-	},
-	placeholderStyle: {
-		fontSize: 16,
-		color: "#808080",
-	},
-	selectedTextStyle: {
-		fontSize: 16,
-		color: "#000000",
-	},
-	inputSearchStyle: {
-		height: 40,
-		fontSize: 16,
-		color: "#000000",
-	},
-	iconStyle: {
-		width: 20,
-		height: 20,
-	},
 	ModalContainer: {
 		flex: 1,
 		justifyContent: "center",
@@ -485,70 +394,113 @@ const styles = StyleSheet.create({
 		backgroundColor: "#fff",
 		borderRadius: 10,
 		width: "95%",
-		height: "70%",
+		height: "80%",
 		shadowColor: "#000",
 		shadowOffset: { width: 0, height: 2 },
 		shadowOpacity: 0.25,
 		shadowRadius: 4,
 		elevation: 5,
-		padding: 10,
-		paddingBottom: 20,
+		padding: width * 0.025,
+		paddingBottom: height * 0.02,
 	},
-	card: {
-		shadowColor: "#469ED8",
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.22,
-		shadowRadius: 2.22,
-		elevation: 3,
-		width: "99%",
-		alignSelf: "center",
-		backgroundColor: "#fff",
-		padding: 15,
-		marginTop: 10,
-		borderRadius: 7,
+	closeButton: {
+		alignSelf: "flex-end",
+		marginBottom: height * 0.01,
 	},
-	phname: {
-		fontSize: 25,
-		textTransform: "capitalize",
-		color: "#469ED8",
+	rtlCloseButton: {
+		alignSelf: "flex-start",
 	},
-	phlocation: {
-		marginHorizontal: 15,
-		marginVertical: 5,
-		fontSize: 16,
+	scrollContainer: {
+		flex: 1,
 	},
-	item_name: {
-		fontSize: 20,
-		textTransform: "capitalize",
-		color: "#469ED8",
+	formContainer: {
+		width: "100%",
+		justifyContent: "center",
+		alignItems: "center",
+		paddingBottom: height * 0.05,
 	},
-	item_info: {
+	container: {
+		backgroundColor: "white",
+		width: "90%",
+		marginTop: height * 0.015,
+	},
+	dropdown: {
+		height: height * 0.06,
+		borderColor: "#469ED8",
+		borderWidth: 1,
+		borderRadius: 8,
+		paddingHorizontal: width * 0.02,
+	},
+	icon: {
+		marginRight: width * 0.01,
+	},
+	rtlIcon: {
+		marginRight: 0,
+		marginLeft: width * 0.01,
+	},
+	placeholderStyle: {
+		fontSize: width < 375 ? 14 : 16,
+		color: "#808080",
+	},
+	selectedTextStyle: {
+		fontSize: width < 375 ? 14 : 16,
+		color: "#000000",
+	},
+	inputSearchStyle: {
+		height: height * 0.05,
+		fontSize: width < 375 ? 14 : 16,
+		color: "#000000",
+	},
+	iconStyle: {
+		width: width * 0.05,
+		height: width * 0.05,
+	},
+	locationButton: {
+		width: "90%",
+		height: height * 0.06,
+		borderWidth: 2,
+		borderColor: "#469ED8",
+		borderRadius: 5,
 		justifyContent: "center",
 		alignItems: "center",
 	},
-	item_itemtitle: {
-		marginBottom: 5,
-		textTransform: "capitalize",
-	},
-	newbtn: {
-		backgroundColor: "#469ED8",
-		height: 50,
-		paddingVertical: 5,
-		paddingHorizontal: 4,
-		borderRadius: 7,
-		justifyContent: "center",
-		marginVertical: 20,
-	},
-	inputModel: {
-		height: 40,
-		borderColor: "#469ED8",
-		borderWidth: 1,
-		paddingLeft: 10,
-		borderRadius: 5,
-		color: "#000000",
+	locationButtonText: {
+		textAlign: "center",
+		fontSize: width < 375 ? 15 : 17,
+		fontWeight: "bold",
 	},
 	map: {
 		width: "90%",
-		height: 200,
+		height: height * 0.25,
+		marginTop: height * 0.01,
+	},
+	submitContainer: {
+		justifyContent: "center",
+		alignItems: "center",
+		marginBottom: height * 0.05,
+	},
+	submitButton: {
+		backgroundColor: "#469ED8",
+		height: height * 0.06,
+		paddingVertical: height * 0.006,
+		paddingHorizontal: width * 0.1,
+		borderRadius: 7,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	submitButtonText: {
+		color: "#fff",
+		fontSize: width < 375 ? 16 : 18,
+		textAlign: "center",
+		fontWeight: "bold",
+	},
+	inputModel: {
+		height: height * 0.05,
+		borderColor: "#469ED8",
+		borderWidth: 1,
+		paddingLeft: width * 0.025,
+		borderRadius: 5,
+		color: "#000000",
+		fontSize: width < 375 ? 14 : 16,
 	},
 });

@@ -5,6 +5,8 @@ import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
+  Dimensions,
+  I18nManager,
 } from 'react-native';
 import React, { useState } from 'react';
 import { styles } from '../components/styles';
@@ -13,82 +15,110 @@ import { get } from '../WebService/RequestBuilder';
 import Constants from '../config/globalConstants';
 import { useEffect } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { useTranslation } from 'react-i18next';
 
 import Clientdoctorlist from './Clientdoctorlist';
 import Clientpharmalist from './Clientpharmalist';
 import Icon from 'react-native-vector-icons/Feather';
 
+const { width, height } = Dimensions.get('window');
+
 const MainClientdoctorlist = ({ navigation, route }) => {
-
+  const { t } = useTranslation();
+  const isRTL = I18nManager.isRTL;
   const Tab = createMaterialTopTabNavigator();
-  const pcolor = '#3A97D6'
-
+  const pcolor = '#3A97D6';
   const [index, setindex] = useState(0);
 
-
   return (
-    <SafeAreaView style={{ height: '100%', flex: 1, flexDirection: 'column', alignContent: 'space-around' }}>
-      <GoBack text={'Client List'} />
-      <View style={style.containerSignIn}>
-        <TouchableOpacity style={index == 0 ? [style.Sal_rep_pharmButton] : [style.Sal_rep_pharmButton2]} onPress={() => { setindex(0) }}  >
-          <Text style={style.reportPageText}>Doctor List</Text>
+    <SafeAreaView style={style.safeArea}>
+      <GoBack text={t('mainClientDoctorList.headerTitle')} />
+      <View style={[style.containerSignIn, isRTL && style.rtlContainer]}>
+        <TouchableOpacity 
+          style={index == 0 ? [style.Sal_rep_pharmButton] : [style.Sal_rep_pharmButton2]} 
+          onPress={() => { setindex(0) }}
+        >
+          <Text style={[style.reportPageText, isRTL && style.rtlText]}>
+            {t('mainClientDoctorList.doctorList')}
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={index == 1 ? [style.Sal_rep_pharmButton] : [style.Sal_rep_pharmButton2]} onPress={() => { setindex(1) }}>
-          <Text style={style.reportPageText}>Pharmacy List</Text>
+        <TouchableOpacity 
+          style={index == 1 ? [style.Sal_rep_pharmButton] : [style.Sal_rep_pharmButton2]} 
+          onPress={() => { setindex(1) }}
+        >
+          <Text style={[style.reportPageText, isRTL && style.rtlText]}>
+            {t('mainClientDoctorList.pharmacyList')}
+          </Text>
         </TouchableOpacity>
       </View>
-      <View style={{ width: '100%', flex: 1 }}>
+      <View style={style.contentContainer}>
         {index == 0
-          ? <Clientdoctorlist header={false} />
-          : <Clientpharmalist header={false} />
+          ? <Clientdoctorlist navigation={navigation} header={false} />
+          : <Clientpharmalist navigation={navigation} header={false} />
         }
       </View>
-    </SafeAreaView >
-
-    // <Tab.Navigator tabBarPosition="top">
-    //   <Tab.Screen name="Clientdoctorlist" component={Clientdoctorlist} options={{ tabBarLabel: 'DocTors list' }} />
-    //   <Tab.Screen name="Clientpharmalist" component={Clientpharmalist} options={{ tabBarLabel: 'pharmacy list' }} />
-    // </Tab.Navigator>
+    </SafeAreaView>
   );
 };
 
 export default MainClientdoctorlist;
 
 export const style = StyleSheet.create({
+  safeArea: { 
+    height: '100%', 
+    flex: 1, 
+    flexDirection: 'column', 
+    alignContent: 'space-around',
+    backgroundColor: '#FFFFFF'
+  },
   containerSignIn: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 12,
+    padding: width * 0.03,
     width: '90%',
     alignSelf: 'center',
     backgroundColor: '#E4E1E1',
-    borderRadius: 25
+    borderRadius: 10,
+    marginVertical: height * 0.01,
   },
   Sal_rep_pharmButton: {
-    backgroundColor: '#469ED8',
-    padding: 10,
+    backgroundColor: '#183E9F',
+    padding: width * 0.025,
     width: '45%',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 16,
+    minHeight: height * 0.05,
   },
   Sal_rep_pharmButton2: {
-    padding: 10,
+    padding: width * 0.025,
     width: '45%',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#CCD1D4',
     borderRadius: 16,
+    minHeight: height * 0.05,
   },
   reportPageText: {
     textAlign: 'center',
-    fontSize: 19,
+    fontSize: width < 375 ? 16 : width < 414 ? 17 : 19,
     color: '#ffffff',
+    fontWeight: '600',
+  },
+  contentContainer: { 
+    width: '100%', 
+    flex: 1 
+  },
+  rtlContainer: {
+    flexDirection: 'row-reverse',
+  },
+  rtlText: {
+    textAlign: 'center',
   },
   mune: {
     width: '100%',
-    height: 50,
+    height: height * 0.06,
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderTopWidth: 1,
@@ -109,16 +139,22 @@ export const style = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  muneheader: { fontSize: 17, color: '#000' },
-  muneheader2: { fontSize: 17, color: '#fff' },
+  muneheader: { 
+    fontSize: width < 375 ? 15 : 17, 
+    color: '#000' 
+  },
+  muneheader2: { 
+    fontSize: width < 375 ? 15 : 17, 
+    color: '#fff' 
+  },
   newbtn: {
     backgroundColor: '#469ED8',
-    paddingVertical: 5,
-    paddingHorizontal: 8,
+    paddingVertical: height * 0.006,
+    paddingHorizontal: width * 0.02,
     borderRadius: 7,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'flex-end',
-    marginHorizontal: 15,
+    marginHorizontal: width * 0.04,
   },
 });

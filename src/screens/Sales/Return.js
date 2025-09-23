@@ -5,11 +5,11 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  PermissionsAndroid,
   Alert,
+  I18nManager,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { styles } from '../../components/styles';
+import { styles as globalStyles } from '../../components/styles'; 
 import GoBack from '../../components/GoBack';
 import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
@@ -24,419 +24,202 @@ import globalConstants from '../../config/globalConstants';
 import { TextInput } from 'react-native';
 import ReturnsTable from '../../components/Tables/ReturnsTable';
 import DatePicker from 'react-native-date-picker';
+import { useTranslation } from 'react-i18next';
 Feather.loadFont();
 
 const Return = ({ navigation, route, item }) => {
-
+  const { t } = useTranslation();
+  const isRTL = I18nManager.isRTL;
   const [modal, setModal] = useState(false);
   const [dataForScan, setDataForScan] = useState(null);
-  // const [dateEx, setDateEx] = useState('');
   const [code, setCode] = useState(null);
-
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date());
   const [dateEx, setDateEx] = useState('');
 
   const endEditing = (date_) => {
     const parms = {
-      batch_number_or_barcode: code, //"12332133"
+      batch_number_or_barcode: code,
       expiry_date: date_,
       pharmacy_id: item?.pharmacy_id,
-    }
+    };
 
-    if (dateEx != null && dateEx != '') {
-      get(globalConstants.return.get_returns, null, parms).then((res) => {
-        if ((res?.return_orders?.length > 0)) {
-          setDataForScan(res.return_orders);
-        } else {
-          setDataForScan(null);
-        }
-      }).catch((err) => {
-        Alert.alert(err.message || 'Error')
-      }).finally(() => { });
+    if (dateEx !== null && dateEx !== '') {
+      get(globalConstants.return.get_returns, null, parms)
+        .then((res) => {
+          if (res?.return_orders?.length > 0) {
+            setDataForScan(res.return_orders);
+          } else {
+            setDataForScan(null);
+          }
+        })
+        .catch((err) => {
+          Alert.alert(err.message || t('return.error'));
+        })
+        .finally(() => {});
     }
-  }
-
-  const submitAfterGetBarcode = dataforscan => {
-    setCode(dataforscan)
   };
 
-
-
-  // const checIfProductInOurStore = (data) => {
-  //   const dataFromAPI = {
-  //     batch_number: 1235,
-  //     expired_date: '10/3/2021',
-  //     amount: 4,
-  //     last_order_date: '12/2/2022',
-  //   };
-  //   if (dataFromAPI?.batch_number === data?.batch_number || dataFromAPI?.expired_date === data?.expired_date) {
-  //     setPrductInOurStore(dataFromAPI);
-  //     setNotInStore(false);
-  //   } else {
-  //     setPrductInOurStore(null);
-  //     setNotInStore(true);
-  //   }
-  // };
-
-  // const addBtn = () => {
-  //   const data = { ...dataForScan, notes: notes };
-  //   const dd = [...returnData, data];
-  //   setReturnData(dd);
-  //   setDataForScan(null);
-  //   setPrductInOurStore(null);
-  //   setNotes('');
-  // };
-
-  // const submit = () => {
-  //   setTotalReturnsStatus(true)
-  // }
+  const submitAfterGetBarcode = (dataforscan) => {
+    setCode(dataforscan);
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10 }}>
-        <TouchableOpacity style={style.newbtn} onPress={() => { setModal(true) }}>
-          <Text style={{ color: '#fff', fontSize: 18, paddingHorizontal: 10 }}>Scan</Text>
-        </TouchableOpacity>
-
-        <View style={{ width: '40%' , marginRight:10}}>
-          <TextInput
-            style={{ marginLeft: 10, width: '100%', height: 40, borderWidth: 1, borderColor: '#000', marginTop: 10, borderRadius: 5, paddingHorizontal: 10, color:'#000000' }}
-            placeholder='batch / barcode'
-            placeholderTextColor={'#808080'}
-            onChangeText={text => setCode(text)}
-            onEndEditing={() => endEditing(dateEx)}
-            value={code}
-          />
-        </View>
+    <SafeAreaView style={localStyles.container}>
+      <View style={localStyles.header}>
+      <GoBack text={t('return.headerTitle')} /> 
 
       </View>
+   
 
-      <View style={{ width: '90%', height: 1, backgroundColor: '#000', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
-      
-      {/* <View style={{ width: '50%' }}>
+      <View style={localStyles.headerRow}>
+        <TouchableOpacity style={localStyles.scanButton} onPress={() => setModal(true)}>
+          <Feather name="camera" size={20} color="#fff" style={localStyles.icon} />
+          <Text style={localStyles.buttonText}>{t('return.scan')}</Text>
+        </TouchableOpacity>
+
         <TextInput
-          style={{ marginLeft: 10, width: '100%', height: 40, borderWidth: 1, borderColor: '#000', marginTop: 10, borderRadius: 5, paddingHorizontal: 10 }}
-          placeholder='YYYY-MM-DD'
-          onChangeText={text => setDateEx(text)}
-          onEndEditing={endEditing}
+          style={[localStyles.codeInput, isRTL && localStyles.rtlText]}
+          placeholder={t('return.batchBarcode')}
+          placeholderTextColor="#808080"
+          onChangeText={(text) => setCode(text)}
+          onEndEditing={() => endEditing(dateEx)}
+          value={code}
         />
-      </View> */}
+      </View>
 
-            <TouchableOpacity
-              style={{...styles.filterbutton, width: '50%', marginHorizontal: 15, borderRadius:7, borderColor: '#000000'}}
-              onPress={() => {
-                setOpen(true);
-              }}>
-              <Text style={styles.filterbuttontext}>
-                {dateEx != '' ? dateEx : 'YYYY-MM-DD'}
-              </Text>
-            </TouchableOpacity>
+      <View style={localStyles.divider} />
 
-            <DatePicker
-              modal
-              mode="date"
-              format="YYYY-MM-DD"
-              open={open}
-              date={date}
-              onCancel={() => {
-                setOpen(false)
-              }}
-              onConfirm={data => {
-                setOpen(false);
-                setDate(data);
-                const formattedDate = data.getFullYear() + '-' + (data.getMonth() + 1) + '-' + data.getDate();
-                setDateEx(formattedDate);
-                endEditing(formattedDate)
-              }}
-            />
+      <TouchableOpacity
+        style={localStyles.dateButton}
+        onPress={() => setOpen(true)}>
+        <Feather name="calendar" size={18} color="#469ED8" style={localStyles.icon} />
+        <Text style={[localStyles.dateText, isRTL && localStyles.rtlText]}>
+          {dateEx !== '' ? dateEx : 'YYYY-MM-DD'}
+        </Text>
+      </TouchableOpacity>
 
+      <DatePicker
+        modal
+        mode="date"
+        open={open}
+        date={date}
+        onConfirm={(data) => {
+          setOpen(false);
+          setDate(data);
+          const formattedDate = `${data.getFullYear()}-${data.getMonth() + 1}-${data.getDate()}`;
+          setDateEx(formattedDate);
+          endEditing(formattedDate);
+        }}
+        onCancel={() => setOpen(false)}
+      />
 
-      <ScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: 40, marginHorizontal: 20 }}>
-
-
-        {dataForScan && <ReturnsTable data={dataForScan} func={() => endEditing(dateEx)}/>}
-
-        {
-          // dataForScan && (
-          //   <>
-          //     <View style={style.viewInfo}>
-          //       <Text style={style.titleInfo}>Batch # : </Text>
-          //       <Text style={style.phname}>
-          //         {dataForScan?.product?.batch_number || '-'}
-          //       </Text>
-          //     </View>
-          //     <View style={style.viewInfo}>
-          //       <Text style={style.titleInfo}>Expired Date : </Text>
-          //       <Text style={style.phname}>
-          //         {dataForScan?.product?.expiry_date || '-'}
-          //       </Text>
-          //     </View>
-          //     <View style={style.viewInfo}>
-          //       <Text style={style.titleInfo}>Amount : </Text>
-          //       <Text style={style.phname}>{dataForScan?.units || '-'}</Text>
-          //     </View>
-          //     {/* <Input
-          //       viewStyle={{marginLeft: 0, marginTop: 15}}
-          //       labelStyle={{
-          //         fontSize: 20,
-          //         color: 'black',
-          //         fontWeight: 'bold',
-          //         marginBottom: 10,
-          //       }}
-          //       lable={'Notes'}
-          //       setData={setNotes}
-          //       style={{...styles.inputModel, height: 100}}
-          //       value={notes}
-          //       multiline={true}
-          //       numberOfLines={4}
-          //       placeholder={'If you have any comments, write them here.'}
-          //     /> */}
-          //     <View
-          //       style={{
-          //         width: '99%',
-          //         height: 1,
-          //         backgroundColor: '#469ED8',
-          //         alignSelf: 'center',
-          //         marginTop: 20,
-          //         borderRadius: 22,
-          //       }}
-          //     />
-          //   </>
-          // )
-        }
-
-
-        {/* {prductInOurStore ? (
-          <View style={{marginBottom: 10}}>
-            <View style={{...style.viewInfo}}>
-              <Text style={style.titleInfo}>Batch # : </Text>
-              <Text style={style.phname}>
-                {prductInOurStore?.batch_number || '-'}
-              </Text>
-            </View>
-            <View style={style.viewInfo}>
-              <Text style={style.titleInfo}>Expired Date : </Text>
-              <Text style={style.phname}>
-                {prductInOurStore?.expired_date || '-'}
-              </Text>
-            </View>
-            <View style={style.viewInfo}>
-              <Text style={style.titleInfo}>Amount : </Text>
-              <Text style={style.phname}>
-                {prductInOurStore?.amount || '-'}
-              </Text>
-            </View>
-            <View style={style.viewInfo}>
-              <Text style={style.titleInfo}>Last order Date : </Text>
-              <Text style={style.phname}>
-                {prductInOurStore?.last_order_date || '-'}
-              </Text>
-            </View>
-            <View
-              style={{
-                ...style.container,
-                justifyContent: 'center',
-                marginTop: 30,
-                marginBottom: 0,
-              }}>
-              <TouchableOpacity
-                style={style.newbtn}
-                onPress={() => {
-                  addBtn();
-                }}>
-                <Text
-                  style={{color: '#fff', fontSize: 18, paddingHorizontal: 50}}>
-                  Add To Table
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : (
-          notInStore && (
-            <View style={{marginVertical: 10}}>
-              <Text style={{fontSize: 17, fontWeight: '600', color: 'red'}}>
-                Sorry, this product is not among our products.
-              </Text>
-              <View style={{
-                ...style.container,
-                justifyContent: 'center',
-                marginTop: 30,
-                marginBottom: 0,
-              }}>
-                <TouchableOpacity
-                  style={style.newbtn}
-                  onPress={() => {
-                    setDataForScan(null);
-                    setNotInStore(false);
-                  }}>
-                  <Text
-                    style={{
-                      color: '#fff',
-                      fontSize: 18,
-                      paddingHorizontal: 10,
-                    }}>
-                    Back
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )
-        )} */}
-
-        {/* <View
-          style={{
-            width: '99%',
-            height: 1,
-            backgroundColor: '#469ED8',
-            alignSelf: 'center',
-            marginTop: 10,
-            borderRadius: 22,
-          }}
-        /> */}
-
-        {/* {returnData.length > 0 && (
-          <>
-            <ReturnsAfterAddTable data={returnData} />
-            <View
-              style={{
-                ...style.container,
-                justifyContent: 'center',
-                marginTop: 30,
-                marginBottom: 70,
-              }}>
-              <TouchableOpacity
-                style={style.newbtn}
-                onPress={() => {
-                  submit();
-                }}>
-                <Text
-                  style={{color: '#fff', fontSize: 18, paddingHorizontal: 50}}>
-                  Submit
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        )} */}
-
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={localStyles.scrollView}
+        contentContainerStyle={localStyles.scrollContent}>
+        {dataForScan && (
+          <ReturnsTable
+            data={dataForScan}
+            func={() => endEditing(dateEx)}
+          />
+        )}
       </ScrollView>
-
-      {/* { totalReturnsStatus && <View style={{ marginTop: 20, width: '90%', marginHorizontal: '5%'}}>
-                        <View style={{...style.card, backgroundColor: '#cccccf' }}>
-                                    <Text style={{color: '#469ED8', fontWeight: 'bold'}}>Total Returns</Text>
-                                    <View style={{ width: '99%', height: 0.5, backgroundColor: 'black', alignSelf: 'center', marginVertical: 10, borderRadius: 22 }} />
-                                    <View style={{ flexDirection: 'row', justifyContent: 'center', paddingHorizontal: 15 }}>  
-                                        <View style={styles.item_info}>
-                                            <Text style={{fontSize: 20, fontWeight:'bold', color: 'black'}}>20.0 JOD</Text>
-                                        </View> 
-                                    </View>
-                        </View>
-      </View>} */}
 
       <ScanBarcodeAndQRModel
         show={modal}
-        hide={() => {
-          setModal(false);
-        }}
-        submit={e => {
-          submitAfterGetBarcode(e);
-        }}
+        hide={() => setModal(false)}
+        submit={(e) => submitAfterGetBarcode(e)}
       />
-
     </SafeAreaView>
   );
 };
 
 export default Return;
 
-export const style = StyleSheet.create({
-  newbtn: {
-    backgroundColor: '#469ED8',
-    paddingVertical: 5,
-    paddingHorizontal: 8,
-    borderRadius: 7,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    marginHorizontal: 15,
-    height: 40,
+const localStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f9f9f9', 
+    paddingTop: 10,
   },
-  viewInfo: {
+  headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 20,
+    paddingHorizontal: 15,
+    marginBottom: 15,
   },
-  titleInfo: {
-    fontSize: 22,
-    color: 'black',
-    fontWeight: 'bold',
-    width: '60%',
-  },
-  phname: {
-    fontSize: 18,
-    textTransform: 'capitalize',
-    color: '#469ED8',
-    justifyContent: 'center',
-    width: '50%',
-  },
-  container: {
-    flex: 1,
+  scanButton: {
     flexDirection: 'row',
-    height: 40,
-    justifyContent: 'flex-end',
-    marginVertical: 10,
-    marginHorizontal: 20,
+    alignItems: 'center',
+    backgroundColor: '#469ED8',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    elevation: 2, 
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
-  card: {
-    shadowColor: "#469ED8",
-    shadowOffset: { width: 0, height: 1, },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
-    width: '100%',
-    alignSelf: 'center',
-    backgroundColor: '#fff',
-    padding: 15,
-    marginTop: 10,
-    borderRadius: 7
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 5,
   },
-  dropdown: {
-    height: 42,
-    borderColor: '#469ED8',
+  codeInput: {
+    flex: 1,
+    height: 45,
     borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 8,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 15,
     marginLeft: 10,
-    marginRight: 10,
-    width: '100%'
+    backgroundColor: '#fff',
+    color: '#000',
+    elevation: 1,
+  },
+  divider: {
+    width: '90%',
+    height: 1,
+    backgroundColor: '#ddd',
+    alignSelf: 'center',
+    marginVertical: 15,
+  },
+  dateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 45,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    marginHorizontal: 15,
+    backgroundColor: '#fff',
+    elevation: 1,
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#000',
+    marginLeft: 10,
+    flex: 1,
   },
   icon: {
     marginRight: 5,
   },
-  placeholderStyle: {
-    fontSize: 16,
-    color:'#808080'
+  scrollView: {
+    flex: 1,
+    marginHorizontal: 15,
   },
-  selectedTextStyle: {
-    fontSize: 16,
-    color:'#000000'
+  scrollContent: {
+    paddingBottom: 80, 
   },
-  iconStyle: {
-    width: 20,
-    height: 20,
+  // أنماط RTL
+  rtlText: {
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
-    color:'#000000'
-  },
-  textinput: {
-    height: 60,
-    borderColor: 'rgba(37, 50, 116, 0.28)',
-    borderWidth: 1,
-    paddingLeft: 10,
-    borderRadius: 5,
-  }
+
 });

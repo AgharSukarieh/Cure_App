@@ -1,0 +1,954 @@
+{
+  "reportPage": {
+    "welcome": "أهلاً بعودتك!",
+    "achieved": "المُنجَز",
+    "remaining": "المتبقي",
+    "detail": "تفاصيل",
+    "totalSales": "إجمالي المبيعات",
+    "totalTarget": "إجمالي الهدف",
+    "management": "الإدارة",
+    "daily": "يومي",
+    "monthly": "شهري",
+    "yearly": "سنوي"
+  },
+  "categories": {
+    "clientList": "قائمة العملاء",
+    "monthlyPlan": "الخطة الشهرية",
+    "visitReport": "تقرير الزيارة",
+    "sales": "المبيعات"
+  },
+
+  "moreScreen": {
+    "header": "المزيد",
+    "preferences": "التفضيلات",
+    "helpSupport": "المساعدة والدعم",
+    "about": "حول التطبيق"
+  },
+  "userCard": {
+    "userId": "معرّف المستخدم:",
+    "username": "اسم المستخدم:",
+    "email": "البريد الإلكتروني:",
+    "phone": "الهاتف:",
+    "city": "المدينة:",
+    "sampleUsername": "جون دو",
+    "sampleEmail": "Aghar3141@gmail.com",
+    "samplePhone": "0795845552",
+    "sampleCity": "عمان"
+  },
+  "settings": {
+    "language": "اللغة",
+    "darkMode": "الوضع الداكن",
+    "faq": "الأسئلة الشائعة",
+    "contactUs": "تواصل معنا",
+    "aboutUs": "من نحن",
+    "terms": "الشروط والأحكام",
+    "privacy": "سياسة الخصوصية",
+    "notifications": "الإشعارات",
+    "logout": "تسجيل الخروج",
+    "logoutConfirm": "هل أنت متأكد من أنك تريد تسجيل الخروج؟"
+  },
+  "notifications": {
+    "header": "الإشعارات",
+    "showAll": "عرض الكل",
+    "unreadOnly": "غير المقروءة فقط",
+    "markAllRead": "تعيين الكل كمقروء",
+    "noNotifications": "لا توجد إشعارات",
+    "newOrder": "طلب جديد",
+    "newOrderMessage": "تم استلام طلب جديد من مستشفى السلام",
+    "followUpReminder": "تذكير المتابعة",
+    "followUpMessage": "تابع طلب مستشفى الملك فهد قبل نهاية اليوم",
+    "inventoryUpdate": "تحديث المخزون",
+    "inventoryMessage": "تم تحديث مخزون المعدات الطبية بنجاح",
+    "clientMeeting": "اجتماع عميل",
+    "meetingMessage": "لديك اجتماع مع ممثل مستشفى المركز التخصصي غداً في الساعة 10 صباحاً",
+    "specialOffer": "عرض خاص",
+    "offerMessage": "عرض خاص على أجهزة الأشعة لفترة محدودة",
+    "timeAgo": {
+      "minutes": "دقائق مضت",
+      "hours": "ساعات مضت",
+      "days": "أيام مضت"
+    },
+    "filterUnread": "تصفية غير المقروءة"
+  },
+  "terms": {
+    "title": "الشروط والأحكام",
+    "welcomeTitle": "مرحباً بك في الشروط والأحكام",
+    "welcomeSubtitle": "يرجى قراءة هذه الشروط بعناية قبل استخدام التطبيق",
+    "lastUpdated": "آخر تحديث",
+    "updateDate": "ديسمبر 2024",
+    "sectionsTitle": "بنود الاتفاقية",
+    "questionsTitle": "هل لديك أسئلة؟",
+    "contactInfo": "تواصل معنا للحصول على المساعدة",
+    "agreementText": "باستخدام هذا التطبيق، فإنك توافق على هذه الشروط والأحكام",
+    "sections": {
+      "acceptance": "قبول الشروط",
+      "acceptanceContent": "باستخدام تطبيق الصيدلية، فإنك توافق على الالتزام بهذه الشروط والأحكام. إذا كنت لا توافق على أي من هذه الشروط، فيرجى عدم استخدام التطبيق.",
+      "serviceDescription": "وصف الخدمة",
+      "serviceDescriptionContent": "تطبيق الصيدلية يوفر خدمات إدارة الأدوية والوصفات الطبية وتتبع المخزون. نحن نقدم منصة رقمية لربط الصيادلة بالعملاء وتسهيل عملية الطلب والتوصيل.",
+      "userAccount": "حساب المستخدم",
+      "userAccountContent": "أنت مسؤول عن الحفاظ على سرية معلومات حسابك وكلمة المرور. يجب عليك إبلاغنا فوراً عن أي استخدام غير مصرح به لحسابك. نحن لسنا مسؤولين عن أي خسائر ناتجة عن عدم حماية معلوماتك.",
+      "privacy": "الخصوصية وحماية البيانات",
+      "privacyContent": "نحن نحترم خصوصيتك ونلتزم بحماية بياناتك الشخصية وفقاً لسياسة الخصوصية الخاصة بنا. قد نجمع ونستخدم معلوماتك لتقديم الخدمات وتحسين تجربتك مع التطبيق.",
+      "payment": "الدفع والفوترة",
+      "paymentContent": "جميع المدفوعات تتم عبر قنوات آمنة. نحن نقبل الدفع النقدي عند الاستلام والدفع الإلكتروني. الأسعار قابلة للتغيير دون إشعار مسبق. المدفوعات غير قابلة للاسترداد إلا في حالات محددة.",
+      "liability": "المسؤولية والضمانات",
+      "liabilityContent": "نحن نقدم الخدمة كما هي دون ضمانات صريحة أو ضمنية. لن نكون مسؤولين عن أي أضرار مباشرة أو غير مباشرة ناتجة عن استخدام التطبيق. المستخدم يتحمل المسؤولية الكاملة عن استخدامه للتطبيق.",
+      "termination": "إنهاء الخدمة",
+      "terminationContent": "يمكن لأي من الطرفين إنهاء هذه الاتفاقية في أي وقت. نحتفظ بالحق في تعليق أو إنهاء حسابك إذا انتهكت هذه الشروط. عند الإنهاء، ستتوقف جميع الخدمات فوراً.",
+      "changes": "تعديل الشروط",
+      "changesContent": "نحتفظ بالحق في تعديل هذه الشروط والأحكام في أي وقت. سيتم إشعارك بأي تغييرات مهمة. استمرار استخدامك للتطبيق بعد التعديلات يعني موافقتك على الشروط الجديدة."
+    }
+  },
+  "contactUs": {
+    "title": "تواصل معنا",
+    "welcomeTitle": "نحن هنا لمساعدتك",
+    "welcomeSubtitle": "تواصل معنا في أي وقت وسنكون سعداء لمساعدتك",
+    "contactMethodsTitle": "طرق التواصل",
+    "formTitle": "أرسل لنا رسالة",
+    "responseTime": "نرد عادة خلال 24 ساعة",
+    "methods": {
+      "email": "البريد الإلكتروني",
+      "emailSubtitle": "support@pharmacy.com",
+      "phone": "الهاتف",
+      "phoneSubtitle": "+1 234 567 8900",
+      "whatsapp": "واتساب",
+      "whatsappSubtitle": "+1 234 567 8900"
+    },
+    "form": {
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "أدخل بريدك الإلكتروني",
+      "title": "عنوان الرسالة",
+      "titlePlaceholder": "أدخل عنوان الرسالة",
+      "message": "الرسالة",
+      "messagePlaceholder": "اكتب رسالتك هنا...",
+      "submit": "إرسال الرسالة"
+    },
+    "errors": {
+      "emailRequired": "البريد الإلكتروني مطلوب",
+      "emailInvalid": "البريد الإلكتروني غير صحيح",
+      "titleRequired": "عنوان الرسالة مطلوب",
+      "titleTooShort": "عنوان الرسالة قصير جداً (5 أحرف على الأقل)",
+      "messageRequired": "الرسالة مطلوبة",
+      "messageTooShort": "الرسالة قصيرة جداً (10 أحرف على الأقل)"
+    },
+    "success": {
+      "title": "تم الإرسال بنجاح",
+      "message": "شكراً لك! تم إرسال رسالتك بنجاح. سنرد عليك في أقرب وقت ممكن.",
+      "button": "حسناً"
+    },
+    "error": {
+      "title": "خطأ في الإرسال",
+      "message": "حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "aboutUs": {
+    "title": "من نحن",
+    "welcomeTitle": "مرحباً بك في عالم الصيدلة الرقمية",
+    "welcomeSubtitle": "نحن نقدم أفضل الحلول التقنية للصيادلة والعملاء",
+    "ourStory": "قصتنا",
+    "description": "تطبيق الصيدلية هو منصة رقمية متطورة تهدف إلى ربط الصيادلة بالعملاء وتسهيل عملية الطلب والتوصيل. نحن نؤمن بأن التكنولوجيا يمكن أن تجعل الرعاية الصحية أكثر سهولة ووصولاً للجميع.",
+    "whyChooseUs": "لماذا تختارنا؟",
+    "ourNumbers": "أرقامنا تتحدث",
+    "ourTeam": "فريقنا",
+    "mission": "مهمتنا",
+    "missionText": "نهدف إلى تحويل تجربة الصيدلة من خلال التكنولوجيا المتقدمة، وجعل الأدوية والرعاية الصحية في متناول الجميع بسهولة وأمان.",
+    "vision": "رؤيتنا",
+    "visionText": "أن نكون المنصة الرائدة في مجال الصيدلة الرقمية في المنطقة، ونقدم حلولاً مبتكرة تساهم في تحسين جودة الرعاية الصحية.",
+    "followUs": "تابعنا",
+    "contactEmail": "info@pharmacy.com",
+    "contactPhone": "+1 234 567 8900",
+    "contactAddress": "شارع التكنولوجيا، مدينة الصحة، دولة الرعاية",
+    "features": {
+      "secure": "آمن ومضمون",
+      "secureDesc": "حماية كاملة لبياناتك ومعلوماتك الشخصية",
+      "fast": "سريع وفعال",
+      "fastDesc": "خدمة سريعة وموثوقة في جميع الأوقات",
+      "reliable": "موثوق ومتاح",
+      "reliableDesc": "خدمة متاحة 24/7 مع فريق دعم محترف",
+      "caring": "رعاية ومتابعة",
+      "caringDesc": "نحن نهتم بصحتك ونوفر أفضل الرعاية"
+    },
+    "stats": {
+      "users": "مستخدم نشط",
+      "pharmacies": "صيدلية شريكة",
+      "orders": "طلب مكتمل",
+      "satisfaction": "معدل الرضا"
+    },
+    "team": {
+      "ceo": "أحمد محمد",
+      "ceoPosition": "الرئيس التنفيذي",
+      "cto": "سارة أحمد",
+      "ctoPosition": "مدير التقنية",
+      "cmo": "محمد علي",
+      "cmoPosition": "مدير التسويق"
+    }
+  },
+  "auth": {
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "عنوان البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "كلمة المرور",
+    "username": "اسم المستخدم",
+    "usernamePlaceholder": "أدخل اسم المستخدم",
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "signingIn": "جاري تسجيل الدخول...",
+    "signingUp": "جاري إنشاء الحساب...",
+    "noAccount": "ليس لديك حساب؟",
+    "haveAccount": "لديك حساب بالفعل؟",
+    "agreeText": "بالتسجيل {{action}} فإنك توافق على",
+    "terms": "الشروط والأحكام",
+    "and": "و",
+    "privacy": "سياسة الخصوصية",
+    "forgotPassword": "هل نسيت كلمة المرور؟",
+    "chooseVerification": {
+      "title": "اختيار طريقة التحقق",
+      "subtitle": "سنرسل لك رمز التحقق",
+      "viaSms": "عبر الرسائل النصية"
+    },
+    "forgotPasswordScreen": {
+      "title": "نسيت كلمة المرور",
+      "subtitle": "أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة تعيين كلمة المرور",
+      "email": "البريد الإلكتروني",
+      "sendResetLink": "إرسال رابط إعادة التعيين",
+      "backToSignIn": "العودة لتسجيل الدخول",
+      "success": "تم إرسال رابط إعادة التعيين",
+      "successMessage": "تحقق من بريدك الإلكتروني للحصول على رابط إعادة تعيين كلمة المرور"
+    },
+    "chooseVerificationMethodScreen": {
+      "title": "اختيار طريقة التحقق",
+      "subtitle": "اختر الطريقة التي تريد استلام رمز التحقق عليها",
+      "viaSms": "عبر الرسائل النصية",
+      "viaEmail": "عبر البريد الإلكتروني",
+      "continue": "متابعة"
+    },
+    "verificationScreen": {
+      "title": "التحقق من الرمز",
+      "subtitle": "أدخل الرمز الذي تم إرساله إليك",
+      "code": "رمز التحقق",
+      "verify": "تحقق",
+      "resendCode": "إعادة إرسال الرمز",
+      "invalidCode": "رمز التحقق غير صحيح",
+      "codeExpired": "انتهت صلاحية الرمز"
+    },
+    "setNewPasswordScreen": {
+      "title": "تعيين كلمة مرور جديدة",
+      "subtitle": "أدخل كلمة المرور الجديدة",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "setPassword": "تعيين كلمة المرور",
+      "passwordsNotMatch": "كلمات المرور غير متطابقة"
+    },
+    "successUpdatePassword": {
+      "title": "تم تحديث كلمة المرور",
+      "subtitle": "تم تحديث كلمة المرور بنجاح",
+      "backToSignIn": "العودة لتسجيل الدخول"
+    }
+  },
+  "faq": {
+    "title": "الأسئلة الشائعة",
+    "welcomeTitle": "مرحباً بك في مركز المساعدة",
+    "welcomeSubtitle": "ابحث عن إجابات لأسئلتك الشائعة",
+    "categoriesTitle": "التصنيفات",
+    "questionsTitle": "الأسئلة المتكررة",
+    "questions": "سؤال",
+    "needHelp": "هل تحتاج مساعدة إضافية؟",
+    "contactUs": "تواصل معنا وسنكون سعداء لمساعدتك",
+    "categories": {
+      "all": "الكل",
+      "general": "عام",
+      "account": "الحساب",
+      "orders": "الطلبات",
+      "payment": "الدفع",
+      "technical": "تقني"
+    },
+    "general": {
+      "question1": "كيف يمكنني إنشاء حساب جديد؟",
+      "answer1": "يمكنك إنشاء حساب جديد من خلال الضغط على زر \"إنشاء حساب\" في صفحة تسجيل الدخول، ثم اتباع الخطوات المطلوبة لإدخال بياناتك الشخصية.",
+      "question2": "كيف يمكنني استعادة كلمة المرور؟",
+      "answer2": "يمكنك استعادة كلمة المرور من خلال الضغط على \"نسيت كلمة المرور\" في صفحة تسجيل الدخول، ثم اتباع التعليمات المرسلة إلى بريدك الإلكتروني."
+    },
+    "account": {
+      "question1": "كيف يمكنني تحديث بياناتي الشخصية؟",
+      "answer1": "يمكنك تحديث بياناتك الشخصية من خلال الذهاب إلى إعدادات الحساب وتعديل المعلومات المطلوبة، ثم حفظ التغييرات.",
+      "question2": "كيف يمكنني حذف حسابي؟",
+      "answer2": "يمكنك حذف حسابك من خلال الذهاب إلى إعدادات الحساب واختيار خيار \"حذف الحساب\"، مع العلم أن هذه العملية لا يمكن التراجع عنها."
+    },
+    "orders": {
+      "question1": "كيف يمكنني تتبع طلبي؟",
+      "answer1": "يمكنك تتبع طلبك من خلال الذهاب إلى قسم \"طلباتي\" واختيار الطلب المطلوب، حيث ستجد تفاصيل حالة الطلب وموقعه الحالي.",
+      "question2": "كيف يمكنني إلغاء طلب؟",
+      "answer2": "يمكنك إلغاء طلبك من خلال الذهاب إلى قسم \"طلباتي\" واختيار الطلب المطلوب، ثم الضغط على \"إلغاء الطلب\" إذا كان لا يزال في مرحلة التحضير."
+    },
+    "payment": {
+      "question1": "ما هي طرق الدفع المتاحة؟",
+      "answer1": "نحن نقبل الدفع النقدي عند الاستلام، والدفع بالبطاقة الائتمانية، والدفع الإلكتروني عبر المحافظ الرقمية.",
+      "question2": "هل الدفع آمن؟",
+      "answer2": "نعم، جميع عمليات الدفع محمية بتقنيات التشفير المتقدمة لضمان أمان معلوماتك المالية."
+    },
+    "technical": {
+      "question1": "التطبيق لا يعمل بشكل صحيح، ماذا أفعل؟",
+      "answer1": "جرب إعادة تشغيل التطبيق أولاً، وإذا استمرت المشكلة، تأكد من تحديث التطبيق إلى أحدث إصدار، أو تواصل مع فريق الدعم الفني.",
+      "question2": "كيف يمكنني تحديث التطبيق؟",
+      "answer2": "يمكنك تحديث التطبيق من خلال متجر التطبيقات (App Store أو Google Play) والبحث عن التطبيق، ثم الضغط على \"تحديث\" إذا كان متاحاً."
+    }
+  },
+  "reportsScreen": {
+    "header": "التقارير",
+    "selectCity": "اختر المدينة",
+    "selectArea": "اختر المنطقة",
+    "from": "من",
+    "to": "إلى",
+    "selectStartDate": "اختر تاريخ البداية",
+    "selectEndDate": "اختر تاريخ النهاية",
+    "filters": {
+      "selectCity": "اختر المدينة",
+      "selectArea": "اختر المنطقة",
+      "from": "من",
+      "to": "إلى"
+    },
+    "table": {
+      "name": "الاسم",
+      "target": "الهدف",
+      "achievement": "الإنجاز",
+      "region": "المنطقة",
+      "performance": "الأداء",
+      "bonus": "المكافأة"
+    },
+    "achievementStatus": {
+      "achieved": "تم الإنجاز",
+      "exceeded": "تجاوز الهدف",
+      "noc": "غير مكتمل"
+    },
+    "chatScreen": {
+      "title": "المحادثة",
+      "placeholder": "اكتب رسالة..."
+    }
+  },
+  "tableHeaders": {
+    "name": "الاسم",
+    "target": "الهدف",
+    "achievement": "الإنجاز",
+    "region": "المنطقة",
+    "performance": "الأداء",
+    "bonus": "المكافأة"
+  },
+  "achievementStatus": {
+    "achieved": "تم الإنجاز",
+    "exceeded": "تم التجاوز",
+    "noc": "غير محقق"
+  },
+  "locations": {
+    "cities": {
+      "amman": "عمان",
+      "zarqa": "الزرقاء",
+      "irbid": "إربد",
+      "aqaba": "العقبة"
+    },
+    "areas": {
+      "amman": {
+        "alAbdali": "العبدلي",
+        "sweifieh": "الصويفية",
+        "jabalAmman": "جبل عمان",
+        "tlaaAlAli": "تلاع العلي"
+      },
+      "zarqa": {
+        "zarqaCity": "مدينة الزرقاء",
+        "russeifa": "الرصيفة"
+      },
+      "irbid": {
+        "irbidCity": "مدينة إربد",
+        "ramtha": "الرمثا"
+      },
+      "aqaba": {
+        "aqabaCity": "مدينة العقبة"
+      }
+    },
+    "regions": {
+      "north": "الشمال",
+      "central": "الوسط",
+      "south": "الجنوب",
+      "east": "الشرق",
+      "west": "الغرب"
+    }
+  },
+  "chatsScreen": {
+    "header": "المحادثات",
+    "searchPlaceholder": "ابحث عن رسائل، أشخاص",
+    "addFriend": "إضافة صديق",
+    "createGroup": "إنشاء مجموعة",
+    "groupCreated": "لقد أنشأت المجموعة.",
+    "contactAdded": "لقد أضفت {{name}}. قل مرحباً!"
+  },
+  "signInScreen": {
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "عنوان البريد الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "passwordPlaceholder": "**************",
+    "forgotPassword": "هل نسيت كلمة المرور؟",
+    "signInButton": "تسجيل الدخول",
+    "noAccount": "ليس لديك حساب؟",
+    "signUpLink": "إنشاء حساب",
+    "footerAgreement": "بتسجيلك الدخول، أنت توافق على",
+    "termsAndConditions": "الشروط والأحكام",
+    "and": "و",
+    "privacyPolicy": "سياسة الخصوصية"
+  },
+  "signUpScreen": {
+    "usernameLabel": "اسم المستخدم",
+    "usernamePlaceholder": "أدخل اسم المستخدم الخاص بك",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "عنوان البريد الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "passwordPlaceholder": "**************",
+    "signUpButton": "إنشاء حساب",
+    "signingUpButton": "جاري الإنشاء...",
+    "hasAccount": "هل لديك حساب بالفعل؟",
+    "signInLink": "تسجيل الدخول",
+    "footerAgreement": "بإنشائك حسابًا، أنت توافق على",
+    "termsAndConditions": "الشروط والأحكام",
+    "and": "و",
+    "privacyPolicy": "سياسة الخصوصية"
+  },
+  "alerts": {
+    "error": "خطأ",
+    "loginError": "خطأ في تسجيل الدخول",
+    "registrationError": "خطأ في التسجيل",
+    "success": "نجاح",
+    "fillAllFields": "الرجاء تعبئة جميع الحقول",
+    "enterValidEmail": "الرجاء إدخال بريد إلكتروني صالح",
+    "somethingWentWrong": "حدث خطأ ما",
+    "accountCreated": "تم إنشاء الحساب بنجاح!"
+  },
+  "changeLanguageScreen": {
+    "headerTitle": "تغيير اللغة",
+    "saveButtonText": "حفظ",
+    "languages": {
+      "en": { "title": "الإنجليزية", "subtitle": "English" },
+      "ar": { "title": "العربية", "subtitle": "Arabic" }
+    }
+  },
+  "homeScreen": {
+  "welcomeBack": "مرحباً! سعيد بعودتك!",
+  "userName": "أنس",
+  "detail": "التفاصيل",
+  "achieved": "المحقق",
+  "remaining": "المتبقي",
+  "daily": "يومي",
+  "monthly": "شهري",
+  "yearly": "سنوي",
+  "totalSales": "إجمالي المبيعات",
+  "totalTarget": "الهدف الكلي",
+  "appointments": "المواعيد",
+  "medicalReports": "التقارير الطبية",
+  "medicalServices": "الخدمات الطبية",
+  "management": "الإدارة",
+  "clientList": "قائمة العملاء",
+  "monthlyPlan": "الخطة الشهرية",
+  "visitReport": "تقرير الزيارة",
+  "sales": "المبيعات"
+},
+  
+  "onboardingScreen": {
+    "slide1": {
+      "title": "انضم إلى مجتمعنا الرائع",
+      "description": "اكتشف عالم الصيدلة الرقمي وانضم إلى مجتمع من المهنيين المتميزين"
+    },
+    "slide2": {
+      "title": "إدارة متقدمة للمخزون",
+      "description": "نظام ذكي لإدارة الأدوية والمخزون مع تتبع دقيق للتواريخ والكميات"
+    },
+    "slide3": {
+      "title": "تقارير مالية شاملة",
+      "description": "احصل على تقارير مفصلة عن المبيعات والأرباح مع تحليلات ذكية للأداء"
+    },
+    "nextButton": "التالي",
+    "startButton": "ابدأ الآن",
+    "backButton": "السابق"
+  },
+  "mainClientDoctorList": {
+    "headerTitle": "قائمة العملاء",
+    "doctorList": "قائمة الأطباء",
+    "pharmacyList": "قائمة الصيدليات"
+  },
+  "addNewDoctorModel": {
+    "doctorName": "اسم الطبيب",
+    "doctorNamePlaceholder": "أدخل اسم الطبيب",
+    "selectCity": "اختر المدينة",
+    "selectArea": "اختر المنطقة",
+    "selectSpecialty": "اختر التخصص",
+    "selectClassification": "اختر التصنيف",
+    "address": "العنوان",
+    "addressPlaceholder": "أدخل العنوان",
+    "location": "الموقع",
+    "getLocation": "الحصول على الموقع",
+    "submit": "إرسال",
+    "search": "بحث...",
+    "error": "خطأ",
+    "success": "تم إضافة الطبيب بنجاح"
+  },
+  "clientDoctorList": {
+    "headerTitle": "قائمة الأطباء",
+    "searchPlaceholder": "البحث باسم الطبيب...",
+    "filterByCity": "تصفية حسب المدينة",
+    "filterByArea": "تصفية حسب المنطقة",
+    "filterBySpecialty": "تصفية حسب التخصص",
+    "allCities": "جميع المدن",
+    "allAreas": "جميع المناطق",
+    "allSpecialties": "جميع التخصصات",
+    "selectCityFirst": "اختر المدينة أولاً",
+    "addNewDoctor": "إضافة طبيب جديد",
+    "loading": "جاري التحميل...",
+    "noData": "لا توجد بيانات",
+    "doctorName": "اسم الطبيب",
+    "specialty": "التخصص",
+    "city": "المدينة",
+    "area": "المنطقة",
+    "phone": "الهاتف",
+    "experience": "الخبرة",
+    "status": "الحالة",
+    "years": "سنوات",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "pending": "قيد الانتظار",
+    "addNewDoctorModal": {
+      "title": "إضافة طبيب جديد",
+      "doctorName": "اسم الطبيب",
+      "doctorNamePlaceholder": "مثال: د. أحمد محمد",
+      "phoneNumber": "رقم الهاتف",
+      "phoneNumberPlaceholder": "مثال: 07701234567",
+      "yearsOfExperience": "سنوات الخبرة",
+      "yearsOfExperiencePlaceholder": "مثال: 10",
+      "specialty": "التخصص",
+      "chooseSpecialty": "اختر التخصص",
+      "city": "المدينة",
+      "chooseCity": "اختر المدينة",
+      "area": "المنطقة",
+      "chooseArea": "اختر المنطقة",
+      "submit": "إرسال",
+      "cancel": "إلغاء",
+      "nameRequired": "الاسم مطلوب",
+      "phoneRequired": "رقم الهاتف مطلوب",
+      "specialtyRequired": "التخصص مطلوب",
+      "cityRequired": "المدينة مطلوبة",
+      "successMessage": "تم إضافة الطبيب بنجاح"
+    }
+  },
+  "clientPharmacyList": {
+    "headerTitle": "قائمة الصيدليات",
+    "searchPlaceholder": "البحث باسم الصيدلية...",
+    "filterByCity": "تصفية حسب المدينة",
+    "filterByArea": "تصفية حسب المنطقة",
+    "allCities": "جميع المدن",
+    "allAreas": "جميع المناطق",
+    "selectCityFirst": "اختر المدينة أولاً",
+    "addNewPharmacy": "إضافة صيدلية جديدة",
+    "loading": "جاري التحميل...",
+    "noData": "لم يتم العثور على صيدليات تطابق معايير البحث.",
+    "pharmacyName": "اسم الصيدلية",
+    "location": "الموقع",
+    "category": "التصنيف",
+    "addNewPharmacyModal": {
+      "title": "إضافة صيدلية جديدة",
+      "pharmacyName": "اسم الصيدلية",
+      "pharmacyNamePlaceholder": "أدخل اسم الصيدلية",
+      "category": "التصنيف (التخصص)",
+      "chooseCategory": "اختر التصنيف",
+      "location": "الموقع",
+      "chooseCity": "اختر المدينة",
+      "chooseArea": "اختر المنطقة",
+      "submit": "إضافة الصيدلية",
+      "cancel": "إلغاء",
+      "nameRequired": "الاسم مطلوب",
+      "categoryRequired": "التصنيف مطلوب",
+      "cityRequired": "الموقع (المدينة) مطلوب",
+      "areaRequired": "الموقع (المنطقة) مطلوب",
+      "successMessage": "تم إضافة الصيدلية بنجاح!"
+    }
+  },
+  "medicalReportScreen": {
+    "headerTitle": "التقرير الطبي",
+    "name": "الاسم",
+    "specialty": "التخصص",
+    "time": "الوقت",
+    "lastVisit": "آخر زيارة",
+    "status": "الحالة",
+    "visited": "تمت الزيارة",
+    "pending": "قيد الانتظار",
+    "noVisits": "لا توجد زيارات مجدولة لهذا اليوم.",
+    "loading": "جاري التحميل..."
+  },
+  "monthlyPlanSales": {
+    "headerTitle": "تقرير المبيعات",
+    "name": "الاسم",
+    "specialty": "التخصص",
+    "time": "الوقت",
+    "lastVisit": "آخر زيارة",
+    "status": "الحالة",
+    "visited": "تمت الزيارة",
+    "pending": "قيد الانتظار",
+    "noVisits": "لا توجد زيارات مجدولة لهذا اليوم.",
+    "loading": "جاري التحميل..."
+  },
+  "salesReportPharm": {
+    "headerTitle": "تقرير المبيعات",
+    "paymentHistory": "سجل المدفوعات",
+    "returns": "المرتجعات",
+    "inventory": "المخزون",
+    "monthlyPlan": "الخطة الشهرية",
+    "orders": "الطلبات"
+  },
+  "frequencyReport": {
+    "headerTitle": "تقرير تكرار الزيارات",
+    "city": "المدينة",
+    "area": "المنطقة",
+    "from": "من",
+    "to": "إلى",
+    "selectCity": "اختر المدينة",
+    "selectArea": "اختر المنطقة",
+    "selectCityFirst": "اختر المدينة أولاً",
+    "doctorName": "اسم الطبيب",
+    "targetVisits": "الزيارات المستهدفة",
+    "actualVisits": "الزيارات الفعلية",
+    "lastVisit": "آخر زيارة",
+    "visited": "تمت الزيارة",
+    "noReports": "لم يتم العثور على تقارير للمرشحات المحددة.",
+    "loading": "جاري التحميل...",
+    "success": "نجح",
+    "visitLogged": "تم تسجيل زيارة لطبيب جديد:"
+  },
+  "sales": {
+    "headerTitle": "المبيعات",
+    "selectCity": "اختر المدينة",
+    "selectArea": "اختر المنطقة",
+    "from": "من",
+    "to": "إلى",
+    "client": "العميل",
+    "totalPrice": "السعر الإجمالي",
+    "status": "الحالة",
+    "createdAt": "تاريخ الإنشاء",
+    "delivered": "تم التسليم",
+    "pending": "قيد الانتظار",
+    "canceled": "ملغي",
+    "noData": "لم يتم العثور على بيانات مبيعات للمرشحات المحددة.",
+    "loading": "جاري التحميل..."
+  },
+  "accountInfo": {
+    "title": "معلومات الحساب",
+    "subtitle": "إدارة تفاصيل حسابك وسجل المدفوعات",
+    "totalBalance": "الرصيد الإجمالي",
+    "pendingPayments": "المدفوعات المعلقة",
+    "collectionsHistory": "سجل التحصيلات",
+    "filter": "تصفية",
+    "addNewPayment": "إضافة دفعة جديدة",
+    "noData": "لا يوجد سجل مدفوعات متاح",
+    "loading": "جاري التحميل...",
+    "success": "نجح",
+    "paymentSubmitted": "تم إرسال الدفعة بنجاح",
+    "tableDate": "التاريخ",
+    "tablePaymentMethod": "طريقة الدفع",
+    "tableAmount": "المبلغ",
+    "tableStatus": "الحالة",
+    "paymentMethodCash": "نقداً",
+    "paymentMethodCheck": "شيك",
+    "statusCompleted": "مكتمل",
+    "statusPending": "معلق",
+    "modalTitle": "إضافة دفعة جديدة",
+    "modalChoosePaymentMethod": "اختر طريقة الدفع",
+    "modalChangePaymentMethod": "تغيير طريقة الدفع",
+    "modalCash": "نقداً",
+    "modalCheck": "شيك",
+    "modalPaymentValue": "قيمة الدفعة",
+    "modalEnterAmount": "أدخل المبلغ",
+    "modalCheckNumber": "رقم الشيك",
+    "modalEnterCheckNumber": "أدخل رقم الشيك",
+    "modalCheckDate": "تاريخ الشيك",
+    "modalDueDate": "تاريخ الاستحقاق",
+    "modalSubmit": "إرسال",
+    "filterModalTitle": "تصفية المدفوعات",
+    "closeButton": "إغلاق",
+    "closeFilterModal": "إغلاق نافذة التصفية",
+    "all": "الكل",
+    "startDate": "تاريخ البداية",
+    "endDate": "تاريخ النهاية",
+    "selectStartDate": "اختر تاريخ البداية",
+    "selectEndDate": "اختر تاريخ النهاية",
+    "applyFilters": "تطبيق التصفية",
+    "clearFilters": "مسح التصفية",
+    "invalidDateRange": "نطاق تاريخ غير صحيح",
+    "startDateAfterEndDate": "تاريخ البداية يجب أن يكون قبل تاريخ النهاية"
+  },
+  "dailySales": {
+    "headerTitle": "المبيعات اليومية",
+    "searchPlaceholder": "ابحث عن صيدلية أو موقع...",
+    "addPharmacy": "إضافة صيدلية جديدة",
+    "pharmacyName": "اسم الصيدلية",
+    "pharmacyLocation": "موقع الصيدلية (المدينة - المنطقة)",
+    "phoneNumber": "رقم الهاتف",
+    "add": "إضافة",
+    "close": "إغلاق",
+    "noPharmacies": "لا توجد صيدليات مطابقة للبحث.",
+    "pharmacies": {
+      "alTaj": "صيدلية التاج",
+      "alNahdi": "صيدلية النهدي",
+      "alMuttahida": "صيدلية المتحدة",
+      "zahratAlRouda": "صيدلية زهرة الروضة",
+      "alMujtama": "صيدلية المجتمع"
+    },
+    "locations": {
+      "ammanUniversity": "عمان - شارع الجامعة",
+      "zarqaPrinceRashid": "الزرقاء - حي الأمير راشد",
+      "irbidMedical": "إربد - مجمع الشرق الطبي",
+      "ammanJabal": "عمان - جبل عمان",
+      "saltOldTown": "السلط - البلد القديم"
+    }
+  },
+  "inventory": {
+    "headerTitle": "المخزون",
+    "searchPlaceholder": "ابحث بالاسم أو الباركود...",
+    "noProduct": "المنتج غير موجود في هذا المخزون.",
+    "errorLoading": "حدث خطأ أثناء جلب البيانات.",
+    "productNotFound": "لم يتم العثور على المنتج.",
+    "searchError": "حدث خطأ أثناء البحث عن المنتج.",
+    "emptyState": "ابحث عن منتج أو استخدم الماسح الضوئي لعرض تفاصيل المخزون"
+  },
+  "order": {
+    "headerTitle": "إدارة الطلبات",
+    "headerSubtitle": "عرض وتتبع جميع طلباتك",
+    "totalOrders": "إجمالي الطلبات",
+    "pending": "قيد المعالجة",
+    "delivered": "تم التوصيل",
+    "orders": "الطلبات",
+    "status": "الحالة",
+    "details": "التفاصيل",
+    "deliveredStatus": "تم التوصيل",
+    "pendingStatus": "قيد المعالجة",
+    "canceledStatus": "ملغي",
+    "moreProducts": "منتجات أخرى",
+    "newOrder": "طلب جديد",
+    "addNewOrder": "إضافة طلب جديد",
+    "products": "المنتجات",
+    "selectProduct": "اختر المنتج",
+    "availableOffers": "العروض المتاحة",
+    "costAndPrice": "التكلفة والسعر للعموم",
+    "enterPrice": "أدخل السعر",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "pharmacy": "الصيدلية",
+    "location": "الموقع",
+    "orderDate": "تاريخ الطلب",
+    "totalAmount": "المجموع الكلي",
+    "quantity": "الكمية",
+    "bonus": "بونص",
+    "price": "السعر",
+    "priceWithTax": "السعر بالضريبة",
+    "expiryDate": "تاريخ الصلاحية",
+    "selectProductAndPrice": "يرجى تحديد عنصر وإدخال التكلفة.",
+    "pharmacies": {
+      "alNahdi": "صيدلية النهدي",
+      "alTaj": "صيدلية التاج",
+      "alDawa": "صيدلية الدواء",
+      "alMuttahida": "صيدلية المتحدة"
+    },
+    "cities": {
+      "riyadh": "الرياض",
+      "jeddah": "جدة",
+      "dammam": "الدمام"
+    },
+    "products": {
+      "aspirin": "أسبرين 100 مجم",
+      "panadol": "بانادول إكسترا",
+      "vitaminC": "فيتامين سي 500 مجم",
+      "ibuprofen": "أيبوبروفين 400 مجم"
+    },
+    "offers": {
+      "discount10": "خصم 10%",
+      "buy1Get1": "اشترِ 1 واحصل على 1",
+      "freeShipping": "شحن مجاني"
+    },
+    "currency": "ر.س",
+    "orders": "الطلبات",
+    "status": "الحالة",
+    "details": "التفاصيل"
+  },
+  "return": {
+    "headerTitle": "المرتجعات",
+    "scan": "مسح",
+    "batchBarcode": "رقم الدفعة / الباركود",
+    "selectDate": "اختر التاريخ",
+    "error": "خطأ"
+  },
+  "weeklySales": {
+    "headerTitle": "الخطة الأسبوعية",
+    "noArea": "لا توجد منطقة",
+    "week": "أسبوع",
+    "selectAreaFor": "اختر منطقة لـ",
+    "cancel": "إلغاء",
+    "alert": "تنبيه",
+    "selectAreaFirst": "الرجاء التأكد من تحديد منطقة لهذا اليوم أولاً."
+  },
+  "reports": {
+    "headerTitle": "التقارير",
+    "selectCity": "اختر المدينة",
+    "selectArea": "اختر المنطقة",
+    "from": "من",
+    "to": "إلى",
+    "name": "الاسم",
+    "target": "الهدف",
+    "achievement": "الإنجاز",
+    "region": "المنطقة",
+    "performance": "الأداء",
+    "bonus": "المكافأة",
+    "achieved": "تم الإنجاز",
+    "exceeded": "تم التجاوز",
+    "noc": "غير محقق"
+  },
+  "collection": {
+    "headerTitle": "التحصيل",
+    "selectCity": "اختر المدينة",
+    "selectArea": "اختر المنطقة",
+    "from": "من",
+    "to": "إلى",
+    "clientName": "اسم العميل",
+    "cityName": "اسم المدينة",
+    "areaName": "اسم المنطقة",
+    "amount": "المبلغ",
+    "date": "التاريخ",
+    "status": "الحالة",
+    "collected": "تم التحصيل",
+    "pending": "معلق",
+    "noData": "لم يتم العثور على بيانات تحصيل للمرشحات المحددة."
+  },
+  "profile": {
+    "headerTitle": "الملف الشخصي",
+    "yourProfile": "ملفك الشخصي",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "submit": "إرسال",
+    "dateOfBirth": "تاريخ الميلاد",
+    "country": "البلد/المنطقة",
+    "password": "كلمة المرور",
+    "changePassword": "تغيير كلمة المرور",
+    "saveChanges": "حفظ التغييرات",
+    "enterName": "أدخل اسمك",
+    "enterEmail": "أدخل بريدك الإلكتروني",
+    "selectCountry": "اختر البلد",
+    "savedData": "البيانات المحفوظة"
+  },
+  "chat": {
+    "headerTitle": "المحادثة",
+    "typeMessage": "اكتب رسالة...",
+    "send": "إرسال"
+  },
+  "confirmProfile": {
+    "headerTitle": "تأكيد ملفك الشخصي",
+    "username": "اسم المستخدم",
+    "firstname": "الاسم الأول",
+    "lastname": "اسم العائلة",
+    "email": "البريد الإلكتروني",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "phone": "الهاتف",
+    "address": "العنوان",
+    "status": "الحالة",
+    "confirm": "تأكيد"
+  },
+    "bottomTabs": {
+      "home": "الرئيسية",
+      "report": "التقارير",
+      "chat": "المحادثة",
+      "more": "المزيد"
+    },
+    "contactsScreen": {
+      "header": "محادثة جديدة",
+      "searchPlaceholder": "بحث ...."
+    },
+    "chatScreen": {
+      "typeMessage": "اكتب رسالة...",
+      "online": "نشط الآن",
+      "lastSeen": "آخر ظهور اليوم",
+      "camera": "الكاميرا",
+      "gallery": "معرض الصور",
+      "document": "مستند",
+      "location": "موقع",
+      "contact": "جهة اتصال",
+      "send": "إرسال",
+      "back": "رجوع",
+      "newGroupCreated": "تم إنشاء مجموعة جديدة:",
+      "systemMessage": "رسالة النظام",
+      "cameraMessage": "سيتم فتح الكاميرا قريباً",
+      "galleryMessage": "سيتم فتح معرض الصور قريباً",
+      "documentMessage": "سيتم فتح اختيار المستندات قريباً",
+      "locationMessage": "سيتم فتح الموقع قريباً",
+      "contactMessage": "سيتم فتح جهات الاتصال قريباً"
+    },
+    "addFriend": {
+      "cancel": "إلغاء",
+      "newContact": "جهة اتصال جديدة",
+      "done": "تم",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "country": "البلد",
+      "phone": "الهاتف",
+      "syncContact": "مزامنة جهة الاتصال مع الهاتف",
+      "contactPrefix": "جهة اتصال"
+    },
+    "addVisit": {
+      "addNewVisit": "إضافة زيارة جديدة",
+      "selectExistingDoctor": "اختيار طبيب موجود (اختياري)",
+      "chooseFromList": "اختر من القائمة...",
+      "or": "أو",
+      "doctorName": "اسم الطبيب",
+      "enterDoctorName": "أدخل اسم الطبيب",
+      "specialty": "التخصص",
+      "enterSpecialty": "أدخل التخصص",
+      "time": "الوقت",
+      "status": "الحالة",
+      "pending": "معلق",
+      "visited": "تمت الزيارة",
+      "confirmVisit": "تأكيد الزيارة",
+      "missingInfo": "معلومات ناقصة",
+      "fillDoctorInfo": "يرجى ملء أو اختيار طبيب وتخصصه."
+    },
+    "addVisitModal": {
+      "logNewVisit": "تسجيل زيارة جديدة",
+      "logVisitExisting": "1. تسجيل زيارة لطبيب موجود",
+      "selectDoctorFromList": "اختر طبيباً من القائمة",
+      "search": "بحث...",
+      "confirmVisit": "تأكيد الزيارة",
+      "addNewDoctorVisited": "2. إضافة طبيب جديد زرته",
+      "addNewDoctor": "إضافة طبيب جديد",
+      "selectDoctor": "يرجى اختيار طبيب."
+    },
+    "addDoctor": {
+      "addNewDoctor": "إضافة طبيب جديد",
+      "doctorName": "اسم الطبيب",
+      "doctorNamePlaceholder": "مثال: د. أحمد محمد",
+      "phoneNumber": "رقم الهاتف",
+      "phonePlaceholder": "مثال: 07701234567",
+      "address": "العنوان / العيادة",
+      "addressPlaceholder": "مثال: الكرادة، بغداد",
+      "addDoctorAndLogVisit": "إضافة طبيب وتسجيل زيارة",
+      "validationError": "خطأ في التحقق",
+      "requiredFields": "اسم الطبيب ورقم الهاتف مطلوبان."
+    },
+    "common": {
+      "error": "خطأ",
+      "continue": "متابعة",
+      "save": "حفظ",
+      "ok": "موافق",
+      "menu": "القائمة",
+      "openingMenu": "فتح القائمة الجانبية..."
+    },
+  "paymentMethod": {
+    "selectMethod": "اختر طريقة الدفع",
+    "selectMethodDesc": "اختر الطريقة المناسبة لإجراء الدفعة",
+    "cash": "نقداً",
+    "cashDesc": "دفع مباشر نقداً",
+    "check": "شيك",
+    "checkDesc": "دفع بواسطة شيك مصرفي",
+    "footerInfo": "يمكنك تغيير طريقة الدفع لاحقاً"
+  }
+  
+}

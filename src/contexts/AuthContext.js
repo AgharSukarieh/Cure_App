@@ -48,31 +48,54 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, []);
 
+  // const login = async (email, password) => {
+  //   setIsLoading(true);
+  //   await post(Constants.auth.login, { email, password })
+  //     .then(res => {
+  //       const token = res.token;
+  //       const userData = res.user;
+  //       const role = res.user.role;
+
+  //       storeJsonData(Constants.storageTokenKeyName, token);
+  //       storeJsonData(Constants.userData, userData);
+  //       storeJsonData(Constants.role, role);
+
+  //       setToken(token);
+  //       setAuthToken(token);
+  //       setUser(userData);
+  //       setRole(role);
+  //       setIsLoggedIn(true);
+  //     })
+  //     .catch(err => {
+  //       console.error('err3', err);
+  //     })
+  //     .finally(() => {
+  //       setIsLoading(false);
+  //     });
+  // };
   const login = async (email, password) => {
-    setIsLoading(true);
-    await post(Constants.auth.login, { email, password })
-      .then(res => {
-        const token = res.token;
-        const userData = res.user;
-        const role = res.user.role;
+  setIsLoading(true);
+  try {
+    // تسجيل دخول وهمي لتخطي الشاشة
+    const dummyUser = { id: 1, name: 'Test User', role: 'admin' };
+    const dummyToken = 'dummy_token';
 
-        storeJsonData(Constants.storageTokenKeyName, token);
-        storeJsonData(Constants.userData, userData);
-        storeJsonData(Constants.role, role);
+    await storeJsonData(Constants.storageTokenKeyName, dummyToken);
+    await storeJsonData(Constants.userData, dummyUser);
+    await storeJsonData(Constants.role, dummyUser.role);
 
-        setToken(token);
-        setAuthToken(token);
-        setUser(userData);
-        setRole(role);
-        setIsLoggedIn(true);
-      })
-      .catch(err => {
-        console.error('err3', err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+    setToken(dummyToken);
+    setAuthToken(dummyToken); 
+    setUser(dummyUser);
+    setRole(dummyUser.role);
+    setIsLoggedIn(true);
+  } catch (err) {
+    console.error('Dummy login error', err);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
   const register = async (name,email, password) => {
     setIsLoading(true);
     await post(Constants.auth.register, {name, email, password })

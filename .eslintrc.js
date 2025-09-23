@@ -1,4 +1,11 @@
-// module.exports = {
-//   root: false,
-//   extends: '@react-native-community',
-// };
+module.exports = {
+  env: {
+    es6: true,
+    node: true,
+  },
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: "module",
+  },
+  extends: ["eslint:recommended"],
+};
