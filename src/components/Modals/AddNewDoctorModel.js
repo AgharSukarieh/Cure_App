@@ -15,16 +15,51 @@ import { Dropdown } from "react-native-element-dropdown";
 import Input from "../Input";
 import GetLocation from "react-native-get-location";
 import { get, post } from "../../WebService/RequestBuilder";
+import { fetchSpecialties } from "../../services/specialtyService";
+import { fetchClassifications } from "../../services/classificationService";
 import Constants from "../../config/globalConstants";
+import { BASE_URL } from "../../config/apiConfig";
 import MapView, { Marker } from "react-native-maps";
 import LoadingScreen from "../LoadingScreen";
 import { useTranslation } from 'react-i18next';
+import { useAuth } from "../../contexts/AuthContext";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCitiesAndAreas, updateAreasForCity } from '../../store/apps/cities';
 
 const { width, height } = Dimensions.get('window');
+
+// دالة إنشاء طبيب جديدة
+async function createDoctor(token, payload) {
+  const payloadBody = {
+    name: payload.name,
+    activate_status: payload.activate_status,
+    city_id: payload.city_id,
+    area_id: payload.area_id,
+    speciality_id: payload.speciality_id,
+    address: payload.address ?? '',
+    classification: payload.classification ?? '',
+    country: payload.country ?? '',
+    email: payload.email ?? '',
+    phone: payload.phone ?? '',
+    availablity_for_visit: payload.availablity_for_visit ?? '',
+    longitude: payload.longitude != null && payload.longitude !== '' ? Number(payload.longitude) : '',
+    latitude: payload.latitude != null && payload.latitude !== '' ? Number(payload.latitude) : '',
+    status: payload.status ?? '',
+    website: payload.website ?? '',
+  };
+
+  const data = await post('sales/doctor', payloadBody);
+  return data;
+}
 
 const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 	const { t } = useTranslation();
 	const isRTL = I18nManager.isRTL;
+	const { user, token } = useAuth();
+	
+	// Redux
+	const dispatch = useDispatch();
+	const userLocationData = useSelector(state => state.cities.userLocationData);
 	
 	const [doctorName, setDoctorName] = useState("");
 	const [classificationData, setClassificationData] = useState([]);
@@ -32,6 +67,12 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 	const [address, setAddress] = useState("");
 	const [latitude, setLatitude] = useState("");
 	const [longitude, setLongitude] = useState("");
+	const [phone, setPhone] = useState("");
+	const [email, setEmail] = useState("");
+	const [country, setCountry] = useState("");
+	const [status, setStatus] = useState("");
+	const [website, setWebsite] = useState("");
+	const [availablity_for_visit, setAvailablityForVisit] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [citiesData, setCitiesData] = useState([]);
 	const [citiesList, setCityList] = useState([]);
@@ -41,8 +82,33 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 	const [specialtyData, setSpecialtyData] = useState([]);
 	const [specialtyValue, setSpecialtyValue] = useState(null);
 
+	const getArea = (cityId) => {
+		if (!cityId) {
+			setAreasData([]);
+			return;
+		}
+		dispatch(updateAreasForCity(cityId));
+		const filtered = (userLocationData.areas || [])
+			.filter(a => String(a.city_id) === String(cityId))
+			.map(a => ({ value: a.id, label: a.name }));
+		setAreasData(filtered);
+	};
+
 	const submitData = async () => {
-		const body = {
+		if (!token) {
+			Alert.alert(t('addNewDoctorModel.error'), "يجب تسجيل الدخول أولاً");
+			return;
+		}
+
+		// التحقق من الحقول المطلوبة
+		if (!doctorName || !cityValue || !areaValue || !specialtyValue) {
+			Alert.alert(t('addNewDoctorModel.error'), "يرجى ملء جميع الحقول المطلوبة");
+			return;
+		}
+
+		setIsLoading(true);
+		
+		const payload = {
 			name: doctorName,
 			activate_status: 1,
 			city_id: cityValue,
@@ -52,21 +118,28 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 			classification: classificationValue,
 			longitude: longitude,
 			latitude: latitude,
+			phone: phone,
+			email: email,
+			country: country,
+			status: "active",
+			website: website,
+			availablity_for_visit: availablity_for_visit,
 		};
-		await post(Constants.doctor.allDoctors, body)
-			.then((res) => {
-				Alert.alert(t('addNewDoctorModel.success'), "");
-				submit(true);
-				hide();
-			})
-			.catch((err) => {
-				Alert.alert(t('addNewDoctorModel.error'), err.message || "");
-				submit(false);
-				hide();
-			})
-			.finally(() => {
-				resetForm();
-			});
+
+		try {
+			const result = await createDoctor(token, payload);
+			console.log("✅ تم إنشاء الطبيب بنجاح:", result);
+			
+			submit(true);
+			hide();
+		} catch (error) {
+			console.error("❌ خطأ في إنشاء الطبيب:", error);
+			Alert.alert(t('addNewDoctorModel.error'), error.message || "فشل في إضافة الطبيب");
+			submit(false);
+		} finally {
+			setIsLoading(false);
+			resetForm();
+		}
 	};
 
 	const resetForm = () => {
@@ -75,6 +148,12 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 		setAddress("");
 		setLatitude("");
 		setLongitude("");
+		setPhone("");
+		setEmail("");
+		setCountry("");
+		setStatus("");
+		setWebsite("");
+		setAvailablityForVisit("");
 		setCityValue(null);
 		setAreaValue(null);
 		setSpecialtyValue(null);
@@ -97,72 +176,51 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 			});
 	};
 
-	const loadCities = () => {
-		get(Constants.get_cities).then((response) => {
-			const list = [];
-			response.forEach((city) => {
-				list.push({
-					value: city.id,
-					label: city.name,
-				});
-			});
-			setCityList(response);
-			setCitiesData(list);
-		});
-	};
-
-	const getArea = (id) => {
-		citiesList.forEach((city) => {
-			if (city.id == id) {
-				const list = [];
-				city.areas.forEach((area) => {
-					list.push({
-						value: area.id,
-						label: area.name,
-					});
-				});
-				setAreasData(list);
-			}
-		});
-	};
-
-	const getSpeciality = async () => {
-		await get(Constants.doctor.speciality)
-			.then((res) => {
-				var count = Object.keys(res.speciality).length;
-				let specialtyArray = [];
-				for (var i = 0; i < count; i++) {
-					specialtyArray.push({
-						value: res.speciality[i].id,
-						label: res.speciality[i].name,
-					});
+	useEffect(() => {
+		const loadUserLocationData = async () => {
+			if (token && !userLocationData.cities.length) {
+				console.log('🔄 جلب المدن والمناطق من الـ API...');
+				try {
+					await dispatch(fetchCitiesAndAreas({ token }));
+				} catch (error) {
+					console.error('❌ خطأ في جلب المدن والمناطق:', error);
 				}
-				setSpecialtyData(specialtyArray);
-			})
-			.catch((err) => {
-				Alert.alert(t('addNewDoctorModel.error'), err.message || "");
-			});
-	};
-
-	const getClassification = () => {
-		const data = ["A", "B", "C", "D"];
-		var count = Object.keys(data).length;
-		let classificationArray = [];
-		for (var i = 0; i < count; i++) {
-			classificationArray.push({
-				value: data[i],
-				label: data[i],
-			});
-		}
-		setClassificationData(classificationArray);
-	};
+			}
+		};
+		const loadSpecialties = async () => {
+			try {
+				const list = await fetchSpecialties();
+				setSpecialtyData(list);
+			} catch (error) {
+				console.error('❌ خطأ في جلب التخصصات:', error?.message || error);
+			}
+		};
+		const loadClassifications = async () => {
+			try {
+				const list = await fetchClassifications();
+				setClassificationData(list);
+			} catch (error) {
+				console.error('❌ خطأ في جلب التصنيفات:', error?.message || error);
+			}
+		};
+		
+		loadUserLocationData();
+		loadSpecialties();
+		loadClassifications();
+	}, [user?.token, userLocationData.cities.length, dispatch]);
 
 	useEffect(() => {
-		if (cityArea) loadCities();
-		getSpeciality();
-		getClassification();
-		loadCities();
-	}, []);
+		if (userLocationData.citiesFormatted.length > 0) {
+			setCitiesData(userLocationData.citiesFormatted);
+			const citiesList = userLocationData.cities.map((city) => ({
+				value: city.id,
+				label: city.name,
+				areas: userLocationData.areas.filter(area => area.city_id === city.id)
+			}));
+			setCityList(citiesList);
+			console.log('✅ تم تحديث بيانات المدن والمناطق من Redux');
+		}
+	}, [userLocationData.citiesFormatted, userLocationData.cities, userLocationData.areas]);
 
 	return (
 		<Modal
@@ -170,207 +228,281 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 			transparent={true}
 			visible={show}
 			coverScreen={false}
-			onSwipeComplete={() => setModalVisible2(false)}>
-			<View style={styles.ModalContainer}>
-				<View style={styles.ModalView}>
-					<TouchableOpacity
-						onPress={() => {
-							submit(null);
-							hide();
-						}}
-						style={[styles.closeButton, isRTL && styles.rtlCloseButton]}>
-						<AntDesign
-							name="close"
-							color="#469ED8"
-							size={width * 0.08}
-							style={{ alignSelf: "flex-end" }}
-						/>
-					</TouchableOpacity>
+			onRequestClose={hide}>
+			<View style={styles.modalOverlay}>
+				<View style={styles.bottomSheet}>
+					{/* Header */}
+					<View style={styles.header}>
+						<View style={styles.headerDragHandle} />
+						<Text style={styles.headerTitle}>إضافة طبيب جديد</Text>
+						<TouchableOpacity 
+							style={styles.closeButton}
+							onPress={() => {
+								submit(null);
+								hide();
+							}}>
+							<AntDesign name="close" color="#183E9F" size={24} />
+						</TouchableOpacity>
+					</View>
 
-					<View style={styles.scrollContainer}>
-						<ScrollView showsVerticalScrollIndicator={false}>
-							<View style={styles.formContainer}>
+					{/* Content */}
+					<View style={styles.content}>
+						<ScrollView 
+							style={styles.scrollView}
+							showsVerticalScrollIndicator={false}
+							contentContainerStyle={styles.scrollContent}>
+							
+							{/* الحقول الأساسية المطلوبة */}
+							<View style={styles.section}>
+								<Text style={styles.sectionTitle}>المعلومات الأساسية</Text>
+								
 								<Input
 									lable={t('addNewDoctorModel.doctorName')}
 									placeholder={t('addNewDoctorModel.doctorNamePlaceholder')}
-									placeholderStyle={{ color: "#808080" }}
+									placeholderStyle={styles.placeholder}
 									setData={setDoctorName}
-									style={[styles.inputModel, { backgroundColor: "white" }]}
+									style={styles.input}
 									value={doctorName}
-									viewStyle={{ width: "90%" }}
+									viewStyle={styles.inputView}
+									required
 								/>
 
-								<View style={[styles.container, { marginTop: height * 0.02 }]}>
+								<View style={styles.dropdownContainer}>
+									<Text style={styles.dropdownLabel}>المدينة *</Text>
 									<Dropdown
-										itemTextStyle={{ color: "#000000" }}
 										style={styles.dropdown}
-										placeholderStyle={styles.placeholderStyle}
-										selectedTextStyle={styles.selectedTextStyle}
-										inputSearchStyle={styles.inputSearchStyle}
-										iconStyle={styles.iconStyle}
+										placeholderStyle={styles.placeholder}
+										selectedTextStyle={styles.selectedText}
+										inputSearchStyle={styles.searchInput}
+										iconStyle={styles.dropdownIcon}
 										data={citiesData}
 										search
-										maxHeight={height * 0.3}
+										maxHeight={height * 0.2}
 										labelField="label"
 										valueField="value"
-										placeholder={!cityValue ? t('addNewDoctorModel.selectCity') : "..."}
-										searchPlaceholder={t('addNewDoctorModel.search')}
+										placeholder="اختر المدينة"
+										searchPlaceholder="ابحث عن المدينة"
 										value={cityValue}
-										onBlur={() => {}}
 										onChange={item => {
 											setCityValue(item.value);
 											getArea(item.value);
+											setAreaValue(null);
 										}}
 										renderLeftIcon={() => (
 											<AntDesign
-												style={[styles.icon, isRTL && styles.rtlIcon]}
-												color={cityValue ? "blue" : "black"}
-												name="Safety"
-												size={width * 0.05}
+												style={styles.dropdownLeftIcon}
+												color={cityValue ? "#183E9F" : "#666"}
+												name="enviromento"
+												size={18}
 											/>
 										)}
 									/>
 								</View>
 
-								<View style={[styles.container, { marginTop: height * 0.02 }]}>
+								<View style={styles.dropdownContainer}>
+									<Text style={styles.dropdownLabel}>المنطقة *</Text>
 									<Dropdown
-										itemTextStyle={{ color: "#000000" }}
-										style={styles.dropdown}
-										placeholderStyle={styles.placeholderStyle}
-										selectedTextStyle={styles.selectedTextStyle}
-										inputSearchStyle={styles.inputSearchStyle}
-										iconStyle={styles.iconStyle}
+										style={[styles.dropdown, !cityValue && styles.dropdownDisabled]}
+										placeholderStyle={styles.placeholder}
+										selectedTextStyle={styles.selectedText}
+										inputSearchStyle={styles.searchInput}
+										iconStyle={styles.dropdownIcon}
 										data={areasData}
 										search
-										maxHeight={height * 0.3}
+										maxHeight={height * 0.2}
 										labelField="label"
 										valueField="value"
-										placeholder={!areaValue ? t('addNewDoctorModel.selectArea') : "..."}
-										searchPlaceholder={t('addNewDoctorModel.search')}
+										placeholder={cityValue ? "اختر المنطقة" : "اختر المدينة أولاً"}
+										searchPlaceholder="ابحث عن المنطقة"
 										value={areaValue}
-										onBlur={() => {}}
-										onChange={item => {
-											setAreaValue(item.value);
-										}}
+										onChange={item => setAreaValue(item.value)}
+										disabled={!cityValue}
 										renderLeftIcon={() => (
 											<AntDesign
-												style={[styles.icon, isRTL && styles.rtlIcon]}
-												color={areaValue ? "blue" : "black"}
-												name="Safety"
-												size={width * 0.05}
+												style={styles.dropdownLeftIcon}
+												color={areaValue ? "#183E9F" : "#666"}
+												name="enviromento"
+												size={18}
 											/>
 										)}
 									/>
 								</View>
 
-								<View style={[styles.container, { marginTop: height * 0.02 }]}>
+								<View style={styles.dropdownContainer}>
+									<Text style={styles.dropdownLabel}>التخصص *</Text>
 									<Dropdown
-										itemTextStyle={{ color: "#000000" }}
 										style={styles.dropdown}
-										placeholderStyle={styles.placeholderStyle}
-										selectedTextStyle={styles.selectedTextStyle}
-										inputSearchStyle={styles.inputSearchStyle}
-										iconStyle={styles.iconStyle}
+										placeholderStyle={styles.placeholder}
+										selectedTextStyle={styles.selectedText}
+										inputSearchStyle={styles.searchInput}
+										iconStyle={styles.dropdownIcon}
 										data={specialtyData}
 										search
-										maxHeight={height * 0.3}
+										maxHeight={height * 0.2}
 										labelField="label"
 										valueField="value"
-										placeholder={!specialtyValue ? t('addNewDoctorModel.selectSpecialty') : "..."}
-										searchPlaceholder={t('addNewDoctorModel.search')}
+										placeholder="اختر التخصص"
+										searchPlaceholder="ابحث عن التخصص"
 										value={specialtyValue}
-										onBlur={() => {}}
-										onChange={item => {
-											setSpecialtyValue(item.value);
-										}}
+										onChange={item => setSpecialtyValue(item.value)}
 										renderLeftIcon={() => (
 											<AntDesign
-												style={[styles.icon, isRTL && styles.rtlIcon]}
-												color={specialtyValue ? "blue" : "black"}
-												name="Safety"
-												size={width * 0.05}
+												style={styles.dropdownLeftIcon}
+												color={specialtyValue ? "#183E9F" : "#666"}
+												name="medicinebox"
+												size={18}
 											/>
 										)}
 									/>
 								</View>
 
-								<View style={[styles.container, { marginTop: height * 0.02 }]}>
+								<View style={styles.dropdownContainer}>
+									<Text style={styles.dropdownLabel}>التصنيف</Text>
 									<Dropdown
-										itemTextStyle={{ color: "#000000" }}
 										style={styles.dropdown}
-										placeholderStyle={styles.placeholderStyle}
-										selectedTextStyle={styles.selectedTextStyle}
-										inputSearchStyle={styles.inputSearchStyle}
-										iconStyle={styles.iconStyle}
+										placeholderStyle={styles.placeholder}
+										selectedTextStyle={styles.selectedText}
+										inputSearchStyle={styles.searchInput}
+										iconStyle={styles.dropdownIcon}
 										data={classificationData}
 										search
-										maxHeight={height * 0.3}
+										maxHeight={height * 0.2}
 										labelField="label"
 										valueField="value"
-										placeholder={!classificationValue ? t('addNewDoctorModel.selectClassification') : "..."}
-										searchPlaceholder={t('addNewDoctorModel.search')}
+										placeholder="اختر التصنيف"
+										searchPlaceholder="ابحث عن التصنيف"
 										value={classificationValue}
-										onBlur={() => {}}
-										onChange={item => {
-											setClassificationValue(item.value);
-										}}
+										onChange={item => setClassificationValue(item.value)}
 										renderLeftIcon={() => (
 											<AntDesign
-												style={[styles.icon, isRTL && styles.rtlIcon]}
-												color={classificationValue ? "blue" : "black"}
-												name="Safety"
-												size={width * 0.05}
+												style={styles.dropdownLeftIcon}
+												color={classificationValue ? "#183E9F" : "#666"}
+												name="staro"
+												size={18}
 											/>
 										)}
 									/>
 								</View>
+							</View>
 
+							{/* معلومات الاتصال */}
+							<View style={styles.section}>
+								<Text style={styles.sectionTitle}>معلومات الاتصال</Text>
+								
 								<Input
-									lable={t('addNewDoctorModel.address')}
-									placeholder={t('addNewDoctorModel.addressPlaceholder')}
-									setData={setAddress}
-									placeholderStyle={{ color: "#808080" }}
-									style={[styles.inputModel, { backgroundColor: "white" }]}
-									value={address}
-									viewStyle={{ width: "90%" }}
+    lable="رقم الهاتف"
+    placeholder="أدخل رقم الهاتف"
+    setData={setPhone}
+    placeholderStyle={styles.placeholder}
+    style={styles.input}
+    value={phone}
+    viewStyle={styles.inputView}
+    keyboardType="phone-pad"
+/>
+								<Input
+									lable="البريد الإلكتروني"
+									placeholder="أدخل البريد الإلكتروني"
+									setData={setEmail}
+									placeholderStyle={styles.placeholder}
+									style={styles.input}
+									value={email}
+									viewStyle={styles.inputView}
+									keyboardType="email-address"
 								/>
 
+								<Input
+									lable="العنوان"
+									placeholder="أدخل العنوان التفصيلي"
+									setData={setAddress}
+									placeholderStyle={styles.placeholder}
+									style={[styles.input, styles.textArea]}
+									value={address}
+									viewStyle={styles.inputView}
+									multiline
+									numberOfLines={3}
+								/>
+							</View>
+
+							{/* الموقع الجغرافي */}
+							<View style={styles.section}>
+								<Text style={styles.sectionTitle}>الموقع الجغرافي</Text>
+								
 								<TouchableOpacity 
-									style={[styles.locationButton, { 
-										backgroundColor: latitude ? "#469ED8" : "#fff",
-										marginTop: height * 0.02,
-									}]} 
+									style={[styles.locationButton, latitude && styles.locationButtonActive]} 
 									onPress={getCurrentLocation}>
-									<Text style={[styles.locationButtonText, {
-										color: latitude ? "#fff" : "#469ED8",
-									}]}>
-										{t('addNewDoctorModel.getLocation')}
+									<AntDesign 
+										name="enviroment" 
+										size={20} 
+										color={latitude ? "#fff" : "#183E9F"} 
+									/>
+									<Text style={[styles.locationButtonText, latitude && styles.locationButtonTextActive]}>
+										{latitude ? "تم تحديد الموقع" : "تحديد الموقع الحالي"}
 									</Text>
 								</TouchableOpacity>
 
-								{(latitude && longitude) && (
-									<MapView
-										style={styles.map}
-										initialRegion={{
-											latitude: latitude,
-											longitude: longitude,
-											latitudeDelta: 0.005,
-											longitudeDelta: 0.005,
-										}}
-										showsUserLocation={true}>
-										<Marker
-											coordinate={{ latitude: latitude, longitude: longitude }}
-										/>
-									</MapView>
+								{latitude && longitude && (
+									<View style={styles.mapContainer}>
+										<MapView
+											style={styles.map}
+											initialRegion={{
+												latitude: latitude,
+												longitude: longitude,
+												latitudeDelta: 0.005,
+												longitudeDelta: 0.005,
+											}}
+											showsUserLocation={true}>
+											<Marker
+												coordinate={{ latitude: latitude, longitude: longitude }}
+											/>
+										</MapView>
+									</View>
 								)}
+							</View>
 
-								<View style={[styles.submitContainer, { marginTop: height * 0.02 }]}>
-									<TouchableOpacity style={styles.submitButton} onPress={submitData}>
-										<Text style={styles.submitButtonText}>
-											{t('addNewDoctorModel.submit')}
-										</Text>
-									</TouchableOpacity>
-								</View>
+							{/* معلومات إضافية */}
+							{/* <View style={styles.section}>
+								<Text style={styles.sectionTitle}>معلومات إضافية</Text>
+								
+								<Input
+									lable="الموقع الإلكتروني"
+									placeholder="أدخل رابط الموقع الإلكتروني"
+									setData={setWebsite}
+									placeholderStyle={styles.placeholder}
+									style={styles.input}
+									value={website}
+									viewStyle={styles.inputView}
+									keyboardType="url"
+								/>
+
+								<Input
+									lable="إتاحة الزيارات"
+									placeholder="معلومات إتاحة الزيارات"
+									setData={setAvailablityForVisit}
+									placeholderStyle={styles.placeholder}
+									style={styles.input}
+									value={availablity_for_visit}
+									viewStyle={styles.inputView}
+								/>
+							</View> */}
+
+							{/* أزرار الإجراء */}
+							<View style={styles.actionsContainer}>
+								<TouchableOpacity 
+									style={[styles.button, styles.cancelButton]} 
+									onPress={hide}>
+									<Text style={styles.cancelButtonText}>إلغاء</Text>
+								</TouchableOpacity>
+								
+								<TouchableOpacity 
+									style={[styles.button, styles.submitButton]} 
+									onPress={submitData}
+									disabled={isLoading}>
+									{isLoading ? (
+										<Text style={styles.submitButtonText}>جاري الإضافة...</Text>
+									) : (
+										<Text style={styles.submitButtonText}>إضافة الطبيب</Text>
+									)}
+								</TouchableOpacity>
 							</View>
 						</ScrollView>
 					</View>
@@ -384,123 +516,197 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 export default AddNewDoctorModel;
 
 const styles = StyleSheet.create({
-	ModalContainer: {
+	modalOverlay: {
 		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-		backgroundColor: "#0707078c",
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		justifyContent: 'flex-end',
 	},
-	ModalView: {
-		backgroundColor: "#fff",
-		borderRadius: 10,
-		width: "95%",
-		height: "80%",
-		shadowColor: "#000",
-		shadowOffset: { width: 0, height: 2 },
+	bottomSheet: {
+		backgroundColor: '#fff',
+		borderTopLeftRadius: 20,
+		borderTopRightRadius: 20,
+		height: '85%',
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: -2,
+		},
 		shadowOpacity: 0.25,
-		shadowRadius: 4,
+		shadowRadius: 3.84,
 		elevation: 5,
-		padding: width * 0.025,
-		paddingBottom: height * 0.02,
+	},
+	header: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 16,
+		paddingHorizontal: 20,
+		borderBottomWidth: 1,
+		borderBottomColor: '#f0f0f0',
+		position: 'relative',
+	},
+	headerDragHandle: {
+		width: 40,
+		height: 4,
+		backgroundColor: '#ddd',
+		borderRadius: 2,
+		position: 'absolute',
+		top: 8,
+		alignSelf: 'center',
+	},
+	headerTitle: {
+		fontSize: 18,
+		fontWeight: 'bold',
+		color: '#183E9F',
 	},
 	closeButton: {
-		alignSelf: "flex-end",
-		marginBottom: height * 0.01,
+		position: 'absolute',
+		left: 20,
+		padding: 4,
 	},
-	rtlCloseButton: {
-		alignSelf: "flex-start",
-	},
-	scrollContainer: {
+	content: {
 		flex: 1,
 	},
-	formContainer: {
-		width: "100%",
-		justifyContent: "center",
-		alignItems: "center",
-		paddingBottom: height * 0.05,
+	scrollView: {
+		flex: 1,
 	},
-	container: {
-		backgroundColor: "white",
-		width: "90%",
-		marginTop: height * 0.015,
+	scrollContent: {
+		padding: 20,
+		paddingBottom: 40,
+	},
+	section: {
+		marginBottom: 24,
+	},
+	sectionTitle: {
+		fontSize: 16,
+		fontWeight: 'bold',
+		color: '#183E9F',
+		marginBottom: 16,
+		paddingBottom: 8,
+		borderBottomWidth: 1,
+		borderBottomColor: '#f0f0f0',
+	},
+	inputView: {
+		width: '100%',
+		marginBottom: 16,
+	},
+	input: {
+		height: 50,
+		borderColor: '#E0E0E0',
+		borderWidth: 1,
+		paddingHorizontal: 16,
+		borderRadius: 12,
+		color: '#333',
+		fontSize: 16,
+		backgroundColor: '#fff',
+	},
+	textArea: {
+		height: 80,
+		textAlignVertical: 'top',
+		paddingTop: 12,
+	},
+	placeholder: {
+		fontSize: 14,
+		color: '#999',
+	},
+	dropdownContainer: {
+		marginBottom: 16,
+	},
+	dropdownLabel: {
+		fontSize: 14,
+		fontWeight: '600',
+		color: '#333',
+		marginBottom: 8,
 	},
 	dropdown: {
-		height: height * 0.06,
-		borderColor: "#469ED8",
+		height: 50,
+		borderColor: '#E0E0E0',
 		borderWidth: 1,
-		borderRadius: 8,
-		paddingHorizontal: width * 0.02,
+		borderRadius: 12,
+		paddingHorizontal: 16,
+		backgroundColor: '#fff',
 	},
-	icon: {
-		marginRight: width * 0.01,
+	dropdownDisabled: {
+		backgroundColor: '#f5f5f5',
+		opacity: 0.6,
 	},
-	rtlIcon: {
-		marginRight: 0,
-		marginLeft: width * 0.01,
+	selectedText: {
+		fontSize: 16,
+		color: '#333',
 	},
-	placeholderStyle: {
-		fontSize: width < 375 ? 14 : 16,
-		color: "#808080",
+	searchInput: {
+		height: 40,
+		fontSize: 16,
+		color: '#333',
 	},
-	selectedTextStyle: {
-		fontSize: width < 375 ? 14 : 16,
-		color: "#000000",
+	dropdownIcon: {
+		width: 20,
+		height: 20,
 	},
-	inputSearchStyle: {
-		height: height * 0.05,
-		fontSize: width < 375 ? 14 : 16,
-		color: "#000000",
-	},
-	iconStyle: {
-		width: width * 0.05,
-		height: width * 0.05,
+	dropdownLeftIcon: {
+		marginRight: 8,
 	},
 	locationButton: {
-		width: "90%",
-		height: height * 0.06,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		height: 50,
 		borderWidth: 2,
-		borderColor: "#469ED8",
-		borderRadius: 5,
-		justifyContent: "center",
-		alignItems: "center",
+		borderColor: '#183E9F',
+		borderRadius: 12,
+		backgroundColor: '#fff',
+		paddingHorizontal: 16,
+		marginBottom: 16,
+	},
+	locationButtonActive: {
+		backgroundColor: '#183E9F',
 	},
 	locationButtonText: {
-		textAlign: "center",
-		fontSize: width < 375 ? 15 : 17,
-		fontWeight: "bold",
+		fontSize: 16,
+		fontWeight: '600',
+		color: '#183E9F',
+		marginLeft: 8,
+	},
+	locationButtonTextActive: {
+		color: '#fff',
+	},
+	mapContainer: {
+		marginTop: 8,
 	},
 	map: {
-		width: "90%",
-		height: height * 0.25,
-		marginTop: height * 0.01,
+		width: '100%',
+		height: 150,
+		borderRadius: 12,
 	},
-	submitContainer: {
-		justifyContent: "center",
-		alignItems: "center",
-		marginBottom: height * 0.05,
+	actionsContainer: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		marginTop: 24,
+		gap: 12,
+	},
+	button: {
+		flex: 1,
+		height: 50,
+		borderRadius: 12,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	cancelButton: {
+		backgroundColor: '#f5f5f5',
+		borderWidth: 1,
+		borderColor: '#E0E0E0',
 	},
 	submitButton: {
-		backgroundColor: "#469ED8",
-		height: height * 0.06,
-		paddingVertical: height * 0.006,
-		paddingHorizontal: width * 0.1,
-		borderRadius: 7,
-		justifyContent: "center",
-		alignItems: "center",
+		backgroundColor: '#183E9F',
+	},
+	cancelButtonText: {
+		fontSize: 16,
+		fontWeight: '600',
+		color: '#666',
 	},
 	submitButtonText: {
-		color: "#fff",
-		fontSize: width < 375 ? 16 : 18,
-		textAlign: "center",
-		fontWeight: "bold",
-	},
-	inputModel: {
-		height: height * 0.05,
-		borderColor: "#469ED8",
-		borderWidth: 1,
-		paddingLeft: width * 0.025,
-		borderRadius: 5,
-		color: "#000000",
-		fontSize: width < 375 ? 14 : 16,
+		fontSize: 16,
+		fontWeight: '600',
+		color: '#fff',
 	},
 });

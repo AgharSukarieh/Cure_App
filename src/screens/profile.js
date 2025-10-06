@@ -22,6 +22,7 @@ import { BlurView } from "@react-native-community/blur";
 import { launchImageLibrary } from "react-native-image-picker";
 import DatePicker from "react-native-date-picker";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../contexts/AuthContext";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const guidelineBaseWidth = 360;
@@ -87,19 +88,27 @@ const Stars = () => {
 const ProfileScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
+  const { user } = useAuth();
+  
+  // طباعة بيانات المستخدم في ProfileScreen
+  console.log('👤 بيانات المستخدم في ProfileScreen:', {
+    user: user,
+    userKeys: user ? Object.keys(user) : 'user is null',
+    userValues: user ? Object.values(user) : 'user is null'
+  });
   
   const [isLoading, setIsLoading] = useState(true);
   
-  const [name, setName] = useState("Melissa Peters");
-  const [email, setEmail] = useState("melpeters@gmail.com");
+  const [name, setName] = useState(user?.name || user?.username || "غير محدد");
+  const [email, setEmail] = useState(user?.email || "غير محدد");
   const [profileImage, setProfileImage] = useState({
     uri: "https://i.pravatar.cc/150?img=27",
   } );
 
-  const [date, setDate] = useState(new Date("1995-05-23"));
+  const [date, setDate] = useState(user?.updated_at ? new Date(user.updated_at) : new Date());
   const [openDatePicker, setOpenDatePicker] = useState(false);
 
-  const [country, setCountry] = useState("Nigeria");
+  const [country, setCountry] = useState(user?.distributor?.address || user?.distributor?.office || "غير محدد");
   const [isCountryModalVisible, setCountryModalVisible] = useState(false);
 
   const countriesData = [
@@ -131,19 +140,7 @@ const ProfileScreen = ({ navigation }) => {
     });
   };
 
-  const handleChangePassword = () => {
-    navigation.navigate('ChangePasswordScreen');
-  };
 
-  const handleSaveChanges = () => {
-    Alert.alert(
-      t('profile.saveChanges'),
-      `${t('profile.savedData')}:\n${t('profile.name')}: ${name}\n${t('profile.email')}: ${email}\n${t('profile.dateOfBirth')}: ${date.toLocaleDateString(
-        "en-GB"
-      )}\n${t('profile.country')}: ${country}`,
-      [{ text: t('common.ok') }]
-    );
-  };
 
   const handleCountryPicker = () => {
     setCountryModalVisible(true);
@@ -194,9 +191,6 @@ const ProfileScreen = ({ navigation }) => {
               <View style={[styles.loadingPasswordInput, isRTL && styles.rtlLoadingText]} />
             </View>
 
-            <View style={styles.loadingFooter}>
-              <View style={[styles.loadingSaveButton, isRTL && styles.rtlLoadingText]} />
-            </View>
           </>
         ) : (
           <>
@@ -257,41 +251,35 @@ const ProfileScreen = ({ navigation }) => {
                 <Icon name="chevron-down" size={20} color="#666" />
               </TouchableOpacity>
 
-              <Text style={[styles.label, isRTL && styles.rtlText]}>{t('profile.password')}</Text>
-              <TouchableOpacity
-                style={styles.passwordInput}
-                onPress={handleChangePassword}
-              >
+              <Text style={[styles.label, isRTL && styles.rtlText]}>الهاتف</Text>
+              <View style={styles.passwordInput}>
+                <View style={styles.passwordContent}>
+                  <Icon name="call-outline" size={20} color="#666" />
+                  <Text style={[styles.passwordText, isRTL && styles.rtlText]}>{user?.phone || "غير محدد"}</Text>
+                </View>
+              </View>
+
+              <Text style={[styles.label, isRTL && styles.rtlText]}>الدور</Text>
+              <View style={styles.passwordInput}>
                 <View style={styles.passwordContent}>
                   <Icon name="person-outline" size={20} color="#666" />
-                  <Text style={[styles.passwordText, isRTL && styles.rtlText]}>{t('profile.changePassword')}</Text>
+                  <Text style={[styles.passwordText, isRTL && styles.rtlText]}>{user?.role || "غير محدد"}</Text>
                 </View>
-                <Icon name="chevron-forward" size={20} color="#666" />
-              </TouchableOpacity>
+              </View>
             </View>
 
             <View style={styles.footer}>
-              <View style={[styles.buttonContainer, isRTL && styles.rtlButtonContainer]}>
-                <TouchableOpacity
-                  style={[styles.backButton, isRTL && styles.rtlBackButton]}
-                  onPress={() => navigation.goBack()}
-                >
-                  <Text style={[styles.backButtonText, isRTL && styles.rtlText]}>{t('common.back')}</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={styles.saveButton}
-                  onPress={handleSaveChanges}
-                >
-                  <Text style={[styles.saveButtonText, isRTL && styles.rtlText]}>{t('profile.saveChanges')}</Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                style={[styles.backButton, isRTL && styles.rtlBackButton]}
+                onPress={() => navigation.goBack()}
+              >
+                <Text style={[styles.backButtonText, isRTL && styles.rtlText]}>{t('common.back')}</Text>
+              </TouchableOpacity>
             </View>
           </>
         )}
       </ScrollView>
 
-      {/* Modal for Date Picker */}
       <DatePicker
         modal
         open={openDatePicker}
@@ -306,7 +294,6 @@ const ProfileScreen = ({ navigation }) => {
         }}
       />
 
-      {/* ===== Country Picker Modal ===== */}
       <Modal
         transparent={true}
         visible={isCountryModalVisible}
@@ -442,16 +429,6 @@ const styles = StyleSheet.create({
   passwordContent: { flexDirection: "row", alignItems: "center" },
   passwordText: { fontSize: 16, marginLeft: 10, color: "#333" },
   footer: { alignItems: "center", padding: 20, marginTop: 10 },
-  buttonContainer: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
-    marginTop: 20,
-    gap: 12,
-  },
-  rtlButtonContainer: {
-    flexDirection: "row-reverse",
-  },
   backButton: {
      
     paddingVertical: 16,
@@ -471,30 +448,6 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: "#3660CC",
     fontSize: 16,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  saveButton: {
-    backgroundColor: "#3660CC",
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-    minHeight: 52,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  saveButtonText: { 
-    color: "#fff", 
-    fontSize: 16, 
     fontWeight: "600",
     textAlign: "center",
   },
@@ -630,13 +583,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     marginTop: 10,
-  },
-  loadingSaveButton: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#E5E5EA",
-    borderRadius: 10,
-    marginTop: 20,
   },
   rtlLoadingText: {
     alignSelf: "flex-end",

@@ -59,7 +59,6 @@ const style = StyleSheet.create({
         paddingVertical: 12
     },
     inputheader: { fontSize: 17, fontWeight: '600', marginHorizontal: 10, color: '#000' },
-    // أنماط RTL
     rtlText: {
         textAlign: 'right',
         writingDirection: 'rtl',

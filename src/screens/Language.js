@@ -116,7 +116,6 @@ const ChangeLanguageScreen = ({ navigation }) => {
         </Text>
       </TouchableOpacity>
 
-      {/* Loading Modal */}
       <Modal
         transparent={true}
         visible={isLoading}
@@ -136,7 +135,6 @@ const ChangeLanguageScreen = ({ navigation }) => {
 
 export default ChangeLanguageScreen;
 
-// الأنماط تبقى كما هي
 const styles = StyleSheet.create({
   container: {
     flex: 1,

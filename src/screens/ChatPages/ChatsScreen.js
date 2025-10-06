@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -10,79 +10,99 @@ import {
   StatusBar,
   FlatList,
   I18nManager,
+  ActivityIndicator,
+  RefreshControl
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
+import { useFocusEffect } from '@react-navigation/native';
 import AddFriendModal from "../../components/AddFriendModel";
+import { useAuth } from "../../contexts/AuthContext";
+import { usePusher } from "../../contexts/PusherContext";
+import { get } from "../../WebService/RequestBuilder";
+import globalConstants from "../../config/globalConstants";
 
-const INITIAL_CHATS = [
-  {
-    id: "1",
-    name: "David Wayne",
-    title: "محادثة مع ديفيد",
-    message: "Thanks a bunch! Have a great day 😊",
-    time: "10:25",
-    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-    unread: 3,
-    online: true,
-    isOnline: true,
-    status: "online",
-    messages: [
-      { id: 1, message: "مرحباً! كيف حالك؟", sender_id: 2, created_at: "2023-10-27T10:00:00Z" },
-      { id: 2, message: "Thanks a bunch! Have a great day 😊", sender_id: 1, created_at: "2023-10-27T10:25:00Z" }
-    ]
-  },
-  {
-    id: "2",
-    name: "Edward Davidson",
-    title: "محادثة مع إدوارد",
-    message: "Great, thanks so much!",
-    time: "22:20 09/05",
-    avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-    unread: 0,
-    online: false,
-    isOnline: false,
-    status: "offline",
-    messages: [
-      { id: 1, message: "Great, thanks so much!", sender_id: 1, created_at: "2023-10-26T22:20:00Z" }
-    ]
-  },
-  {
-    id: "3",
-    name: "Angela Kelly",
-    title: "محادثة مع أنجيلا",
-    message: "Appreciate it! See you soon! ❤️",
-    time: "10:45 08/05",
-    avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-    unread: 1,
-    online: true,
-    isOnline: true,
-    status: "online",
-    messages: [
-      { id: 1, message: "Appreciate it! See you soon! ❤️", sender_id: 1, created_at: "2023-10-25T10:45:00Z" }
-    ]
-  },
-];
+const getSingleConvEndpoint = globalConstants.single_chat.get_conv;
+const getGroupConvEndpoint = globalConstants.group_chat.get_conv;
 
-const ChatItem = ({ chat , navigation }) => (
-  <TouchableOpacity style={styles_chat.chatItem} onPress={() => navigation.navigate("ChatScreen" , { chat: chat })}>
+// Format time function
+const formatTime = (dateString) => {
+  if (!dateString) return 'Now';
+  
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+  
+  if (diffInMinutes < 1) return 'Now';
+  if (diffInMinutes < 60) return `${diffInMinutes}m`;
+  if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h`;
+  if (diffInMinutes < 10080) return `${Math.floor(diffInMinutes / 1440)}d`;
+  
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric' 
+  });
+};
+
+const ChatItem = ({ chat, navigation }) => (
+  <TouchableOpacity style={styles_chat.chatItem} onPress={() => {
+    if (chat.isGroup) {
+      // الانتقال إلى شاشة المجموعة
+      navigation.navigate("ChatScreen", { 
+        id: chat.id,
+        name: chat.name || chat.title,
+        user_id: chat.id, // استخدام chat.id كـ user_id للمجموعات
+        isGroup: true,
+        chatData: chat
+      });
+    } else {
+      // الانتقال إلى شاشة المحادثة الفردية
+      navigation.navigate("ChatScreen", { 
+        id: chat.id,
+        name: chat.name || chat.title,
+        user_id: chat.user_id || chat.partner_id,
+        isGroup: false,
+        chatData: chat
+      });
+    }
+  }}>
     <View style={styles_chat.avatarContainer}>
-      <Image source={{ uri: chat.avatar }} style={styles_chat.avatar} />
-      {chat.online && <View style={styles_chat.onlineIndicator} />}
+      <Image 
+        source={{ uri: chat.avatar || chat.profile_image || chat.group_avatar }} 
+        style={styles_chat.avatar} 
+        defaultSource={require("../../../assets/images/avatar.png")}
+      />
+      {chat.isGroup ? (
+        <View style={styles_chat.groupIndicator}>
+          <Icon name="users" size={12} color="#fff" />
+        </View>
+      ) : (
+        chat.online && <View style={styles_chat.onlineIndicator} />
+      )}
     </View>
     <View style={styles_chat.chatContent}>
       <View style={styles_chat.chatHeader}>
-        <Text style={styles_chat.chatName}>{chat.name}</Text>
-        <Text style={styles_chat.chatTime}>{chat.time}</Text>
+        <Text style={styles_chat.chatName}>
+          {chat.name || chat.title}
+          {chat.isGroup && " 👥"}
+        </Text>
+        <Text style={styles_chat.chatTime}>
+          {formatTime(chat.last_message_time || chat.time)}
+        </Text>
       </View>
       <View style={styles_chat.messageContainer}>
         <Text style={styles_chat.chatMessage} numberOfLines={1}>
-          {chat.message}
+          {typeof chat.last_message === 'string' 
+            ? chat.last_message 
+            : typeof chat.message === 'string' 
+              ? chat.message 
+              : chat.last_message?.text || chat.message?.text || 'آخر رسالة'
+          }
         </Text>
-        {chat.unread > 0 && (
+        {chat.unread_count > 0 && (
           <View style={styles_chat.unreadBadge}>
-            <Text style={styles_chat.unreadText}>{chat.unread}</Text>
+            <Text style={styles_chat.unreadText}>{chat.unread_count}</Text>
           </View>
         )}
       </View>
@@ -97,10 +117,201 @@ const ChatsScreen = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const [chats, setChats] = useState(INITIAL_CHATS);
+  
+  const { user } = useAuth();
+  const { data, dataForGroup } = usePusher() || {};
+  
+  const [chats, setChats] = useState([]);
+  const [page, setPage] = useState(1);
+  const [groupPage, setGroupPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [hasMoreGroups, setHasMoreGroups] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const [isAddFriendModalVisible, setAddFriendModalVisible] = useState(false);
 
+  // دالة لجلب المحادثات الفردية
+  const getSingleChats = useCallback(async (pageNum = 1) => {
+    try {
+      const res = await get(getSingleConvEndpoint, null, { page: pageNum });
+      
+      if (res && res.data && Array.isArray(res.data)) {
+        const formattedChats = res.data
+          .filter(chat => chat && chat.id)
+          .map(chat => ({
+            id: chat.id || chat.chat_id,
+            name: chat.name || chat.title || chat.partner_name,
+            title: chat.title,
+            message: chat.last_message,
+            last_message: chat.last_message,
+            time: formatTime(chat.last_message_time || chat.updated_at),
+            last_message_time: chat.last_message_time || chat.updated_at,
+            avatar: chat.avatar || chat.profile_image || chat.partner_avatar,
+            unread: chat.unread_count || 0,
+            unread_count: chat.unread_count || 0,
+            online: chat.is_online || chat.status === 'online',
+            isOnline: chat.is_online || chat.status === 'online',
+            status: chat.status,
+            user_id: chat.user_id || chat.partner_id,
+            partner_id: chat.partner_id,
+            isGroup: false,
+            ...chat
+          }));
+
+        return formattedChats;
+      }
+    } catch (err) {
+      console.log('Error fetching single chats:', err);
+    }
+    return [];
+  }, []);
+
+  // دالة لجلب المحادثات الجماعية
+  const getGroupChats = useCallback(async (pageNum = 1) => {
+    try {
+      const res = await get(getGroupConvEndpoint, null, { page: pageNum });
+      
+      if (res && res.data && Array.isArray(res.data)) {
+        const formattedChats = res.data
+          .filter(chat => chat && chat.id)
+          .map(chat => ({
+            id: chat.id || chat.chat_id,
+            name: chat.name || chat.title || chat.group_name,
+            title: chat.title,
+            message: chat.last_message,
+            last_message: chat.last_message,
+            time: formatTime(chat.last_message_time || chat.updated_at),
+            last_message_time: chat.last_message_time || chat.updated_at,
+            avatar: chat.avatar || chat.group_avatar || chat.profile_image,
+            unread: chat.unread_count || 0,
+            unread_count: chat.unread_count || 0,
+            online: true, // Groups are always considered "online"
+            isOnline: true,
+            status: 'online',
+            user_id: chat.created_by || chat.admin_id,
+            isGroup: true,
+            members_count: chat.members_count || chat.participants_count,
+            ...chat
+          }));
+
+        return formattedChats;
+      }
+    } catch (err) {
+      console.log('Error fetching group chats:', err);
+    }
+    return [];
+  }, []);
+
+  // الدالة الرئيسية لجلب جميع المحادثات
+  const getAllChats = useCallback(async (pageNum = 1, isLoadMore = false) => {
+    if (isLoadMore) {
+      if ((!hasMore && !hasMoreGroups) || isLoadingMore) return;
+      setIsLoadingMore(true);
+    } else {
+      setIsLoading(true);
+    }
+
+    try {
+      // جلب المحادثات الفردية والجماعية بشكل متوازي
+      const [singleChats, groupChats] = await Promise.all([
+        getSingleChats(pageNum),
+        getGroupChats(pageNum)
+      ]);
+
+      const allChats = [...singleChats, ...groupChats];
+
+      // ترتيب المحادثات حسب الوقت
+      const sortedChats = allChats.sort((a, b) => {
+        const timeA = new Date(a.last_message_time || a.time || 0);
+        const timeB = new Date(b.last_message_time || b.time || 0);
+        return timeB - timeA;
+      });
+
+      if (pageNum === 1) {
+        setChats(sortedChats);
+      } else {
+        setChats(prev => [...prev, ...sortedChats]);
+      }
+      
+      // التحقق إذا كان هناك المزيد من المحادثات
+      const hasMoreSingle = singleChats.length >= 10;
+      const hasMoreGroup = groupChats.length >= 10;
+      setHasMore(hasMoreSingle);
+      setHasMoreGroups(hasMoreGroup);
+
+    } catch (err) {
+      console.log('Error fetching all chats:', err);
+    } finally {
+      setIsLoading(false);
+      setIsLoadingMore(false);
+      setRefreshing(false);
+    }
+  }, [hasMore, hasMoreGroups, isLoadingMore, getSingleChats, getGroupChats]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setPage(1);
+    setGroupPage(1);
+    setHasMore(true);
+    setHasMoreGroups(true);
+    getAllChats(1);
+  };
+
+  const loadMoreChats = () => {
+    if (!isLoadingMore && (hasMore || hasMoreGroups)) {
+      const nextPage = page + 1;
+      const nextGroupPage = groupPage + 1;
+      setPage(nextPage);
+      setGroupPage(nextGroupPage);
+      getAllChats(nextPage, true);
+    }
+  };
+
+  const renderFooter = () => {
+    if (!isLoadingMore) return null;
+    
+    return (
+      <View style={styles_chat.loadingFooter}>
+        <ActivityIndicator size="small" color="#183E9F" />
+        <Text style={styles_chat.loadingText}>Loading more chats...</Text>
+      </View>
+    );
+  };
+
+  const renderEmpty = () => {
+    if (isLoading) return null;
+    
+    return (
+      <View style={styles_chat.emptyContainer}>
+        <Icon name="message-circle" size={64} color="#DDD" />
+        <Text style={styles_chat.emptyTitle}>No chats yet</Text>
+        <Text style={styles_chat.emptyText}>
+          Start a conversation by adding a friend or creating a group
+        </Text>
+      </View>
+    );
+  };
+
+  // تحديث المحادثات عند تغيير بيانات Pusher
+  useEffect(() => {
+    if (data || dataForGroup) {
+      console.log('🔄 تحديث المحادثات من Pusher:', { data, dataForGroup });
+      setPage(1);
+      setGroupPage(1);
+      getAllChats(1);
+    }
+  }, [data, dataForGroup]);
+
+  // تحميل المحادثات عند التركيز على الشاشة
+  useFocusEffect(
+    useCallback(() => {
+      getAllChats(1);
+    }, [getAllChats])
+  );
+
+  // معالجة المجموعة الجديدة من route params
   useEffect(() => {
     if (route.params?.newGroup) {
       const newGroup = route.params.newGroup;
@@ -108,10 +319,16 @@ const ChatsScreen = () => {
         id: newGroup.id,
         name: newGroup.name,
         message: t('chatsScreen.groupCreated'),
+        last_message: t('chatsScreen.groupCreated'),
         time: "Now",
+        last_message_time: new Date().toISOString(),
         avatar: newGroup.avatar,
         unread: 0,
+        unread_count: 0,
         online: true,
+        isOnline: true,
+        isGroup: true,
+        members_count: newGroup.members?.length || 1
       };
       setChats((prevChats) => [newChatItem, ...prevChats]);
       navigation.setParams({ newGroup: undefined });
@@ -124,10 +341,15 @@ const ChatsScreen = () => {
       id: newContact.id,
       name: newContact.name,
       message: t('chatsScreen.contactAdded', { name: newContact.name }),
+      last_message: t('chatsScreen.contactAdded', { name: newContact.name }),
       time: "Now",
+      last_message_time: new Date().toISOString(),
       avatar: newContact.avatar,
       unread: 0,
-      online: false, 
+      unread_count: 0,
+      online: false,
+      isOnline: false,
+      isGroup: false
     };
     setChats((prevChats) => [newChatItem, ...prevChats]);
   };
@@ -167,12 +389,11 @@ const ChatsScreen = () => {
 
       {showDropdown && (
         <View style={styles_chat.dropdown}>
-     
           <TouchableOpacity
             style={[styles_chat.optiones]}
             onPress={() => {
               setShowDropdown(false);
-              setAddFriendModalVisible(true);
+              navigation.navigate("ContactsScreen");
             }}
           >
             <Image
@@ -201,15 +422,33 @@ const ChatsScreen = () => {
         </View>
       )}
 
-      <FlatList
-        data={filteredChats}
-        renderItem={({ item }) => <ChatItem chat={item} navigation={navigation} />}
-        keyExtractor={(item) => item.id}
-        style={styles_chat.chatList}
-        showsVerticalScrollIndicator={false}
-      />
+      {isLoading && chats.length === 0 ? (
+        <View style={styles_chat.loadingContainer}>
+          <ActivityIndicator size="large" color="#183E9F" />
+          <Text style={styles_chat.loadingText}>Loading chats...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredChats}
+          renderItem={({ item }) => <ChatItem chat={item} navigation={navigation} />}
+          keyExtractor={(item) => `${item.isGroup ? 'group' : 'single'}_${item.id}`}
+          style={styles_chat.chatList}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              colors={["#183E9F"]}
+              tintColor="#183E9F"
+            />
+          }
+          onEndReached={loadMoreChats}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
+          ListEmptyComponent={renderEmpty}
+        />
+      )}
 
-   
       <AddFriendModal
         visible={isAddFriendModalVisible}
         onClose={() => setAddFriendModalVisible(false)}
@@ -218,7 +457,6 @@ const ChatsScreen = () => {
     </SafeAreaView>
   );
 };
-
 
 const styles_chat = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
@@ -291,6 +529,17 @@ const styles_chat = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#fff",
   },
+  groupIndicator: {
+    position: "absolute",
+    bottom: 2,
+    right: 2,
+    width: 16,
+    height: 16,
+    backgroundColor: "#6B46C1",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   chatContent: { flex: 1 },
   chatHeader: {
     flexDirection: "row",
@@ -322,6 +571,41 @@ const styles_chat = StyleSheet.create({
   rtlText: {
     textAlign: 'right',
     writingDirection: 'rtl',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingFooter: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  loadingText: {
+    marginLeft: 8,
+    color: '#666',
+    fontSize: 14,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#666',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });
 

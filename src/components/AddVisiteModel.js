@@ -6,7 +6,6 @@ import Icon from 'react-native-vector-icons/Feather';
 import AddDoctoerModel from './AddDoctoerModel';
 import { useTranslation } from 'react-i18next';
 
-// --- تم التعديل: تغيير اسم الخاصية onAddNewDoctor إلى onAddNewDoctorAndLog ---
 const AddVisitModal = ({ visible, onClose, doctors, onLogVisit, onAddNewDoctorAndLog }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
@@ -24,17 +23,15 @@ const AddVisitModal = ({ visible, onClose, doctors, onLogVisit, onAddNewDoctorAn
   };
 
   const openAddNewDoctorModal = () => {
-    onClose(); // إغلاق المودال الحالي قبل فتح الجديد لتجنب التداخل
+    onClose(); 
     setTimeout(() => {
         setAddDoctorModalVisible(true);
-    }, 300); // تأخير بسيط لتحسين الانتقال
+    }, 300); 
   };
 
-  // --- تم التعديل: هذه الدالة ستستدعي الدالة الجديدة من الشاشة الرئيسية ---
   const handleDoctorSubmit = (newDoctorData) => {
-    setAddDoctorModalVisible(false); // إغلاق مودال إضافة الطبيب
-    onAddNewDoctorAndLog(newDoctorData); // استدعاء الدالة الرئيسية من الشاشة الأم
-    // لا حاجة لاستدعاء onClose() هنا لأنه تم إغلاقه بالفعل
+    setAddDoctorModalVisible(false); 
+    onAddNewDoctorAndLog(newDoctorData);
   };
 
   const handleCloseAddDoctorModal = () => {

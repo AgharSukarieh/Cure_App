@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import {
     View, Text, TouchableOpacity, SafeAreaView, StyleSheet,
     ScrollView, Dimensions, ActivityIndicator, Animated, StatusBar, I18nManager,
-    InteractionManager
+    InteractionManager, Modal
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Moment from 'moment';
@@ -10,8 +10,12 @@ import DatePicker from 'react-native-date-picker';
 import { BlurView } from '@react-native-community/blur';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from '@react-navigation/native';
+import { useAuth } from '../../contexts/AuthContext';
+import { post, get } from '../../WebService/RequestBuilder';
+import Constants from '../../config/globalConstants';
+import { Dropdown } from 'react-native-element-dropdown';
 
-import AddVisit from '../../components/AddVisit';
+import DailyaddModel from '../../components/Modals/DailyaddModel';
 
 const FAKE_VISITS_DATA = [
     { id: 1, doctorName: 'Dr. Ali Hassan Al-Jubouri', specialty: 'Cardiologist', appointmentTime: '10:30 AM', lastVisit: '2025-08-15', status: 'Visited', visitDate: '2025-09-12' },
@@ -19,7 +23,6 @@ const FAKE_VISITS_DATA = [
     { id: 3, doctorName: 'Dr. Omar Khalid', specialty: 'Dermatologist', appointmentTime: '01:45 PM', lastVisit: '2025-07-30', status: 'Pending', visitDate: '2025-09-12' },
 ];
 
-// تحريك الأبعاد داخل المكون لضمان الحصول على القيم الصحيحة
 const Star = ({ size, position, duration }) => {
     const opacityAnim = useRef(new Animated.Value(0)).current;
     
@@ -52,6 +55,7 @@ const Stars = React.memo(() => (
 
 const MedicalReportScreen = ({ navigation }) => {
     const { t, i18n } = useTranslation();
+    const { user } = useAuth();
     const isRTL = I18nManager.isRTL;
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [visits, setVisits] = useState([]);
@@ -61,6 +65,15 @@ const MedicalReportScreen = ({ navigation }) => {
     const [isModalVisible, setModalVisible] = useState(false);
     const [isReady, setIsReady] = useState(false);
     const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
+    const [currentCity, setCurrentCity] = useState("");
+    const [currentArea, setCurrentArea] = useState("");
+    const [isLocationModalVisible, setLocationModalVisible] = useState(false);
+    const [cities, setCities] = useState([]);
+    const [areas, setAreas] = useState([]);
+    const [allAreas, setAllAreas] = useState([]);
+    const [selectedCity, setSelectedCity] = useState(null);
+    const [selectedArea, setSelectedArea] = useState(null);
+    const [weeklyscdata, setWeeklyscdata] = useState([]);
 
     const isTodaySelected = Moment(selectedDate).isSame(new Date(), 'day');
 
@@ -109,6 +122,155 @@ const MedicalReportScreen = ({ navigation }) => {
         }, [i18n])
     );
 
+    const submitedit = async (data) => {
+        const body = {
+            user_id: user.id,
+            city_id: data.city,
+            area_id: data.area,
+            date: Moment(selectedDate).format('yyyy-MM-DD')
+        }
+         const res = await post(Constants.plans.get_plans, body, null)
+      
+            .then((res) => {
+                console.log('=====================================================res', res);
+                // تحديث المنطقة والمدينة المحلية
+                setCurrentCity(data.cityName);
+                setCurrentArea(data.areaName);
+                setLocationModalVisible(false);
+                // إعادة تحميل البيانات لتحديث الواجهة
+                getdata();
+            }).catch((err) => {
+                console.log('Error updating location:', err);
+            }).finally(() => { })
+    };
+
+    // دالة لجلب البيانات
+    const getdata = async () => {
+        setIsLoading(true);
+        await get(Constants.plans.get_plans, null, { 
+            user_id: user.id, 
+            date: Moment(selectedDate).format('yyyy-MM-DD') 
+        })
+            .then((res) => {
+                console.log('📊 استجابة API:', res);
+                setWeeklyscdata(res.data || []);
+                
+                // تحديث المنطقة الحالية من البيانات المحفوظة
+                const matchingData = res.data?.find(data => 
+                    Moment(data.date).isSame(selectedDate, 'day')
+                );
+                
+                if (matchingData && matchingData.area) {
+                    setCurrentArea(matchingData.area);
+                    console.log('📍 المنطقة الحالية:', matchingData.area);
+                } else {
+                    setCurrentArea("");
+                    console.log('⚠️ لا توجد منطقة محفوظة لهذا التاريخ');
+                }
+            })
+            .catch((err) => {
+                console.error('❌ خطأ في جلب البيانات:', err);
+                setCurrentArea("");
+            })
+            .finally(() => {
+                setIsLoading(false);
+            })
+    };
+
+    // دالة لجلب بيانات الزيارات الطبية
+    const getMedicalVisits = async () => {
+        try {
+            console.log('🏥 جلب بيانات الزيارات الطبية...');
+            const response = await get(Constants.visit.medical, null, {
+                medical_id: user.id,
+                date: Moment(selectedDate).format('yyyy-MM-DD')
+            });
+            
+            console.log('🏥 استجابة API الزيارات الطبية:');
+            console.log('📋========================= البيانات الكاملة:', response);
+            console.log('📊 البيانات (res.data):', response.data);
+            console.log('📈 عدد الزيارات:', response.data?.length || 0);
+            
+            if (response.data && Array.isArray(response.data)) {
+                console.log('🔍 تفاصيل كل زيارة:');
+                response.data.forEach((visit, index) => {
+                    console.log(`📝 زيارة ${index + 1}:`, {
+                        id: visit.id,
+                        doctorName: visit.doctorName,
+                        specialty: visit.specialty,
+                        status: visit.status,
+                        start_visit: visit.start_visit,
+                        end_visit: visit.end_visit,
+                        area: visit.area,
+                        city: visit.city,
+                        area_id: visit.area_id,
+                        city_id: visit.city_id
+                    });
+                });
+            } else {
+                console.log('⚠️ لا توجد بيانات زيارات أو البيانات ليست array');
+            }
+            
+            return response;
+        } catch (error) {
+            console.error('❌ خطأ في جلب الزيارات الطبية:', error);
+            return null;
+        }
+    };
+
+    // دالة لجلب المدن والمناطق
+    const loadCitiesAndAreas = async () => {
+        try {
+            const response = await get(`${Constants.users.cityArea}${user.id}`);
+            const cityArea = response.data || response;
+            
+            if (cityArea.cities && Array.isArray(cityArea.cities)) {
+                const cityArray = cityArea.cities.map(c => ({
+                    value: c.id,
+                    label: c.name
+                }));
+                setCities(cityArray);
+            }
+            
+            if (cityArea.areas && Array.isArray(cityArea.areas)) {
+                const areaArray = cityArea.areas.map(a => ({
+                    value: a.id,
+                    label: a.name,
+                    city_id: a.city_id
+                }));
+                setAllAreas(areaArray);
+            }
+        } catch (error) {
+            console.error('Error loading cities and areas:', error);
+        }
+    };
+
+    // دالة لتحديث المناطق عند اختيار المدينة
+    const handleCityChange = (cityId) => {
+        setSelectedCity(cityId);
+        setSelectedArea(null);
+        const filteredAreas = allAreas.filter(area => area.city_id == cityId);
+        setAreas(filteredAreas);
+    };
+
+    // دالة لحفظ التحديد
+    const handleSaveLocation = () => {
+        if (selectedCity && selectedArea) {
+            const cityName = cities.find(c => c.value === selectedCity)?.label;
+            const areaName = areas.find(a => a.value === selectedArea)?.label;
+            
+            console.log('💾 حفظ المنطقة الجديدة:', areaName);
+            
+            // حفظ في API
+            submitedit({
+                city: selectedCity,
+                area: selectedArea,
+                cityName: cityName,
+                areaName: areaName
+            });
+        }
+    };
+
     useEffect(() => {
         const subscription = Dimensions.addEventListener('change', ({ window }) => {
             setScreenDimensions(window);
@@ -116,6 +278,38 @@ const MedicalReportScreen = ({ navigation }) => {
 
         return () => subscription?.remove();
     }, []);
+
+    // تحميل البيانات عند تحميل الصفحة
+    useEffect(() => {
+        if (user?.id) {
+            getdata();
+            // جلب بيانات الزيارات الطبية لطباعة الـ structure
+            getMedicalVisits();
+        }
+    }, [user?.id, selectedDate]);
+
+    // تحميل المدن والمناطق عند فتح المودال
+    useEffect(() => {
+        if (isLocationModalVisible) {
+            loadCitiesAndAreas();
+        }
+    }, [isLocationModalVisible]);
+
+    // تحديث الواجهة عند تغيير البيانات
+    useEffect(() => {
+        console.log('🔄 تم تحديث weeklyscdata:', weeklyscdata);
+        // إعادة تحميل البيانات لتحديث الواجهة
+        if (weeklyscdata.length > 0) {
+            // البحث عن البيانات المطابقة للتاريخ الحالي
+            const matchingData = weeklyscdata.find(data => 
+                Moment(data.date).isSame(selectedDate, 'day')
+            );
+            
+            if (matchingData && matchingData.area) {
+                console.log('📍 تم العثور على منطقة جديدة:', matchingData.area);
+            }
+        }
+    }, [weeklyscdata, selectedDate]);
 
     const filteredVisits = useMemo(() => {
         if (!visits.length) return [];
@@ -280,6 +474,7 @@ const MedicalReportScreen = ({ navigation }) => {
         }
         
         return (
+            
             <View style={styles.noDataContainer}>
                 <Feather name="info" size={40} color="#A0AEC0" />
                 <Text style={[styles.noDataText, isRTL && styles.rtlText]}>
@@ -292,7 +487,39 @@ const MedicalReportScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#39a5e4" />
-            
+            <View style={styles.headerConentArea}>
+                <View style={styles.locationContainer}>
+                    <View style={styles.locationInfo}>
+                        <Text style={styles.locationLabel}>المنطقة الحالية:</Text>
+                        {(() => {
+                            // البحث عن البيانات المطابقة للتاريخ
+                            const matchingData = weeklyscdata.find(data => 
+                                Moment(data.date).isSame(selectedDate, 'day')
+                            );
+                            const areaName = matchingData ? matchingData.area : null;
+                            
+                            return areaName ? (
+                                <View style={styles.locationDetails}>
+                                    <Text style={styles.areaText}>{areaName}</Text>
+                                </View>
+                            ) : (
+                                <Text style={styles.noLocationText}>لم يتم تحديد منطقة بعد لهذا اليوم</Text>
+                            );
+                        })()}
+                    </View>
+                    <TouchableOpacity 
+                        style={styles.editButton}
+                        onPress={() => {
+                            console.log('تم الضغط على زر التعديل');
+                            setLocationModalVisible(true);
+                        }}
+                    >
+                        <Feather name="edit-3" size={16} color="#183E9F" />
+                        <Text style={styles.editButtonText}>تعديل</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        
             <ScrollView
                 contentContainerStyle={styles.scrollContentContainer}
                 showsVerticalScrollIndicator={false}
@@ -341,12 +568,82 @@ const MedicalReportScreen = ({ navigation }) => {
                 onCancel={() => setDatePickerVisible(false)} 
             />
             
-            <AddVisit
-                visible={isModalVisible}
-                onClose={() => setModalVisible(false)}
-                onSubmit={handleAddNewVisit}
+            <DailyaddModel
+                show={isModalVisible}
+                hide={() => setModalVisible(false)}
+                
                 existingDoctors={FAKE_VISITS_DATA}
             />
+
+            {/* مودال اختيار المنطقة والمدينة */}
+            <Modal
+                visible={isLocationModalVisible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setLocationModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>اختيار المنطقة والمدينة</Text>
+                            <TouchableOpacity 
+                                onPress={() => setLocationModalVisible(false)}
+                                style={styles.closeButton}
+                            >
+                                <Feather name="x" size={24} color="#666" />
+                            </TouchableOpacity>
+                        </View>
+                        
+                        <View style={styles.modalBody}>
+                            {/* اختيار المدينة */}
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.inputLabel}>المدينة</Text>
+                                <Dropdown
+                                    style={styles.dropdown}
+                                    data={cities}
+                                    labelField="label"
+                                    valueField="value"
+                                    placeholder="اختر المدينة"
+                                    value={selectedCity}
+                                    onChange={item => handleCityChange(item.value)}
+                                />
+                            </View>
+
+                            {/* اختيار المنطقة */}
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.inputLabel}>المنطقة</Text>
+                                <Dropdown
+                                    style={styles.dropdown}
+                                    data={areas}
+                                    labelField="label"
+                                    valueField="value"
+                                    placeholder={selectedCity ? "اختر المنطقة" : "اختر المدينة أولاً"}
+                                    value={selectedArea}
+                                    onChange={item => setSelectedArea(item.value)}
+                                    disable={!selectedCity}
+                                />
+                            </View>
+                        </View>
+
+                        <View style={styles.modalFooter}>
+                            <TouchableOpacity 
+                                style={styles.cancelButton}
+                                onPress={() => setLocationModalVisible(false)}
+                            >
+                                <Text style={styles.cancelButtonText}>إلغاء</Text>
+                            </TouchableOpacity>
+                            
+                            <TouchableOpacity 
+                                style={[styles.saveButton, (!selectedCity || !selectedArea) && styles.disabledButton]}
+                                onPress={handleSaveLocation}
+                                disabled={!selectedCity || !selectedArea}
+                            >
+                                <Text style={styles.saveButtonText}>حفظ</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 };
@@ -548,6 +845,174 @@ const styles = StyleSheet.create({
     },
     rtlLoadingText: {
         alignSelf: 'flex-end',
+    },
+    headerConent: {
+        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 15,
+        paddingVertical: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#EEE',
+        marginBottom: 5,
+    },
+    headerConentArea:{
+marginTop:140,
+backgroundColor:'#FFFFFF',
+paddingHorizontal:15,
+paddingVertical:15,
+borderBottomWidth:1,
+borderBottomColor:'#EEE',
+marginBottom:5,
+flexDirection:'row',
+alignItems:'center',
+justifyContent:'space-between',
+borderBottomWidth:1,
+borderBottomColor:'#EEE',
+marginBottom:5,
+flexDirection:'row',
+alignItems:'center',
+justifyContent:'space-between',
+
+    },
+    locationContainer: {
+        flexDirection: 'row-reverse',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    locationInfo: {
+        flex: 1,
+    },
+    locationLabel: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 5,
+    },
+    locationDetails: {
+        flexDirection: 'column',
+    },
+    cityText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#183E9F',
+        marginBottom: 2,
+        textAlign:'right',
+    },
+    areaText: {
+        fontSize: 14,
+        color: '#333',
+
+    },
+    noLocationText: {
+        fontSize: 14,
+        color: '#999',
+        marginHorizontal:2,
+   
+    },
+    editButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F8F9FA',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#183E9F',
+    },
+    editButtonText: {
+        fontSize: 14,
+        color: '#183E9F',
+        marginLeft: 5,
+        fontWeight: '500',
+    },
+    // أنماط المودال
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContainer: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        width: '90%',
+        maxHeight: '80%',
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#EEE',
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#183E9F',
+    },
+    closeButton: {
+        padding: 5,
+    },
+    modalBody: {
+        padding: 20,
+    },
+    inputGroup: {
+        marginBottom: 20,
+    },
+    inputLabel: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: 8,
+    },
+    dropdown: {
+        height: 50,
+        borderColor: '#183E9F',
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        backgroundColor: '#FFFFFF',
+    },
+    modalFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 20,
+        borderTopWidth: 1,
+        borderTopColor: '#EEE',
+    },
+    cancelButton: {
+        flex: 1,
+        marginRight: 10,
+        paddingVertical: 12,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#CCC',
+        alignItems: 'center',
+    },
+    cancelButtonText: {
+        fontSize: 16,
+        color: '#666',
+        fontWeight: '500',
+    },
+    saveButton: {
+        flex: 1,
+        marginLeft: 10,
+        paddingVertical: 12,
+        borderRadius: 8,
+        backgroundColor: '#183E9F',
+        alignItems: 'center',
+    },
+    saveButtonText: {
+        fontSize: 16,
+        color: '#FFFFFF',
+        fontWeight: '600',
+    },
+    disabledButton: {
+        backgroundColor: '#CCC',
     },
 });
 

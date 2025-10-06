@@ -24,7 +24,6 @@ import GoBack from "../../components/GoBack";
 
 const { width, height } = Dimensions.get("window");
 
-// Skeleton Placeholder Component
 const SkeletonPlaceholder = () => {
   const opacityValue = new Animated.Value(0.5);
 
@@ -73,7 +72,6 @@ const SkeletonPlaceholder = () => {
   );
 };
 
-// Styled Account Table Component
 const StyledAccountTable = ({ data }) => {
   const { t } = useTranslation();
 
@@ -354,7 +352,6 @@ const FilterModal = ({ visible, onClose, onApply, initialFilters }) => {
   );
 };
 
-// Main AccountInfo Component
 const AccountInfo = ({ item }) => {
   const { t } = useTranslation();
   const [dataLoading, setDataLoading] = useState(true);

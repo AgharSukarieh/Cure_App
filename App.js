@@ -36,7 +36,7 @@ import logo from "./src/components/an";
 import SplashScreen from "./src/screens/SplashScreen";
 import AccountInfo from "./src/screens/Sales/AccountInfo";
 import DailySales from "./src/screens/Sales/DailySales";
-import Sal_rep_pharm from "./src/screens/Sales/sal_rep_pharm";
+import Sal_rep_pharm from "./src/screens/Sales/SalRepSpharm";
 import WeeklySales from "./src/screens/Sales/WeeklySales";
 import MonthlyPlanSales from "./src/screens/Sales/MonthlyPlanSales";
 import ReportPageSales from "./src/screens/Sales/ReportPageSales";
@@ -65,8 +65,9 @@ import FAQScreen from "./src/screens/FAQScreen";
 import TermsScreen from "./src/screens/TermsScreen";
 import ContactUsScreen from "./src/screens/ContactUsScreen";
 import AboutUsScreen from "./src/screens/AboutUsScreen";
-import sal_rep_pharm from "./src/screens/Sales/sal_rep_pharm";
-
+import sal_rep_pharm from "./src/screens/Sales/SalRepSpharm";
+import ContactChat from "./src/screens/ChatPages/ContactChat";
+import SalRepSpharm from "./src/screens/Sales/SalRepSpharm";
 
 
 
@@ -116,6 +117,7 @@ const AppNavigator = () => {
 				<Stack.Screen name="ChatScreen" component={ChatScreen} />
 				<Stack.Screen name="ChatsScreen" component={ChatsScreen} />
 				<Stack.Screen name="AllGroup" component={AllGroups} />
+				<Stack.Screen name="ContactChat" component={ContactChat} />
 			
 				<Stack.Screen name="AddGroup" component={AddGroup} />
 				<Stack.Screen name="PresentImage" component={PresentImage} />
@@ -158,8 +160,9 @@ const AppNavigator = () => {
 				<Stack.Screen name="CustomDatePicker" component={CustomDatePicker} />
 				<Stack.Screen name="Test" component={Test} />
 				<Stack.Screen name="logo" component={logo} />
-				<Stack.Screen name="sal_rep_pharm" component={sal_rep_pharm} />
+				<Stack.Screen name="sal_rep_pharm" component={SalRepSpharm} />
 				<Stack.Screen name="Clientpharmalist" component={Clientpharmalist} />
+				
 			</Stack.Navigator>
 		</NavigationContainer>
 	);

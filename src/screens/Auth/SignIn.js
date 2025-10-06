@@ -20,6 +20,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
 import { useTranslation } from 'react-i18next';
 import { I18nManager } from 'react-native';
+import { useAuth } from '../../contexts/AuthContext';
 
 const SignIn = ({ navigation }) => {
   const { t } = useTranslation();
@@ -30,7 +31,7 @@ const SignIn = ({ navigation }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
-  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
   const [signUpEmail, setSignUpEmail] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
   const [isSignUpPasswordVisible, setIsSignUpPasswordVisible] = useState(false);
@@ -52,7 +53,88 @@ const SignIn = ({ navigation }) => {
   const isSmallScreen = screenHeight < 700;
   const isTinyScreen = screenHeight < 600;
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+///==========================================
 
+// farah@gmail.com 123456789
+
+const { login , register } = useAuth();
+
+const LoginPress = async () => {
+  setIsLoading(true);
+  
+  // 1. التحقق من أن الحقول غير فارغة
+  if (email === '' || password === '') {
+    setIsLoading(false);
+    Alert.alert('خطأ', 'يرجى إدخال البريد الإلكتروني وكلمة المرور');
+    return;
+  }
+  
+  // 2. التحقق من صحة البريد الإلكتروني
+  if (!regex.test(email)) {
+    setIsLoading(false);
+    Alert.alert('خطأ', 'يرجى إدخال بريد إلكتروني صحيح');
+    return;
+  }
+  
+  try {
+    // 3. إرسال الطلب للـ API
+    console.log('🚀 محاولة تسجيل الدخول:', { email, password: '***' });
+    const result = await login(email, password);
+    console.log('=======================================================Login result:', result);
+    console.log('🔍 Result.success:', result.success);
+    console.log('🔍 Result.message:', result.message);
+    console.log('🔍 Result.error:', result.error);
+    setIsLoading(false);
+    
+    // 4. التحقق من النتيجة
+    if (result.success && result.data && result.data.user && result.data.token) {
+      // 5. نجح تسجيل الدخول - الانتقال للصفحة الرئيسية
+      console.log('✅ Login successful, navigating to BottomTabs');
+      navigation.navigate('BottomTabs');
+    } else {
+      // 6. فشل تسجيل الدخول - عرض رسالة خطأ
+      console.log('❌ Login failed:', result.message);
+      console.log('❌ Result.error:', result.error);
+      console.log('❌ Result.fullResponse:', result.fullResponse);
+      Alert.alert('خطأ في تسجيل الدخول', result.message || result.error || 'فشل في تسجيل الدخول');
+    }
+  } catch (error) {
+    setIsLoading(false);
+    console.log('❌ Login error:', error);
+    console.log('❌ Error.message:', error.message);
+    console.log('❌ Error.stack:', error.stack);
+    Alert.alert('خطأ في تسجيل الدخول', error.message || 'حدث خطأ في الاتصال بالخادم');
+  }
+};
+
+///==========================================
+const RegisterPress = async () => {
+  setIsLoading(true);
+  if (signUpEmail != '' && signUpPassword != '') {
+  
+
+    if (regex.test(signUpEmail)) {
+      await register(name,signUpEmail, signUpPassword)
+        .then((e) => {
+          setIsLoading(false);
+
+    if (e.data === 'success') { 
+          toggleCard();
+        }})
+        .catch(err => {
+          setIsLoading(false);
+    
+        });
+    } else {
+      setIsLoading(false);
+      Alert.alert('Make sure to enter a valid email');
+    }
+  } else {
+    setIsLoading(false);
+    Alert.alert('Make sure to enter Email and Name and Password');
+  }
+};
+///==========================================
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
       setIsKeyboardVisible(true);
@@ -133,49 +215,28 @@ const SignIn = ({ navigation }) => {
     }, 300);
   };
 
-  const handleSignIn = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Make sure to enter Email and Password');
-      return;
-    }
-    if (!regex.test(email)) {
-      Alert.alert('Error', 'Enter a valid email');
-      return;
-    }
+  // const handleSignIn = async () => {
+  //   if (!email || !password) {
+  //     Alert.alert('Error', 'Make sure to enter Email and Password');
+  //     return;
+  //   }
+  //   if (!regex.test(email)) {
+  //     Alert.alert('Error', 'Enter a valid email');
+  //     return;
+  //   }
 
-    setIsLoading(true);
-    try {
-      console.log('Login attempt:', email);
-      setIsLoading(false);
-      navigation.replace('BottomTabs');
-    } catch (err) {
-      setIsLoading(false);
-      Alert.alert('Login Error', err?.response?.data?.message || 'Something went wrong');
-    }
-  };
+  //   setIsLoading(true);
+  //   try {
+  //     console.log('Login attempt:', email);
+  //     setIsLoading(false);
+  //     navigation.replace('BottomTabs');
+  //   } catch (err) {
+  //     setIsLoading(false);
+  //     Alert.alert('Login Error', err?.response?.data?.message || 'Something went wrong');
+  //   }
+  // };
 
-  const handleSignUp = async () => {
-    if (!username || !signUpEmail || !signUpPassword) {
-      Alert.alert('Error', 'Please fill all fields');
-      return;
-    }
-    if (!regex.test(signUpEmail)) {
-      Alert.alert('Error', 'Please enter a valid email');
-      return;
-    }
-
-    setIsSignUpLoading(true);
-    try {
-      console.log('Register attempt:', username, signUpEmail);
-      Alert.alert('Success', 'Account created successfully!');
-      navigation.replace('ReportPageSales');
-      toggleCard();
-      setIsSignUpLoading(false);
-    } catch (error) {
-      Alert.alert('Registration Error', error?.response?.data?.message || error.message);
-      setIsSignUpLoading(false);
-    }
-  };
+  
 
   const frontAnimatedStyle = {
     transform: [
@@ -294,7 +355,7 @@ const SignIn = ({ navigation }) => {
             }
           ]}
         >
-          <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+          <TouchableOpacity style={styles.signInButton} onPress={LoginPress}>
             <Text style={styles.signInButtonText}>
               {isLoading ? t('auth.signingIn') : t('auth.signIn')}
             </Text>
@@ -338,8 +399,8 @@ const SignIn = ({ navigation }) => {
           placeholder={t('auth.usernamePlaceholder')}
           placeholderTextColor="#AC9E9E"
           autoCapitalize="none"
-          value={username}
-          onChangeText={setUsername}
+          value={name}
+          onChangeText={setName}
         />
       </Animated.View>
 
@@ -425,7 +486,7 @@ const SignIn = ({ navigation }) => {
             }
           ]}
         >
-          <TouchableOpacity style={styles.signInButton} onPress={handleSignUp}>
+          <TouchableOpacity style={styles.signInButton} onPress={RegisterPress}>
             <Text style={styles.signInButtonText}>
               {isSignUpLoading ? t('auth.signingUp') : t('auth.signUp')}
             </Text>
@@ -467,7 +528,6 @@ const SignIn = ({ navigation }) => {
               keyboardShouldPersistTaps="handled"
               nestedScrollEnabled={false}
             >
-            {/* Logo Container with floating animation - أصغر عند فتح الكيبورد */}
             <Animated.View 
               style={[
                 styles.logoContainer,
@@ -490,7 +550,6 @@ const SignIn = ({ navigation }) => {
               />
             </Animated.View>
 
-            {/* Card Container with Flip Animation */}
             <View style={[
               styles.cardContainer,
               {
@@ -498,7 +557,6 @@ const SignIn = ({ navigation }) => {
                 marginBottom: isKeyboardVisible ? 10 : 30,
               }
             ]}>
-              {/* Sign In Card (Front) */}
               <Animated.View 
                 style={[
                   styles.card,
@@ -522,7 +580,6 @@ const SignIn = ({ navigation }) => {
                 {!isSignUp && renderSignInCard()}
               </Animated.View>
 
-              {/* Sign Up Card (Back) */}
               <Animated.View 
                 style={[
                   styles.card,
@@ -547,7 +604,6 @@ const SignIn = ({ navigation }) => {
               </Animated.View>
             </View>
 
-            {/* Footer - مخفي عند فتح الكيبورد */}
             {!isKeyboardVisible && (
               <Animated.View 
                 style={[

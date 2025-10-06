@@ -17,38 +17,29 @@ const ChangePasswordScreen = ({ navigation }) => {
   const [isNewPasswordVisible, setIsNewPasswordVisible] = useState();
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
-  // دالة للتعامل مع حفظ التغييرات
   const handleSaveChanges = () => {
-    // التحقق من أن الحقول ليست فارغة
     if (!newPassword || !confirmPassword) {
       Alert.alert('Error', 'Please fill in both password fields.');
       return;
     }
-    // التحقق من تطابق كلمتي المرور
     if (newPassword !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
-    // التحقق من طول كلمة المرور (مثال: 8 أحرف على الأقل)
     if (newPassword.length < 8) {
       Alert.alert('Error', 'Password must be at least 8 characters long.');
       return;
     }
 
-    // إذا كانت البيانات صحيحة، يتم عرض رسالة نجاح
-    // Alert.alert('Success', 'Password has been changed successfully.', [
-    //   { text: 'OK', onPress: () => navigation.goBack() }, // العودة للشاشة السابقة بعد النجاح
-    // ]);
+ 
     navigation.navigate("VerifyOtpScreen");
 
-    // هنا يمكنك إضافة منطق إرسال كلمة المرور الجديدة إلى الخادم (API)
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Icon name="arrow-back" size={24} color="#333" />
@@ -57,7 +48,6 @@ const ChangePasswordScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.form}>
-        {/* New Password Input */}
         <Text style={styles.label}>New Password</Text>
         <View style={styles.inputContainer}>
           <TextInput
@@ -77,7 +67,6 @@ const ChangePasswordScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Confirm Password Input */}
         <Text style={styles.label}>Confirm Password</Text>
         <View style={styles.inputContainer}>
           <TextInput
@@ -98,7 +87,6 @@ const ChangePasswordScreen = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Save Button */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
           <Text style={styles.saveButtonText}>Save changes</Text>
@@ -122,7 +110,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#F0F0F0',
   },
   backButton: {
-    backgroundColor: '#F0F0F0', // لون خلفية قريب من الصورة
+    backgroundColor: '#F0F0F0', 
     padding: 8,
     borderRadius: 12,
   },
@@ -162,7 +150,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   saveButton: {
-    backgroundColor: '#2d5accff', // لون الزر من الصورة
+    backgroundColor: '#2d5accff',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',

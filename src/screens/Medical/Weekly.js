@@ -6,7 +6,6 @@ import Moment from 'moment';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 
-// --- Mock Components & Data ---
 const GoBack = ({ text, onBack }) => (
     <TouchableOpacity onPress={onBack} style={styles.header}>
         <Feather name="chevron-left" size={24} color="#FFF" />
@@ -26,7 +25,6 @@ const WeeklyScreen = ({ route, navigation }) => {
     const [weeklyPlans, setWeeklyPlans] = useState([]);
 
     useEffect(() => {
-        // In a real app, you would fetch this data based on month and year
         setWeeklyPlans(FAKE_WEEKLY_DATA);
     }, [monthData, year]);
 

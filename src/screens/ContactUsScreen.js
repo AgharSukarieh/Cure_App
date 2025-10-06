@@ -392,13 +392,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 
-  // Contact Methods Section
   contactMethodsSection: {
     marginHorizontal: 20,
     marginBottom: 24,
   },
   contactMethodsSectionRTL: {
-    // RTL styles if needed
   },
   sectionTitle: {
     fontSize: 20,
@@ -415,7 +413,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   contactMethodRTL: {
-    // RTL styles if needed
   },
   contactMethodGradient: {
     borderRadius: 16,
@@ -459,13 +456,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 
-  // Form Section
   formSection: {
     marginHorizontal: 10,
     marginBottom: 4,
   },
   formSectionRTL: {
-    // RTL styles if needed
   },
   formContainer: {
     backgroundColor: '#FFFFFF',
@@ -481,7 +476,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   inputContainerRTL: {
-    // RTL styles if needed
   },
   inputLabel: {
     fontSize: 15,
@@ -550,13 +544,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
 
-  // Response Time Section
   responseTimeSection: {
     marginHorizontal: 20,
     marginTop: 10,
   },
   responseTimeSectionRTL: {
-    // RTL styles if needed
   },
   responseTimeContent: {
     flexDirection: 'row',

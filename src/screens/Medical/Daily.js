@@ -1,4 +1,3 @@
-// FileName: screens/DailyScreen.js
 
 import React from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView, Dimensions } from 'react-native';
@@ -6,7 +5,6 @@ import Moment from 'moment';
 import Feather from 'react-native-vector-icons/Feather';
 import { LineChart } from 'react-native-chart-kit';
 
-// --- Mock Components & Data ---
 const GoBack = ({ text, onBack }) => (
     <TouchableOpacity onPress={onBack} style={styles.header}>
         <Feather name="chevron-left" size={24} color="#FFF" />

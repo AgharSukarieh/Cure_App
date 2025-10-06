@@ -26,7 +26,7 @@ const SuccessfullyModel = ({show, hide, message}) => {
       transparent={true}
       visible={show}
       coverScreen={false}
-      onSwipeComplete={() => setModalVisible2(false)}>
+      >
       <View style={styles.ModalContainer}>
         <View style={styles.ModalView}>
           <TouchableOpacity

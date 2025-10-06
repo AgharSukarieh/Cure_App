@@ -371,14 +371,12 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   
-  // Header Section
   headerSection: {
     marginHorizontal: 20,
     marginTop: 10,
     marginBottom: 20,
   },
   headerSectionRTL: {
-    // RTL styles if needed
   },
   headerGradient: {
     borderRadius: 20,
@@ -424,13 +422,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 
-  // Description Section
   descriptionSection: {
     marginHorizontal: 20,
     marginBottom: 24,
   },
   descriptionSectionRTL: {
-    // RTL styles if needed
   },
   sectionTitle: {
     fontSize: 20,
@@ -450,13 +446,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 
-  // Features Section
   featuresSection: {
     marginHorizontal: 20,
     marginBottom: 24,
   },
   featuresSectionRTL: {
-    // RTL styles if needed
   },
   featuresGrid: {
     flexDirection: 'row',
@@ -470,7 +464,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   featureCardRTL: {
-    // RTL styles if needed
   },
   featureGradient: {
     borderRadius: 16,
@@ -480,7 +473,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   featureContentRTL: {
-    // RTL styles if needed
   },
   featureIcon: {
     width: 48,
@@ -510,13 +502,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 
-  // Stats Section
   statsSection: {
     marginHorizontal: 20,
     marginBottom: 24,
   },
   statsSectionRTL: {
-    // RTL styles if needed
   },
   statsGrid: {
     flexDirection: 'row',
@@ -535,14 +525,12 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   statCardRTL: {
-    // RTL styles if needed
   },
   statContent: {
     padding: 16,
     alignItems: 'center',
   },
   statContentRTL: {
-    // RTL styles if needed
   },
   statIcon: {
     width: 40,
@@ -570,13 +558,11 @@ const styles = StyleSheet.create({
     textAlign:  I18nManager.isRTL ? 'left' : 'right',
   },
 
-  // Team Section
   teamSection: {
     marginHorizontal: 20,
     marginBottom: 24,
   },
   teamSectionRTL: {
-    // RTL styles if needed
   },
   teamGrid: {
     flexDirection: 'row',
@@ -588,7 +574,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   teamMemberRTL: {
-    // RTL styles if needed
   },
   teamMemberImage: {
     width: 80,
@@ -621,13 +606,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 
-  // Mission & Vision Section
   missionSection: {
     marginHorizontal: 20,
     marginBottom: 24,
   },
   missionSectionRTL: {
-    // RTL styles if needed
   },
   missionCard: {
     marginBottom: 16,
@@ -635,7 +618,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   missionCardRTL: {
-    // RTL styles if needed
   },
   missionGradient: {
     borderRadius: 16,
@@ -645,7 +627,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   missionContentRTL: {
-    // RTL styles if needed
   },
   missionTitle: {
     fontSize: 18,
@@ -672,7 +653,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   visionCardRTL: {
-    // RTL styles if needed
   },
   visionGradient: {
     borderRadius: 16,
@@ -682,7 +662,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   visionContentRTL: {
-    // RTL styles if needed
   },
   visionTitle: {
     fontSize: 18,
@@ -705,13 +684,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 
-  // Social Section
   socialSection: {
     marginHorizontal: 20,
     marginBottom: 24,
   },
   socialSectionRTL: {
-    // RTL styles if needed
   },
   socialLinks: {
     flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
@@ -719,7 +696,6 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   socialLinksRTL: {
-    // RTL styles if needed
   },
   socialLink: {
     width: 56,
@@ -729,13 +705,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  // Contact Section
   contactSection: {
     marginHorizontal: 20,
     marginTop: 10,
   },
   contactSectionRTL: {
-    // RTL styles if needed
   },
   contactCard: {
     backgroundColor: '#FFFFFF',
@@ -748,7 +722,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   contactCardRTL: {
-    // RTL styles if needed
+
   },
   contactContent: {
     flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',

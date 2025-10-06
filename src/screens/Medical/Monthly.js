@@ -6,7 +6,6 @@ import SelectDropdown from 'react-native-select-dropdown';
 import Feather from 'react-native-vector-icons/Feather';
 import { PieChart } from 'react-native-chart-kit';
 
-// --- Mock Components & Data ---
 const GoBack = ({ text }) => (
     <View style={styles.header}>
         <Text style={styles.headerText}>{text}</Text>
@@ -16,7 +15,6 @@ const GoBack = ({ text }) => (
 const FAKE_YEARS = [2024, 2025, 2026];
 
 const getFakeMonthlyPlans = (year) => {
-    // بيانات مختلفة لكل سنة لمحاكاة الواقع
     const baseVisits = year === 2024 ? 120 : 140;
     return [
         { id: 1, name: 'January', status: 'Completed', visits: baseVisits, completedVisits: baseVisits },
@@ -48,7 +46,6 @@ const MonthlyScreen = ({ navigation }) => {
         const plans = getFakeMonthlyPlans(year);
         setMonthlyPlans(plans);
 
-        // حساب بيانات الملخص للمخطط الدائري
         const completed = plans.filter(p => p.status === 'Completed').length;
         const pending = plans.filter(p => p.status === 'Pending').length;
         const notStarted = plans.filter(p => p.status === 'Not Started').length;

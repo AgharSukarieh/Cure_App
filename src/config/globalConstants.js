@@ -1,5 +1,9 @@
+// Import the new API configuration
+import API from './apiConfig';
+
+// Updated global constants using the new API structure
 const base_URL = () => {
-	return "https://pharmaceuticals.ncitsolutions.com/api/";
+	return "http://10.42.0.1:8003/api/"; // Updated to 8003 as requested
 };
 
 export default {
@@ -10,70 +14,117 @@ export default {
 	role: "role",
 	userData: "userData",
 	visit_id: "visit_id",
+	
+	// Updated to use new API structure
 	auth: {
-		login: "login",
-		logout: "logout",
-		register: "register",
-		delete_account:'delete-account'
+		login: API.auth.login,
+		logout: API.auth.logout,
+		register: API.auth.register,
+		delete_account: API.auth.delete_account
 	},
 	sales: {
-		pharmacy: "sales/pharamcy",
-		reports: "target/sales",
-		collection: "collect-money",
+		pharmacy: API.sales.pharmacy,
+		reports: API.sales.reports,
+		add_report: API.sales.add_report,
+		collection: API.sales.collection,
+		inventory: API.sales.inventory,
+		add_inventory: API.sales.add_inventory,
+		last_order: API.sales.last_order,
+		// pharmacy_areas: API.sales.pharmacy_areas, // Not available in apiConfig
+		orders: API.sales.orders,
+		product_by_barcode: API.sales.product_by_barcode
 	},
 	medical: {
-		reports: "target/medicals",
-		frequncy_visits: "frequncy-visits",
+		reports: API.medical.reports,
+		add_daily_report: API.medical.add_daily_report,
+		edit_daily_report: API.medical.edit_daily_report,
+		get_daily_report: API.medical.get_daily_report,
+		add_daily_schedule: API.medical.add_daily_schedule,
+		get_daily_schedule: API.medical.get_daily_schedule,
+		frequncy_visits: API.medical.frequncy_visits,
+		visits: API.medical.visits
 	},
 	users: {
-		cityArea: "users/",
-		user_orders: "user-orders",
-		order_details: "order-details/",
+		// cityArea: API.users.cityArea, // Not available in apiConfig
+		user_orders: API.users.user_orders,
+		order_details: API.users.order_details,
+		med_client: API.users.med_client,
+		client_doctor: API.users.client_doctor
 	},
 	doctor: {
-		speciality: "doctor/speciality",
-		allDoctors: "sales/doctor",
-		specialArea: "sales/doctor/areas/",
-		doctor_speciality: "doctor/speciality-area",
+		doctors: API.doctor.doctors,
+		speciality: API.doctor.speciality,
+		create_doctor: API.doctor.create_doctor
+	},
+	pharmacy: {
+		list: API.pharmacy.list,
+		create_pharmacy: API.pharmacy.create_pharmacy,
+		add_image: API.pharmacy.add_image
+	},
+	area: {
+		area: API.area.area,
+		city: API.area.city,
+		specialties: API.area.specialties,
+		get_cities: API.area.get_cities
 	},
 	plans: {
-		get_plans: "plans",
+		get_plans: API.plans,
 	},
 	visit: {
-		sales: "sale-visits",
-		medical: "medical-visits",
+		sales: API.sales.visits,
+		medical: API.medical.visits,
 	},
 	product: {
-		products: "product",
-		sample_products: "sample-products",
+		products: API.product.products,
+		sample_products: API.product.sample_products,
 	},
 	inventory: {
-		get_inventory: "get-last-order-pharamcy",
+		get_inventory: API.sales.inventory,
 	},
 	orders: {
-		add_order: "orders",
-		get_orders: "user-orders",
-		sales_order: "sales/orders",
+		add_order: API.orders.add_order,
+		get_orders: API.orders.get_orders,
+		sales_order: API.orders.sales_order,
+		order_details: API.orders.order_details
 	},
 	return: {
-		get_returns: "return-orders",
-		add_returns: "return-product",
+		get_returns: API.orders.return_orders,
+		add_returns: API.orders.return_product,
 	},
 	single_chat: {
-		get_conv: "get-single-chat-list",
-		get_mess: "get-single-chat-messages",
-		send_mess: "single_chat_message_mobile",
-		seen_chat: "seen-chat",
+		get_conv: API.chat.single_chat.get_conversations,
+		get_mess: API.chat.single_chat.get_messages,
+		send_mess: API.chat.single_chat.send_message,
+		seen_chat: API.chat.single_chat.seen_chat,
 	},
 	group_chat: {
-		get_conv: "get-group-chat-list",
-		get_mess: "get-group-chat-messages",
-		send_mess: "group_chat_message_mobile",
-		seen_chat: "seen-group",
-		create_group: "add-new-group",
+		get_conv: API.chat.group_chat.get_conversations,
+		get_mess: API.chat.group_chat.get_messages,
+		send_mess: API.chat.group_chat.send_message,
+		seen_chat: API.chat.group_chat.seen_chat,
+		create_group: API.chat.group_chat.create_group,
 	},
-	get_user_to_chat: "get-search-results",
-	get_cities: "get-all-cities",
+	// get_user_to_chat: API.get_user_to_chat, // Not available in apiConfig
+	get_cities: API.area.get_cities,
+	update_location: API.area.update_location,
+	
+	// Additional database endpoints
+	companies: {
+		companies: API.companies
+	},
+	bonuses: {
+		bonuses: API.bonuses
+	},
+	visits: {
+		visits: API.visits,
+		sale_visits: API.sale_visits
+	},
+	orderdetails: {
+		orderdetails: API.orderdetails
+	},
+	
+	// Export the new API configuration for modern usage
+	API: API
 };
 
 

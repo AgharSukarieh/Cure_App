@@ -555,25 +555,10 @@ const Styles = StyleSheet.create({
     alignContent: "center",
     alignItems: "center",
     justifyContent: "center",
-    // <-- تعديل: استخدم 'start' بدلاً من 'left'
     start: widthScreen * 0.194,
   },
-  // numberPercentAchieved: {
-  //   fontSize: widthScreen * 0.02,
-  //   color: "#ff0505ff",
-  //   top: heightScreen * 0.1,
-  //   position: "absolute",
-  //   // <-- تعديل: استخدم 'start' بدلاً من 'left'
-  //   start: widthScreen * 0.19,
-  // },
-  // numberPercentRemaining: {
-  //   fontSize: widthScreen * 0.02,
-  //   color: "#f50000ff",
-  //   top: heightScreen * 0.115,
-  //   position: "absolute",
-  //   // <-- تعديل: استخدم 'start' بدلاً من 'left'
-  //   start: widthScreen * 0.38,
-  // },
+ 
+ 
   legendContainer: { zIndex: 0, paddingTop: 0, justifyContent: "space-around" },
   legendItem: {
     flexDirection: "row",
@@ -585,7 +570,7 @@ const Styles = StyleSheet.create({
     width: widthScreen * 0.05,
     height: widthScreen * 0.05,
     borderRadius: (widthScreen * 0.05) / 2,
-    // <-- تعديل: استخدم 'marginEnd' بدلاً من 'marginRight'
+ 
     marginEnd: widthScreen * 0.02,
     marginTop: heightScreen * 0.032,
   },
@@ -593,7 +578,7 @@ const Styles = StyleSheet.create({
     fontSize: widthScreen * 0.035,
     color: "#000000ff",
     fontWeight: "400",
-    // <-- تعديل: لضمان محاذاة النص بشكل صحيح في RTL
+
     textAlign: 'left',
    
   },
@@ -610,24 +595,24 @@ const Styles = StyleSheet.create({
   rowChartTitle: {
     flexDirection: I18nManager.isRTL? "row-reverse":"row",
     gap: widthScreen * 0.01,
-    position: 'absolute', // <-- تعديل: أضفت position absolute
-    // <-- تعديل: استخدم 'start' بدلاً من 'left'
+    position: 'absolute', 
+  
     start: widthScreen * 0.33,
     top: heightScreen * 0.01,
     marginBottom: heightScreen * 0.04,
-    alignItems: 'center', // <-- تعديل: لمحاذاة الأيقونة مع النص
+    alignItems: 'center', 
   },
   dropdownContainer: {
     position: "relative",
-    // <-- تعديل: استخدم 'flex-start' ليعمل في كلا الاتجاهين
+  
     alignItems: "flex-start",
     marginTop: heightScreen * 0.02,
-    // <-- تعديل: استخدم 'marginStart' بدلاً من 'marginLeft'
+   
     marginStart: widthScreen * 0.04,
     zIndex: 1000,
   },
   dropdownButton: {
-    // <-- تعديل: استخدم I18nManager لتحديد اتجاه الأيقونة والنص
+    
     flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     alignItems: "center",
     justifyContent: "space-between",
@@ -640,13 +625,12 @@ const Styles = StyleSheet.create({
     fontSize: widthScreen * 0.035,
     color: "#2085BC",
     flex: 1,
-    // <-- تعديل: لضمان محاذاة النص بشكل صحيح
+   
     textAlign: 'left',
   },
   dropdownMenu: {
     position: "absolute",
     top: heightScreen * 0.06,
-    // <-- تعديل: استخدم 'start' بدلاً من 'left'
     start: 0,
     borderRadius: widthScreen * 0.02,
     backgroundColor: "#fff",
@@ -666,7 +650,6 @@ const Styles = StyleSheet.create({
     borderBottomColor: "#f0f0f0",
   },
   dropdownItemText: {
-    // <-- تعديل: لضمان محاذاة النص بشكل صحيح
     textAlign: 'left',
   }
 ,

@@ -5,50 +5,70 @@ import {
 	StyleSheet,
 	Modal,
 	ScrollView,
-	FlatList,
 	Image,
 	Alert,
 	Platform,
+	KeyboardAvoidingView,
+	TextInput,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { Dropdown } from "react-native-element-dropdown";
-import Input from "../Input";
 import GetLocation from "react-native-get-location";
 import { openPicker } from "@baronha/react-native-multiple-image-picker";
-import { uploadFiles, post, get } from "../../WebService/RequestBuilder";
+import { post } from "../../WebService/RequestBuilder";
 import Constants from "../../config/globalConstants";
-import { launchImageLibrary } from "react-native-image-picker";
 import LoadingScreen from "../LoadingScreen";
 import RNFetchBlob from "rn-fetch-blob";
 import MapView, { Marker } from "react-native-maps";
 
-const AddNewPharmacyModel = ({ showM, hideM, submit, data,setFilter,user }) => {
-	const [pharmacyName, setPharmacyName] = useState(null);
-	// const [classification, setClassification] = useState('');
-
-	const [classificationData, setClassificationData] = useState([]);
+const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties }) => {
+	const [pharmacyName, setPharmacyName] = useState("");
+	const [responsible, setResponsible] = useState("");
+	const [phone, setPhone] = useState("");
 	const [classificationValue, setClassificationValue] = useState(null);
-
-	const [citiesData, setCitiesData] = useState([]);
+	const [classificationData, setClassificationData] = useState([]);
 	const [cityValue, setCityValue] = useState(null);
-
-	const [areasData, setAreasData] = useState([]);
 	const [areaValue, setAreaValue] = useState(null);
-	const [citiesList, setCityList] = useState([]);
+	const [availableAreas, setAvailableAreas] = useState([]);
 	const [latitude, setLatitude] = useState(null);
 	const [longitude, setLongitude] = useState(null);
-
 	const [images, setImages] = useState([]);
 	const [imagesBase64, setImagesBase64] = useState([]);
-
 	const [isLoading, setIsLoading] = useState(false);
 
+	// تحديث المناطق عند تغيير المدينة
+	useEffect(() => {
+		if (cityValue && allAreas) {
+			const filteredAreas = allAreas.filter((area) => area.city_id == cityValue);
+			setAvailableAreas(filteredAreas);
+			setAreaValue(null); // إعادة تعيين المنطقة
+		} else {
+			setAvailableAreas([]);
+		}
+	}, [cityValue, allAreas]);
+
+	// تحميل التصنيفات عند فتح المودال
+	useEffect(() => {
+		getClassification();
+	}, []);
+
 	const submitData = async () => {
-		if (pharmacyName && cityValue && areaValue) {
-			setIsLoading(true);
+		// Validation
+		if (!pharmacyName || !responsible || !phone || !cityValue || !areaValue || !classificationValue) {
+			Alert.alert(
+				"Required Fields", 
+				"Pharmacy Name, Responsible, Phone, City, Area and Classification are required"
+			);
+			return;
+		}
+
+		setIsLoading(true);
+		try {
 			const bodyData = {
 				name: pharmacyName,
+				responsible_pharmacist_name: responsible,
+				phone: phone,
 				activate_status: 1,
 				city_id: cityValue,
 				area_id: areaValue,
@@ -57,76 +77,21 @@ const AddNewPharmacyModel = ({ showM, hideM, submit, data,setFilter,user }) => {
 				longitude: longitude,
 				images: imagesBase64,
 			};
-			post(Constants.sales.pharmacy, bodyData).then((res) => {
-				setPharmacyName(null);
-				setClassificationValue(null);
-				setCityValue(null);
-				setAreaValue(null);
-				setLatitude(null);
-				setLongitude(null);
-				setImages([]);
-				setImagesBase64([]);
-				hideM();
-				setFilter({ user_id: user?.id });
-			}).catch((err) => {
-				console.log("....", err);
-			}).finally(() => {
-				setIsLoading(false);
-			});
-		} else {
-			Alert.alert("pharmacy Name, City and Area is required");
-		}
-	};
-	const getCities = () => {
-		// setCitiesData(citiesList);
-	};
-
-	const getClassification = () => {
-		const data = ["A", "B", "C", "D"];
-		var count = Object.keys(data).length;
-		let classificationArray = [];
-		for (var i = 0; i < count; i++) {
-			classificationArray.push({
-				value: data[i],
-				label: data[i],
-			});
-		}
-		setClassificationData(classificationArray);
-	};
-
-
-	const loadCities = () => {
-		// call api to get cities
-		setIsLoading(true);
-		get(Constants.get_cities).then((response) => {
-			const list = [];
-			response.forEach((city) => {
-					list.push({
-						value: city.id,
-						label: city.name,
-					});
-				},
-			);
-			setCityList(response);
-			setCitiesData(list);
-		});
-		setIsLoading(false);
-
-	};
-	const getArea = (id) => {
-		citiesList.forEach((city) => {
-			if (city.id == id) {
-				console.log(city.areas);
-				const list = [];
-				city.areas.forEach((area) => {
-					list.push({
-						value: area.id,
-						label: area.name,
-					});
-				});
-				setAreasData(list);
+			
+			const response = await post(Constants.sales.pharmacy, bodyData);
+			
+			if (response) {
+				resetForm();
+				hide();
+				submit(true); // إشعار بالنجاح
 			}
-		});
+		} catch (err) {
+			console.log("Error submitting pharmacy:", err);
+			Alert.alert("Error", "Failed to add pharmacy. Please try again.");
+			submit(false);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const getCurrentLocation = () => {
@@ -142,6 +107,7 @@ const AddNewPharmacyModel = ({ showM, hideM, submit, data,setFilter,user }) => {
 			})
 			.catch(error => {
 				setIsLoading(false);
+				Alert.alert("Location Error", "Could not get current location");
 				console.log(error);
 			});
 	};
@@ -157,6 +123,7 @@ const AddNewPharmacyModel = ({ showM, hideM, submit, data,setFilter,user }) => {
 				singleSelectedMode,
 				isCrop: false,
 			});
+			
 			const crop = response.crop;
 			if (crop) {
 				response.path = crop.path;
@@ -169,7 +136,6 @@ const AddNewPharmacyModel = ({ showM, hideM, submit, data,setFilter,user }) => {
 
 			if (Platform.OS === "ios") {
 				const base = await Promise.all(arr.map(async (img) => {
-					console.log(arr[0].path);
 					const data = await fetch(arr[0].path);
 					const blob = await data.blob();
 					return new Promise((resolve) => {
@@ -183,19 +149,13 @@ const AddNewPharmacyModel = ({ showM, hideM, submit, data,setFilter,user }) => {
 				}));
 				setImagesBase64([base]);
 			} else {
-				getImageBaser64ToAndroid(arr[0].realPath)
-					.then((base64Image) => {
-						if (base64Image) {
-							setImagesBase64([base64Image]);
-						}
-					})
-					.catch((error) => {
-						console.error("Error3:", error);
-					});
+				const base64Image = await getImageBaser64ToAndroid(arr[0].realPath);
+				if (base64Image) {
+					setImagesBase64([base64Image]);
+				}
 			}
-
 		} catch (e) {
-			console.log("e", e);
+			console.log("Image picker error:", e);
 		}
 	};
 
@@ -209,319 +169,290 @@ const AddNewPharmacyModel = ({ showM, hideM, submit, data,setFilter,user }) => {
 		}
 	};
 
-	useEffect(() => {
-		getCities();
-		getClassification();
-		loadCities();
-	}, []);
+	const resetForm = () => {
+		setPharmacyName("");
+		setResponsible("");
+		setPhone("");
+		setClassificationValue(null);
+		setCityValue(null);
+		setAreaValue(null);
+		setAvailableAreas([]);
+		setLatitude(null);
+		setLongitude(null);
+		setImages([]);
+		setImagesBase64([]);
+	};
+
+	const handleClose = () => {
+		resetForm();
+		hide();
+	};
+
+	const dropdownStyles = {
+		itemTextStyle: { color: "#333", fontSize: 14 },
+		selectedTextStyle: { fontSize: 14, color: "#333" },
+		placeholderStyle: { fontSize: 14, color: "#999" },
+		maxHeight: 200,
+	};
+  const getClassification = () => {
+		const data = ["A", "B", "C", "D"];
+		var count = Object.keys(data).length;
+		let classificationArray = [];
+		for (var i = 0; i < count; i++) {
+			classificationArray.push({
+				value: data[i],
+				label: data[i],
+			});
+		}
+		setClassificationData(classificationArray);
+	};
 
 	return (
 		<Modal
-			animationType="slide"
+			animationType="fade"
 			transparent={true}
-			visible={showM}
-			coverScreen={false}
+			visible={show}
+			onRequestClose={handleClose}
 		>
-			<View style={styles.ModalContainer}>
-				<View style={styles.ModalView}>
+			<KeyboardAvoidingView
+				behavior={Platform.OS === "ios" ? "padding" : "height"}
+				style={styles.modalOverlay}
+			>
+				<View style={styles.modalContainer}>
+					<ScrollView showsVerticalScrollIndicator={false}>
+						{/* Header */}
+						<View style={styles.modalHeader}>
+							<Text style={styles.modalTitle}>Add New Pharmacy</Text>
+							<TouchableOpacity onPress={handleClose}>
+								<AntDesign name="close" size={24} color="#555" />
+							</TouchableOpacity>
+						</View>
 
-					<TouchableOpacity
-						onPress={() => {
-							submit(null);
-							hideM();
-						}}>
-						<AntDesign
-							name="close"
-							color="#469ED8"
-							size={35}
-							style={{ alignSelf: "flex-end" }}
-						/>
-					</TouchableOpacity>
-
-					<View style={{ marginVertical: 10 }}>
-						<ScrollView showsVerticalScrollIndicator={false}>
-							<View
-								style={{
-									width: "100%",
-									justifyContent: "center",
-									alignItems: "center",
-								}}>
-
-								<View style={styles.container}>
-									<Dropdown
-										itemTextStyle={{ color: "#000000" }}
-										style={styles.dropdown}
-										placeholderStyle={styles.placeholderStyle}
-										selectedTextStyle={styles.selectedTextStyle}
-										inputSearchStyle={styles.inputSearchStyle}
-										iconStyle={styles.iconStyle}
-										data={citiesData}
-										search
-										maxHeight={300}
-										labelField="label"
-										valueField="value"
-										placeholder={!cityValue ? "Select City" : "..."}
-										searchPlaceholder="Search..."
-										value={cityValue}
-										onBlur={() => {
-										}}
-										onChange={item => {
-											setCityValue(item.value);
-											getArea(item.value);
-										}}
-										renderLeftIcon={() => (
-											<AntDesign
-												style={styles.icon}
-												color={cityValue ? "blue" : "black"}
-												name="Safety"
-												size={20}
-											/>
-										)}
-									/>
-								</View>
-
-								<View style={{ ...styles.container, marginTop: 40 }}>
-									<Dropdown
-										itemTextStyle={{ color: "#000000" }}
-										style={styles.dropdown}
-										placeholderStyle={styles.placeholderStyle}
-										selectedTextStyle={styles.selectedTextStyle}
-										inputSearchStyle={styles.inputSearchStyle}
-										iconStyle={styles.iconStyle}
-										data={areasData}
-										search
-										maxHeight={300}
-										labelField="label"
-										valueField="value"
-										placeholder={!areaValue ? "Select Area" : "..."}
-										searchPlaceholder="Search..."
-										value={areaValue}
-										onBlur={() => {
-										}}
-										onChange={item => {
-											setAreaValue(item.value);
-										}}
-										renderLeftIcon={() => (
-											<AntDesign
-												style={styles.icon}
-												color={areaValue ? "blue" : "black"}
-												name="Safety"
-												size={20}
-											/>
-										)}
-									/>
-								</View>
-
-								<View style={{ ...styles.container, marginTop: 40 }}>
-									<Dropdown
-										itemTextStyle={{ color: "#000000" }}
-										style={styles.dropdown}
-										placeholderStyle={styles.placeholderStyle}
-										selectedTextStyle={styles.selectedTextStyle}
-										inputSearchStyle={styles.inputSearchStyle}
-										iconStyle={styles.iconStyle}
-										data={classificationData}
-										search
-										maxHeight={300}
-										labelField="label"
-										valueField="value"
-										placeholder={!classificationValue ? "Select Classification" : "..."}
-										searchPlaceholder="Search..."
-										value={classificationValue}
-										onBlur={() => {
-										}}
-										onChange={item => {
-											setClassificationValue(item.value);
-										}}
-										renderLeftIcon={() => (
-											<AntDesign
-												style={styles.icon}
-												color={classificationValue ? "blue" : "black"}
-												name="Safety"
-												size={20}
-											/>
-										)}
-									/>
-								</View>
-
-								<Input
-									lable={"Pharmacy Name"}
-									setData={setPharmacyName}
-									style={{ ...styles.inputModel, backgroundColor: "white" }}
+						{/* Body */}
+						<View style={styles.modalBody}>
+							{/* Pharmacy Name */}
+							<View style={styles.inputGroup}>
+								<Text style={styles.inputLabel}>
+									Pharmacy Name <Text style={styles.requiredStar}>*</Text>
+								</Text>
+								<TextInput
+									style={styles.modalInput}
+									placeholder="Enter pharmacy name"
 									value={pharmacyName}
-									viewStyle={{ width: "90%" }}
+									onChangeText={setPharmacyName}
+									placeholderTextColor="#999"
 								/>
+							</View>
 
-								{/* <Input
-                  lable={'Classification'}
-                  setData={setClassification}
-                  style={{...styles.inputModel, backgroundColor: 'white'}}
-                  value={classification}
-                  viewStyle={{width: '90%'}}
-                /> */}
+							{/* Responsible */}
+							<View style={styles.inputGroup}>
+								<Text style={styles.inputLabel}>
+									Responsible <Text style={styles.requiredStar}>*</Text>
+								</Text>
+								<TextInput
+									style={styles.modalInput}
+									placeholder="Enter responsible person name"
+									value={responsible}
+									onChangeText={setResponsible}
+									placeholderTextColor="#999"
+								/>
+							</View>
 
-								<TouchableOpacity style={{
-									marginTop: 40,
-									width: "90%",
-									height: 50,
-									backgroundColor: latitude ? "#469ED8" : "#fff",
-									borderWidth: 2,
-									borderColor: "#469ED8",
-									borderRadius: 5,
-									justifyContent: "center",
-								}} onPress={() => {
-									getCurrentLocation();
-								}}>
-									<Text style={{
-										marginBottom: 5,
-										color: latitude ? "#fff" : "#469ED8",
-										textAlign: "center",
-										fontSize: 17,
-										fontWeight: "bold",
-									}}>
-										Location
+							{/* Phone */}
+							<View style={styles.inputGroup}>
+								<Text style={styles.inputLabel}>
+									Phone <Text style={styles.requiredStar}>*</Text>
+								</Text>
+								<TextInput
+									style={styles.modalInput}
+									placeholder="Enter phone number"
+									value={phone}
+									onChangeText={setPhone}
+									placeholderTextColor="#999"
+									keyboardType="phone-pad"
+								/>
+							</View>
+
+							{/* Classification Dropdown */}
+							<View style={styles.inputGroup}>
+								<Text style={styles.inputLabel}>
+									Classification <Text style={styles.requiredStar}>*</Text>
+								</Text>
+								<Dropdown
+									style={styles.dropdown}
+									data={classificationData || []}
+									labelField="label"
+									valueField="value"
+									placeholder="Select Classification"
+									searchPlaceholder="Search..."
+									value={classificationValue}
+									search
+									onChange={item => {
+										setClassificationValue(item.value);
+									}}
+									{...dropdownStyles}
+								/>
+							</View>
+
+							{/* City Dropdown */}
+							<View style={styles.inputGroup}>
+								<Text style={styles.inputLabel}>
+									City <Text style={styles.requiredStar}>*</Text>
+								</Text>
+								<Dropdown
+									style={styles.dropdown}
+									data={cities || []}
+									labelField="label"
+									valueField="value"
+									placeholder="Select City"
+									searchPlaceholder="Search..."
+									value={cityValue}
+									search
+									onChange={item => {
+										setCityValue(item.value);
+									}}
+									{...dropdownStyles}
+								/>
+							</View>
+
+							{/* Area Dropdown */}
+							<View style={styles.inputGroup}>
+								<Text style={styles.inputLabel}>
+									Area <Text style={styles.requiredStar}>*</Text>
+								</Text>
+								<Dropdown
+									style={styles.dropdown}
+									data={availableAreas}
+									labelField="label"
+									valueField="value"
+									placeholder={
+										!cityValue
+											? "Select City First"
+											: availableAreas.length === 0
+											? "No areas available"
+											: "Select Area"
+									}
+									searchPlaceholder="Search..."
+									value={areaValue}
+									search
+									disable={!cityValue || availableAreas.length === 0}
+									onChange={item => {
+										setAreaValue(item.value);
+									}}
+									{...dropdownStyles}
+								/>
+							</View>
+
+							{/* Location Button */}
+							<View style={styles.inputGroup}>
+								<Text style={styles.inputLabel}>Location</Text>
+								<TouchableOpacity
+									style={[
+										styles.locationButton,
+										latitude && styles.locationButtonActive
+									]}
+									onPress={getCurrentLocation}
+								>
+									<AntDesign
+										name="enviromento"
+										size={20}
+										color={latitude ? "#FFF" : "#183E9F"}
+										style={{ marginRight: 8 }}
+									/>
+									<Text style={[
+										styles.locationButtonText,
+										latitude && styles.locationButtonTextActive
+									]}>
+										{latitude ? "Location Added ✓" : "Get Current Location"}
 									</Text>
 								</TouchableOpacity>
-								{(latitude && longitude) &&
+							</View>
+
+							{/* Map View */}
+							{(latitude && longitude) && (
+								<View style={styles.inputGroup}>
 									<MapView
 										style={styles.map}
 										initialRegion={{
 											latitude: latitude,
 											longitude: longitude,
-											latitudeDelta: 0.005,  // Adjust these values to control zoom level
-											longitudeDelta: 0.005, // Adjust these values to control zoom level
+											latitudeDelta: 0.005,
+											longitudeDelta: 0.005,
 										}}
-										showsUserLocation={true}>
+										showsUserLocation={true}
+									>
 										<Marker
 											coordinate={{ latitude: latitude, longitude: longitude }}
 										/>
-									</MapView>}
-								<View
-									style={{
-										...styles.container,
-										justifyContent: "center",
-										marginTop: 30,
-									}}>
-									<TouchableOpacity
-										style={{
-											...styles.newbtn,
-											backgroundColor: "white",
-											borderColor: "#469ED8",
-											borderWidth: 2,
-										}}
-										onPress={() => {
-											onPicker();
-										}}>
-										<View
-											style={{
-												flexDirection: "row",
-												justifyContent: "space-between",
-											}}>
-											<Text
-												style={{
-													color: "#469ED8",
-													fontSize: 18,
-													paddingHorizontal: 50,
-													textAlign: "center",
-													fontWeight: "bold",
-												}}>
-												Attachments
-											</Text>
-											<AntDesign
-												style={styles.icon}
-												color={images.length > 0 ? "blue" : "black"}
-												name="pluscircle"
-												size={25}
-											/>
-										</View>
-									</TouchableOpacity>
+									</MapView>
+								</View>
+							)}
 
-									<FlatList
-										horizontal={true}
-										data={images}
-										renderItem={({ item }) => (
-											<View key={item.position}>
-												<Image
-													key={item.position}
-													style={{
-														height: 80,
-														width: 80,
-														marginRight: 5,
-														borderRadius: 7,
-													}}
-													source={{ uri: Platform.OS === "ios" ? images[0].path : `file://${images[0].realPath}` }}
-												/>
-
-												<TouchableOpacity
-													key={item.position}
-													style={{ position: "absolute", top: 5, right: 5 }}
-													onPress={async () => {
-														// const arr = images.filter(
-														//   items =>
-														//     items.localIdentifier !== item.localIdentifier,
-														// );
-														// setImages(arr);
-														setImages([]);
-														//   const baseArray = await Promise.all(arr.map(async (img) => {
-														//   const data = await fetch(img.path);
-														//   const blob = await data.blob();
-														//   return new Promise((resolve) => {
-														//     const reader = new FileReader();
-														//     reader.readAsDataURL(blob);
-														//     reader.onloadend = () => {
-														//       const base64data = reader.result;
-														//       resolve(base64data);
-														//     };
-														//   });
-														// }));
-
-														// setImagesBase64(baseArray.length > 0 ? baseArray : []);
-														setImagesBase64([]);
-														// console.log('....', baseArray);
-													}}>
-													<AntDesign
-														style={styles.icon}
-														color={"red"}
-														name="minuscircle"
-														size={25}
-													/>
-												</TouchableOpacity>
-											</View>
-										)}
-										// keyExtractor={item => item.position}
+							{/* Attachments */}
+							<View style={styles.inputGroup}>
+								<Text style={styles.inputLabel}>Attachments (Optional)</Text>
+								<TouchableOpacity
+									style={styles.attachmentButton}
+									onPress={onPicker}
+								>
+									<Text style={styles.attachmentButtonText}>
+										{images.length > 0 ? "Change Image" : "Add Image"}
+									</Text>
+									<AntDesign
+										name="camerao"
+										size={20}
+										color="#183E9F"
 									/>
-								</View>
+								</TouchableOpacity>
 
-								<View
-									style={{
-										...styles.container,
-										justifyContent: "center",
-										marginTop: 30,
-										marginBottom: 70,
-									}}>
-									<TouchableOpacity
-										style={styles.newbtn}
-										onPress={() => {
-											submitData();
-										}}>
-										<Text
-											style={{
-												color: "#fff",
-												fontSize: 18,
-												paddingHorizontal: 50,
-												textAlign: "center",
-												fontWeight: "bold",
-											}}>
-											Submit
-										</Text>
-									</TouchableOpacity>
-								</View>
-
+								{images.length > 0 && (
+									<View style={styles.imagePreviewContainer}>
+										<Image
+											style={styles.imagePreview}
+											source={{
+												uri: Platform.OS === "ios"
+													? images[0].path
+													: `file://${images[0].realPath}`
+											}}
+										/>
+										<TouchableOpacity
+											style={styles.removeImageButton}
+											onPress={() => {
+												setImages([]);
+												setImagesBase64([]);
+											}}
+										>
+											<AntDesign
+												name="closecircle"
+												size={24}
+												color="#DC3545"
+											/>
+										</TouchableOpacity>
+									</View>
+								)}
 							</View>
-						</ScrollView>
-					</View>
+						</View>
+
+						{/* Footer */}
+						<View style={styles.modalFooter}>
+							<TouchableOpacity
+								style={[styles.modalButton, styles.submitButton]}
+								onPress={submitData}
+							>
+								<Text style={styles.modalButtonText}>Submit</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={[styles.modalButton, styles.cancelButton]}
+								onPress={handleClose}
+							>
+								<Text style={[styles.modalButtonText, { color: "#333" }]}>
+									Cancel
+								</Text>
+							</TouchableOpacity>
+						</View>
+					</ScrollView>
 				</View>
-			</View>
+			</KeyboardAvoidingView>
 			{isLoading && <LoadingScreen />}
 		</Modal>
 	);
@@ -530,128 +461,156 @@ const AddNewPharmacyModel = ({ showM, hideM, submit, data,setFilter,user }) => {
 export default AddNewPharmacyModel;
 
 const styles = StyleSheet.create({
-	iconPassword: {
-		position: "absolute",
-		right: "3%",
-		height: 35,
-		width: 35,
-	},
-	container: {
-		backgroundColor: "white",
-		width: "90%",
-		marginTop: 15,
-	},
-	dropdown: {
-		height: 50,
-		borderColor: "#469ED8",
-		borderWidth: 1,
-		borderRadius: 8,
-		paddingHorizontal: 8,
-	},
-	icon: {
-		marginRight: 5,
-	},
-	label: {
-		position: "absolute",
-		backgroundColor: "white",
-		left: 22,
-		top: 8,
-		zIndex: 999,
-		paddingHorizontal: 8,
-		fontSize: 14,
-	},
-	placeholderStyle: {
-		fontSize: 16,
-		color: "#808080",
-	},
-	selectedTextStyle: {
-		fontSize: 16,
-		color: "#000000",
-	},
-	inputSearchStyle: {
-		height: 40,
-		fontSize: 16,
-		color: "#000000",
-	},
-	iconStyle: {
-		width: 20,
-		height: 20,
-	},
-	ModalContainer: {
+	modalOverlay: {
 		flex: 1,
+		backgroundColor: "rgba(0, 0, 0, 0.5)",
 		justifyContent: "center",
 		alignItems: "center",
-		backgroundColor: "#0707078c",
-
+		padding: 20,
 	},
-	ModalView: {
-		backgroundColor: "#fff",
-		borderRadius: 10,
-		width: "95%",
-		height: "75%",
+	modalContainer: {
+		width: "100%",
+		maxHeight: "85%",
+		backgroundColor: "white",
+		borderRadius: 15,
+		padding: 20,
+		elevation: 10,
 		shadowColor: "#000",
 		shadowOffset: { width: 0, height: 2 },
 		shadowOpacity: 0.25,
-		shadowRadius: 4,
-		elevation: 5,
-		padding: 20,
-		overflow: "hidden",
+		shadowRadius: 3.84,
 	},
-	card: {
-		shadowColor: "#469ED8",
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.22,
-		shadowRadius: 2.22,
-		elevation: 3,
-		width: "99%",
-		alignSelf: "center",
-		backgroundColor: "#fff",
-		padding: 15,
-		marginTop: 10,
-		borderRadius: 7,
+	modalHeader: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		borderBottomWidth: 1,
+		borderBottomColor: "#eee",
+		paddingBottom: 15,
+		marginBottom: 20,
 	},
-	phname: {
-		fontSize: 25,
-		textTransform: "capitalize",
-		color: "#469ED8",
-	},
-	phlocation: {
-		marginHorizontal: 15,
-		marginVertical: 5,
-		fontSize: 16,
-	},
-	item_name: {
+	modalTitle: {
 		fontSize: 20,
-		textTransform: "capitalize",
-		color: "#469ED8",
+		fontWeight: "bold",
+		color: "#183E9F",
+		flex: 1,
 	},
-	item_info: {
+	modalBody: {
+		marginBottom: 20,
+	},
+	inputGroup: {
+		marginBottom: 20,
+	},
+	inputLabel: {
+		fontSize: 16,
+		color: "#555",
+		marginBottom: 8,
+		fontWeight: "600",
+	},
+	modalInput: {
+		height: 50,
+		borderColor: "#E0E0E0",
+		borderWidth: 1,
+		borderRadius: 8,
+		paddingHorizontal: 12,
+		backgroundColor: "#F8F9FA",
+		fontSize: 16,
+		color: "#000",
+	},
+	dropdown: {
+		height: 50,
+		borderColor: "#E0E0E0",
+		borderWidth: 1,
+		borderRadius: 8,
+		paddingHorizontal: 12,
+		backgroundColor: "#F8F9FA",
+	},
+	locationButton: {
+		height: 50,
+		borderWidth: 1,
+		borderColor: "#183E9F",
+		borderRadius: 8,
+		backgroundColor: "#FFF",
+		flexDirection: "row",
 		justifyContent: "center",
 		alignItems: "center",
 	},
-	item_itemtitle: {
-		marginBottom: 5,
-		textTransform: "capitalize",
+	locationButtonActive: {
+		backgroundColor: "#183E9F",
 	},
-	newbtn: {
-		backgroundColor: "#469ED8",
-		height: 50,
-		paddingVertical: 5,
-		paddingHorizontal: 4,
-		borderRadius: 7,
-		justifyContent: "center",
-		marginVertical: 20,
+	locationButtonText: {
+		fontSize: 16,
+		color: "#183E9F",
+		fontWeight: "600",
 	},
-	inputModel: {
-		height: 40,
-		borderColor: "#469ED8",
-		borderWidth: 1,
-		paddingLeft: 10,
-		borderRadius: 5,
-		color: "#000000",
+	locationButtonTextActive: {
+		color: "#FFF",
 	},
 	map: {
-		width: "90%",
+		width: "100%",
 		height: 200,
+		borderRadius: 8,
+		overflow: "hidden",
+	},
+	attachmentButton: {
+		height: 50,
+		borderWidth: 1,
+		borderColor: "#183E9F",
+		borderRadius: 8,
+		backgroundColor: "#FFF",
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		paddingHorizontal: 15,
+	},
+	attachmentButtonText: {
+		fontSize: 16,
+		color: "#183E9F",
+		fontWeight: "600",
+	},
+	imagePreviewContainer: {
+		marginTop: 15,
+		position: "relative",
+		alignSelf: "center",
+	},
+	imagePreview: {
+		width: 120,
+		height: 120,
+		borderRadius: 8,
+	},
+	removeImageButton: {
+		position: "absolute",
+		top: -10,
+		right: -10,
+		backgroundColor: "#FFF",
+		borderRadius: 12,
+	},
+	modalFooter: {
+		marginTop: 10,
+	},
+	modalButton: {
+		height: 50,
+		borderRadius: 8,
+		justifyContent: "center",
+		alignItems: "center",
+		marginBottom: 10,
+	},
+	submitButton: {
+		backgroundColor: "#183E9F",
+	},
+	cancelButton: {
+		backgroundColor: "#E9ECEF",
+		borderWidth: 1,
+		borderColor: "#DEE2E6",
+	},
+	modalButtonText: {
+		color: "#FFF",
+		fontSize: 16,
+		fontWeight: "bold",
+	},
+	requiredStar: {
+		color: "#DC3545",
+		fontSize: 16,
+		fontWeight: "bold",
 	},
 });

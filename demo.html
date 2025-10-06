@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المدن والمناطق</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #1976d2;
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f44336;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .cities-areas-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .section h2 {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid;
+            color: #333;
+        }
+        
+        .cities-section h2 {
+            border-color: #1976d2;
+            color: #1976d2;
+        }
+        
+        .areas-section h2 {
+            border-color: #388e3c;
+            color: #388e3c;
+        }
+        
+        .list-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .list-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .list-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .list-item.selected {
+            background-color: #e3f2fd;
+            border-left: 4px solid #1976d2;
+        }
+        
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .item-id {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #dee2e6;
+        }
+        
+        .stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .stats h3 {
+            margin-top: 0;
+            color: white;
+        }
+        
+        .stats p {
+            margin: 8px 0;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #1565c0;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        @media (max-width: 768px) {
+            .cities-areas-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏙️ إدارة المدن والمناطق</h1>
+        </div>
+        
+        <div id="root"></div>
+    </div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const CitiesAreasDemo = () => {
+            const [cities, setCities] = useState([]);
+            const [areas, setAreas] = useState([]);
+            const [blockId, setBlockId] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState(null);
+            const [selectedCity, setSelectedCity] = useState(null);
+            const [filteredAreas, setFilteredAreas] = useState([]);
+
+            // جلب البيانات من API
+            const fetchCitiesAndAreas = async () => {
+                setLoading(true);
+                setError(null);
+                
+                try {
+                    const response = await fetch('http://10.42.0.1:8003/api/user/cities-areas', {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR...'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        const { cities, areas, block_id } = result.data;
+                        
+                        // حفظ البيانات في state
+                        setCities(cities);
+                        setAreas(areas);
+                        setBlockId(block_id);
+                        
+                        // حفظ البيانات في localStorage
+                        localStorage.setItem('citiesAndAreas', JSON.stringify({
+                            cities,
+                            areas,
+                            block_id,
+                            timestamp: new Date().toISOString()
+                        }));
+                        
+                        console.log('تم جلب البيانات بنجاح:', { cities, areas, block_id });
+                    } else {
+                        throw new Error(result.message || 'فشل في جلب البيانات');
+                    }
+                } catch (err) {
+                    setError(err.message);
+                    console.error('خطأ في جلب البيانات:', err);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            // تحميل البيانات من localStorage عند بدء التطبيق
+            const loadFromLocalStorage = () => {
+                try {
+                    const storedData = localStorage.getItem('citiesAndAreas');
+                    if (storedData) {
+                        const parsedData = JSON.parse(storedData);
+                        setCities(parsedData.cities || []);
+                        setAreas(parsedData.areas || []);
+                        setBlockId(parsedData.block_id);
+                        console.log('تم تحميل البيانات من localStorage');
+                    }
+                } catch (err) {
+                    console.error('خطأ في تحميل البيانات من localStorage:', err);
+                }
+            };
+
+            // عند الضغط على مدينة
+            const handleCityClick = (city) => {
+                setSelectedCity(city);
+                const cityAreas = areas.filter(area => area.city_id === city.id);
+                setFilteredAreas(cityAreas);
+                console.log(`تم اختيار مدينة: ${city.name}`, cityAreas);
+            };
+
+            // تحميل البيانات عند بدء التطبيق
+            useEffect(() => {
+                loadFromLocalStorage();
+                fetchCitiesAndAreas();
+            }, []);
+
+            return (
+                <div>
+                    {/* معلومات Block ID */}
+                    {blockId && (
+                        <div className="info-box">
+                            <strong>🆔 Block ID: {blockId}</strong>
+                        </div>
+                    )}
+
+                    {/* حالة التحميل */}
+                    {loading && (
+                        <div className="loading" style={{
+                            padding: '20px',
+                            borderRadius: '8px',
+                            marginBottom: '20px',
+                            textAlign: 'center'
+                        }}>
+                            <p>⏳ جاري التحميل...</p>
+                        </div>
+                    )}
+
+                    {/* رسالة الخطأ */}
+                    {error && (
+                        <div className="error">
+                            <strong>❌ خطأ:</strong> {error}
+                            <button 
+                                onClick={fetchCitiesAndAreas}
+                                className="btn btn-primary"
+                                style={{ marginLeft: '10px' }}
+                            >
+                                🔄 إعادة المحاولة
+                            </button>
+                        </div>
+                    )}
+
+                    <div className="cities-areas-container">
+                        {/* قائمة المدن */}
+                        <div className="section cities-section">
+                            <h2>🏙️ المدن ({cities.length})</h2>
+                            
+                            {cities.length > 0 ? (
+                                <div className="list-container">
+                                    {cities.map((city) => (
+                                        <div
+                                            key={city.id}
+                                            onClick={() => handleCityClick(city)}
+                                            className={`list-item ${selectedCity?.id === city.id ? 'selected' : ''}`}
+                                        >
+                                            <div className="item-name">{city.name}</div>
+                                            <div className="item-id">ID: {city.id}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                !loading && (
+                                    <div className="empty-state">
+                                        📭 لا توجد مدن متاحة
+                                    </div>
+                                )
+                            )}
+                        </div>
+
+                        {/* قائمة المناطق */}
+                        <div className="section areas-section">
+                            <h2>
+                                📍 المناطق ({filteredAreas.length})
+                                {selectedCity && (
+                                    <span style={{ 
+                                        fontSize: '14px', 
+                                        fontWeight: 'normal',
+                                        opacity: 0.8
+                                    }}>
+                                        {' '}- {selectedCity.name}
+                                    </span>
+                                )}
+                            </h2>
+                            
+                            {selectedCity ? (
+                                filteredAreas.length > 0 ? (
+                                    <div className="list-container">
+                                        {filteredAreas.map((area) => (
+                                            <div
+                                                key={area.id}
+                                                className="list-item"
+                                                style={{ backgroundColor: '#f8f9fa', cursor: 'default' }}
+                                            >
+                                                <div className="item-name">{area.name}</div>
+                                                <div className="item-id">
+                                                    ID: {area.id} | City ID: {area.city_id}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="empty-state">
+                                        📭 لا توجد مناطق لهذه المدينة
+                                    </div>
+                                )
+                            ) : (
+                                <div className="empty-state">
+                                    👆 اختر مدينة لعرض المناطق
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* إحصائيات */}
+                    {!loading && !error && (
+                        <div className="stats">
+                            <h3>📊 الإحصائيات</h3>
+                            <p><strong>عدد المدن:</strong> {cities.length}</p>
+                            <p><strong>إجمالي المناطق:</strong> {areas.length}</p>
+                            {selectedCity && (
+                                <p><strong>مناطق المدينة المختارة:</strong> {filteredAreas.length}</p>
+                            )}
+                        </div>
+                    )}
+
+                    {/* أزرار التحكم */}
+                    <div className="controls">
+                        <button 
+                            onClick={fetchCitiesAndAreas}
+                            disabled={loading}
+                            className="btn btn-primary"
+                        >
+                            🔄 تحديث البيانات
+                        </button>
+                        
+                        <button 
+                            onClick={() => {
+                                setSelectedCity(null);
+                                setFilteredAreas([]);
+                            }}
+                            className="btn btn-secondary"
+                        >
+                            🔄 إعادة تعيين
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // تشغيل التطبيق
+        ReactDOM.render(<CitiesAreasDemo />, document.getElementById('root'));
+    </script>
+</body>
+</html>

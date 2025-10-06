@@ -11,10 +11,8 @@ import DatePicker from 'react-native-date-picker';
 import { BlurView } from '@react-native-community/blur';
 import { useTranslation } from 'react-i18next';
 
-// --- استيراد المودال الجديد ---
-import AddVisit from '../../components/AddVisit'; // تأكد من أن المسار صحيح
+import AddVisit from '../../components/AddVisit'; 
 
-// --- Mock Data ---
 const FAKE_VISITS_DATA = [
     { id: 1, doctorName: 'Dr. Ali Hassan Al-Jubouri', specialty: 'Cardiologist', appointmentTime: '10:30 AM', lastVisit: '2025-08-15', status: 'Visited', visitDate: '2025-09-12' },
     { id: 2, doctorName: 'Dr. Fatima Ahmed', specialty: 'Pediatrician', appointmentTime: '11:00 AM', lastVisit: '2025-08-20', status: 'Visited', visitDate: '2025-09-12' },
@@ -23,7 +21,6 @@ const FAKE_VISITS_DATA = [
 
 const { width } = Dimensions.get('window');
 
-// --- Animation Components ---
 const Star = ({ size, position, duration }) => {
     const opacityAnim = useRef(new Animated.Value(0)).current;
     useEffect(() => {
@@ -52,7 +49,6 @@ const Stars = () => (
     </>
 );
 
-// --- Main Screen Component ---
 const MonthlyPlanSales = ({ navigation }) => {
     const { t, i18n } = useTranslation();
     const isRTL = I18nManager.isRTL;
@@ -90,7 +86,6 @@ const MonthlyPlanSales = ({ navigation }) => {
         }
     };
 
-    // --- دالة إضافة الزيارة الجديدة ---
     const handleAddNewVisit = (newVisitData) => {
         setVisits(prevVisits => [newVisitData, ...prevVisits]);
         setModalVisible(false);
@@ -183,14 +178,12 @@ const MonthlyPlanSales = ({ navigation }) => {
                 </View>
             </View>
 
-            {/* --- زر الإضافة العائم --- */}
             {isTodaySelected && (
                 <TouchableOpacity style={styles.addNewButton} onPress={() => setModalVisible(true)}>
                     <Feather name="plus" size={24} color="#FFF" />
                 </TouchableOpacity>
             )}
 
-            {/* --- المودالات --- */}
             <DatePicker modal open={isDatePickerVisible} date={selectedDate} mode="date" onConfirm={handleDateChange} onCancel={() => setDatePickerVisible(false)} />
             
             <AddVisit
@@ -203,7 +196,6 @@ const MonthlyPlanSales = ({ navigation }) => {
     );
 };
 
-// --- Styles ---
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#ffffffff' },
     

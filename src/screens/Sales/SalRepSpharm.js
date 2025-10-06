@@ -99,7 +99,7 @@ const AnimatedHeader = ({ title, onBackPress, showStars = true }) => {
   );
 };
 
-const sal_rep_pharm = ({ navigation }) => {
+const SalRepSpharm = ({ navigation }) => {
   if (!navigation) {
     console.log('Navigation not available');
     return null;
@@ -274,4 +274,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default sal_rep_pharm;
+export default SalRepSpharm;

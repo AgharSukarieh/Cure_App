@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  ActivityIndicator, // لاستخدامه في حالة التحميل
+  ActivityIndicator, 
   ScrollView,
   I18nManager,
 } from 'react-native';
@@ -16,36 +16,32 @@ import AddNewInventoryModel from '../../components/Modals/AddNewInventoryModel';
 import ScanBarcodeAndQRModel from '../../components/Modals/ScanBarcodeAndQRModel';
 import { get } from '../../WebService/RequestBuilder';
 import Constants from '../../config/globalConstants';
-// لاستخدام أبعاد الشاشة في الأنماط
 import { Dimensions } from 'react-native';
 import GoBack from '../../components/GoBack';
 import { useTranslation } from 'react-i18next';
 const { height } = Dimensions.get('window');
 Feather.loadFont();
 
-// شاشة المخزون بتصميم ووظائف محسّنة
 const Inventory = ({ navigation, item }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
-  // --- إدارة الحالات ---
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const [isScanModalVisible, setScanModalVisible] = useState(false);
-  const [inventoryData, setInventoryData] = useState(null); // بيانات الجدول
-  const [searchTerm, setSearchTerm] = useState(''); // حالة لمصطلح البحث
-  const [isLoading, setIsLoading] = useState(false); // حالة التحميل
-  const [error, setError] = useState(null); // حالة لعرض الأخطاء
+  const [inventoryData, setInventoryData] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(''); 
+  const [isLoading, setIsLoading] = useState(false); 
+  const [error, setError] = useState(null); 
 
-  // --- طلب البيانات من الشبكة ---
   const fetchInventoryById = (productId) => {
     if (!item?.pharmacy_id || !productId) return;
 
     setIsLoading(true);
     setError(null);
-    setInventoryData(null); // إخفاء الجدول القديم عند بدء بحث جديد
+    setInventoryData(null); 
 
     const params = {
       pharmacy_id: item.pharmacy_id,
-      product_id: productId, // البحث بـ ID المنتج
+      product_id: productId, 
     };
 
     get(Constants.inventory.get_inventory, null, params)
@@ -53,7 +49,6 @@ const Inventory = ({ navigation, item }) => {
         if (res.pharamcy_last_order && res.pharamcy_last_order.order_details?.length > 0) {
           setInventoryData(res.pharamcy_last_order);
         } else {
-          // في حال لم يتم العثور على المنتج في المخزون
           setError(t('inventory.noProduct'));
         }
       })
@@ -66,7 +61,6 @@ const Inventory = ({ navigation, item }) => {
       });
   };
 
-  // --- التعامل مع نتيجة المسح الضوئي أو البحث اليدوي ---
   const handleSearch = (searchValue) => {
     if (!searchValue) return;
 
@@ -82,7 +76,6 @@ const Inventory = ({ navigation, item }) => {
       .then((res) => {
         if (res.data && res.data.length > 0) {
           const foundProductId = res.data[0]?.id;
-          // بعد العثور على المنتج، ابحث عنه في المخزون
           fetchInventoryById(foundProductId);
         } else {
           setError(t('inventory.productNotFound'));
@@ -128,7 +121,7 @@ const Inventory = ({ navigation, item }) => {
             placeholderTextColor="#888"
             value={searchTerm}
             onChangeText={setSearchTerm}
-            onSubmitEditing={() => handleSearch(searchTerm)} // للبحث عند الضغط على "Enter"
+            onSubmitEditing={() => handleSearch(searchTerm)} 
             returnKeyType="search"
           />
         </View>
@@ -137,12 +130,10 @@ const Inventory = ({ navigation, item }) => {
         </TouchableOpacity>
       </View>
 
-      {/* --- حاوية المحتوى الديناميكي --- */}
       <ScrollView contentContainerStyle={styles.contentScrollView}>
         {renderContent()}
       </ScrollView>
 
-      {/* --- النماذج (Modals) --- */}
       <AddNewInventoryModel
         show={isAddModalVisible}
         hide={() => setAddModalVisible(false)}
@@ -154,19 +145,18 @@ const Inventory = ({ navigation, item }) => {
         show={isScanModalVisible}
         hide={() => setScanModalVisible(false)}
         submit={(scannedValue) => {
-          setSearchTerm(scannedValue); // ضع القيمة الممسوحة في شريط البحث
-          handleSearch(scannedValue); // ابدأ البحث مباشرة
+          setSearchTerm(scannedValue); 
+          handleSearch(scannedValue); 
         }}
       />
     </SafeAreaView>
   );
 };
 
-// --- الأنماط الموحدة ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA', // لون خلفية هادئ
+    backgroundColor: '#F8F9FA', 
   },
   header: {
     flexDirection: 'row',
@@ -200,7 +190,7 @@ const styles = StyleSheet.create({
     width: 45,
     height: 45,
     borderRadius: 12,
-    backgroundColor: '#0A2540', // لون أساسي قوي
+    backgroundColor: '#0A2540', 
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -220,7 +210,7 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   errorText: {
-    color: '#D93025', // لون أحمر للأخطاء
+    color: '#D93025', 
     fontWeight: '500',
   },
   emptyStateContainer: {
@@ -228,7 +218,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    marginTop: height * 0.15, // لدفعه للأسفل قليلاً
+    marginTop: height * 0.15,
   },
   emptyStateText: {
     marginTop: 15,

@@ -1,0 +1,68 @@
+// Base URL
+const Api = "http://10.42.0.1:8002/api/";
+
+// Auth
+export const LOGIN = `${Api}login`;
+export const LOGOUT = `${Api}logout`;
+export const REGISTER = `${Api}register`;
+export const DELETE_ACCOUNT = `${Api}delete-account`;
+
+// Sales
+export const SALES_PHARMACY = `${Api}sales/pharamcy`;
+export const TARGET_SALES = `${Api}target/sales`;
+export const COLLECT_MONEY = `${Api}collect-money`;
+
+// Medical
+export const TARGET_MEDICALS = `${Api}target/medicals`;
+export const FREQUENCY_VISITS = `${Api}frequncy-visits`;
+
+// Users
+export const USERS_CITY_AREA = `${Api}users/`;
+export const USER_ORDERS = `${Api}user-orders`;
+export const ORDER_DETAILS = `${Api}order-details/`;
+
+// Doctor
+export const DOCTOR_SPECIALITY = `${Api}doctor/speciality`;
+export const ALL_DOCTORS = `${Api}sales/doctor`;
+export const DOCTOR_SPECIAL_AREA = `${Api}sales/doctor/areas/`;
+export const DOCTOR_SPECIALITY_AREA = `${Api}doctor/speciality-area`;
+
+// Plans
+export const GET_PLANS = `${Api}plans`;
+
+// Visit
+export const SALE_VISITS = `${Api}sale-visits`;
+export const MEDICAL_VISITS = `${Api}medical-visits`;
+
+// Product
+export const PRODUCTS = `${Api}product`;
+export const SAMPLE_PRODUCTS = `${Api}sample-products`;
+
+// Inventory
+export const GET_INVENTORY = `${Api}get-last-order-pharamcy`;
+
+// Orders
+export const ADD_ORDER = `${Api}orders`;
+export const GET_ORDERS = `${Api}user-orders`;
+export const SALES_ORDER = `${Api}sales/orders`;
+
+// Return
+export const GET_RETURNS = `${Api}return-orders`;
+export const ADD_RETURNS = `${Api}return-product`;
+
+// Single Chat
+export const GET_SINGLE_CHAT_CONV = `${Api}get-single-chat-list`;
+export const GET_SINGLE_CHAT_MESS = `${Api}get-single-chat-messages`;
+export const SEND_SINGLE_CHAT_MESS = `${Api}single_chat_message_mobile`;
+export const SEEN_SINGLE_CHAT = `${Api}seen-chat`;
+
+// Group Chat
+export const GET_GROUP_CHAT_CONV = `${Api}get-group-chat-list`;
+export const GET_GROUP_CHAT_MESS = `${Api}get-group-chat-messages`;
+export const SEND_GROUP_CHAT_MESS = `${Api}group_chat_message_mobile`;
+export const SEEN_GROUP_CHAT = `${Api}seen-group`;
+export const CREATE_GROUP = `${Api}add-new-group`;
+
+// General
+export const GET_USER_TO_CHAT = `${Api}get-search-results`;
+export const GET_CITIES = `${Api}get-all-cities`;

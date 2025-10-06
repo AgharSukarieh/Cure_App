@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView, Ale
 import Moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
-// --- مكونات وهمية لتعويض المكونات الأصلية ---
 const GoBack = ({ text }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
@@ -15,7 +14,6 @@ const GoBack = ({ text }) => {
   );
 };
 
-// --- 1. إضافة كود المودال الوهمي (Weeklyareaedit) هنا ---
 const Weeklyareaedit = ({ show, hide, data, submit }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
@@ -29,7 +27,6 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
   ];
 
   const handleSelectArea = (area) => {
-    // عند اختيار منطقة، يتم استدعاء دالة الحفظ وتمرير البيانات
     submit({ area_id: area.id, area_name: area.name });
   };
 
@@ -64,7 +61,6 @@ const Weeklyareaedit = ({ show, hide, data, submit }) => {
 };
 
 
-// --- بيانات وهمية (Fake Data) ---
 const FAKE_USER_INFO = {
   id: 101,
   name: 'Aghar',
@@ -244,7 +240,6 @@ export const style = StyleSheet.create({
     color: '#469ED8',
     fontWeight: '700',
   },
-  // أنماط RTL
   rtlText: {
     textAlign: 'right',
     writingDirection: 'rtl',
@@ -254,7 +249,6 @@ export const style = StyleSheet.create({
 const fakeStyles = StyleSheet.create({
   header: { padding: 15, backgroundColor: '#f8f8f8', borderBottomWidth: 1, borderColor: '#eee' },
   headerText: { fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
-  // --- ستايلات المودال ---
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -296,7 +290,6 @@ const fakeStyles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-  // أنماط RTL
   rtlText: {
     textAlign: 'right',
     writingDirection: 'rtl',

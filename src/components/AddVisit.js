@@ -9,17 +9,15 @@ import DatePicker from 'react-native-date-picker';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useTranslation } from 'react-i18next';
 
-// سنفترض أن قائمة الأطباء ستمرر إلى المودال
 const AddVisit = ({ visible, onClose, onSubmit, existingDoctors = [] }) => {
     const { t } = useTranslation();
     const isRTL = I18nManager.isRTL;
     const [doctorName, setDoctorName] = useState('');
     const [specialty, setSpecialty] = useState('');
     const [time, setTime] = useState(new Date());
-    const [status, setStatus] = useState('Pending'); // الحالة الافتراضية
+    const [status, setStatus] = useState('Pending'); 
     const [isTimePickerVisible, setTimePickerVisible] = useState(false);
 
-    // عند اختيار طبيب من القائمة، يتم ملء الحقول تلقائيًا
     const handleDoctorSelect = (doctor) => {
         setDoctorName(doctor.doctorName);
         setSpecialty(doctor.specialty);
@@ -36,13 +34,12 @@ const AddVisit = ({ visible, onClose, onSubmit, existingDoctors = [] }) => {
             doctorName,
             specialty,
             appointmentTime: Moment(time).format('hh:mm A'),
-            lastVisit: Moment().format('YYYY-MM-DD'), // تاريخ اليوم كآخر زيارة
-            status: status, // استخدام الحالة المختارة
+            lastVisit: Moment().format('YYYY-MM-DD'),
+            status: status, 
             visitDate: Moment().format('YYYY-MM-DD'),
         };
 
         onSubmit(newVisitData);
-        // إعادة تعيين الحالة بعد الإرسال
         setDoctorName('');
         setSpecialty('');
         setTime(new Date());
@@ -70,7 +67,6 @@ const AddVisit = ({ visible, onClose, onSubmit, existingDoctors = [] }) => {
                     </View>
 
                     <ScrollView showsVerticalScrollIndicator={false}>
-                        {/* --- قسم اختيار طبيب موجود --- */}
                         <Text style={[styles.label, isRTL && styles.rtlText]}>{t('addVisit.selectExistingDoctor')}</Text>
                         <Dropdown
                             style={styles.input}
@@ -89,7 +85,6 @@ const AddVisit = ({ visible, onClose, onSubmit, existingDoctors = [] }) => {
                             <View style={styles.divider} />
                         </View>
 
-                        {/* --- قسم إدخال طبيب جديد --- */}
                         <Text style={[styles.label, isRTL && styles.rtlText]}>{t('addVisit.doctorName')}</Text>
                         <TextInput
                             style={[styles.input, isRTL && styles.rtlText]}

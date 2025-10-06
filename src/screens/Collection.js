@@ -17,8 +17,7 @@ import Feather from "react-native-vector-icons/Feather";
 import DatePicker from "react-native-date-picker";
 import { useTranslation } from "react-i18next";
 
-// --- Mock Components ---
-// تم استبدال GoBack بنسخة مبسطة هنا لتشغيل المثال
+
 const GoBack = ({ text }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
@@ -30,7 +29,6 @@ const GoBack = ({ text }) => {
   );
 };
 
-// --- FAKE DATA (بيانات وهمية للتحصيل والمدن) ---
 const FAKE_CITIES = [
   { label: "Baghdad", value: 1 },
   { label: "Basra", value: 2 },
@@ -44,7 +42,6 @@ const FAKE_AREAS = [
   { label: "Ankawa", value: 301, city_id: 3 },
 ];
 
-// بيانات وهمية للتحصيل لتوضيح الفكرة
 const FAKE_COLLECTION_DATA = [
   {
     id: 1,
@@ -111,16 +108,13 @@ const Collection = ({ navigation }) => {
     dateTo: null,
   });
 
-  // States for Date Pickers
   const [dateFrom, setDateFrom] = useState(new Date());
   const [openDateFrom, setOpenDateFrom] = useState(false);
   const [dateTo, setDateTo] = useState(new Date());
   const [openDateTo, setOpenDateTo] = useState(false);
 
-  // --- Fetching Data ---
   const fetchData = useCallback(() => {
     setIsLoading(true);
-    // محاكاة جلب البيانات من API
     setTimeout(() => {
       setCities(FAKE_CITIES);
       setAllAreas(FAKE_AREAS);
@@ -133,7 +127,6 @@ const Collection = ({ navigation }) => {
     fetchData();
   }, [fetchData]);
 
-  // --- Filtering Logic ---
   const filteredCollections = useMemo(() => {
     if (isLoading) return [];
     return allCollections.filter((item) => {
@@ -153,13 +146,12 @@ const Collection = ({ navigation }) => {
     });
   }, [allCollections, filters, isLoading]);
 
-  // --- Handlers ---
   const handleFilterChange = useCallback(
     (key, value) => {
       setFilters((prev) => {
         const newFilters = { ...prev, [key]: value };
         if (key === "city_id") {
-          newFilters.area_id = null; // إعادة تعيين المنطقة عند تغيير المدينة
+          newFilters.area_id = null; 
           setAreas(allAreas.filter((area) => area.city_id == value));
         }
         return newFilters;
@@ -196,9 +188,7 @@ const Collection = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
-        {/* Filters Section */}
         <View style={styles.filtersContainer}>
-          {/* City and Area Filters */}
           <View style={styles.filterRow}>
             <View style={styles.filterBox}>
               <Text style={[styles.filterLabel, isRTL && styles.rtlText]}>{t("collection.selectCity")}</Text>
@@ -230,7 +220,6 @@ const Collection = ({ navigation }) => {
               />
             </View>
           </View>
-          {/* Date Filters */}
           <View style={styles.filterRow}>
             <View style={styles.filterBox}>
               <Text style={[styles.filterLabel, isRTL && styles.rtlText]}>{t("collection.from")}</Text>
@@ -259,9 +248,7 @@ const Collection = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Table */}
         <View style={styles.tableContainer}>
-          {/* Table Header */}
           <View style={styles.tableHeaderRow}>
             <View style={styles.fixedHeaderCell}>
               <Text style={styles.fixedHeaderText}>Client Name</Text>
@@ -292,7 +279,6 @@ const Collection = ({ navigation }) => {
             </ScrollView>
           </View>
 
-          {/* Table Data */}
           {isLoading ? (
             <Text style={styles.emptyText}>Loading...</Text>
           ) : filteredCollections.length > 0 ? (
@@ -355,7 +341,6 @@ const Collection = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      {/* Date Picker Modals */}
       <DatePicker
         modal
         mode="date"
@@ -511,7 +496,6 @@ const styles = StyleSheet.create({
   evenRow: { backgroundColor: "#FFFFFF" },
   oddRow: { backgroundColor: "#FAFAFA" },
   emptyText: { fontSize: 16, color: "#888", padding: 20, textAlign: "center" },
-  // أنماط RTL
   rtlText: {
     textAlign: 'right',
     writingDirection: 'rtl',

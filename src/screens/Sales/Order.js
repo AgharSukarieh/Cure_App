@@ -234,7 +234,7 @@ const AddNewOrderPopup = ({ show, hide, submit }) => {
 };
 
 const OrderDetailsPopup = ({ show, hide, data }) => {
-  if (!data) return null; // لا تعرض شيئًا إذا لم تكن هناك بيانات
+  if (!data) return null; 
 
   return (
     <Modal

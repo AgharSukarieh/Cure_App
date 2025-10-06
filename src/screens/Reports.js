@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -7,15 +7,20 @@ import {
   ScrollView,
   Dimensions,
   I18nManager,
+  ActivityIndicator,
+  RefreshControl,
+
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import CustomDatePicker from '../components/CustomPicker';
 import CustomDropdown from '../components/CustomDropDown'; 
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../contexts/AuthContext';
+import { get } from '../WebService/RequestBuilder';
+import Constants from '../config/globalConstants';
 
 const { width } = Dimensions.get('window');
 
-// بيانات وهمية للمدن والمناطق
 const cities = ['Amman', 'Zarqa', 'Irbid', 'Aqaba'];
 const areas = {
   Amman: ['AlAbdali', 'Sweifieh', 'Jabal Amman', 'Tlaa Al-Ali'],
@@ -24,7 +29,6 @@ const areas = {
   Aqaba: ['Aqaba City'],
 };
 
-// بيانات وهمية للجدول
 const reportData = [
   { id: 1, name: 'Dr. anas', sales: 3000, target: 3500, achievement: 'NOC', region: 'North', performance: '85.7%', bonus: 500 },
   { id: 2, name: 'Dr. sami', sales: 4200, target: 4000, achievement: 'Achieved', region: 'Central', performance: '105%', bonus: 800 },
@@ -41,13 +45,56 @@ const reportData = [
 const Reports = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const { user } = useAuth();
   const isRTL = I18nManager.isRTL;
 
-  const [selectedCity, setSelectedCity] = useState('Amman');
-  const [selectedArea, setSelectedArea] = useState('AlAbdali');
-  const [availableAreas, setAvailableAreas] = useState(areas['Amman']);
-  const [fromDate, setFromDate] = useState(new Date('2024-05-02'));
-  const [toDate, setToDate] = useState(new Date('2024-09-02'));
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedArea, setSelectedArea] = useState(null);
+  const [availableAreas, setAvailableAreas] = useState([]);
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
+  
+  // API states
+  const [reportData, setReportData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  
+  // Get reports endpoint based on user role
+  const getReportsEndpoint = user.role == 'sales' ? 
+    Constants.sales.reports : 
+    Constants.medical.reports;
+
+  // Fetch reports data from API
+  const fetchReportsData = async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setIsLoading(true);
+      }
+      
+      console.log('📊 جلب بيانات التقارير من:', getReportsEndpoint);
+      const response = await get(`${getReportsEndpoint}?user_id=${user?.id}`);
+      console.log('📊 استجابة API التقارير:', response);
+      
+      const data = response.data || [];
+      setReportData(data);
+      
+    } catch (error) {
+      console.error('❌ خطأ في جلب بيانات التقارير:', error);
+      setReportData([]);
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  // Load data on component mount
+  useEffect(() => {
+    if (user?.id) {
+      fetchReportsData();
+    }
+  }, [user?.id]);
 
   const handleCitySelect = (city) => {
     setSelectedCity(city);
@@ -70,8 +117,14 @@ const Reports = () => {
         style={styles.container}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => fetchReportsData(true)}
+            colors={['#183E9F']}
+          />
+        }
       >
-        {/* قسم الفلاتر */}
         <View style={styles.filtersContainer}>
           <View style={styles.filterRow}>
             <View style={styles.filterBox}>
@@ -114,22 +167,29 @@ const Reports = () => {
           </View>
         </View>
 
-        {/* الجدول */}
         <View style={styles.tableContainer}>
-          <View style={styles.tableWrapper}>
-            {/* العمود الثابت */}
-            <View style={styles.fixedColumn}>
-              <View style={[styles.fixedHeaderCell, styles.tableHeader]}>
-                <Text style={[styles.fixedHeaderText, isRTL && styles.rtlText]}>{t("reports.name")}</Text>
-              </View>
-              {reportData.map((item, index) => (
-                <View key={item.id} style={[styles.fixedCell, index % 2 === 1 ? styles.oddRow : styles.evenRow]}>
-                  <Text style={styles.fixedCellText}>{item.name}</Text>
-                </View>
-              ))}
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#183E9F" />
+              <Text style={styles.loadingText}>جاري التحميل...</Text>
             </View>
+          ) : reportData.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>لا توجد بيانات متاحة</Text>
+            </View>
+          ) : (
+            <View style={styles.tableWrapper}>
+              <View style={styles.fixedColumn}>
+                <View style={[styles.fixedHeaderCell, styles.tableHeader]}>
+                  <Text style={[styles.fixedHeaderText, isRTL && styles.rtlText]}>{t("reports.name")}</Text>
+                </View>
+                {reportData.map((item, index) => (
+                  <View key={item.id || index} style={[styles.fixedCell, index % 2 === 1 ? styles.oddRow : styles.evenRow]}>
+                    <Text style={styles.fixedCellText}>{item.name || item.product}</Text>
+                  </View>
+                ))}
+              </View>
 
-            {/* الأعمدة الأخرى */}
             <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.scrollableContent}>
               <View style={styles.scrollableTable}>
                 <View style={[styles.scrollableHeaderRow, styles.tableHeader]}>
@@ -141,22 +201,43 @@ const Reports = () => {
                   <View style={styles.scrollableHeaderCell}><Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>{t("reports.bonus")}</Text></View>
                 </View>
                 {reportData.map((item, index) => (
-                  <View key={item.id} style={[styles.scrollableRow, index % 2 === 1 ? styles.oddRow : styles.evenRow]}>
-                    <View style={styles.scrollableCell}><Text style={styles.scrollableCellText}>{item.sales.toLocaleString()}</Text></View>
-                    <View style={styles.scrollableCell}><Text style={styles.scrollableCellText}>{item.target.toLocaleString()}</Text></View>
+                  <View key={item.id || index} style={[styles.scrollableRow, index % 2 === 1 ? styles.oddRow : styles.evenRow]}>
                     <View style={styles.scrollableCell}>
-                      <Text style={[styles.scrollableCellText, { color: getAchievementColor(item.achievement), fontWeight: 'bold' }]}>
-                        {t(`reports.${item.achievement.toLowerCase()}`)}
+                      <Text style={styles.scrollableCellText}>
+                        {item.sold_units || item.sales || 0}
                       </Text>
                     </View>
-                    <View style={styles.scrollableCell}><Text style={styles.scrollableCellText}>{item.region}</Text></View>
-                    <View style={styles.scrollableCell}><Text style={styles.scrollableCellText}>{item.performance}</Text></View>
-                    <View style={styles.scrollableCell}><Text style={styles.scrollableCellText}>${item.bonus.toLocaleString()}</Text></View>
+                    <View style={styles.scrollableCell}>
+                      <Text style={styles.scrollableCellText}>
+                        {item.target || 0}
+                      </Text>
+                    </View>
+                    <View style={styles.scrollableCell}>
+                      <Text style={[styles.scrollableCellText, { color: getAchievementColor(item.achievement), fontWeight: 'bold' }]}>
+                        {item.achievement || 'NOC'}
+                      </Text>
+                    </View>
+                    <View style={styles.scrollableCell}>
+                      <Text style={styles.scrollableCellText}>
+                        {item.region || item.area || '-'}
+                      </Text>
+                    </View>
+                    <View style={styles.scrollableCell}>
+                      <Text style={styles.scrollableCellText}>
+                        {item.percentage || item.performance || '0%'}
+                      </Text>
+                    </View>
+                    <View style={styles.scrollableCell}>
+                      <Text style={styles.scrollableCellText}>
+                        {item.bonus || item.bonus || 0}
+                      </Text>
+                    </View>
                   </View>
                 ))}
               </View>
             </ScrollView>
-          </View>
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -210,7 +291,29 @@ const styles = StyleSheet.create({
       marginBottom: 5,
     },
     tableContainer: {
-     
+      flex: 1,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 50,
+    },
+    loadingText: {
+      marginTop: 10,
+      fontSize: 16,
+      color: '#666',
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 50,
+    },
+    emptyText: {
+      fontSize: 16,
+      color: '#888',
+      textAlign: 'center',
     },
     tableWrapper: {
       flexDirection: 'row',
@@ -246,7 +349,7 @@ const styles = StyleSheet.create({
       fontSize: 14,
       color: '#333',
       textAlign: 'center',
-      borderRightWidth:   I18nManager.isRTL?0:1,
+      borderRightWidth:   I18nManager.isRTL? 0 : 1,
       borderLeftWidth:  I18nManager.isRTL?1:0,
       borderLeftColor:"#9D9292",
       borderRightColor:"#9D9292",

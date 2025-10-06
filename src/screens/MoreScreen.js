@@ -15,9 +15,9 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import { BlurView } from "@react-native-community/blur";
 import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next'; // <-- 1. استيراد useTranslation
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '../contexts/AuthContext'; 
 
-// --- أدوات المقياس المتجاوب ---
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const guidelineBaseWidth = 360;
 const guidelineBaseHeight = 800;
@@ -25,8 +25,7 @@ const scale = (size) => (SCREEN_WIDTH / guidelineBaseWidth) * size;
 const verticalScale = (size) => (SCREEN_HEIGHT / guidelineBaseHeight) * size;
 const moderateScale = (size, factor = 0.5) => size + (scale(size) - size) * factor;
 
-// ... (مكونات Star و Stars و RippleEffectCard تبقى كما هي)
-// --- مكون النجمة ---
+
 const Star = ({ size, position, duration }) => {
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
@@ -65,7 +64,6 @@ const Star = ({ size, position, duration }) => {
   );
 };
 
-// --- مجموعة النجوم ---
 const Stars = () => {
   const starData = [
     { size: 2, position: { x: "15%", y: "20%" }, duration: 2000 },
@@ -101,7 +99,6 @@ const Stars = () => {
   );
 };
 
-// --- مكون البطاقة مع تأثير التموج ---
 const RippleEffectCard = ({
   children,
   style,
@@ -139,7 +136,7 @@ const RippleEffectCard = ({
     <Pressable
       style={style}
       onPressIn={handlePressIn}
-      onPress={onPress} // استدعاء onPress عند اكتمال الضغطة
+      onPress={onPress} 
       onLayout={(event) => {
         const { width, height } = event.nativeEvent.layout;
         setCardDimensions({ width, height });
@@ -178,12 +175,19 @@ const RippleEffectCard = ({
 
 
 const MoreScreen = () => {
-  const { t } = useTranslation(); // <-- 2. استدعاء الهوك
+  const { t } = useTranslation(); 
   const isRTL = I18nManager.isRTL;
   const [darkMode, setDarkMode] = useState(false);
   const navigation = useNavigation();
+  const { user } = useAuth();
   
-  // ... (الرسوم المتحركة تبقى كما هي)
+  // طباعة بيانات المستخدم في MoreScreen
+  console.log('👤 بيانات المستخدم في MoreScreen:', {
+    user: user,
+    userKeys: user ? Object.keys(user) : 'user is null',
+    userValues: user ? Object.values(user) : 'user is null'
+  });
+  
   const chevronAnims = [
     useRef(new Animated.Value(0)).current,
     useRef(new Animated.Value(0)).current,
@@ -257,11 +261,11 @@ const chevronIconName = I18nManager.isRTL ? "chevron-left" : "chevron-right";
         <View style={styles.userInfoContainer}>
             <View style={styles.userInfoRow}>
                 <Text style={[styles.userLabel, isRTL && styles.rtlText]}>{t('userCard.userId')}</Text>
-                <Text style={[styles.userValue, isRTL && styles.rtlText]}>31525</Text>
+                <Text style={[styles.userValue, isRTL && styles.rtlText]}>{user?.id || 'غير محدد'}</Text>
             </View>
             <View style={styles.userInfoRow}>
                 <Text style={[styles.userLabel, isRTL && styles.rtlText]}>{t('userCard.username')}</Text>
-                <Text style={[styles.userValue, isRTL && styles.rtlText]}>{t('userCard.sampleUsername')}</Text>
+                <Text style={[styles.userValue, isRTL && styles.rtlText]}>{user?.name || user?.username || 'غير محدد'}</Text>
             </View>
         </View>
 
@@ -275,20 +279,19 @@ const chevronIconName = I18nManager.isRTL ? "chevron-left" : "chevron-right";
    fontSize: I18nManager.isRTL ? moderateScale(12) : moderateScale(12) }]}>
   {t('userCard.email')}
 </Text>
-                <Text style={[styles.detailValue, isRTL && styles.rtlText]}>{t('userCard.sampleEmail')}</Text>
+                <Text style={[styles.detailValue, isRTL && styles.rtlText]}>{user?.email || 'غير محدد'}</Text>
             </View>
             <View style={styles.detailRow}>
                 <Text style={[styles.detailLabel, isRTL && styles.rtlText]}>{t('userCard.phone')}</Text>
-                <Text style={[styles.detailValue, isRTL && styles.rtlText]}>{t('userCard.samplePhone')}</Text>
+                <Text style={[styles.detailValue, isRTL && styles.rtlText]}>{user?.phone || 'غير محدد'}</Text>
             </View>
             <View style={styles.detailRow}>
-                <Text style={[styles.detailLabel, isRTL && styles.rtlText]}>{t('userCard.city')}</Text>
-                <Text style={[styles.detailValue, isRTL && styles.rtlText]}>{t('userCard.sampleCity')}</Text>
+                <Text style={[styles.detailLabel, isRTL && styles.rtlText]}>{t('userCard.company')}</Text>
+                <Text style={[styles.detailValue, isRTL && styles.rtlText]}>{user?.name || 'غير محدد'}</Text>
             </View>
         </View>
 
         <View style={styles.chevronsContainer}>
-            {/* الخطوة 3: استخدم المتغير هنا */}
             <Animated.View style={chevronStyles[2]}><Icon name={chevronIconName} size={moderateScale(20)} color="#fff" /></Animated.View>
             <Animated.View style={[chevronStyles[1], { marginLeft: -scale(0) }]}><Icon name={chevronIconName} size={moderateScale(20)} color="#fff" /></Animated.View>
             <Animated.View style={[chevronStyles[0], { marginLeft: -scale(8) }]}><Icon name={chevronIconName} size={moderateScale(20)} color="#fff" /></Animated.View>
@@ -353,7 +356,6 @@ const chevronIconName = I18nManager.isRTL ? "chevron-left" : "chevron-right";
         <Icon name={chevronIconName} size={moderateScale(16)} color="#999" />
       </Pressable>
 
-      {/* زر تسجيل الخروج */}
       <Pressable 
         style={[styles.logoutButton, darkMode && styles.darkLogoutButton]} 
         onPress={() => {
@@ -369,7 +371,6 @@ const chevronIconName = I18nManager.isRTL ? "chevron-left" : "chevron-right";
                 text: t('settings.logout'),
                 style: 'destructive',
                 onPress: () => {
-                  // هنا يمكنك إضافة منطق تسجيل الخروج
                   console.log('تسجيل الخروج...');
                   // navigation.navigate('SignIn');
                 }
@@ -491,7 +492,7 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(0,0,0,0.9)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
-    width: scale(50), // عرض ثابت للمحاذاة
+    // width: scale(60), 
   },
   detailValue: {
     fontSize: moderateScale(12),
@@ -556,7 +557,6 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     writingDirection: 'rtl',
   },
-  // أنماط زر تسجيل الخروج
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',

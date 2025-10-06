@@ -24,7 +24,6 @@ const COUNTRIES = [
   { label: 'United States', value: 'US', code: '+1' },
 ];
 
-// --- تم التعديل: إضافة onAddContact prop ---
 const AddFriendModal = ({ visible, onClose, onAddContact }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
@@ -52,15 +51,12 @@ const AddFriendModal = ({ visible, onClose, onAddContact }) => {
       avatar: `https://ui-avatars.com/api/?name=${firstName || 'N'}+${lastName || 'C'}&background=random`,
     };
 
-    // --- تم التعديل: استدعاء الدالة الممررة وإرسال البيانات ---
     onAddContact(newContact );
     
-    // إعادة تعيين الحقول بعد الإضافة
     setFirstName('');
     setLastName('');
     setPhoneNumber('');
 
-    // إغلاق الشاشة
     onClose();
   };
 
@@ -155,7 +151,6 @@ const AddFriendModal = ({ visible, onClose, onAddContact }) => {
   );
 };
 
-// الأنماط تبقى كما هي
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F4F7FC' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 15, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#E0E0E0' },

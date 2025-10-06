@@ -226,7 +226,6 @@ const FAQScreen = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Header Section */}
         <View style={[styles.headerSection, isRTL && styles.headerSectionRTL]}>
           <LinearGradient
             colors={['#2580B3', '#2580B3']}
@@ -248,7 +247,6 @@ const FAQScreen = ({ navigation }) => {
           </LinearGradient>
         </View>
 
-        {/* Categories Section */}
         <View style={[styles.categoriesSection, isRTL && styles.categoriesSectionRTL]}>
           <Text style={[styles.sectionTitle, isRTL && styles.sectionTitleRTL]}>
             {t('faq.categoriesTitle')}
@@ -265,7 +263,6 @@ const FAQScreen = ({ navigation }) => {
           </ScrollView>
         </View>
 
-        {/* FAQ Items */}
         <View style={[styles.faqSection, isRTL && styles.faqSectionRTL]}>
           <View style={[styles.faqHeader, isRTL && styles.faqHeaderRTL]}>
             <Text style={[styles.sectionTitle, isRTL && styles.sectionTitleRTL]}>
@@ -281,7 +278,6 @@ const FAQScreen = ({ navigation }) => {
           ))}
         </View>
 
-        {/* Contact Section */}
         <View style={[styles.contactSection, isRTL && styles.contactSectionRTL]}>
           <LinearGradient
             colors={['#F8F9FA', '#E9ECEF']}
@@ -320,14 +316,12 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   
-  // Header Section
   headerSection: {
     marginHorizontal: 20,
     marginTop: 10,
     marginBottom: 20,
   },
   headerSectionRTL: {
-    // RTL styles if needed
   },
   headerGradient: {
     borderRadius: 20,
@@ -374,13 +368,11 @@ const styles = StyleSheet.create({
     textAlign: I18nManager.isRTL ? 'left' : 'right',
   },
 
-  // Categories Section
   categoriesSection: {
     marginHorizontal: 20,
     marginBottom: 24,
   },
   categoriesSectionRTL: {
-    // RTL styles if needed
   },
   sectionTitle: {
     fontSize: 20,
@@ -392,10 +384,8 @@ const styles = StyleSheet.create({
     textAlign: I18nManager.isRTL ? 'left' : 'right',
   },
   categoriesScrollView: {
-    // Additional styles if needed
   },
   categoriesScrollViewRTL: {
-    // RTL styles if needed
   },
   categoriesScroll: {
     paddingHorizontal: 4,
@@ -438,13 +428,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 
-  // FAQ Section
   faqSection: {
     marginHorizontal: 20,
     marginBottom: 24,
   },
   faqSectionRTL: {
-    // RTL styles if needed
   },
   faqHeader: {
     flexDirection: 'row',
@@ -477,7 +465,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   faqItemRTL: {
-    // RTL styles if needed
   },
   faqHeader: {
     flexDirection: 'row',
@@ -524,7 +511,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   faqAnswerRTL: {
-    // RTL styles if needed
   },
   answerText: {
     fontSize: 15,
@@ -536,7 +522,6 @@ const styles = StyleSheet.create({
     textAlign: I18nManager.isRTL ? 'left' : 'right',
   },
 
-  // Contact Section
   contactSection: {
     marginHorizontal: 20,
     marginTop: 10,

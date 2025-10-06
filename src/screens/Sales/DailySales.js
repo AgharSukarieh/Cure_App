@@ -21,7 +21,6 @@ import { useTranslation } from 'react-i18next';
 
 Feather.loadFont();
 
-// بيانات وهمية للصيدليات
 const getFakePharmaciesData = (t) => [
   { id: '1', name: t('dailySales.pharmacies.alTaj'), location: t('dailySales.locations.ammanUniversity'), phone: '0791234567' },
   { id: '2', name: t('dailySales.pharmacies.alNahdi'), location: t('dailySales.locations.zarqaPrinceRashid'), phone: '0781234567' },
@@ -30,7 +29,6 @@ const getFakePharmaciesData = (t) => [
   { id: '5', name: t('dailySales.pharmacies.alMujtama'), location: t('dailySales.locations.saltOldTown'), phone: '0782345678' },
 ];
 
-// مكون الهيكل العظمي للنص
 const SkeletonText = ({ width = '100%', height = 16, style = {} }) => {
   const animatedValue = new Animated.Value(0);
 
@@ -76,7 +74,6 @@ const SkeletonText = ({ width = '100%', height = 16, style = {} }) => {
   );
 };
 
-// مكون الهيكل العظمي لشريط البحث
 const SearchBarSkeleton = () => (
   <View style={styles.searchContainer}>
     <SkeletonText width={20} height={20} style={styles.searchIcon} />
@@ -84,7 +81,6 @@ const SearchBarSkeleton = () => (
   </View>
 );
 
-// مكون الهيكل العظمي لبطاقة الصيدلية
 const PharmacyCardSkeleton = () => (
   <View style={styles.card}>
     <View style={styles.cardContent}>
@@ -105,7 +101,6 @@ const PharmacyCardSkeleton = () => (
   </View>
 );
 
-// مكون شاشة التحميل بالهياكل العظمية
 const LoadingSkeletons = () => (
   <View style={{ flex: 1 }}>
     <SearchBarSkeleton />
@@ -117,7 +112,6 @@ const LoadingSkeletons = () => (
   </View>
 );
 
-// مكون شريط البحث
 const SearchBar = ({ value, onChangeText }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
@@ -136,7 +130,6 @@ const SearchBar = ({ value, onChangeText }) => {
   );
 };
 
-// مكون بطاقة الصيدلية
 const PharmacyCard = ({ item, onPress }) => (
   <TouchableOpacity style={styles.card} onPress={onPress}>
     <View style={styles.cardContent}>
@@ -157,7 +150,6 @@ const PharmacyCard = ({ item, onPress }) => (
   </TouchableOpacity>
 );
 
-// مكون شاشة إضافة صيدلية
 const AddPharmacyModal = ({ visible, onClose, onSubmit }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
@@ -219,7 +211,6 @@ const DailySales = ({ navigation }) => {
     setModalVisible(false);
   };
 
-  // تحديد حجم الخط بناءً على عرض الشاشة
   const responsiveFontSize = width < 350 ? 18 : 20;
 
   return (

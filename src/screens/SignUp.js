@@ -15,10 +15,10 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
-import { useAuth } from '../contexts/AuthContext'; // ✅ لوجيك التسجيل
+import { useAuth } from '../contexts/AuthContext'; 
 
 const SignUp = ({ navigation }) => {
-  const { register } = useAuth(); // ✅ استخدم register من الـ context
+  const { register } = useAuth(); 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,9 +39,9 @@ const SignUp = ({ navigation }) => {
 
     setIsLoading(true);
     try {
-      await register(username, email, password); // ✅ تسجيل المستخدم
+      await register(username, email, password); 
       Alert.alert('Success', 'Account created successfully!');
-      navigation.navigate('SignIn'); // بعد التسجيل اذهب لصفحة تسجيل الدخول
+      navigation.navigate('SignIn');
     } catch (error) {
       Alert.alert('Registration Error', error?.response?.data?.message || error.message);
     } finally {

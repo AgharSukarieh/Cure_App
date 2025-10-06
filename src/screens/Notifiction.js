@@ -107,7 +107,6 @@ const NotificationScreen = () => {
     }
   };
 
-  // وضع علامة مقروء على الإشعار
   const markAsRead = (id) => {
     const updatedNotifications = notifications.map((notification) =>
       notification.id === id ? { ...notification, read: true } : notification
@@ -115,7 +114,6 @@ const NotificationScreen = () => {
     setNotifications(updatedNotifications);
   };
 
-  // وضع علامة مقروء على جميع الإشعارات
   const markAllAsRead = () => {
     const updatedNotifications = notifications.map((notification) => ({
       ...notification,
@@ -124,7 +122,6 @@ const NotificationScreen = () => {
     setNotifications(updatedNotifications);
   };
 
-  // تصفية الإشعارات
   const filteredNotifications = filterUnread
     ? notifications.filter((notification) => !notification.read)
     : notifications;
@@ -133,7 +130,6 @@ const NotificationScreen = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       
-      {/* الهيدر */}
       <View style={[styles.header, isRTL && styles.rtlHeader]}>
         <GoBack text={t('notifications.header')} />
         
@@ -150,15 +146,12 @@ const NotificationScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* قائمة الإشعارات */}
       {loading ? (
         <ScrollView style={styles.notificationsList}>
-          {/* Placeholder Header */}
           <View style={[styles.loadingHeader, isRTL && styles.rtlLoadingHeader]}>
             <View style={styles.loadingFilterButton} />
           </View>
           
-          {/* Placeholder Notifications */}
           {[1, 2, 3, 4, 5].map((index) => (
             <View key={index} style={[styles.loadingNotificationItem, isRTL && styles.rtlLoadingNotificationItem]}>
               <View style={[styles.loadingNotificationIcon, isRTL && styles.rtlLoadingNotificationIcon]} />
@@ -312,7 +305,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#8E8E93',
   },
-  // RTL Styles
   rtlText: {
     textAlign: I18nManager.isRTL ? 'left' : 'right',
     writingDirection: 'rtl',
@@ -334,7 +326,6 @@ const styles = StyleSheet.create({
     marginLeft: 0,
     marginRight: 8,
   },
-  // Loading Placeholder Styles
   loadingHeader: {
     paddingHorizontal: 16,
     paddingVertical: 8,

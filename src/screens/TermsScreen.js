@@ -206,7 +206,6 @@ const TermsScreen = ({ navigation }) => {
           ))}
         </View>
 
-        {/* Contact Section */}
         <View style={[styles.contactSection, isRTL && styles.contactSectionRTL]}>
           <LinearGradient
             colors={['#F8F9FA', '#E9ECEF']}
@@ -232,7 +231,6 @@ const TermsScreen = ({ navigation }) => {
           </LinearGradient>
         </View>
 
-        {/* Agreement Section */}
         <View style={[styles.agreementSection, isRTL && styles.agreementSectionRTL]}>
           <View style={[styles.agreementContent, isRTL && styles.agreementContentRTL]}>
             <Feather name="check-circle" size={20} color="#10B981" />
@@ -258,14 +256,12 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   
-  // Header Section
   headerSection: {
     marginHorizontal: 20,
     marginTop: 10,
     marginBottom: 20,
   },
   headerSectionRTL: {
-    // RTL styles if needed
   },
   headerGradient: {
     borderRadius: 20,
@@ -315,13 +311,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 
-  // Last Updated Section
   lastUpdatedSection: {
     marginHorizontal: 20,
     marginBottom: 20,
   },
   lastUpdatedSectionRTL: {
-    // RTL styles if needed
   },
   lastUpdatedContent: {
     flexDirection: 'row',
@@ -350,13 +344,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 
-  // Terms Container
   termsContainer: {
     marginHorizontal: 20,
     marginBottom: 24,
   },
   termsContainerRTL: {
-    // RTL styles if needed
   },
   sectionHeaderTitle: {
     fontSize: 20,
@@ -378,7 +370,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   termsSectionRTL: {
-    // RTL styles if needed
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -423,7 +414,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   sectionContentRTL: {
-    // RTL styles if needed
   },
   contentText: {
     fontSize: 15,
@@ -435,13 +425,11 @@ const styles = StyleSheet.create({
     textAlign:  I18nManager.isRTL ? 'left' : 'right',
   },
 
-  // Contact Section
   contactSection: {
     marginHorizontal: 20,
     marginTop: 10,
   },
   contactSectionRTL: {
-    // RTL styles if needed
   },
   contactGradient: {
     borderRadius: 16,
@@ -486,13 +474,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  // Agreement Section
   agreementSection: {
     marginHorizontal: 20,
     marginTop: 20,
   },
   agreementSectionRTL: {
-    // RTL styles if needed
   },
   agreementContent: {
     flexDirection: 'row',

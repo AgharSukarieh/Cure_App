@@ -14,10 +14,9 @@ import OtpTextInput from 'react-native-otp-textinput';
 const VerifyOtpScreen = ({ navigation }) => {
   const [otp, setOtp] = useState('');
   const otpInput = useRef(null);
-  const [timer, setTimer] = useState(30); // مؤقت لإعادة الإرسال
+  const [timer, setTimer] = useState(30); 
   const [isResendDisabled, setIsResendDisabled] = useState(true);
 
-  // تأثير لبدء المؤقت عند تحميل الشاشة
   useEffect(() => {
     let interval = setInterval(() => {
       setTimer((prevTimer) => {
@@ -30,33 +29,26 @@ const VerifyOtpScreen = ({ navigation }) => {
       });
     }, 1000);
 
-    // تنظيف المؤقت عند مغادرة الشاشة
     return () => clearInterval(interval);
-  }, [isResendDisabled]); // إعادة تشغيل المؤقت عند الضغط على إعادة الإرسال
+  }, [isResendDisabled]); 
 
-  // دالة للتحقق من الرمز
   const handleVerify = () => {
-    // تحقق من أن الرمز المدخل هو 4 أرقام
     if (otp.length !== 4) {
       Alert.alert('Error', 'Please enter a valid 4-digit OTP code.');
       return;
     }
 
-    // منطق التحقق من الرمز (هنا مثال بسيط)
     console.log('Verifying OTP:', otp);
     Alert.alert('Success', 'OTP Verified Successfully!', [
-      // يمكنك الانتقال إلى شاشة إعادة تعيين كلمة المرور الفعلية هنا
       { text: 'OK', onPress: () => navigation.goBack() },
     ]);
   };
 
-  // دالة لإعادة إرسال الرمز
   const handleResend = () => {
     if (!isResendDisabled) {
-      // منطق إعادة إرسال الرمز
       Alert.alert('Code Sent', 'A new OTP code has been sent to you.');
       setIsResendDisabled(true);
-      setTimer(30); // إعادة ضبط المؤقت
+      setTimer(30); 
     }
   };
 
@@ -64,7 +56,6 @@ const VerifyOtpScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Icon name="arrow-back" size={24} color="#333" />
@@ -75,19 +66,17 @@ const VerifyOtpScreen = ({ navigation }) => {
         <Text style={styles.title}>Change Password</Text>
         <Text style={styles.subtitle}>Enter your OTP code</Text>
 
-        {/* OTP Input */}
         <OtpTextInput
           ref={otpInput}
           handleTextChange={setOtp}
           containerStyle={styles.otpContainer}
           textInputStyle={styles.otpInput}
-          tintColor="#2d5accff" // لون الحدود عند التركيز
-          offTintColor="#E0E0E0" // لون الحدود الافتراضي
+          tintColor="#2d5accff" 
+          offTintColor="#E0E0E0" 
           inputCount={4}
           keyboardType="numeric"
         />
 
-        {/* Resend Code */}
         <View style={styles.resendContainer}>
           <Text style={styles.resendText}>Didn't receive code? </Text>
           <TouchableOpacity onPress={handleResend} disabled={isResendDisabled}>
@@ -98,7 +87,6 @@ const VerifyOtpScreen = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Verify Button */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.verifyButton} onPress={handleVerify}>
           <Text style={styles.verifyButtonText}>Verify</Text>
@@ -164,11 +152,11 @@ const styles = StyleSheet.create({
   },
   resendLink: {
     fontSize: 14,
-    color: '#2d5accff', // لون الرابط
+    color: '#2d5accff', 
     fontWeight: 'bold',
   },
   resendDisabled: {
-    color: '#BDBDBD', // لون الرابط عند تعطيله
+    color: '#BDBDBD', 
   },
   footer: {
     padding: 24,

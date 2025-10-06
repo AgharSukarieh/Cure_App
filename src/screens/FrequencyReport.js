@@ -8,8 +8,8 @@ import {
 	ScrollView,
 	Dimensions,
 	I18nManager,
-    Alert,
-    ActivityIndicator,
+	Alert,
+	ActivityIndicator,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import Feather from "react-native-vector-icons/Feather";
@@ -17,58 +17,78 @@ import DatePicker from 'react-native-date-picker';
 import AddVisiteModel from '../components/AddVisiteModel';
 import { useTranslation } from 'react-i18next';
 import GoBack from '../components/GoBack';
-// --- Mock Components ---
-// const GoBack = ({ text }) => <View style={styles.header}><Text style={styles.headerText}>{text}</Text></View>;
-
-// --- FAKE DATA (with long names to test) ---
-const FAKE_CITIES = [{ label: "Baghdad", value: 1 }, { label: "Basra", value: 2 }];
-const FAKE_AREAS = [
-    { label: "Karrada", value: 101, city_id: 1 },
-    { label: "Mansour", value: 102, city_id: 1 },
-    { label: "Al-Ashar", value: 201, city_id: 2 },
-];
-let FAKE_REPORT_DATA = [
-    { id: 1, doctor_name: "Dr. Ali Hassan Al-Jubouri The Third", area_name: "Karrada", city_id: 1, target_visits: 10, actual_visits: 8, visit_date: "2025-09-10" },
-    { id: 2, doctor_name: "Dr. Fatima Ahmed", area_name: "Mansour", city_id: 1, target_visits: 8, actual_visits: 8, visit_date: "2025-09-11" },
-    { id: 3, doctor_name: "Dr. Omar Khalid Al-Tikriti", area_name: "Al-Ashar", city_id: 2, target_visits: 12, actual_visits: 9, visit_date: "2025-09-12" },
-    { id: 4, doctor_name: "Dr. Layla Ghasan", area_name: "Karrada", city_id: 1, target_visits: 15, actual_visits: 15, visit_date: "2025-09-12" },
-    { id: 5, doctor_name: "Prof. Dr. Mohammed Salah Al-Din", area_name: "Mansour", city_id: 1, target_visits: 9, actual_visits: 3, visit_date: "2025-09-09" },
-];
+import Constants from "../config/globalConstants";
+import { get } from "../WebService/RequestBuilder";
+import { useAuth } from "../contexts/AuthContext";
 
 const { width } = Dimensions.get('window');
-const DEFAULT_ROW_HEIGHT = 60; // ارتفاع افتراضي للصف
 
 const FrequencyReport = ({ navigation }) => {
 	const { t } = useTranslation();
 	const isRTL = I18nManager.isRTL;
+	const { user } = useAuth();
+	const user_id = user.id;
+
+	const getFrequencyReportEndpoint = Constants.medical.frequncy_visits;
+	const getCityAreaEndpoint = Constants.users.cityArea;
+
 	const [allReports, setAllReports] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
-    const [cities, setCities] = useState([]);
-    const [areas, setAreas] = useState([]);
-    const [allAreas, setAllAreas] = useState([]);
-    const [rowHeights, setRowHeights] = useState({});
 
-    const [filters, setFilters] = useState({ city_id: null, area_id: null, dateFrom: null, dateTo: null });
-    const [dateFrom, setDateFrom] = useState(new Date());
-    const [openDateFrom, setOpenDateFrom] = useState(false);
-    const [dateTo, setDateTo] = useState(new Date());
-    const [openDateTo, setOpenDateTo] = useState(false);
-    const [isModalVisible, setModalVisible] = useState(false);
-    const [visitedToday, setVisitedToday] = useState([]);
+	const [cities, setCities] = useState([]);
+	const [areas, setAreas] = useState([]);
+	const [allAreas, setAllAreas] = useState([]);
+	const [rowHeights, setRowHeights] = useState({});
+	const [filters, setFilters] = useState({ city_id: null, area_id: null, dateFrom: null, dateTo: null });
 
-	const fetchData = useCallback(() => {
+	const [dateFrom, setDateFrom] = useState(new Date());
+	const [openDateFrom, setOpenDateFrom] = useState(false);
+	const [dateTo, setDateTo] = useState(new Date());
+	const [openDateTo, setOpenDateTo] = useState(false);
+
+	const [isModalVisible, setModalVisible] = useState(false);
+	const [visitedToday, setVisitedToday] = useState([]);
+
+	useEffect(() => {
+		get(`${getCityAreaEndpoint}${user_id}`)
+			.then(res => {
+				const cityArea = res.data;
+				const cityArray = cityArea.cities.map(c => ({
+					value: c.id,
+					label: c.name
+				}));
+				setCities(cityArray);
+
+				const areaArray = cityArea.areas.map(a => ({
+					value: a.id,
+					label: a.name,
+					city_id: a.city_id
+				}));
+				setAllAreas(areaArray);
+			})
+			.catch(err => console.error(err));
+	}, [user_id]);
+
+	const fetchReports = useCallback(() => {
 		setIsLoading(true);
-		setTimeout(() => {
-            setCities(FAKE_CITIES);
-            setAllAreas(FAKE_AREAS);
-			setAllReports([...FAKE_REPORT_DATA]);
-			setIsLoading(false);
-		}, 1000);
-	}, []);
+		get(`${getFrequencyReportEndpoint}?sale_id=${user_id}`)
 
-	useEffect(() => { fetchData(); }, [fetchData]);
+			.then(res => {
+				console.log('=====================================================res.data', res.data);
+				setAllReports(res.data); 
+				setIsLoading(false);
+			})
+			.catch(err => {
+				console.error(err);
+				setIsLoading(false);
+			});
+	}, [user_id]);
 
-    const handleFilterChange = useCallback((key, value) => {
+	useEffect(() => {
+		fetchReports();
+	}, [fetchReports]);
+
+	const handleFilterChange = useCallback((key, value) => {
 		setFilters(prev => {
 			const newFilters = { ...prev, [key]: value };
 			if (key === 'city_id') {
@@ -79,57 +99,57 @@ const FrequencyReport = ({ navigation }) => {
 		});
 	}, [allAreas]);
 
-    const filteredReports = useMemo(() => {
+	const filteredReports = useMemo(() => {
 		if (isLoading) return [];
 		return allReports.filter(item => {
-            const cityFilterMatch = !filters.city_id || item.city_id === filters.city_id;
-			const areaFilterMatch = !filters.area_id || FAKE_AREAS.find(a => a.value === filters.area_id)?.label === item.area_name;
-            const dateFromMatch = !filters.dateFrom || new Date(item.visit_date) >= new Date(filters.dateFrom);
-            const dateToMatch = !filters.dateTo || new Date(item.visit_date) <= new Date(filters.dateTo);
-            return cityFilterMatch && areaFilterMatch && dateFromMatch && dateToMatch;
+			const cityFilterMatch = !filters.city_id || item.city_id === filters.city_id;
+			const areaFilterMatch = !filters.area_id || item.area_id === filters.area_id;
+			const dateFromMatch = !filters.dateFrom || new Date(item.visit_date) >= new Date(filters.dateFrom);
+			const dateToMatch = !filters.dateTo || new Date(item.visit_date) <= new Date(filters.dateTo);
+			return cityFilterMatch && areaFilterMatch && dateFromMatch && dateToMatch;
 		});
 	}, [allReports, filters, isLoading]);
 
-    const handleLogVisit = (doctorId) => {
-        const updatedReports = allReports.map(report => {
-            if (report.id === doctorId) {
-                return { ...report, actual_visits: report.actual_visits + 1, visit_date: new Date().toISOString().split('T')[0] };
-            }
-            return report;
-        });
-        setAllReports(updatedReports);
-        setVisitedToday(prev => [...prev, doctorId]);
-    };
+	const handleLogVisit = (doctorId) => {
+		const updatedReports = allReports.map(report => {
+			if (report.id === doctorId) {
+				return { ...report, actual_visits: report.actual_visits + 1, visit_date: new Date().toISOString().split('T')[0] };
+			}
+			return report;
+		});
+		setAllReports(updatedReports);
+		setVisitedToday(prev => [...prev, doctorId]);
+	};
 
-    const handleAddNewDoctorAndLog = (newDoctorData) => {
-        const newDoctorId = Date.now();
-        const newReport = {
-            id: newDoctorId,
-            doctor_name: newDoctorData.name,
-            area_name: newDoctorData.address || "N/A",
-            city_id: filters.city_id || 1,
-            target_visits: 1,
-            actual_visits: 1,
-            visit_date: new Date().toISOString().split('T')[0],
-        };
-        setAllReports(prevReports => [newReport, ...prevReports]);
-        setVisitedToday(prev => [...prev, newDoctorId]);
-        Alert.alert(t('frequencyReport.success'), `${t('frequencyReport.visitLogged')} ${newDoctorData.name}`);
-    };
+	const handleAddNewDoctorAndLog = (newDoctorData) => {
+		const newDoctorId = Date.now();
+		const newReport = {
+			id: newDoctorId,
+			doctor_name: newDoctorData.name,
+			area_name: newDoctorData.address || "N/A",
+			city_id: filters.city_id || 1,
+			target_visits: 1,
+			actual_visits: 1,
+			visit_date: new Date().toISOString().split('T')[0],
+		};
+		setAllReports(prevReports => [newReport, ...prevReports]);
+		setVisitedToday(prev => [...prev, newDoctorId]);
+		Alert.alert(t('frequencyReport.success'), `${t('frequencyReport.visitLogged')} ${newDoctorData.name}`);
+	};
 
-    const handleRowLayout = (event, index) => {
-        const { height } = event.nativeEvent.layout;
-        if (height > 0 && (!rowHeights[index] || Math.abs(rowHeights[index] - height) > 1)) {
-            setRowHeights(prev => ({ ...prev, [index]: height }));
-        }
-    };
+	const handleRowLayout = (event, index) => {
+		const { height } = event.nativeEvent.layout;
+		if (height > 0 && (!rowHeights[index] || Math.abs(rowHeights[index] - height) > 1)) {
+			setRowHeights(prev => ({ ...prev, [index]: height }));
+		}
+	};
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
 			<GoBack text={t('frequencyReport.headerTitle')} />
 			<ScrollView style={styles.container} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
 				{/* Filters Section */}
-                <View style={styles.filtersContainer}>
+				<View style={styles.filtersContainer}>
 					<View style={styles.filterRow}>
 						<View style={styles.filterBox}>
 							<Text style={[styles.filterLabel, isRTL && styles.rtlText]}>{t('frequencyReport.city')}</Text>
@@ -140,109 +160,93 @@ const FrequencyReport = ({ navigation }) => {
 							<Dropdown style={styles.dropdown} data={areas} labelField="label" valueField="value" placeholder={!filters.city_id ? t('frequencyReport.selectCityFirst') : t('frequencyReport.selectArea')} value={filters.area_id} onChange={item => handleFilterChange('area_id', item.value)} disable={!filters.city_id} {...dropdownStyles} />
 						</View>
 					</View>
-                    <View style={styles.filterRow}>
-                        <View style={styles.filterBox}>
-                            <Text style={[styles.filterLabel, isRTL && styles.rtlText]}>{t('frequencyReport.from')}</Text>
-                            <TouchableOpacity style={styles.dateButton} onPress={() => setOpenDateFrom(true)}>
-                                <Text style={[styles.dateButtonText, isRTL && styles.rtlText]}>{filters.dateFrom ? filters.dateFrom : 'YYYY-MM-DD'}</Text>
-                                <Feather name="calendar" size={18} color="#555" />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.filterBox}>
-                            <Text style={[styles.filterLabel, isRTL && styles.rtlText]}>{t('frequencyReport.to')}</Text>
-                            <TouchableOpacity style={styles.dateButton} onPress={() => setOpenDateTo(true)}>
-                                <Text style={[styles.dateButtonText, isRTL && styles.rtlText]}>{filters.dateTo ? filters.dateTo : 'YYYY-MM-DD'}</Text>
-                                <Feather name="calendar" size={18} color="#555" />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
 				</View>
 
-				{/* Table */}
-                {isLoading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color="#183E9F" />
-                        <Text style={[styles.loadingText, isRTL && styles.rtlText]}>{t('frequencyReport.loading')}</Text>
-                    </View>
-                ) : filteredReports.length > 0 ? (
-                    <View style={styles.tableContainer}>
-                        <View style={styles.tableWrapper}>
-                            {/* Fixed Column */}
-                            <View style={styles.fixedColumn}>
-                                <View style={[styles.fixedHeaderCell, styles.tableHeader]}>
-                                    <Text style={[styles.fixedHeaderText, isRTL && styles.rtlText]}>{t('frequencyReport.doctorName')}</Text>
-                                </View>
-                                {filteredReports.map((item, index) => (
-                                    <View
-                                        key={item.id}
-                                        onLayout={(event) => handleRowLayout(event, index)}
-                                        style={[
-                                            styles.fixedCell,
-                                            index % 2 === 1 ? styles.oddRow : styles.evenRow,
-                                            { height: rowHeights[index] || undefined } // Use undefined to let it auto-size first
-                                        ]}
-                                    >
-                                        <Text style={styles.fixedCellText} numberOfLines={2}>{item.doctor_name}</Text>
-                                        {visitedToday.includes(item.id) && (
-                                            <View style={styles.visitedBadge}>
-                                                <Feather name="check-circle" size={12} color="#fff" />
-                                                <Text style={styles.visitedBadgeText}>{t('frequencyReport.visited')}</Text>
-                                            </View>
-                                        )}
-                                    </View>
-                                ))}
-                            </View>
+				{isLoading ? (
+					<View style={styles.loadingContainer}>
+						<ActivityIndicator size="large" color="#183E9F" />
+						<Text style={[styles.loadingText, isRTL && styles.rtlText]}>{t('frequencyReport.loading')}</Text>
+					</View>
+				) : filteredReports.length > 0 ? (
+					<View style={styles.tableContainer}>
+						<View style={styles.tableWrapper}>
+							<View style={styles.fixedColumn}>
+								<View style={[styles.fixedHeaderCell, styles.tableHeader]}>
+									<Text style={[styles.fixedHeaderText, isRTL && styles.rtlText]}>{t('frequencyReport.doctorName')}</Text>
+								</View>
+								{filteredReports.map((item, index) => (
+									<View
+										key={item.id}
+										onLayout={(event) => handleRowLayout(event, index)}
+										style={[
+											styles.fixedCell,
+											index % 2 === 1 ? styles.oddRow : styles.evenRow,
+											{ height: rowHeights[index] || undefined }
+										]}
+									>
+										<Text style={styles.fixedCellText} numberOfLines={2}>{item.doctor_name}</Text>
+										{visitedToday.includes(item.id) && (
+											<View style={styles.visitedBadge}>
+												<Feather name="check-circle" size={12} color="#fff" />
+												<Text style={styles.visitedBadgeText}>{t('frequencyReport.visited')}</Text>
+											</View>
+										)}
+									</View>
+								))}
+							</View>
 
-                            {/* Scrollable Columns */}
-                            <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.scrollableContent}>
-                                <View style={styles.scrollableTable}>
-                                    <View style={[styles.scrollableHeaderRow, styles.tableHeader]}>
-                                        <View style={styles.scrollableHeaderCell}><Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>{t('frequencyReport.area')}</Text></View>
-                                        <View style={styles.scrollableHeaderCell}><Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>{t('frequencyReport.targetVisits')}</Text></View>
-                                        <View style={styles.scrollableHeaderCell}><Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>{t('frequencyReport.actualVisits')}</Text></View>
-                                        <View style={styles.scrollableHeaderCell}><Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>{t('frequencyReport.lastVisit')}</Text></View>
-                                    </View>
-                                    {filteredReports.map((item, index) => (
-                                        <View
-                                            key={item.id}
-                                            style={[
-                                                styles.scrollableRow,
-                                                index % 2 === 1 ? styles.oddRow : styles.evenRow,
-                                                { height: rowHeights[index] || undefined } // Use undefined to let it auto-size first
-                                            ]}
-                                        >
-                                            <View style={styles.scrollableCell}><Text style={styles.scrollableCellText}>{item.area_name}</Text></View>
-                                            <View style={styles.scrollableCell}><Text style={styles.scrollableCellText}>{item.target_visits}</Text></View>
-                                            <View style={styles.scrollableCell}><Text style={styles.scrollableCellText}>{item.actual_visits}</Text></View>
-                                            <View style={styles.scrollableCell}><Text style={styles.scrollableCellText}>{item.visit_date}</Text></View>
-                                        </View>
-                                    ))}
-                                </View>
-                            </ScrollView>
-                        </View>
-                    </View>
-                ) : (
-                    <Text style={[styles.emptyText, isRTL && styles.rtlText]}>{t('frequencyReport.noReports')}</Text>
-                )}
+							<ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.scrollableContent}>
+								<View style={styles.scrollableTable}>
+									<View style={[styles.scrollableHeaderRow, styles.tableHeader]}>
+										<View style={styles.scrollableHeaderCell}><Text style={styles.scrollableHeaderText}>{t('frequencyReport.classification')}</Text></View>
+										<View style={styles.scrollableHeaderCell}><Text style={styles.scrollableHeaderText}>{t('frequencyReport.visitCount')}</Text></View>
+										<View style={styles.scrollableHeaderCell}><Text style={styles.scrollableHeaderText}>{t('frequencyReport.percentage')}</Text></View>
+										
+									</View>
+									{filteredReports.map((item, index) => (
+										<View
+											key={item.id}
+											style={[
+												styles.scrollableRow,
+												index % 2 === 1 ? styles.oddRow : styles.evenRow,
+												{ height: rowHeights[index] || undefined }
+											]}
+										>
+											<View style={styles.scrollableCell}><Text style={styles.scrollableCellText}>{item.classification}</Text></View>
+											<View style={styles.scrollableCell}><Text style={styles.scrollableCellText}>{item.visitCount}</Text></View>
+											<View style={styles.scrollableCell}><Text style={styles.scrollableCellText}>{item.percentage}</Text></View>
+											
+										</View>
+									))}
+								</View>
+							</ScrollView>
+						</View>
+					</View>
+				) : (
+					<Text style={[styles.emptyText, isRTL && styles.rtlText]}>{t('frequencyReport.noReports')}</Text>
+				)}
 			</ScrollView>
 
-            {/* <TouchableOpacity style={styles.logVisitButton} onPress={() => setModalVisible(true)}>
-                <Feather name="edit" size={24} color="#FFF" />
-                <Text style={styles.logVisitButtonText}>Log Visit</Text>
-            </TouchableOpacity> */}
+			<AddVisiteModel
+				visible={isModalVisible}
+				onClose={() => setModalVisible(false)}
+				doctors={allReports}
+				onLogVisit={handleLogVisit}
+				onAddNewDoctorAndLog={handleAddNewDoctorAndLog}
+			/>
 
-            <AddVisiteModel visible={isModalVisible} onClose={() => setModalVisible(false)} doctors={allReports} onLogVisit={handleLogVisit} onAddNewDoctorAndLog={handleAddNewDoctorAndLog} />
-            <DatePicker modal mode="date" open={openDateFrom} date={dateFrom} onConfirm={(date) => { setOpenDateFrom(false); setDateFrom(date); handleFilterChange('dateFrom', date.toISOString().split('T')[0]); }} onCancel={() => setOpenDateFrom(false)} />
-            <DatePicker modal mode="date" open={openDateTo} date={dateTo} onConfirm={(date) => { setOpenDateTo(false); setDateTo(date); handleFilterChange('dateTo', date.toISOString().split('T')[0]); }} onCancel={() => setOpenDateTo(false)} />
+			<DatePicker modal mode="date" open={openDateFrom} date={dateFrom} onConfirm={(date) => { setOpenDateFrom(false); setDateFrom(date); handleFilterChange('dateFrom', date.toISOString().split('T')[0]); }} onCancel={() => setOpenDateFrom(false)} />
+			<DatePicker modal mode="date" open={openDateTo} date={dateTo} onConfirm={(date) => { setOpenDateTo(false); setDateTo(date); handleFilterChange('dateTo', date.toISOString().split('T')[0]); }} onCancel={() => setOpenDateTo(false)} />
 		</SafeAreaView>
 	);
 };
 
 const dropdownStyles = {
-    placeholderStyle: { fontSize: 14, color: '#999' },
-    selectedTextStyle: { fontSize: 14, color: '#333' },
-    iconStyle: { width: 20, height: 20 },
+	placeholderStyle: { fontSize: 14, color: '#999' },
+	selectedTextStyle: { fontSize: 14, color: '#333' },
+	iconStyle: { width: 20, height: 20 },
 };
+
 
 const styles = StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: '#F8F9FA' },
@@ -263,7 +267,7 @@ const styles = StyleSheet.create({
     fixedHeaderCell: { paddingVertical: 16, paddingHorizontal: 10, justifyContent: 'center', backgroundColor: '#F1F3F5' },
     fixedHeaderText: { fontSize: 14, fontWeight: 'bold', color: '#183E9F', textAlign: 'center' },
     fixedCell: {
-        paddingVertical: 10, // Add some default padding
+        paddingVertical: 10, 
         paddingHorizontal: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -276,7 +280,7 @@ const styles = StyleSheet.create({
     fixedCellText: { fontSize: 14, color: '#333', textAlign: 'center' , maxlines: 1},
     
     scrollableContent: { flex: 1 },
-    scrollableTable: { minWidth: width * 1.2 },
+    scrollableTable: { minWidth: width * 0.9 },
     scrollableHeaderRow: { flexDirection: 'row' },
     scrollableHeaderCell: { width: width * 0.3, paddingVertical: 16, paddingHorizontal: 10, justifyContent: 'center', alignItems: 'center' },
     scrollableHeaderText: { fontSize: 12, fontWeight: 'bold', color: '#1A46BE', textAlign: 'center' },
@@ -284,7 +288,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         borderBottomWidth: 1, 
         borderBottomColor: '#F0F0F0',
-        alignItems: 'stretch', // Use stretch to fill height
+        alignItems: 'stretch', 
     },
     scrollableCell: {
         width: width * 0.3,

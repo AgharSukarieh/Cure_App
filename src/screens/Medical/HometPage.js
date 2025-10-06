@@ -15,15 +15,20 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../contexts/AuthContext";
 import Constants from "../../config/globalConstants";
+import API, { tokenManager } from "../../config/apiConfig";
 import LoadingScreen from "../../components/LoadingScreen";
 import LinearGradient from "react-native-linear-gradient";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { PieChart, LineChart } from "react-native-chart-kit";
 import { useTranslation } from "react-i18next";
+import { get } from "../../WebService/RequestBuilder";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCitiesAndAreas, clearUserLocationData } from '../../store/apps/cities';
+import locationService from '../../services/locationService';
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
-const getCityAreaEndpoint = Constants.users.cityArea;
+// const getCityAreaEndpoint = Constants.users.cityArea; // Not available in globalConstants
 
 const AnimatedPressable = ({
   children,
@@ -101,14 +106,194 @@ const chartsData = {
 const HomePage = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const { role, user } = useAuth();
+  const { role, user, isAuthenticated, loading, token } = useAuth();
+  
+  // طباعة بيانات AuthContext
+  console.log('🔍 AuthContext Debug:');
+  console.log('  - role:', role);
+  console.log('  - isAuthenticated:', isAuthenticated);
+  console.log('  - loading:', loading);
+  console.log('  - token:', token ? 'موجود' : 'غير موجود');
+  console.log('  - token value:', token);
+  console.log('  - user keys:', user ? Object.keys(user) : 'user is null');
+  console.log('  - user object:', user);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Redux
+  const dispatch = useDispatch();
+  const userLocationData = useSelector(state => state.cities.userLocationData);
+// للوصول للبيانات:
+const userId = user?.id;                    // 19
+const userEmail = user?.email;              // aghar101010@gmail.com
+const userName = user?.name;                // Dr. Ahmed Medical Rep
+const userRole = user?.role;                // medical
+
+// Medical Record (إذا موجود في response)
+const medicalId = user?.medical?.id;        // 1
+const blockId = user?.medical?.block_id;    // 4
+
+// Block Data (إذا موجود)
+const blockName = user?.medical?.block?.name;           // Medical Block Riyadh
+const blockCities = user?.medical?.block?.cities;       // [{id: 1, name: 'الرياض'}, ...]
+const blockAreas = user?.medical?.block?.areas; 
+
+  // إظهار شاشة التحميل إذا كان يتم جلب بيانات المستخدم
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
 
   const [selectedPieFilter, setSelectedPieFilter] = useState("Daily");
   const [showPieOptions, setShowPieOptions] = useState(false);
 
   const [selectedLineFilter, setSelectedLineFilter] = useState("Daily");
   const [showLineOptions, setShowLineOptions] = useState(false);
+  const [cityArea, setCityArea] = useState(null);
+
+  // دالة لاختبار جلب البيانات يدوياً
+  const testFetchCitiesAndAreas = async () => {
+    console.log('🧪 اختبار جلب البيانات باستخدام locationService...');
+    
+    try {
+      const result = await locationService.fetchCitiesAndAreas();
+      
+      if (result.success) {
+        console.log('✅ اختبار ناجح - تم جلب البيانات');
+        console.log('🆔 Block ID:', result.data.block_id);
+        console.log('🏙️ عدد المدن:', result.data.cities?.length || 0);
+        console.log('📍 عدد المناطق:', result.data.areas?.length || 0);
+        
+        // طباعة المناطق
+        if (result.data.areas && result.data.areas.length > 0) {
+          console.log('📍 المناطق:');
+          result.data.areas.forEach((area, index) => {
+            console.log(`  ${index + 1}. ${area.name} (ID: ${area.id})`);
+          });
+        }
+        
+        if (result.fromCache) {
+          console.log('📦 البيانات من التخزين المحلي');
+        }
+      } else {
+        console.log('❌ اختبار فاشل:', result.error);
+      }
+    } catch (error) {
+      console.error('❌ خطأ في الاختبار:', error);
+    }
+  };
+
+
+  // دالة لمسح البيانات وإعادة جلبها
+  const clearAndRefetchData = async () => {
+    console.log('🗑️ مسح البيانات وإعادة جلبها...');
+    
+    try {
+      // مسح البيانات المخزنة محلياً
+      await locationService.clearCachedData();
+      console.log('✅ تم مسح البيانات المخزنة');
+      
+      // إعادة جلب البيانات
+      const result = await locationService.fetchCitiesAndAreas();
+      
+      if (result.success) {
+        console.log('✅ تم إعادة جلب البيانات بنجاح');
+        console.log('🏙️ عدد المدن:', result.data.cities?.length || 0);
+        console.log('📍 عدد المناطق:', result.data.areas?.length || 0);
+        
+        // طباعة المناطق
+        if (result.data.areas && result.data.areas.length > 0) {
+          console.log('📍 المناطق الجديدة:');
+          result.data.areas.forEach((area, index) => {
+            console.log(`  ${index + 1}. ${area.name} (ID: ${area.id})`);
+          });
+        }
+      } else {
+        console.log('❌ فشل في إعادة جلب البيانات:', result.error);
+      }
+    } catch (error) {
+      console.error('❌ خطأ في مسح وإعادة جلب البيانات:', error);
+    }
+  };
+  
+  // جلب المدن والمناطق الخاصة بالمستخدم عند فتح الصفحة
+  useEffect(() => {
+    const loadUserLocationData = async () => {
+      console.log('🚀 بدء جلب البيانات - HomePage useEffect (LocationService)');
+      console.log('👤 User موجود؟', !!user);
+      console.log('🆔 User ID:', user?.id);
+      
+      if (user?.id && token) {
+        console.log('📡 بدء استدعاء locationService.fetchCitiesAndAreas...');
+        console.log('🔑 Token المستخدم:', token);
+        try {
+          const result = await locationService.fetchCitiesAndAreas(token);
+          
+          if (result.success) {
+            // console.log('✅ تم جلب البيانات بنجاح من locationService');
+            // console.log('🆔 Block ID:', result.data.block_id);
+            // console.log('🏙️ عدد المدن:', result.data.cities?.length || 0);
+            // console.log('📍 عدد المناطق:', result.data.areas?.length || 0);
+            
+            // طباعة تفاصيل المناطق
+            if (result.data.areas && result.data.areas.length > 0) {
+              // console.log('🏙️ ========== المناطق التي تم جلبها في HomePage ==========');
+              // console.log('📍 إجمالي عدد المناطق:', result.data.areas.length);
+              // console.log('🆔 Block ID:', result.data.block_id);
+              
+              result.data.areas.forEach((area, index) => {
+                console.log(`  ${index + 1}. ${area.name} (ID: ${area.id}) - مدينة: ${area.city_name || 'غير محدد'} (City ID: ${area.city_id})`);
+              });
+              
+              console.log('🏙️ ============================================');
+            }
+            
+            if (result.fromCache) {
+              console.log('📦 البيانات من التخزين المحلي');
+            }
+          } else {
+            console.log('❌ فشل في جلب البيانات:', result.error);
+          }
+        } catch (error) {
+          console.error('❌ خطأ في locationService:', error);
+        }
+      } else {
+        console.log('⚠️ لا يوجد User ID');
+      }
+    };
+    
+    if (user?.id) {
+      console.log('🎯 User ID موجود - بدء loadUserLocationData');
+      loadUserLocationData();
+    } else {
+      console.log('⚠️ لا يوجد User ID');
+    }
+  }, [user?.id]);
+
+  // عرض المدن والمناطق المخزنة في Redux
+  useEffect(() => {
+    if (userLocationData.cities.length > 0 || userLocationData.areas.length > 0) {
+      console.log('🏙️ ========== البيانات المخزنة في Redux - HomePage ==========');
+      console.log('🆔 Block ID:', userLocationData.block_id);
+      console.log('🏙️ عدد المدن المخزنة:', userLocationData.cities.length);
+      console.log('📍 عدد المناطق المخزنة:', userLocationData.areas.length);
+      
+      if (userLocationData.cities.length > 0) {
+        console.log('🏙️ المدن المخزنة:');
+        userLocationData.cities.forEach((city, index) => {
+          console.log(`  ${index + 1}. ${city.name} (ID: ${city.id})`);
+        });
+      }
+      
+      if (userLocationData.areas.length > 0) {
+        console.log('📍 المناطق المخزنة:');
+        userLocationData.areas.forEach((area, index) => {
+          console.log(`  ${index + 1}. ${area.name} (ID: ${area.id}) - مدينة: ${area.city_name || 'غير محدد'} (City ID: ${area.city_id})`);
+        });
+      }
+      
+      console.log('🏙️ ============================================');
+    }
+  }, [userLocationData.cities.length, userLocationData.areas.length, userLocationData.block_id]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -141,7 +326,7 @@ const categoriesData = [
     key: "clientList",
     image: require("../../../assets/icons/client_list.png"),
     pressedColor: "#183E9F",
-    onclick: () => {navigation.navigate('Clientdoctorlist')},
+    onclick: () => { user?.role === 'sales' ? navigation.navigate('Clientpharmalist') : navigation.navigate('Clientdoctorlist')},
   },
   {
     id: 2,
@@ -152,17 +337,17 @@ const categoriesData = [
   },
   {
     id: 3,
-    key: "visitReport",
+    key: role == 'sales' ? t('collection.headerTitle') : t('frequencyReport.headerTitle'),
     image: require("../../../assets/icons/visit.png"),
     pressedColor: "#183E9F",
-     onclick: () => {navigation.navigate('FrequencyReport')},
+     onclick: () => { role == 'sales' ? navigation.navigate('Collection') : navigation.navigate('FrequencyReport')},
   },
   {
     id: 4,
     key: "sales",
     image: require("../../../assets/icons/online-store.png"),
     pressedColor: "#183E9F",
-     onclick: () => {navigation.navigate('Sales')},
+     onclick: () => { navigation.navigate('Sales')},
   },
 
 ];
@@ -256,7 +441,6 @@ const categoriesData = [
             </View>
           </View>
 
-          {/* Line Chart Placeholder */}
           <View style={Styles.loadingLineChartContainer}>
             <View style={Styles.loadingLineChartInner}>
               <View style={Styles.loadingLineChartHeader}>
@@ -324,7 +508,10 @@ const categoriesData = [
                 <Text style={Styles.TextWelcomeBack}>
                   {t("homeScreen.welcomeBack")}
                 </Text>
-                <Text style={Styles.TextNameUser}>{t("homeScreen.userName")}</Text>
+                <Text style={Styles.TextNameUser}>{user?.name || 'المستخدم'}</Text>
+                <Text style={Styles.TextNameUser}>
+                  {user?.supervisor?.name || user?.distributor_name || 'لا يوجد سوبر فايزر'}
+                </Text>
               </View>
               <View style={Styles.containerNotification}>
                 <TouchableOpacity
@@ -525,7 +712,7 @@ const categoriesData = [
                   <Image source={category.image} style={Styles.IconCatgories} />
                 </AnimatedPressable>
                 <Text style={Styles.categoryText}>
-                  {t(`homeScreen.${category.key}`)}
+                  {category.key}
                 </Text>
               </View>
             ))}
@@ -560,6 +747,147 @@ const categoriesData = [
                   </AnimatedPressable>
                   <Text style={Styles.categoryText}>
                     {t('homeScreen.medicalReports')}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* زر اختبار جلب المدن والمناطق */}
+            <View style={Styles.containerCategories}>
+              <Text style={Styles.TextCategoies}>اختبار البيانات</Text>
+              <View style={Styles.innerContainerCatgories}>
+                <View style={Styles.categoryItemContainer}>
+                  <AnimatedPressable
+                    onPress={testFetchCitiesAndAreas}
+                    style={Styles.containerButton}
+                    baseColor="#ffffff"
+                    pressedColor="#f0f0f0"
+                  >
+                    <FontAwesome name="refresh" size={24} color="#1A46BE" />
+                  </AnimatedPressable>
+                  <Text style={Styles.categoryText}>
+                    جلب (طريقة قديمة)
+                  </Text>
+                </View>
+                
+              </View>
+              
+              <View style={Styles.innerContainerCatgories}>
+                <View style={Styles.categoryItemContainer}>
+                  <AnimatedPressable
+                    onPress={async () => {
+                      console.log('🔍 ========== عرض البيانات الحالية من locationService ==========');
+                      
+                      try {
+                        const cachedData = await locationService.getCachedCitiesAndAreas();
+                        
+                        if (cachedData) {
+                          console.log('🆔 Block ID:', cachedData.block_id);
+                          console.log('🏙️ عدد المدن:', cachedData.cities?.length || 0);
+                          console.log('📍 عدد المناطق:', cachedData.areas?.length || 0);
+                          
+                          console.log('🏙️ المدن:');
+                          cachedData.cities.forEach((city, index) => {
+                            console.log(`  ${index + 1}. ${city.name} (ID: ${city.id})`);
+                          });
+                          
+                          console.log('📍 المناطق:');
+                          cachedData.areas.forEach((area, index) => {
+                            console.log(`  ${index + 1}. ${area.name} (ID: ${area.id}) - مدينة: ${area.city_name || 'غير محدد'} (City ID: ${area.city_id})`);
+                          });
+                        } else {
+                          console.log('❌ لا توجد بيانات مخزنة محلياً');
+                        }
+                      } catch (error) {
+                        console.error('❌ خطأ في قراءة البيانات المخزنة:', error);
+                      }
+                      
+                      console.log('🔍 ============================================');
+                    }}
+                    style={Styles.containerButton}
+                    baseColor="#ffffff"
+                    pressedColor="#f0f0f0"
+                  >
+                    <FontAwesome name="eye" size={24} color="#1A46BE" />
+                  </AnimatedPressable>
+                  <Text style={Styles.categoryText}>
+                    عرض البيانات
+                  </Text>
+                </View>
+                
+                <View style={Styles.categoryItemContainer}>
+                  <AnimatedPressable
+                    onPress={() => {
+                      console.log('🔍 معلومات البيانات:');
+                      console.log('Block ID من Redux:', userLocationData.block_id);
+                      console.log('بيانات المستخدم الطبية:', user?.medical);
+                      console.log('عدد المدن:', userLocationData.cities.length);
+                      console.log('عدد المناطق:', userLocationData.areas.length);
+                    }}
+                    style={Styles.containerButton}
+                    baseColor="#ffffff"
+                    pressedColor="#f0f0f0"
+                  >
+                    <FontAwesome name="info-circle" size={24} color="#1A46BE" />
+                  </AnimatedPressable>
+                  <Text style={Styles.categoryText}>
+                    معلومات البيانات
+                  </Text>
+                </View>
+              </View>
+              
+              <View style={Styles.innerContainerCatgories}>
+                <View style={Styles.categoryItemContainer}>
+                  <AnimatedPressable
+                    onPress={clearAndRefetchData}
+                    style={Styles.containerButton}
+                    baseColor="#ffffff"
+                    pressedColor="#f0f0f0"
+                  >
+                    <FontAwesome name="trash" size={24} color="#1A46BE" />
+                  </AnimatedPressable>
+                  <Text style={Styles.categoryText}>
+                    مسح وإعادة جلب
+                  </Text>
+                </View>
+                
+                <View style={Styles.categoryItemContainer}>
+                  <AnimatedPressable
+                    onPress={async () => {
+                      console.log('📊 ========== إحصائيات البيانات من locationService ==========');
+                      
+                      try {
+                        const cachedData = await locationService.getCachedCitiesAndAreas();
+                        
+                        if (cachedData) {
+                          console.log(`🏙️ عدد المدن: ${cachedData.cities?.length || 0}`);
+                          console.log(`📍 عدد المناطق: ${cachedData.areas?.length || 0}`);
+                          console.log(`🆔 Block ID: ${cachedData.block_id || 'غير محدد'}`);
+                          
+                          // طباعة تفاصيل المناطق
+                          if (cachedData.areas && cachedData.areas.length > 0) {
+                            console.log('📍 تفاصيل المناطق:');
+                            cachedData.areas.forEach((area, index) => {
+                              console.log(`  ${index + 1}. ${area.name} (ID: ${area.id}) - مدينة: ${area.city_name || 'غير محدد'}`);
+                            });
+                          }
+                        } else {
+                          console.log('❌ لا توجد بيانات مخزنة محلياً');
+                        }
+                      } catch (error) {
+                        console.error('❌ خطأ في قراءة الإحصائيات:', error);
+                      }
+                      
+                      console.log('📊 ============================================');
+                    }}
+                    style={Styles.containerButton}
+                    baseColor="#ffffff"
+                    pressedColor="#f0f0f0"
+                  >
+                    <FontAwesome name="bar-chart" size={24} color="#1A46BE" />
+                  </AnimatedPressable>
+                  <Text style={Styles.categoryText}>
+                    إحصائيات
                   </Text>
                 </View>
               </View>
@@ -703,7 +1031,6 @@ const Styles = StyleSheet.create({
     width: widthScreen * 0.05,
     height: widthScreen * 0.05,
     borderRadius: (widthScreen * 0.05) / 2,
-    // <-- تعديل: استخدم 'marginEnd' بدلاً من 'marginRight'
     marginEnd: widthScreen * 0.02,
     marginTop: heightScreen * 0.032,
   },
@@ -711,7 +1038,6 @@ const Styles = StyleSheet.create({
     fontSize: widthScreen * 0.035,
     color: "#000000ff",
     fontWeight: "400",
-    // <-- تعديل: لضمان محاذاة النص بشكل صحيح في RTL
     textAlign: 'left',
    
   },
@@ -728,24 +1054,20 @@ const Styles = StyleSheet.create({
   rowChartTitle: {
     flexDirection: I18nManager.isRTL? "row-reverse":"row",
     gap: widthScreen * 0.01,
-    position: 'absolute', // <-- تعديل: أضفت position absolute
-    // <-- تعديل: استخدم 'start' بدلاً من 'left'
+    position: 'absolute', 
     start: widthScreen * 0.33,
     top: heightScreen * 0.01,
     marginBottom: heightScreen * 0.04,
-    alignItems: 'center', // <-- تعديل: لمحاذاة الأيقونة مع النص
+    alignItems: 'center', 
   },
   dropdownContainer: {
     position: "relative",
-    // <-- تعديل: استخدم 'flex-start' ليعمل في كلا الاتجاهين
     alignItems: "flex-start",
     marginTop: heightScreen * 0.02,
-    // <-- تعديل: استخدم 'marginStart' بدلاً من 'marginLeft'
     marginStart: widthScreen * 0.04,
     zIndex: 1000,
   },
   dropdownButton: {
-    // <-- تعديل: استخدم I18nManager لتحديد اتجاه الأيقونة والنص
     flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     alignItems: "center",
     justifyContent: "space-between",
@@ -758,13 +1080,11 @@ const Styles = StyleSheet.create({
     fontSize: widthScreen * 0.035,
     color: "#2085BC",
     flex: 1,
-    // <-- تعديل: لضمان محاذاة النص بشكل صحيح
     textAlign: 'left',
   },
   dropdownMenu: {
     position: "absolute",
     top: heightScreen * 0.06,
-    // <-- تعديل: استخدم 'start' بدلاً من 'left'
     start: 0,
     borderRadius: widthScreen * 0.02,
     backgroundColor: "#fff",
@@ -784,7 +1104,6 @@ const Styles = StyleSheet.create({
     borderBottomColor: "#f0f0f0",
   },
   dropdownItemText: {
-    // <-- تعديل: لضمان محاذاة النص بشكل صحيح
     textAlign: 'left',
   }
 ,
@@ -885,7 +1204,6 @@ const Styles = StyleSheet.create({
     fontWeight: "400",
     textAlign: "center",
   },
-  // Loading Placeholder Styles - محاكاة دقيقة للمكونات الحقيقية
   loadingHeaderContainer: {
     height: heightScreen * 0.28,
     width: widthScreen,
@@ -949,7 +1267,6 @@ const Styles = StyleSheet.create({
     backgroundColor: '#FF6B6B',
   },
   
-  // Pie Chart Placeholder
   loadingPieChartContainer: {
     marginHorizontal: 20,
     marginBottom: 20,
@@ -1035,7 +1352,6 @@ const Styles = StyleSheet.create({
     borderRadius: 6,
   },
   
-  // Line Chart Placeholder
   loadingLineChartContainer: {
     marginHorizontal: 20,
     marginBottom: 20,
@@ -1102,7 +1418,6 @@ const Styles = StyleSheet.create({
     borderRadius: 8,
   },
   
-  // Categories Placeholder
   loadingCategoriesContainer: {
     marginHorizontal: 20,
     marginBottom: 20,

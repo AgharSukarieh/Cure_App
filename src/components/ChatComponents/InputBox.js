@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TextInput, StyleSheet, Image, FlatList, Platform, ActivityIndicator, Text } from "react-native";
+import { View, TextInput, StyleSheet, Image, FlatList, Platform, Text } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { openPicker } from "@baronha/react-native-multiple-image-picker";
@@ -16,14 +16,13 @@ import { log } from "console";
 import GetLocation from "react-native-get-location";
 
 
-const InputBox = ({ receiverID, submit,getChat }) => {
+const InputBox = ({ receiverID, submit, getChat, isGroup = false }) => {
 	const navigation = useNavigation();
 	const [newMessage, setNewMessage] = useState("");
 	const [images, setImages] = useState([]);
 	const [baseimages, setbaseimages] = useState([]);
 	const [latitude, setLatitude] = useState("");
 	const [longitude, setLongitude] = useState("");
-	const [loading, setLoading] = useState(false);
 	const currentTimeStamp = () => {
 		const currentDate = new Date();
 		const timestamp = currentDate.getTime();
@@ -39,32 +38,32 @@ const InputBox = ({ receiverID, submit,getChat }) => {
 				attachmentUrl: baseimages,
 				attachmentName: timestamp + ".png",
 			};
-			post(globalConstants.single_chat.send_mess, data, null).then((res) => {
+			const sendEndpoint = isGroup 
+			? globalConstants.group_chat.send_mess 
+			: globalConstants.single_chat.send_mess;
+			
+		post(sendEndpoint, data, null).then((res) => {
+				console.log('✅ تم إرسال الصورة:', res);
 				submit(res?.message?.chat_id);
 				setNewMessage("");
 				setImages([]);
 				setbaseimages([]);
 				getChat();
-				setLoading(false);
 			}).catch((err) => {
-				console.log(err);
-				setLoading(false);
+				console.log('❌ خطأ في إرسال الصورة:', err);
 			});
 		} catch (error) {
 
-			setLoading(false);
 		}
 	};
 
 	const onSend = () => {
-		setLoading(true);
 		console.log(newMessage,);
 		console.log(baseimages,);
 		console.log(latitude,);
 		console.log(longitude,);
 
 		if(newMessage =='' && baseimages.length == 0 && latitude == "" && longitude == ""){
-			setLoading(false);
 			return;
 		}
 		if (newMessage.length > 0 || baseimages.length > 0 || longitude) {
@@ -87,19 +86,20 @@ const InputBox = ({ receiverID, submit,getChat }) => {
 				};
 
 
-				post(globalConstants.single_chat.send_mess, data, null).then((res) => {
+				const sendEndpoint = isGroup 
+					? globalConstants.group_chat.send_mess 
+					: globalConstants.single_chat.send_mess;
+					
+				post(sendEndpoint, data, null).then((res) => {
+					console.log('✅ تم إرسال الرسالة:', res);
 					submit(res?.message?.chat_id);
 					setNewMessage("");
 					setImages([]);
 					setLatitude("");
 					setLongitude("");
-					setLoading(false);
 					getChat();
 				}).catch((err) => {
-					console.log(err);
-					setLoading(false);
-
-
+					console.log('❌ خطأ في إرسال الرسالة:', err);
 				});
 			}
 		}
@@ -186,13 +186,6 @@ const InputBox = ({ receiverID, submit,getChat }) => {
 			return null;
 		}
 	};
-	if (loading) {
-		return (
-			<View style={styles.container2}>
-				<ActivityIndicator size="large" color="#0000ff" />
-			</View>
-		);
-	}
 	return (
 		<>
 			{latitude !== "" && longitude !== "" && (
