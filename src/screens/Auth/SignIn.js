@@ -10,21 +10,23 @@ import {
   StatusBar,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   Animated,
   ScrollView,
   Dimensions,
   Keyboard,
+  Linking,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
 import { useTranslation } from 'react-i18next';
 import { I18nManager } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
+import { useAlert } from '../../components/Alert';
 
 const SignIn = ({ navigation }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
+  const alert = useAlert();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -53,31 +55,26 @@ const SignIn = ({ navigation }) => {
   const isSmallScreen = screenHeight < 700;
   const isTinyScreen = screenHeight < 600;
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-///==========================================
 
-// farah@gmail.com 123456789
 
 const { login , register } = useAuth();
 
 const LoginPress = async () => {
   setIsLoading(true);
   
-  // 1. التحقق من أن الحقول غير فارغة
   if (email === '' || password === '') {
     setIsLoading(false);
-    Alert.alert('خطأ', 'يرجى إدخال البريد الإلكتروني وكلمة المرور');
+    alert.showError('خطأ', 'يرجى إدخال البريد الإلكتروني وكلمة المرور');
     return;
   }
   
-  // 2. التحقق من صحة البريد الإلكتروني
   if (!regex.test(email)) {
     setIsLoading(false);
-    Alert.alert('خطأ', 'يرجى إدخال بريد إلكتروني صحيح');
+    alert.showError('خطأ', 'يرجى إدخال بريد إلكتروني صحيح');
     return;
   }
   
   try {
-    // 3. إرسال الطلب للـ API
     console.log('🚀 محاولة تسجيل الدخول:', { email, password: '***' });
     const result = await login(email, password);
     console.log('=======================================================Login result:', result);
@@ -86,24 +83,83 @@ const LoginPress = async () => {
     console.log('🔍 Result.error:', result.error);
     setIsLoading(false);
     
-    // 4. التحقق من النتيجة
     if (result.success && result.data && result.data.user && result.data.token) {
-      // 5. نجح تسجيل الدخول - الانتقال للصفحة الرئيسية
       console.log('✅ Login successful, navigating to BottomTabs');
       navigation.navigate('BottomTabs');
     } else {
-      // 6. فشل تسجيل الدخول - عرض رسالة خطأ
       console.log('❌ Login failed:', result.message);
       console.log('❌ Result.error:', result.error);
       console.log('❌ Result.fullResponse:', result.fullResponse);
-      Alert.alert('خطأ في تسجيل الدخول', result.message || result.error || 'فشل في تسجيل الدخول');
+      
+      // تحديد نوع الخطأ وعرض الرسالة المناسبة
+      const errorMessage = result.message || result.error || '';
+      const fullResponse = result.fullResponse || {};
+      const errorData = fullResponse.error || {};
+      const errorDataMessage = errorData.data?.error || errorData.message || '';
+      
+      // دمج جميع رسائل الخطأ للتحقق منها
+      const allErrorMessages = [
+        errorMessage,
+        errorDataMessage,
+        fullResponse.message || '',
+        errorData.message || ''
+      ].join(' ').toLowerCase();
+      
+      let displayMessage = '';
+      
+      if (allErrorMessages.includes('password') || 
+          allErrorMessages.includes('كلمة المرور') ||
+          allErrorMessages.includes('incorrect password') ||
+          allErrorMessages.includes('wrong password') ||
+          allErrorMessages.includes('unauthorized') ||
+          allErrorMessages.includes('unauthorised') ||
+          allErrorMessages.includes('invalid credentials') ||
+          allErrorMessages.includes('authentication failed') ||
+          fullResponse.status === 401 ||
+          fullResponse.status === 404) {
+        displayMessage = t('auth.loginErrors.wrongPassword');
+      } else if (allErrorMessages.includes('user not found') ||
+                 allErrorMessages.includes('user not exist') ||
+                 allErrorMessages.includes('المستخدم غير موجود') ||
+                 allErrorMessages.includes('email not found')) {
+        displayMessage = t('auth.loginErrors.emailNotRegistered');
+      } else if (allErrorMessages.includes('invalid email') ||
+                 allErrorMessages.includes('بريد إلكتروني غير صحيح') ||
+                 allErrorMessages.includes('email format')) {
+        displayMessage = t('auth.loginErrors.invalidEmail');
+      } else {
+        displayMessage = errorMessage || 'فشل في تسجيل الدخول';
+      }
+      
+      alert.showError('خطأ في تسجيل الدخول', displayMessage);
     }
   } catch (error) {
     setIsLoading(false);
     console.log('❌ Login error:', error);
     console.log('❌ Error.message:', error.message);
     console.log('❌ Error.stack:', error.stack);
-    Alert.alert('خطأ في تسجيل الدخول', error.message || 'حدث خطأ في الاتصال بالخادم');
+    
+    // تحديد نوع خطأ الاتصال
+    let connectionErrorMessage = '';
+    if (error.message && (
+        error.message.toLowerCase().includes('network') ||
+        error.message.toLowerCase().includes('timeout') ||
+        error.message.toLowerCase().includes('connection') ||
+        error.message.toLowerCase().includes('fetch') ||
+        error.message.toLowerCase().includes('internet') ||
+        error.message.toLowerCase().includes('network request failed')
+    )) {
+      connectionErrorMessage = t('auth.loginErrors.networkError');
+    } else if (error.message && (
+        error.message.toLowerCase().includes('timeout') ||
+        error.message.toLowerCase().includes('timed out')
+    )) {
+      connectionErrorMessage = t('auth.loginErrors.timeoutError');
+    } else {
+      connectionErrorMessage = t('auth.loginErrors.serverError');
+    }
+    
+    alert.showError('خطأ في الاتصال', connectionErrorMessage);
   }
 };
 
@@ -127,11 +183,11 @@ const RegisterPress = async () => {
         });
     } else {
       setIsLoading(false);
-      Alert.alert('Make sure to enter a valid email');
+      alert.showError('خطأ', 'يرجى إدخال بريد إلكتروني صحيح');
     }
   } else {
     setIsLoading(false);
-    Alert.alert('Make sure to enter Email and Name and Password');
+    alert.showError('خطأ', 'يرجى إدخال الاسم والبريد الإلكتروني وكلمة المرور');
   }
 };
 ///==========================================
@@ -213,6 +269,40 @@ const RegisterPress = async () => {
     setTimeout(() => {
       setIsSignUp(!isSignUp);
     }, 300);
+  };
+
+  const handleEmailPress = () => {
+    const email = 'ramikhreishat@gmail.com';
+    const subject = t('auth.createAccountEmail.subject');
+    const body = t('auth.createAccountEmail.body');
+    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    Linking.openURL(mailtoUrl).catch(() => {
+      alert.showError(
+        t('auth.createAccountEmail.errorTitle'),
+        `${t('auth.createAccountEmail.errorMessage')}: ${email}`
+      );
+    });
+  };
+
+  const handleTermsPress = () => {
+    const termsUrl = 'https://cure.dev2.prodevr.com/terms.php';
+    Linking.openURL(termsUrl).catch(() => {
+      alert.showError(
+        t('auth.links.errorTitle'),
+        t('auth.links.errorMessage')
+      );
+    });
+  };
+
+  const handlePrivacyPress = () => {
+    const privacyUrl = 'https://cure.dev2.prodevr.com/privacy_policy.php';
+    Linking.openURL(privacyUrl).catch(() => {
+      alert.showError(
+        t('auth.links.errorTitle'),
+        t('auth.links.errorMessage')
+      );
+    });
   };
 
   // const handleSignIn = async () => {
@@ -374,6 +464,8 @@ const RegisterPress = async () => {
 
   const renderSignUpCard = () => (
     <View style={styles.cardContent}>
+      {/* تعليق على قسم إنشاء الحساب */}
+      {/* 
       <Text style={[styles.label, { fontSize: isSmallScreen ? 10 : 12, textAlign: isRTL ? 'left' : 'left' }]}>{t('auth.username')}</Text>
       <Animated.View 
         style={[
@@ -492,6 +584,28 @@ const RegisterPress = async () => {
             </Text>
           </TouchableOpacity>
         </Animated.View>
+      </View>
+      */}
+
+      <View style={styles.contactAdminContainer}>
+        <Icon name="user-plus" size={48} color="#183E9F" style={styles.contactIcon} />
+        <Text style={[styles.contactTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+          {t('auth.createAccount.title')}
+        </Text>
+        <Text style={[styles.contactMessage, { textAlign: isRTL ? 'right' : 'left' }]}>
+          {t('auth.createAccount.message')}
+        </Text>
+        <TouchableOpacity 
+          style={styles.emailContainer}
+          onPress={handleEmailPress}
+          activeOpacity={0.7}
+        >
+          <Icon name="mail" size={20} color="#183E9F" />
+          <Text style={[styles.emailText, { textAlign: isRTL ? 'right' : 'left' }]}>
+            ramikhreishat@gmail.com
+          </Text>
+          <Icon name="external-link" size={16} color="#183E9F" style={{ marginLeft: 8 }} />
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.signUpContainer} onPress={toggleCard}>
@@ -622,7 +736,7 @@ const RegisterPress = async () => {
                   {t('auth.agreeText', { action: isSignUp ? t('auth.signingUp') : t('auth.signingIn') })}
                 </Text>
                 <View style={[styles.footerLinksContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={handleTermsPress}>
                     <Text style={[
                       styles.footerLink,
                       { fontSize: isSmallScreen ? 10 : 12 }
@@ -632,7 +746,7 @@ const RegisterPress = async () => {
                     styles.footerText,
                     { fontSize: isSmallScreen ? 10 : 12 }
                   ]}> {t('auth.and')} </Text>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={handlePrivacyPress}>
                     <Text style={[
                       styles.footerLink,
                       { fontSize: isSmallScreen ? 10 : 12 }
@@ -792,6 +906,43 @@ const styles = StyleSheet.create({
   signUpLink: { 
     color: '#1C9BE8', 
     fontWeight: 'bold' 
+  },
+  contactAdminContainer: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  contactIcon: {
+    marginBottom: 20,
+  },
+  contactTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    marginBottom: 12,
+  },
+  contactMessage: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 20,
+  },
+  emailContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8F9FA',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  emailText: {
+    fontSize: 16,
+    color: '#183E9F',
+    fontWeight: '600',
+    marginLeft: 8,
   },
   footer: { 
     alignItems: 'center', 

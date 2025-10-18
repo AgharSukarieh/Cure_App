@@ -151,7 +151,7 @@ export const fetchCitiesAndAreas = async (token = null) => {
       throw new Error('فشل في جلب البيانات');
     }
   } catch (error) {
-    console.error('❌ خطأ في جلب البيانات:', error.message);
+    // صمتاً: لا نطبع أخطاء getcity/areas في الكونسول
     
     // محاولة جلب البيانات المخزنة محلياً
     const cachedData = await getCachedCitiesAndAreas();

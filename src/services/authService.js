@@ -327,9 +327,10 @@ class AuthService {
    */
   async validateToken() {
     try {
+      // محاولة استخدام endpoint مختلف للتحقق من التوكن
       const response = await apiRequest({
         method: 'GET',
-        url: 'user/profile' // Assuming this endpoint exists
+        url: 'auth/me' // محاولة استخدام endpoint مختلف
       });
 
       return {
@@ -338,10 +339,23 @@ class AuthService {
         message: response.success ? 'الرمز صالح' : 'الرمز غير صالح'
       };
     } catch (error) {
+      // إذا كان الخطأ 401 (غير مصرح)، فالتوكن غير صالح
+      if (error.response?.status === 401) {
+        console.log('🔐 Token expired - 401 Unauthorized');
+        return {
+          success: false,
+          message: 'انتهت صلاحية الجلسة',
+          error: error.message
+        };
+      }
+      
+      // إذا كان الخطأ في الشبكة أو الخادم، لا نعتبر التوكن غير صالح
+      console.log('⚠️ Token validation failed due to network/server error:', error.message);
       return {
         success: false,
         message: 'فشل في التحقق من الرمز',
-        error: error.message
+        error: error.message,
+        isNetworkError: true // إضافة علامة لتمييز أخطاء الشبكة
       };
     }
   }

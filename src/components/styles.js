@@ -187,6 +187,7 @@ export const styles = StyleSheet.create({
   },
   arrowBack: {
     marginLeft: 20,
+    
   },
 
   filterContainer: {

@@ -103,6 +103,11 @@ android {
         versionCode 1
         versionName "1.0"
         missingDimensionStrategy 'react-native-camera', 'general'
+        
+        // Fix for react-native-reanimated CMake issue - only build for ARM architectures
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
     }
 
     splits {

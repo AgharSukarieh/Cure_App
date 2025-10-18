@@ -21,21 +21,29 @@ import {
     const [allnewusers, setallnewusers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchTimeout, setSearchTimeout] = useState(null);
+
+    console.log('📡 Endpoints Check:', {
+      get_user_to_chat: globalConstants.get_user_to_chat,
+      single_chat_conv: globalConstants.single_chat?.get_conv,
+      group_chat_conv: globalConstants.group_chat?.get_conv
+    });
+    
+    if (!globalConstants.get_user_to_chat) {
+      console.error('❌ globalConstants.get_user_to_chat is undefined!');
+    }
   
     const handleTextChange = (newText) => {
       setTxt(newText);
       
-      // Clear previous timeout
       if (searchTimeout) {
         clearTimeout(searchTimeout);
       }
   
-      // Set new timeout for search
       if (newText.length > 2) {
         setIsLoading(true);
         const timeout = setTimeout(() => {
           get_users(newText);
-        }, 500); // 500ms delay
+        }, 500); 
         setSearchTimeout(timeout);
       } else if (newText.length === 0) {
         setIsLoading(true);
@@ -48,7 +56,9 @@ import {
   
     const get_users = async (searchText = '') => {
       try {
+        console.log('🔍 Searching with endpoint:', globalConstants.get_user_to_chat);
         const params = searchText ? { username: searchText } : {};
+        console.log('📡 API Request params:', params);
         const res = await get(globalConstants.get_user_to_chat, null, params);
         setallnewusers(res.data || []);
       } catch (err) {
@@ -73,12 +83,10 @@ import {
   
     return (
       <SafeAreaView style={style.container}>
-        {/* Header */}
         <View style={style.header}>
           <GoBack text={'New Chat'} />
         </View>
   
-        {/* Search Section */}
         <View style={style.searchSection}>
           <View style={style.searchContainer}>
             <FontAwesome name="search" size={20} color="#666" style={style.searchIcon} />
@@ -112,7 +120,6 @@ import {
           </TouchableOpacity>
         </View>
   
-        {/* Results Section */}
         <View style={style.resultsContainer}>
           <View style={style.resultsHeader}>
             <Text style={style.resultsTitle}>

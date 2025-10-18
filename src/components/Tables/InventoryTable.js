@@ -1,134 +1,258 @@
-import { TouchableOpacity, Text, View, StyleSheet, Dimensions } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { 
+  TouchableOpacity, 
+  Text, 
+  View, 
+  StyleSheet, 
+  Dimensions,
+  ScrollView,
+  I18nManager 
+} from 'react-native';
+import React, { useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
 import InventoryModel from '../Modals/InventoryModel';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
+
 AntDesign.loadFont();
+Feather.loadFont();
+
+const { width } = Dimensions.get('window');
+const FIXED_COLUMN_WIDTH = width * 0.35;
+const SCROLLABLE_COLUMN_WIDTH = width * 0.28;
+const ROW_HEIGHT = 70;
 
 const InventoryTable = ({ data }) => {
-    const [modal, setModal] = useState(false)
-    const [rowdata, setrowdata] = useState('')
-    const [lastOrder, setLastOrder] = useState({})
+  const { t } = useTranslation();
+  const isRTL = I18nManager.isRTL;
+  const [modal, setModal] = useState(false);
+  const [rowdata, setrowdata] = useState('');
+  const [lastOrder, setLastOrder] = useState({});
 
-    const DDD = (row) => {
-        setrowdata(row)
-        setLastOrder({})
-        setModal(true)
-    }
+  const handleShowDetails = (row) => {
+    setrowdata(row);
+    setLastOrder({});
+    setModal(true);
+  };
 
+  if (!data || !data.order_details || data.order_details.length === 0) {
     return (
-        <View style={styles.container}>
-
-            <View style={styles.header}>
-                <View style={{ ...styles.headerel, width: '30%', }}>
-                    <Text style={styles.headerel_tetx}>Items</Text>
-                </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
-                <View style={styles.headerel}>
-                    <Text style={styles.headerel_tetx}>Availability</Text>
-                </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
-                <View style={styles.headerel}>
-                    <Text style={styles.headerel_tetx}>Last Order</Text>
-                </View>
-                <View style={{ width: 1, height: '100%', backgroundColor: '#469ED8' }} />
-                <View style={{ ...styles.headerel, width: '12%', }}>
-                    <Text style={styles.headerel_tetx}>Info</Text>
-                </View>
-            </View>
-            {data?.order_details?.length > 0 ?
-                data?.order_details.map((item, index) => (
-                    <View style={{ ...styles.row, backgroundColor: index % 2 == 0 ? '#469ED8' : '#fff' }} key={index}>
-                        <View style={{ ...styles.rowel, width: '30.1%', }}>
-                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{item?.product?.name}</Text>
-                        </View>
-                        <View style={styles.rowel}>
-                            {/* {item?.items?.slice(0, 3).map((row, index2) => (
-                                <Text key={index2} style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{row.item_name}</Text>
-                            ))} */}
-                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{parseFloat(item?.units) + parseFloat(item?.bouns)}</Text>
-                        </View>
-                        <View style={styles.rowel}>
-                            {/* {item?.items?.slice(0, 3).map((row, index2) => (
-                                <Text key={index2} style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{row.items_sum} / {row.bonus}</Text>
-                            ))} */}
-                            <Text style={{ ...styles.rowel_tetx, color: index % 2 == 0 ? '#fff' : '#000' }}>{moment(item?.created_at).format('YYYY-MM-DD')}</Text>
-                        </View>
-                        <View style={{ ...styles.rowel, width: '12%', }}>
-                            <TouchableOpacity onPress={() => { DDD(item) }}>
-                                <AntDesign name="infocirlceo" color='gold' size={17} />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                ))
-                :
-                <View style={{ width: '100%', height: 70, justifyContent: 'center', alignItems: 'center', borderWidth: 0.5 }}>
-                    <Text style={{ textTransform: 'capitalize', fontSize: 25 }}>no available data</Text>
-                </View>
-            }
-            {modal && <InventoryModel show={modal} hide={() => { setModal(false) }} data={rowdata} lastOrder={lastOrder}/>}
-        </View >
+      <View style={styles.emptyContainer}>
+        <Text style={[styles.emptyText, isRTL && styles.rtlText]}>
+          {t('inventory.noData') || 'لا توجد بيانات'}
+        </Text>
+      </View>
     );
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.table}>
+        {/* Fixed Column - Product Name */}
+        <View style={styles.fixedColumn}>
+          <View style={styles.fixedHeaderCell}>
+            <Text style={[styles.fixedHeaderText, isRTL && styles.rtlText]}>
+              {t('inventory.productName') || 'اسم المنتج'}
+            </Text>
+          </View>
+          {data.order_details.map((item, index) => (
+            <View
+              key={`inventory-fixed-${item.id}-${index}`}
+              style={[
+                styles.fixedCell,
+                index % 2 === 1 ? styles.oddRow : styles.evenRow,
+              ]}
+            >
+              <Text style={styles.fixedCellText}>
+                {item?.product?.name || '-'}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Scrollable Columns */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+          <View style={styles.scrollablePart}>
+            {/* Header Row */}
+            <View style={styles.scrollableHeaderRow}>
+              <View style={styles.scrollableHeaderCell}>
+                <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                  {t('inventory.availability') || 'الكمية'}
+                </Text>
+              </View>
+              <View style={styles.scrollableHeaderCell}>
+                <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                  {t('inventory.lastOrder') || 'آخر طلب'}
+                </Text>
+              </View>
+              <View style={styles.scrollableHeaderCell}>
+                <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                  {t('inventory.info') || 'التفاصيل'}
+                </Text>
+              </View>
+            </View>
+
+            {/* Data Rows */}
+            {data.order_details.map((item, index) => (
+              <View
+                key={`inventory-data-${item.id}-${index}`}
+                style={[
+                  styles.scrollableDataRow,
+                  index % 2 === 1 ? styles.oddRow : styles.evenRow,
+                ]}
+              >
+                {/* Availability */}
+                <View style={styles.scrollableCell}>
+                  <Text style={[styles.scrollableCellText, isRTL && styles.rtlText]}>
+                    {parseFloat(item?.units || 0) + parseFloat(item?.bonus || item?.bonuse || 0)}
+                  </Text>
+                </View>
+                
+                {/* Last Order Date */}
+                <View style={styles.scrollableCell}>
+                  <Text style={[styles.scrollableCellText, isRTL && styles.rtlText]}>
+                    {item?.created_at ? moment(item.created_at).format('YYYY-MM-DD') : '-'}
+                  </Text>
+                </View>
+                
+                {/* Info Button */}
+                <View style={styles.scrollableCell}>
+                  <TouchableOpacity
+                    onPress={() => handleShowDetails(item)}
+                    style={styles.infoButton}
+                  >
+                    <Feather name="info" size={18} color="#469ED8" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+      </View>
+
+      {modal && (
+        <InventoryModel
+          show={modal}
+          hide={() => setModal(false)}
+          data={rowdata}
+          lastOrder={lastOrder}
+        />
+      )}
+    </View>
+  );
 };
 
 export default InventoryTable;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: '98%',
-        alignSelf: 'center',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        borderColor: '#469ED8',
-        marginTop: 10,
-        borderRadius: 7,
-        paddingVertical: 7
-    },
-    headerel: {
-        width: '29%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 1,
-        borderColor: '#469ED8',
-    },
-    headerel_tetx: {
-        textAlign: 'center',
-        fontSize: 17,
-        textTransform: 'capitalize',
-        color: '#000'
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        borderWidth: 1,
-        borderColor: '#469ED8',
-        marginTop: 10,
-        borderRadius: 7
-    },
-    rowel: {
-        width: '29%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 4
-    },
-    rowel_tetx: {
-        textAlign: 'center',
-        fontSize: 15,
-        textTransform: 'capitalize',
-        color: '#000',
-        height: 20,
-    },
-    rowel_tetx2: {
-        textAlign: 'center',
-        fontSize: 15,
-        textTransform: 'capitalize',
-        color: '#fff',
-        height: 20,
-    }
-})
+  container: {
+    flex: 1,
+    width: '98%',
+    alignSelf: 'center',
+  },
+  table: {
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: '#FFFFFF',
+  },
+  fixedColumn: {
+    width: FIXED_COLUMN_WIDTH,
+    backgroundColor: '#FFFFFF',
+    borderRightWidth: 1,
+    borderRightColor: '#E0E0E0',
+  },
+  scrollablePart: {
+    flex: 1,
+  },
+  fixedHeaderCell: {
+    height: ROW_HEIGHT,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    backgroundColor: '#F1F3F5',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  fixedHeaderText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#183E9F',
+    textAlign: 'left',
+  },
+  fixedCell: {
+    height: ROW_HEIGHT,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  fixedCellText: {
+    fontSize: 14,
+    color: '#333',
+    textAlign: 'left',
+  },
+  scrollableHeaderRow: {
+    flexDirection: 'row',
+    height: ROW_HEIGHT,
+    backgroundColor: '#F1F3F5',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  scrollableDataRow: {
+    flexDirection: 'row',
+    height: ROW_HEIGHT,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  scrollableHeaderCell: {
+    width: SCROLLABLE_COLUMN_WIDTH,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  scrollableHeaderText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#1A46BE',
+    textAlign: 'center',
+  },
+  scrollableCell: {
+    width: SCROLLABLE_COLUMN_WIDTH,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  scrollableCellText: {
+    fontSize: 14,
+    color: '#333',
+    textAlign: 'center',
+  },
+  evenRow: {
+    backgroundColor: '#FFFFFF',
+  },
+  oddRow: {
+    backgroundColor: '#FAFAFA',
+  },
+  emptyContainer: {
+    height: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#888',
+    textAlign: 'center',
+  },
+  infoButton: {
+    padding: 5,
+  },
+  rtlText: {
+    textAlign: 'right',
+  },
+});

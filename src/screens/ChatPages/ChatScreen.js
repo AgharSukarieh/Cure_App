@@ -11,6 +11,8 @@ import {
   ActivityIndicator,
   Dimensions,
   Keyboard,
+  I18nManager,
+  RefreshControl,
 } from 'react-native';
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -39,14 +41,24 @@ const ChatHeader = ({ partner, onBackPress, isLoading, isGroup }) => {
   return (
     <View style={styles.headerContainer}>
       <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
-        <Ionicons name="arrow-back" size={24} color="white" />
+        <Ionicons 
+          name={I18nManager.isRTL ? "arrow-forward" : "arrow-back"} 
+          size={24} 
+          color="white" 
+        />
       </TouchableOpacity>
       
       <View style={styles.headerContent}>
         <View style={styles.avatarContainer}>
           <Image 
-            source={require('../../../assets/images/avatar.png')} 
-            style={styles.avatar} 
+            source={
+              partner?.profile_image_url && partner?.profile_image_url !== null
+                ? { uri: partner.profile_image_url }
+                : isGroup 
+                  ? require('../../../assets/images/avatar.png')
+                  : require('../../../assets/user.png')
+            } 
+            style={styles.avatar}
           />
           {!isGroup && (
             <View style={[
@@ -74,7 +86,7 @@ const ChatHeader = ({ partner, onBackPress, isLoading, isGroup }) => {
         </View>
       </View>
       
-      <View style={styles.headerIcons}>
+      {/* <View style={styles.headerIcons}>
         <TouchableOpacity style={styles.iconButton}>
           <Ionicons name="call-outline" size={22} color="white" />
         </TouchableOpacity>
@@ -84,7 +96,7 @@ const ChatHeader = ({ partner, onBackPress, isLoading, isGroup }) => {
         <TouchableOpacity style={styles.iconButton}>
           <Ionicons name="ellipsis-vertical" size={22} color="white" />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -103,17 +115,17 @@ const ChatScreen = ({ route, navigation }) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
   
   const flatListRef = useRef(null);
 
-  // تحديد الـ endpoints بناءً على نوع المحادثة
   const getMessagesEndpoint = isGroup 
-    ? globalConstants.group_chat.get_mess 
-    : globalConstants.single_chat.get_mess;
+    ? globalConstants.group_chat.get_messages 
+    : globalConstants.single_chat.get_messages;
     
   const putSeenMessagesEndpoint = isGroup 
-    ? globalConstants.group_chat.seen_chat 
-    : globalConstants.single_chat.seen_chat;
+    ? globalConstants.group_chat.mark_seen 
+    : globalConstants.single_chat.mark_seen;
 
   const sendMessageEndpoint = isGroup
     ? globalConstants.group_chat.send_message
@@ -124,6 +136,13 @@ const ChatScreen = ({ route, navigation }) => {
     getMessagesEndpoint,
     putSeenMessagesEndpoint,
     sendMessageEndpoint
+  });
+  
+  console.log('🔍 globalConstants check:', {
+    single_chat: globalConstants.single_chat,
+    group_chat: globalConstants.group_chat,
+    send_message_single: globalConstants.single_chat?.send_message,
+    send_message_group: globalConstants.group_chat?.send_message
   });
 
   const getChats = async (pageNum = 1, isLoadMore = false) => {
@@ -141,7 +160,6 @@ const ChatScreen = ({ route, navigation }) => {
         page: pageNum
       });
       
-      // استخدام المعلمة الصحيحة بناءً على نوع المحادثة
       const params = isGroup 
         ? { page: pageNum, group_id: chatIdNew }
         : { page: pageNum, chat_id: chatIdNew };
@@ -151,7 +169,6 @@ const ChatScreen = ({ route, navigation }) => {
       console.log('📨 استجابة الرسائل:', res);
 
       if (res.data && Array.isArray(res.data)) {
-        // عكس ترتيب الرسائل لعرضها من الأسفل إلى الأعلى
         const messages = [...res.data].reverse();
         
         if (pageNum === 1) {
@@ -160,14 +177,12 @@ const ChatScreen = ({ route, navigation }) => {
           setChats(prev => [...messages, ...prev]);
         }
         
-        // التحقق إذا كان هناك المزيد من الرسائل
         if (res.data.length < 20) {
           setHasMore(false);
         } else {
           setHasMore(true);
         }
 
-        // التمرير إلى الأسفل بعد تحميل الرسائل الجديدة
         if (pageNum === 1 && flatListRef.current) {
           setTimeout(() => {
             flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
@@ -185,7 +200,6 @@ const ChatScreen = ({ route, navigation }) => {
   const putSeen = async () => {
     if (chatIdNew) {
       try {
-        // استخدام المعلمة الصحيحة بناءً على نوع المحادثة
         const params = isGroup 
           ? { group_id: chatIdNew }
           : { chat_id: chatIdNew };
@@ -206,8 +220,16 @@ const ChatScreen = ({ route, navigation }) => {
     }
   };
 
+  const onRefresh = async () => {
+    console.log('🔄 Pull-to-Refresh - تحديث الرسائل...');
+    setRefreshing(true);
+    setPage(1);
+    setHasMore(true);
+    await getChats(1, false);
+    setRefreshing(false);
+  };
+
   const handleNewMessage = () => {
-    // تحديد البيانات الحالية بناءً على نوع المحادثة
     const currentData = isGroup ? dataForGroup : data;
     console.log('🔄 تحديث الرسائل:', { 
       currentData, 
@@ -218,7 +240,6 @@ const ChatScreen = ({ route, navigation }) => {
       dataForGroup
     });
     
-    // التحقق إذا كانت الرسالة الجديدة تخص هذه المحادثة
     if (currentData) {
       const isRelevantMessage = isGroup 
         ? currentData.group_id == id || currentData.receiver_id == id
@@ -237,12 +258,10 @@ const ChatScreen = ({ route, navigation }) => {
     if (!chatIdNew && newChatId) {
       console.log('🆔 تحديث chatId:', newChatId);
       setChatIdNew(newChatId);
-      // إعادة تحميل الرسائل بعد تعيين chatId جديد
       setTimeout(() => getChats(1), 100);
     }
   };
 
-  // تحميل الرسائل عند فتح الشاشة أو تغيير chatId
   useEffect(() => {
     if (chatIdNew) {
       console.log('🚀 تحميل الرسائل الأولية');
@@ -251,13 +270,11 @@ const ChatScreen = ({ route, navigation }) => {
     }
   }, [chatIdNew]);
 
-  // تحديث الرسائل عند استلام بيانات جديدة من Pusher
   useEffect(() => {
     console.log('📡 استقبال تحديث من Pusher');
     handleNewMessage();
   }, [data, dataForGroup]);
 
-  // تحديث عند تغيير المعلمة isGroup
   useEffect(() => {
     if (chatIdNew) {
       console.log('🔄 تغيير نوع المحادثة، إعادة التحميل');
@@ -346,6 +363,16 @@ const ChatScreen = ({ route, navigation }) => {
               windowSize={11}
               removeClippedSubviews={true}
               inverted={false}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={[Colors.primary]}
+                  tintColor={Colors.primary}
+                  title="جاري التحديث..."
+                  titleColor={Colors.gray}
+                />
+              }
             />
           )}
         </View>
@@ -435,11 +462,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
+    textAlign:I18nManager?"left" :"right"
   },
   statusText: {
     color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 14,
     marginTop: 2,
+      textAlign:I18nManager?"left" :"right"
   },
   headerIcons: {
     flexDirection: 'row',
@@ -448,6 +477,7 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 8,
     marginLeft: 8,
+    
   },
   messagesContainer: {
     flex: 1,

@@ -39,8 +39,8 @@ const InputBox = ({ receiverID, submit, getChat, isGroup = false }) => {
 				attachmentName: timestamp + ".png",
 			};
 			const sendEndpoint = isGroup 
-			? globalConstants.group_chat.send_mess 
-			: globalConstants.single_chat.send_mess;
+			? globalConstants.group_chat.send_message 
+			: globalConstants.single_chat.send_message;
 			
 		post(sendEndpoint, data, null).then((res) => {
 				console.log('✅ تم إرسال الصورة:', res);
@@ -80,15 +80,19 @@ const InputBox = ({ receiverID, submit, getChat, isGroup = false }) => {
 			} else {
 				let data = {
 					receiver_id: receiverID,
-					latitude: latitude,
-					longitude: longitude,
 					text: newMessage,
 				};
+				
+				// إضافة الموقع فقط إذا كان موجود
+				if (latitude && longitude && latitude !== "" && longitude !== "") {
+					data.latitude = latitude;
+					data.longitude = longitude;
+				}
 
 
 				const sendEndpoint = isGroup 
-					? globalConstants.group_chat.send_mess 
-					: globalConstants.single_chat.send_mess;
+					? globalConstants.group_chat.send_message 
+					: globalConstants.single_chat.send_message;
 					
 				post(sendEndpoint, data, null).then((res) => {
 					console.log('✅ تم إرسال الرسالة:', res);
@@ -263,7 +267,7 @@ export default InputBox;
 
 const styles = StyleSheet.create({
 	container: {
-		flexDirection: "row",
+		flexDirection: "row-reverse",
 		backgroundColor: "whitesmoke",
 		padding: 5,
 		alignItems: "center",

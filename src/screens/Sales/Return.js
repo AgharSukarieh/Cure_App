@@ -9,16 +9,11 @@ import {
   I18nManager,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 import { styles as globalStyles } from '../../components/styles'; 
 import GoBack from '../../components/GoBack';
-import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
 import ScanBarcodeAndQRModel from '../../components/Modals/ScanBarcodeAndQRModel';
-import Input from '../../components/Input';
-import ReturnsAfterAddTable from '../../components/Tables/ReturnsAfterAddTable';
-import { Dropdown } from 'react-native-element-dropdown';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import { SAL_GET_PRODUCT_BY_BARCODE } from '../../Provider/ApiRequest';
 import { get } from '../../WebService/RequestBuilder';
 import globalConstants from '../../config/globalConstants';
 import { TextInput } from 'react-native';
@@ -30,6 +25,23 @@ Feather.loadFont();
 const Return = ({ navigation, route, item }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
+  
+  // ✅ استقبال البيانات من route.params أو props (نفس AccountInfo)
+  const visitData = route?.params?.item || item;
+  const visitId = route?.params?.visit_id;
+  
+  // ✅ Console log للتحقق من البيانات الواردة
+  useEffect(() => {
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('📦 Return - البيانات الواردة:');
+    console.log('   - pharmacy_id:', visitData?.pharmacy_id);
+    console.log('   - pharmacy_name:', visitData?.pharmacy_name || visitData?.name);
+    console.log('   - visit_id:', visitId || visitData?.id);
+    console.log('   - من route.params:', !!route?.params?.item);
+    console.log('   - من props:', !!item);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  }, [visitData, visitId, route, item]);
+  
   const [modal, setModal] = useState(false);
   const [dataForScan, setDataForScan] = useState(null);
   const [code, setCode] = useState(null);
@@ -38,23 +50,55 @@ const Return = ({ navigation, route, item }) => {
   const [dateEx, setDateEx] = useState('');
 
   const endEditing = (date_) => {
+    // ✅ التحقق من pharmacy_id
+    if (!visitData?.pharmacy_id) {
+      Alert.alert('خطأ', 'معلومات الصيدلية غير متوفرة');
+      console.error('❌ pharmacy_id مفقود في visitData');
+      return;
+    }
+    
+    if (!code || code.trim() === '') {
+      Alert.alert('تنبيه', 'يرجى إدخال رقم التشغيلة أو الباركود');
+      return;
+    }
+    
+    if (!date_ || date_ === '') {
+      Alert.alert('تنبيه', 'يرجى اختيار تاريخ انتهاء الصلاحية');
+      return;
+    }
+    
     const parms = {
       batch_number_or_barcode: code,
       expiry_date: date_,
-      pharmacy_id: item?.pharmacy_id,
-    };
+      pharmacy_id: visitData.pharmacy_id,  // ✅ من visitData
+    }
+    
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('🔍 البحث عن منتج مرتجع:');
+    console.log('   - batch/barcode:', code);
+    console.log('   - expiry_date:', date_);
+    console.log('   - pharmacy_id:', visitData.pharmacy_id);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     if (dateEx !== null && dateEx !== '') {
       get(globalConstants.return.get_returns, null, parms)
         .then((res) => {
+          console.log('✅ Response من API:', res);
+          console.log('   - return_orders:', res?.return_orders?.length || 0);
+          
           if (res?.return_orders?.length > 0) {
+            console.log('📦 تم العثور على منتجات مرتجعة:', res.return_orders.length);
             setDataForScan(res.return_orders);
           } else {
+            console.log('⚠️ لم يتم العثور على منتجات مرتجعة');
             setDataForScan(null);
+            Alert.alert('تنبيه', 'لم يتم العثور على منتجات مرتجعة بهذه البيانات');
           }
+          console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         })
         .catch((err) => {
-          Alert.alert(err.message || t('return.error'));
+          console.error('❌ خطأ في جلب المرتجعات:', err);
+          Alert.alert('خطأ', err.message || 'فشل البحث عن المنتج');
         })
         .finally(() => {});
     }

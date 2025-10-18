@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,7 +9,7 @@ import {
   I18nManager,
   ActivityIndicator,
   RefreshControl,
-
+  TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import CustomDatePicker from '../components/CustomPicker';
@@ -18,35 +18,41 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { get } from '../WebService/RequestBuilder';
 import Constants from '../config/globalConstants';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 
 const { width } = Dimensions.get('window');
 
-const cities = ['Amman', 'Zarqa', 'Irbid', 'Aqaba'];
-const areas = {
-  Amman: ['AlAbdali', 'Sweifieh', 'Jabal Amman', 'Tlaa Al-Ali'],
-  Zarqa: ['Zarqa City', 'Russeifa'],
-  Irbid: ['Irbid City', 'Ramtha'],
-  Aqaba: ['Aqaba City'],
-};
+// ✅ ثوابت الجدول
+const FIXED_COLUMN_WIDTH = width * 0.3;
+const SCROLLABLE_CELL_WIDTH = width * 0.25;
+const ROW_HEIGHT = 70;
 
-const reportData = [
-  { id: 1, name: 'Dr. anas', sales: 3000, target: 3500, achievement: 'NOC', region: 'North', performance: '85.7%', bonus: 500 },
-  { id: 2, name: 'Dr. sami', sales: 4200, target: 4000, achievement: 'Achieved', region: 'Central', performance: '105%', bonus: 800 },
-  { id: 3, name: 'Dr. layla', sales: 2800, target: 3500, achievement: 'NOC', region: 'South', performance: '80%', bonus: 300 },
-  { id: 4, name: 'Dr. ahmad', sales: 500000, target: 480000, achievement: 'Exceeded', region: 'East', performance: '104.2%', bonus: 2000 },
-  { id: 5, name: 'Dr. fatima', sales: 3450, target: 3500, achievement: 'NOC', region: 'West', performance: '98.6%', bonus: 450 },
-  { id: 6, name: 'Dr. omar', sales: 3000, target: 3500, achievement: 'NOC', region: 'North', performance: '85.7%', bonus: 500 },
-  { id: 7, name: 'Dr. yara', sales: 1200000, target: 1000000, achievement: 'Exceeded', region: 'Central', performance: '120%', bonus: 5000 },
-  { id: 8, name: 'Dr. khaled', sales: 3000, target: 3500, achievement: 'NOC', region: 'South', performance: '85.7%', bonus: 500 },
-  { id: 9, name: 'Dr. rami', sales: 3100, target: 3500, achievement: 'NOC', region: 'East', performance: '88.6%', bonus: 550 },
-  { id: 10, name: 'Dr. suha', sales: 3900, target: 3500, achievement: 'Achieved', region: 'West', performance: '111.4%', bonus: 750 },
-];
+
+
 
 const Reports = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const { user } = useAuth();
   const isRTL = I18nManager.isRTL;
+  
+  // ✅ استخدام Custom Hook للوصول لبيانات المستخدم
+  const { user: currentUser, isFromRedux, isFromContext } = useCurrentUser();
+  
+  // ✅ Refs
+  const scrollViewRef = useRef(null);
+  
+  // ✅ Console logs للتحقق
+  useEffect(() => {
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('👤 مصدر بيانات المستخدم في Reports:');
+    console.log('   - From Redux:', isFromRedux ? '✅' : '❌');
+    console.log('   - From Context:', isFromContext ? '✅' : '❌');
+    console.log('   - Current User ID:', currentUser?.id);
+    console.log('   - Current User Role:', currentUser?.role);
+    console.log('   - Current User Name:', currentUser?.name);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  }, [currentUser, isFromRedux, isFromContext]);
 
   const [selectedCity, setSelectedCity] = useState(null);
   const [selectedArea, setSelectedArea] = useState(null);
@@ -59,64 +65,238 @@ const Reports = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
+  // ✅ Scroll to Top state
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
+  
+  // ✅ Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMoreData, setHasMoreData] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  
   // Get reports endpoint based on user role
-  const getReportsEndpoint = user.role == 'sales' ? 
-    Constants.sales.reports : 
-    Constants.medical.reports;
+  const getReportsEndpoint = () => {
+    // ✅ استخدم الـ endpoints الجديدة
+    if (currentUser?.role === 'sales') {
+      return 'target/sales';
+    } else {
+      return 'target/medicals';
+    }
+  };
 
   // Fetch reports data from API
-  const fetchReportsData = async (isRefresh = false) => {
+  const fetchReportsData = async (isRefresh = false, pageNum = 1) => {
     try {
       if (isRefresh) {
         setRefreshing(true);
-      } else {
+      } else if (pageNum === 1) {
         setIsLoading(true);
+      } else {
+        setIsLoadingMore(true);
       }
       
-      console.log('📊 جلب بيانات التقارير من:', getReportsEndpoint);
-      const response = await get(`${getReportsEndpoint}?user_id=${user?.id}`);
-      console.log('📊 استجابة API التقارير:', response);
+      // ✅ بناء الـ query parameters
+      const params = {
+        page: pageNum,
+        per_page: 10, // عدد الصفوف لكل صفحة
+      };
       
-      const data = response.data || [];
-      setReportData(data);
+      if (fromDate) {
+        params.dateFrom = fromDate;
+      }
+      if (toDate) {
+        params.dateTo = toDate;
+      }
+      if (selectedCity) {
+        params.cityId = selectedCity;
+      }
+      if (selectedArea) {
+        params.areaId = selectedArea;
+      }
+      
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('📊 جلب بيانات التقارير');
+      console.log('   - Endpoint:', getReportsEndpoint());
+      console.log('   - User Role:', currentUser?.role);
+      console.log('   - User ID:', currentUser?.id);
+      console.log('   - Page:', pageNum);
+      console.log('   - Parameters:', params);
+      
+      const response = await get(getReportsEndpoint(), null, params);
+      
+      console.log('📊 استجابة API التقارير:', response);
+      console.log('   - Data count:', response?.data?.length || 0);
+      
+      // ✅ معالجة البيانات من pagination أو direct
+      let data = [];
+      let meta = null;
+      
+      if (response?.data) {
+        if (Array.isArray(response.data)) {
+          data = response.data;
+        } else if (response.data.data && Array.isArray(response.data.data)) {
+          data = response.data.data;
+          meta = response.data;
+        }
+      }
+      
+      // ✅ تحديد إذا كان هناك المزيد من البيانات
+      if (meta) {
+        const hasMore = meta.current_page < meta.last_page;
+        setHasMoreData(hasMore);
+        console.log(`   - Page ${meta.current_page} of ${meta.last_page}`);
+        console.log(`   - Has more: ${hasMore}`);
+      } else {
+        // إذا لم يكن هناك pagination metadata
+        setHasMoreData(data.length >= 10);
+      }
+      
+      // ✅ إضافة البيانات أو استبدالها
+      if (pageNum === 1) {
+        setReportData(data);
+        setCurrentPage(1);
+      } else {
+        setReportData(prev => [...prev, ...data]);
+        setCurrentPage(pageNum);
+      }
+      
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
       
     } catch (error) {
       console.error('❌ خطأ في جلب بيانات التقارير:', error);
-      setReportData([]);
+      if (pageNum === 1) {
+        setReportData([]);
+      }
     } finally {
       setIsLoading(false);
       setRefreshing(false);
+      setIsLoadingMore(false);
     }
+  };
+
+  // ✅ بيانات المدن والمناطق (مثال - يمكن جلبها من Redux أو API)
+  const cities = ['Amman', 'Irbid', 'Zarqa', 'Aqaba'];
+  const areas = {
+    'Amman': ['Abdoun', 'Shmeisani', 'Sweifieh', 'Jabal Amman'],
+    'Irbid': ['Downtown', 'University', 'Hay Nuzha'],
+    'Zarqa': ['Downtown', 'New Zarqa'],
+    'Aqaba': ['City Center', 'Ayla']
   };
 
   // Load data on component mount
   useEffect(() => {
-    if (user?.id) {
-      fetchReportsData();
+    if (currentUser?.id) {
+      fetchReportsData(false, 1);
     }
-  }, [user?.id]);
+  }, [currentUser?.id]);
+  
+  // ✅ Reload data when filters change
+  useEffect(() => {
+    if (currentUser?.id && (fromDate || toDate || selectedCity || selectedArea)) {
+      const timer = setTimeout(() => {
+        // إعادة تعيين pagination عند تغيير الفلاتر
+        setCurrentPage(1);
+        setHasMoreData(true);
+        fetchReportsData(false, 1);
+      }, 500); // debounce
+      
+      return () => clearTimeout(timer);
+    }
+  }, [fromDate, toDate, selectedCity, selectedArea]);
 
   const handleCitySelect = (city) => {
     setSelectedCity(city);
     const newAreas = areas[city] || [];
     setAvailableAreas(newAreas);
-    setSelectedArea(newAreas[0] || null); 
+    setSelectedArea(null); // ✅ امسح المنطقة المحددة عند تغيير المدينة
   };
+  
+  // ✅ إعادة تعيين الفلاتر
+  const resetFilters = useCallback(async () => {
+    console.log('🔄 إعادة تعيين جميع الفلاتر');
+    setSelectedCity(null);
+    setSelectedArea(null);
+    setFromDate(null);
+    setToDate(null);
+    setAvailableAreas([]);
+    
+    // ✅ إعادة تعيين pagination
+    setCurrentPage(1);
+    setHasMoreData(true);
+    
+    // إعادة تحميل البيانات بدون فلاتر
+    try {
+      setIsLoading(true);
+      await fetchReportsData(false, 1);
+    } catch (error) {
+      console.error("❌ خطأ في إعادة تحميل البيانات:", error);
+    }
+  }, []);
+  
+  // ✅ التمرير للأعلى
+  const scrollToTop = useCallback(() => {
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+  }, []);
+  
+  // ✅ تحميل المزيد من البيانات
+  const loadMoreData = useCallback(async () => {
+    if (isLoadingMore || !hasMoreData || isLoading) {
+      return;
+    }
+    
+    console.log('📥 تحميل المزيد من البيانات...');
+    const nextPage = currentPage + 1;
+    await fetchReportsData(false, nextPage);
+  }, [isLoadingMore, hasMoreData, isLoading, currentPage]);
+  
+  // ✅ معالجة حدث التمرير
+  const handleScroll = useCallback((event) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const currentScrollY = contentOffset.y;
+    
+    // إظهار زر العودة للأعلى عند التمرير لأسفل أكثر من 300
+    setShowScrollToTop(currentScrollY > 300);
+    
+    // ✅ تحميل المزيد عند الوصول للنهاية
+    const paddingToBottom = 200;
+    const isNearBottom = 
+      layoutMeasurement.height + contentOffset.y >= 
+      contentSize.height - paddingToBottom;
+    
+    if (isNearBottom && hasMoreData && !isLoadingMore && !isLoading) {
+      console.log('🔽 وصلت للنهاية - تحميل المزيد...');
+      loadMoreData();
+    }
+  }, [hasMoreData, isLoadingMore, isLoading, loadMoreData]);
 
+  // ✅ حساب Achievement من النسبة المئوية
+  const calculateAchievement = (soldUnits, target) => {
+    if (!target || target === 0) return 'N/A';
+    
+    const percentage = (soldUnits / target) * 100;
+    
+    if (percentage >= 100) return 'Exceeded';
+    if (percentage >= 80) return 'Achieved';
+    return 'NOC';
+  };
+  
   const getAchievementColor = (achievement) => {
     switch (achievement) {
       case 'Achieved': return '#51CF66';
       case 'Exceeded': return '#339AF0';
-      case 'NOC': default: return '#FF6B6B';
+      case 'NOC': return '#FF6B6B';
+      default: return '#999';
     }
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
+        ref={scrollViewRef}
         style={styles.container}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
+        onScroll={handleScroll}
+        scrollEventThrottle={400}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -165,6 +345,19 @@ const Reports = () => {
               />
             </View>
           </View>
+          
+          {/* ✅ زر إعادة تعيين الفلاتر */}
+          <View style={styles.resetFiltersContainer}>
+            <TouchableOpacity 
+              style={styles.resetFiltersButton}
+              onPress={resetFilters}
+            >
+              <AntDesign name="reload1" size={16} color="#183E9F" />
+              <Text style={[styles.resetFiltersText, isRTL && styles.rtlText]}>
+                {t("reports.resetFilters") || "إعادة تعيين الفلاتر"}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.tableContainer}>
@@ -178,68 +371,120 @@ const Reports = () => {
               <Text style={styles.emptyText}>لا توجد بيانات متاحة</Text>
             </View>
           ) : (
-            <View style={styles.tableWrapper}>
+            <View style={styles.table}>
+              {/* ✅ العمود الثابت */}
               <View style={styles.fixedColumn}>
-                <View style={[styles.fixedHeaderCell, styles.tableHeader]}>
-                  <Text style={[styles.fixedHeaderText, isRTL && styles.rtlText]}>{t("reports.name")}</Text>
+                <View style={styles.fixedHeaderCell}>
+                  <Text style={[styles.fixedHeaderText, isRTL && styles.rtlText]}>
+                    {t("reports.name")}
+                  </Text>
                 </View>
                 {reportData.map((item, index) => (
-                  <View key={item.id || index} style={[styles.fixedCell, index % 2 === 1 ? styles.oddRow : styles.evenRow]}>
-                    <Text style={styles.fixedCellText}>{item.name || item.product}</Text>
+                  <View
+                    key={`report-fixed-${item.id}-${item.product_id}-${index}`}
+                    style={[
+                      styles.fixedCell,
+                      index % 2 === 1 ? styles.oddRow : styles.evenRow,
+                    ]}
+                  >
+                    <Text style={styles.fixedCellText}>
+                      { item.product || 'N/A'}
+                    </Text>
                   </View>
                 ))}
               </View>
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.scrollableContent}>
-              <View style={styles.scrollableTable}>
-                <View style={[styles.scrollableHeaderRow, styles.tableHeader]}>
-                  <View style={styles.scrollableHeaderCell}><Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>{t("reports.sales")}</Text></View>
-                  <View style={styles.scrollableHeaderCell}><Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>{t("reports.target")}</Text></View>
-                  <View style={styles.scrollableHeaderCell}><Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>{t("reports.achievement")}</Text></View>
-                  <View style={styles.scrollableHeaderCell}><Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>{t("reports.region")}</Text></View>
-                  <View style={styles.scrollableHeaderCell}><Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>{t("reports.performance")}</Text></View>
-                  <View style={styles.scrollableHeaderCell}><Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>{t("reports.bonus")}</Text></View>
-                </View>
-                {reportData.map((item, index) => (
-                  <View key={item.id || index} style={[styles.scrollableRow, index % 2 === 1 ? styles.oddRow : styles.evenRow]}>
-                    <View style={styles.scrollableCell}>
-                      <Text style={styles.scrollableCellText}>
-                        {item.sold_units || item.sales || 0}
+              {/* ✅ الأعمدة المتحركة */}
+              <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+                <View style={styles.scrollablePart}>
+                  {/* ✅ Header Row */}
+                  <View style={styles.scrollableHeaderRow}>
+                    <View style={styles.scrollableHeaderCell}>
+                      <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                        {t("reports.sales")}
                       </Text>
                     </View>
-                    <View style={styles.scrollableCell}>
-                      <Text style={styles.scrollableCellText}>
-                        {item.target || 0}
+                    <View style={styles.scrollableHeaderCell}>
+                      <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                        {t("reports.target")}
                       </Text>
                     </View>
-                    <View style={styles.scrollableCell}>
-                      <Text style={[styles.scrollableCellText, { color: getAchievementColor(item.achievement), fontWeight: 'bold' }]}>
-                        {item.achievement || 'NOC'}
-                      </Text>
-                    </View>
-                    <View style={styles.scrollableCell}>
-                      <Text style={styles.scrollableCellText}>
-                        {item.region || item.area || '-'}
-                      </Text>
-                    </View>
-                    <View style={styles.scrollableCell}>
-                      <Text style={styles.scrollableCellText}>
-                        {item.percentage || item.performance || '0%'}
-                      </Text>
-                    </View>
-                    <View style={styles.scrollableCell}>
-                      <Text style={styles.scrollableCellText}>
-                        {item.bonus || item.bonus || 0}
-                      </Text>
-                    </View>
+                    <View style={styles.scrollableHeaderCell}>
+                      <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                        {t("reports.achievement")}
+                      </Text> 
+                     </View>
+                   
                   </View>
-                ))}
-              </View>
-            </ScrollView>
+                  
+                  {/* ✅ Data Rows */}
+                  {reportData.map((item, index) => {
+                    // ✅ حساب Achievement إذا لم يكن موجوداً
+                    const achievement = item.achievement || calculateAchievement(item.sold_units, item.target);
+                    
+                    return (
+                      <View
+                        key={`report-${item.id}-${item.product_id}-${index}`}
+                        style={[
+                          styles.scrollableDataRow,
+                          index % 2 === 1 ? styles.oddRow : styles.evenRow,
+                        ]}
+                      >
+                        <View style={styles.scrollableCell}>
+                          <Text style={styles.scrollableCellText}>
+                            {item.sold_units || 0}
+                          </Text>
+                        </View>
+                        <View style={styles.scrollableCell}>
+                          <Text style={styles.scrollableCellText}>
+                            {item.target || 0}
+                          </Text>
+                        </View>
+                      
+                        <View style={styles.scrollableCell}>
+                          <Text style={styles.scrollableCellText}>
+                            {item.percentage || '0%'}
+                          </Text>
+                        </View>
+                        
+                      </View>
+                    );
+                  })}
+                </View>
+              </ScrollView>
             </View>
           )}
         </View>
+        
+        {/* ✅ Loading More Indicator */}
+        {isLoadingMore && (
+          <View style={styles.loadingMoreContainer}>
+            <AntDesign name="downcircleo" size={24} color="#183E9F" />
+            <Text style={styles.loadingMoreText}>
+              {t("reports.loadingMore") || "جاري تحميل المزيد..."}
+            </Text>
+          </View>
+        )}
+        
+        {/* ✅ No More Data Indicator */}
+        {!hasMoreData && reportData.length > 0 && (
+          <View style={styles.noMoreDataContainer}>
+            <Text style={styles.noMoreDataText}>
+              {t("reports.noMoreData") || "لا توجد بيانات أخرى"}
+            </Text>
+          </View>
+        )}
       </ScrollView>
+      
+      {/* ✅ زر العودة للأعلى - Floating فوق الجدول */}
+      {showScrollToTop && (
+        <TouchableOpacity
+          style={styles.scrollToTopButton}
+          onPress={scrollToTop}
+        >
+          <AntDesign name="upcircleo" size={24} color="#FFF" />
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };
@@ -247,19 +492,6 @@ const styles = StyleSheet.create({
     safeArea: {
       flex: 1,
       backgroundColor: '#F8F9FA',
-    },
-    header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingHorizontal: 15,
-      paddingVertical: 10,
-      backgroundColor: '#1c6dbeff',
-    },
-    headerTitle: {
-      fontSize: 22,
-      fontWeight: 'bold',
-      color: '#183E9F',
     },
     container: {
       flex: 1,
@@ -290,8 +522,30 @@ const styles = StyleSheet.create({
       color: '#888',
       marginBottom: 5,
     },
+    // ✅ زر Reset الفلاتر
+    resetFiltersContainer: {
+      marginTop: 5,
+      alignItems: 'center',
+    },
+    resetFiltersButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      backgroundColor: '#F8F9FA',
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: '#183E9F',
+    },
+    resetFiltersText: {
+      marginLeft: 8,
+      fontSize: 14,
+      color: '#183E9F',
+      fontWeight: '600',
+    },
     tableContainer: {
       flex: 1,
+      paddingHorizontal: 15,
     },
     loadingContainer: {
       flex: 1,
@@ -315,20 +569,27 @@ const styles = StyleSheet.create({
       color: '#888',
       textAlign: 'center',
     },
-    tableWrapper: {
+    // ✅ تصميم الجدول من ClientDoctorList
+    table: {
       flexDirection: 'row',
+      borderWidth: 1,
+      borderColor: '#E0E0E0',
+      borderRadius: 8,
+      overflow: 'hidden',
     },
     fixedColumn: {
-      width: width * 0.25,
-     
-    
-      
+      width: FIXED_COLUMN_WIDTH,
+      backgroundColor: '#FFFFFF',
+      borderRightWidth: 1,
+      borderRightColor: '#E0E0E0',
     },
     fixedHeaderCell: {
-      paddingVertical: 15,
-      paddingHorizontal: 10,
+      height: ROW_HEIGHT,
       justifyContent: 'center',
-
+      paddingHorizontal: 10,
+      backgroundColor: '#F1F3F5',
+      borderBottomWidth: 1,
+      borderBottomColor: '#E0E0E0',
     },
     fixedHeaderText: {
       fontSize: 14,
@@ -337,71 +598,102 @@ const styles = StyleSheet.create({
       textAlign: 'center',
     },
     fixedCell: {
-      paddingVertical: 15,
-      paddingHorizontal: 10,
+      height: ROW_HEIGHT,
       justifyContent: 'center',
+      paddingHorizontal: 10,
       borderBottomWidth: 1,
       borderBottomColor: '#F0F0F0',
-       
-      
     },
     fixedCellText: {
       fontSize: 14,
       color: '#333',
       textAlign: 'center',
-      borderRightWidth:   I18nManager.isRTL? 0 : 1,
-      borderLeftWidth:  I18nManager.isRTL?1:0,
-      borderLeftColor:"#9D9292",
-      borderRightColor:"#9D9292",
     },
-    scrollableContent: {
+    scrollablePart: {
       flex: 1,
-    },
-    scrollableTable: {
-      minWidth: width * 1.5,
     },
     scrollableHeaderRow: {
       flexDirection: 'row',
+      backgroundColor: '#F1F3F5',
     },
     scrollableHeaderCell: {
-      width: width * 0.25,
-      paddingVertical: 16,
-      paddingHorizontal: 10,
+      width: SCROLLABLE_CELL_WIDTH,
+      height: ROW_HEIGHT,
       justifyContent: 'center',
       alignItems: 'center',
+      paddingHorizontal: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#E0E0E0',
     },
     scrollableHeaderText: {
       fontSize: 12,
       fontWeight: 'bold',
-      color: '#1A46BE',
+      color: '#183E9F',
       textAlign: 'center',
-    
     },
-    scrollableRow: {
+    scrollableDataRow: {
       flexDirection: 'row',
-      borderBottomWidth: 1,
-      borderBottomColor: '#F0F0F0',
     },
     scrollableCell: {
-      width: width * 0.25,
-      paddingVertical: 15,
-      paddingHorizontal: 10,
+      width: SCROLLABLE_CELL_WIDTH,
+      height: ROW_HEIGHT,
       justifyContent: 'center',
       alignItems: 'center',
+      paddingHorizontal: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#F0F0F0',
     },
     scrollableCellText: {
       fontSize: 14,
       color: '#333',
       textAlign: 'center',
     },
-    tableHeader: {
-  
-    },
     evenRow: {
       backgroundColor: '#FFFFFF',
     },
     oddRow: {
       backgroundColor: '#FAFAFA',
+    },
+    // ✅ زر Scroll to Top (Floating)
+    scrollToTopButton: {
+      position: 'absolute',
+      bottom: 100,
+      right: 30,
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: '#28A745',
+      justifyContent: 'center',
+      alignItems: 'center',
+      elevation: 8,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4.65,
+      zIndex: 9999, // ✅ فوق كل شيء
+    },
+    // ✅ Loading More Indicator
+    loadingMoreContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 20,
+      gap: 10,
+    },
+    loadingMoreText: {
+      fontSize: 14,
+      color: '#183E9F',
+      fontWeight: '600',
+    },
+    // ✅ No More Data Indicator
+    noMoreDataContainer: {
+      paddingVertical: 20,
+      alignItems: 'center',
+    },
+    noMoreDataText: {
+      fontSize: 14,
+      color: '#999',
+      fontStyle: 'italic',
     },
     // أنماط RTL
     rtlText: {
@@ -411,3 +703,4 @@ const styles = StyleSheet.create({
   });
 
 export default Reports;
+

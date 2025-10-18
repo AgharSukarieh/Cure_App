@@ -17,12 +17,8 @@ import Feather from 'react-native-vector-icons/Feather';
 import {styles} from '../styles';
 import Moment from 'moment';
 import DatePicker from 'react-native-date-picker';
-import {
-  GET_PHARMACY,
-  SAL_ADD_REPORT,
-  GET_Products,
-} from '../../Provider/ApiRequest';
-import axios from 'axios';
+import Constants from '../../config/globalConstants';
+import { get } from '../../WebService/RequestBuilder';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Input from '../Input';
 import ScanBarcodeAndQRModel from './ScanBarcodeAndQRModel';
@@ -54,23 +50,35 @@ const AddNewInventoryModel = ({show, hide, submit}) => {
   }
 
   const getProducts = () => {
-    axios({
-      method: 'POST',
-      url: GET_Products,
-    })
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('📦 جلب المنتجات للمخزون...');
+    
+    get(Constants.product.products, null, null)
       .then(response => {
-        var count = Object.keys(response.data).length;
-        let cityArray = [];
-        for (var i = 0; i < count; i++) {
-          cityArray.push({
-            value: response.data[i].pro_id,
-            label: response.data[i].product_name,
-          });
+        console.log('✅ استجابة API:', response);
+        
+        // التعامل مع response سواء كان array أو object
+        const products = Array.isArray(response) ? response : response.data;
+        
+        if (products && products.length > 0) {
+          console.log('   - عدد المنتجات:', products.length);
+          
+          const productsArray = products.map((product) => ({
+            value: product.id || product.pro_id,
+            label: product.name || product.product_name,
+          }));
+          
+          setProductsData(productsArray);
+          console.log('✅ تم تحميل المنتجات بنجاح');
+        } else {
+          console.log('⚠️ لا توجد منتجات');
+          setProductsData([]);
         }
-        setProductsData(cityArray);
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       })
       .catch(error => {
-        
+        console.error('❌ خطأ في جلب المنتجات:', error);
+        setProductsData([]);
       });
   };
 

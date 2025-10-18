@@ -15,7 +15,30 @@ export default {
 	userData: "userData",
 	visit_id: "visit_id",
 	
-	// Updated to use new API structure
+
+	get_user_to_chat: "get-search-results",
+	
+	
+	single_chat: {
+		get_conv: "get-single-chat-list",        
+		get_messages: "get-single-chat-messages", 
+		send_message: "single_chat_message_mobile",    
+		mark_seen: "seen-chat"                  
+	},
+	
+	
+	group_chat: {
+		get_conv: "get-group-chat-list",          
+		get_messages: "get-group-chat-messages", 
+		send_message: "group_chat_message_mobile",         
+		mark_seen: "seen-group",                  
+		create_group: "add-new-group",            
+		add_member: "add-group-member",          
+		remove_member: "remove-group-member",     
+		leave_group: "leave-group"              
+	},
+	
+
 	auth: {
 		login: API.auth.login,
 		logout: API.auth.logout,
@@ -41,11 +64,11 @@ export default {
 		get_daily_report: API.medical.get_daily_report,
 		add_daily_schedule: API.medical.add_daily_schedule,
 		get_daily_schedule: API.medical.get_daily_schedule,
-		frequncy_visits: API.medical.frequncy_visits,
+		frequncy_visits: API.medical.frequency_visits, 
 		visits: API.medical.visits
 	},
 	users: {
-		// cityArea: API.users.cityArea, // Not available in apiConfig
+	
 		user_orders: API.users.user_orders,
 		order_details: API.users.order_details,
 		med_client: API.users.med_client,
@@ -54,7 +77,9 @@ export default {
 	doctor: {
 		doctors: API.doctor.doctors,
 		speciality: API.doctor.speciality,
-		create_doctor: API.doctor.create_doctor
+		specialties_public: API.doctor.specialties_public,
+		create_doctor: API.doctor.create_doctor,
+		doctor_speciality: API.doctor.speciality_area
 	},
 	pharmacy: {
 		list: API.pharmacy.list,
@@ -90,19 +115,6 @@ export default {
 	return: {
 		get_returns: API.orders.return_orders,
 		add_returns: API.orders.return_product,
-	},
-	single_chat: {
-		get_conv: API.chat.single_chat.get_conversations,
-		get_mess: API.chat.single_chat.get_messages,
-		send_mess: API.chat.single_chat.send_message,
-		seen_chat: API.chat.single_chat.seen_chat,
-	},
-	group_chat: {
-		get_conv: API.chat.group_chat.get_conversations,
-		get_mess: API.chat.group_chat.get_messages,
-		send_mess: API.chat.group_chat.send_message,
-		seen_chat: API.chat.group_chat.seen_chat,
-		create_group: API.chat.group_chat.create_group,
 	},
 	// get_user_to_chat: API.get_user_to_chat, // Not available in apiConfig
 	get_cities: API.area.get_cities,

@@ -2,6 +2,8 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import authService from '../services/authService';
 import { setAuthToken, clearAuthToken } from '../WebService/RequestBuilder';
+import { store } from '../store';
+import { setUserData, clearUserData } from '../store/apps/user';
 
 // Initial state
 const initialState = {
@@ -82,6 +84,10 @@ const authReducer = (state, action) => {
       };
 
     case AUTH_ACTIONS.UPDATE_PROFILE:
+      // ✅ تحديث بيانات المستخدم في Redux أيضاً
+      if (action.payload) {
+        store.dispatch(setUserData({ ...state.user, ...action.payload }));
+      }
       return {
         ...state,
         user: { ...state.user, ...action.payload }
@@ -132,24 +138,59 @@ export const AuthProvider = ({ children }) => {
       
       const isAuth = await authService.isAuthenticated();
       const userData = await authService.getCurrentUser();
+      const token = await authService.getToken();
       
-      if (isAuth && userData) {
-        const token = await authService.getToken();
+      if (isAuth && userData && token) {
+        console.log('🔍 Found local auth data:', { 
+          hasUserData: !!userData, 
+          hasToken: !!token, 
+          userEmail: userData?.email,
+          userName: userData?.name 
+        });
+        
         // إعداد التوكن في RequestBuilder
-        if (token) {
-          setAuthToken(token);
-        }
+        setAuthToken(token);
+        
+        // ✅ تخزين بيانات المستخدم في Redux
+        store.dispatch(setUserData(userData));
+        
+        // استخدام البيانات المحلية مباشرة (بدون التحقق من الخادم)
+        console.log('✅ Using local authentication data');
         dispatch({
           type: AUTH_ACTIONS.CHECK_AUTH_SUCCESS,
           payload: { user: userData, token: token }
         });
+        
+        // التحقق من صحة التوكن مع الخادم في الخلفية (معطل مؤقتًا)
+        // authService.validateToken()
+        //   .then(validationResult => {
+        //     if (!validationResult.success) {
+        //       if (validationResult.isNetworkError) {
+        //         console.log('⚠️ Token validation failed due to network error, keeping local session');
+        //       } else {
+        //         console.log('⚠️ Token validation failed, but keeping local session');
+        //       }
+        //     } else {
+        //       console.log('✅ Token validation successful');
+        //     }
+        //   })
+        //   .catch(validationError => {
+        //     console.log('⚠️ Token validation error, but keeping local session:', validationError.message);
+        //   });
       } else {
+        // لا توجد بيانات مصادقة صالحة
+        console.log('❌ No valid auth data found:', { 
+          isAuth, 
+          hasUserData: !!userData, 
+          hasToken: !!token 
+        });
         dispatch({
           type: AUTH_ACTIONS.CHECK_AUTH_FAILURE,
           payload: 'غير مسجل الدخول'
         });
       }
     } catch (error) {
+      console.error('❌ Auth check error:', error);
       dispatch({
         type: AUTH_ACTIONS.CHECK_AUTH_FAILURE,
         payload: error.message
@@ -190,6 +231,10 @@ export const AuthProvider = ({ children }) => {
         console.log('✅ Login Success - Dispatching LOGIN_SUCCESS');
         // إعداد التوكن في RequestBuilder
         setAuthToken(result.data.token);
+        
+        // ✅ تخزين بيانات المستخدم في Redux
+        store.dispatch(setUserData(result.data.user));
+        
         dispatch({
           type: AUTH_ACTIONS.LOGIN_SUCCESS,
           payload: { user: result.data.user, token: result.data.token }
@@ -199,6 +244,10 @@ export const AuthProvider = ({ children }) => {
         console.log('✅ Login Success (with success=false) - Dispatching LOGIN_SUCCESS');
         // إعداد التوكن في RequestBuilder
         setAuthToken(result.data.token);
+        
+        // ✅ تخزين بيانات المستخدم في Redux
+        store.dispatch(setUserData(result.data.user));
+        
         dispatch({
           type: AUTH_ACTIONS.LOGIN_SUCCESS,
           payload: { user: result.data.user, token: result.data.token }
@@ -265,12 +314,20 @@ export const AuthProvider = ({ children }) => {
     try {
       // مسح التوكن من RequestBuilder
       clearAuthToken();
+      
+      // ✅ مسح بيانات المستخدم من Redux
+      store.dispatch(clearUserData());
+      
       const result = await authService.logout();
       dispatch({ type: AUTH_ACTIONS.LOGOUT });
       return result;
     } catch (error) {
       // Even if logout fails, clear local state
       clearAuthToken();
+      
+      // ✅ مسح بيانات المستخدم من Redux
+      store.dispatch(clearUserData());
+      
       dispatch({ type: AUTH_ACTIONS.LOGOUT });
       return { success: true, message: 'تم تسجيل الخروج بنجاح' };
     }

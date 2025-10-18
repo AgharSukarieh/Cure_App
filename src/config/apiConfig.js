@@ -1,11 +1,11 @@
-// 🚀 Enhanced API Configuration - 100% Compatible with Laravel Backend
+
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Base URL for the Laravel backend API - VERIFIED COMPATIBLE
-const BASE_URL = "http://10.42.0.1:8003/api/"; // Updated to 8003 as requested
 
-// Create axios instance with optimized configuration
+const BASE_URL = "http://10.42.0.1:8003/api/"; 
+
+
 const apiClient = axios.create({
   baseURL: BASE_URL,
   timeout: 30000, // 30 seconds timeout
@@ -15,11 +15,11 @@ const apiClient = axios.create({
   },
 });
 
-// Token management
+
 const TOKEN_KEY = 'access_token';
 const USER_DATA_KEY = 'userData';
 
-// Request interceptor to add authentication token
+
 apiClient.interceptors.request.use(
   async (config) => {
     try {
@@ -28,7 +28,7 @@ apiClient.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
       }
       
-      // Log request in development
+    
       if (__DEV__) {
         console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`);
         if (config.data) {
@@ -48,10 +48,10 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling and token refresh
+
 apiClient.interceptors.response.use(
   (response) => {
-    // Log response in development
+   
     if (__DEV__) {
       console.log(`✅ API Response: ${response.config.method?.toUpperCase()} ${response.config.url}`);
       console.log('📥 Response Data:', response.data);
@@ -62,19 +62,19 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
-    // Log error in development
+    
     if (__DEV__) {
       console.log(`❌ API Error: ${error.config?.method?.toUpperCase()} ${error.config?.url}`);
       console.log('💥 Error Details:', error.response?.data || error.message);
     }
     
-    // Handle different error types
+   
     if (error.response) {
       const { status, data } = error.response;
       
       switch (status) {
         case 401:
-          // Unauthorized - clear token and redirect to login
+         
           await AsyncStorage.multiRemove([TOKEN_KEY, USER_DATA_KEY]);
           console.log('🔐 Session expired - redirecting to login');
           break;
@@ -109,18 +109,18 @@ apiClient.interceptors.response.use(
   }
 );
 
-// 🎯 API Configuration Object - 100% Compatible with Laravel Backend
+
 const API = {
   baseURL: BASE_URL,
   
-  // Authentication endpoints - VERIFIED
+
   auth: {
     login: "login",
     logout: "logout",
     register: "register"
   },
   
-  // Users endpoints - VERIFIED
+
   users: {
     users: "users",
     medicals: "users/all/medicals",
@@ -131,27 +131,30 @@ const API = {
     client_doctor: "get_clinet_doctor"
   },
   
-  // Doctor endpoints - VERIFIED
+
   doctor: {
-    doctors: "doctors", // Public
-    user_doctors: "sales/doctor", // User's doctors
-    create_doctor: "sales/doctor", // POST
-    update_doctor: "sales/doctor", // PUT
-    delete_doctor: "sales/doctor", // DELETE
-    speciality: "doctor/speciality",
+    doctors: "doctors", 
+    doctors_filter: "doctors/filter", 
+    user_doctors: "sales/doctor", 
+    create_doctor: "sales/doctor",
+    update_doctor: "sales/doctor", 
+    delete_doctor: "sales/doctor", 
+    speciality: "doctor/speciality", 
+    specialties_public: "specialties", 
     cities: "sales/doctor/cities",
     areas: "sales/doctor/areas/",
     speciality_area: "doctor/speciality-area",
     create_doctor_mobile: "createDoctor"
   },
   
-  // Pharmacy endpoints - VERIFIED
+  
   pharmacy: {
-    list: "getpharmacy", // Public
-    user_pharmacies: "sales/pharmacy", // User's pharmacies
-    create_pharmacy: "sales/pharmacy", // POST
-    update_pharmacy: "sales/pharmacy", // PUT
-    delete_pharmacy: "sales/pharmacy", // DELETE
+    list: "getpharmacy", 
+    user_pharmacies: "sales/pharmacy", 
+    pharmacies_filter: "pharmacies/filter", 
+    create_pharmacy: "sales/pharmacy", 
+    update_pharmacy: "sales/pharmacy", 
+    delete_pharmacy: "sales/pharmacy", 
     cities: "sales/pharmacy/cities",
     areas: "sales/pharmacy/areas/",
     create_pharmacy_mobile: "createPharmacy",
@@ -159,20 +162,22 @@ const API = {
     update_image: "sales/pharmacy/update"
   },
   
-  // Product endpoints - VERIFIED
+ 
   product: {
-    products: "products", // Public
-    user_products: "product", // User's products
-    create_product: "product", // POST
-    update_product: "product", // PUT
-    delete_product: "product", // DELETE
+    products: "all-products", 
+    user_products: "product", 
+    create_product: "product", 
+    update_product: "product", 
+    delete_product: "product", 
     sample_products: "sample-products",
     scan_barcode: "scan-barcode"
   },
   
-  // Orders endpoints - VERIFIED
   orders: {
-    orders: "orders", // GET, POST, PUT, DELETE
+    orders: "orders", 
+    add_order: "orders",
+    get_orders: "user-orders", 
+    sales_order: "sales/orders", 
     user_orders: "user-orders",
     sales_orders: "sales/orders",
     order_details: "order-details/",
@@ -181,7 +186,7 @@ const API = {
     return_product: "return-product"
   },
   
-  // Medical endpoints - VERIFIED
+  
   medical: {
     reports: "target/medicals",
     add_daily_report: "med_adddaily",
@@ -195,21 +200,21 @@ const API = {
     client_doctor: "get_clinet_doctor"
   },
   
-  // Sales endpoints - VERIFIED
+ 
   sales: {
     reports: "target/sales",
     add_report: "sal_add_report",
     get_report: "sal_get_report",
     collection: "collect-money",
-    inventory: "sal_get_inventory",
+    inventory: "get-last-order-pharamcy", 
     add_inventory: "sal_add_inventory",
-    last_order: "sal_get_last_order",
+    last_order: "get-last-order-pharamcy", 
     product_by_barcode: "sal_get_product_by_barcode",
-    pharmacy: "sal_get_pharmacy",
+    pharmacy: "sales/pharamcy", 
     visits: "sale-visits"
   },
   
-  // Chat endpoints - VERIFIED
+  
   chat: {
     single_chat: {
       get_conversations: "get-single-chat-list",
@@ -227,7 +232,7 @@ const API = {
     search_results: "get-search-results"
   },
   
-  // Location endpoints - VERIFIED
+
   area: {
     cities: "getcity",
     areas: "area",
@@ -237,11 +242,11 @@ const API = {
     get_cities: "get-all-cities"
   },
   
-  // Additional endpoints - VERIFIED
+ 
   plans: "plans"
 };
 
-// HTTP Methods
+
 export const HTTP_METHODS = {
   GET: 'GET',
   POST: 'POST',
@@ -250,7 +255,7 @@ export const HTTP_METHODS = {
   PATCH: 'PATCH'
 };
 
-// Authentication requirements - VERIFIED
+
 export const AUTH_REQUIRED = {
   PUBLIC: [
     'doctors', 'getpharmacy', 'products', 'getcity', 'area', 
@@ -270,7 +275,7 @@ export const AUTH_REQUIRED = {
   ]
 };
 
-// Helper functions
+
 export const API_HELPERS = {
   /**
    * Build URL with parameters
@@ -407,6 +412,7 @@ export { apiClient };
 export const Api = API.baseURL;
 export const LOGIN = `${API.baseURL}${API.auth.login}`;
 export const GET_DOCTORS_LIST = `${API.baseURL}${API.doctor.doctors}`;
+export const GET_DOCTORS_FILTER = `${API.baseURL}${API.doctor.doctors_filter}`;
 export const GET_PHARMACY = `${API.baseURL}${API.pharmacy.list}`;
 export const GET_Products = `${API.baseURL}${API.product.products}`;
 export const GET_Areas = `${API.baseURL}${API.area.areas}`;
@@ -416,6 +422,7 @@ export const MED_EDIT_DAILY = `${API.baseURL}${API.medical.edit_daily_report}`;
 export const MED_GET_DAILY = `${API.baseURL}${API.medical.get_daily_report}`;
 export const UPDATE_LOCATION = `${API.baseURL}${API.area.update_location}`;
 export const GET_SPECIALTIES = `${API.baseURL}${API.area.specialties}`;
+export const GET_SPECIALTIES_PUBLIC = `${API.baseURL}${API.doctor.specialties_public}`;
 export const GET_MED_CLIENT = `${API.baseURL}${API.medical.med_client}`;
 export const GET_CLIENT_DOCTOR = `${API.baseURL}${API.medical.client_doctor}`;
 export const CREATE_DOCTOR = `${API.baseURL}${API.doctor.create_doctor_mobile}`;

@@ -20,7 +20,9 @@ const Message = ({ message, currentUserId }) => {
         backgroundColor: isMyMessage() ? '#8ab7eb' : 'white', //'#DCF8C5'
         alignSelf: isMyMessage() ? 'flex-end' : 'flex-start',
       }}>
-      {message?.latitude && message?.longitude && (
+      {message?.latitude && message?.longitude && 
+       message?.latitude !== "0" && message?.longitude !== "0" && 
+       message?.latitude !== "" && message?.longitude !== "" && (
         <Pressable
           onPress={() => {
             const latitude = message?.latitude;

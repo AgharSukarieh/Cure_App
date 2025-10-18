@@ -21,13 +21,25 @@ import Constants from "../../config/globalConstants";
 import LoadingScreen from "../LoadingScreen";
 import RNFetchBlob from "rn-fetch-blob";
 import MapView, { Marker } from "react-native-maps";
+import { useTranslation } from 'react-i18next';
+import { useAlert } from "../Alert/AlertProvider";
 
-const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties }) => {
+const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas }) => {
+	const { t } = useTranslation();
+	const alert = useAlert();
+	
 	const [pharmacyName, setPharmacyName] = useState("");
 	const [responsible, setResponsible] = useState("");
 	const [phone, setPhone] = useState("");
+	const [email, setEmail] = useState("");
+	const [address, setAddress] = useState("");
 	const [classificationValue, setClassificationValue] = useState(null);
-	const [classificationData, setClassificationData] = useState([]);
+	const [classificationData, setClassificationData] = useState([
+		{ value: "A", label: "A" },
+		{ value: "B", label: "B" },
+		{ value: "C", label: "C" },
+		{ value: "D", label: "D" },
+	]);
 	const [cityValue, setCityValue] = useState(null);
 	const [areaValue, setAreaValue] = useState(null);
 	const [availableAreas, setAvailableAreas] = useState([]);
@@ -40,54 +52,137 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 	// تحديث المناطق عند تغيير المدينة
 	useEffect(() => {
 		if (cityValue && allAreas) {
-			const filteredAreas = allAreas.filter((area) => area.city_id == cityValue);
+			console.log('🏙️ تغيير المدينة إلى:', cityValue);
+			const filteredAreas = allAreas.filter((area) => 
+				String(area.city_id) === String(cityValue)
+			);
+			console.log('📍 المناطق المتاحة:', filteredAreas.length);
 			setAvailableAreas(filteredAreas);
-			setAreaValue(null); // إعادة تعيين المنطقة
+			setAreaValue(null);
 		} else {
 			setAvailableAreas([]);
 		}
 	}, [cityValue, allAreas]);
 
-	// تحميل التصنيفات عند فتح المودال
-	useEffect(() => {
-		getClassification();
-	}, []);
-
 	const submitData = async () => {
-		// Validation
-		if (!pharmacyName || !responsible || !phone || !cityValue || !areaValue || !classificationValue) {
-			Alert.alert(
-				"Required Fields", 
-				"Pharmacy Name, Responsible, Phone, City, Area and Classification are required"
-			);
+		console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+		console.log('📤 إرسال بيانات صيدلية جديدة');
+		
+		// ✅ Validation محسّن مع Custom Alert
+		if (!pharmacyName?.trim()) {
+			alert.showError(t('addNewPharmacyModel.required'), t('addNewPharmacyModel.pharmacyNameRequired'));
+			return;
+		}
+		if (!responsible?.trim()) {
+			alert.showError(t('addNewPharmacyModel.required'), t('addNewPharmacyModel.responsibleRequired'));
+			return;
+		}
+		if (!phone?.trim()) {
+			alert.showError(t('addNewPharmacyModel.required'), t('addNewPharmacyModel.phoneRequired'));
+			return;
+		}
+		if (!cityValue) {
+			alert.showError(t('addNewPharmacyModel.required'), t('addNewPharmacyModel.cityRequired'));
+			return;
+		}
+		if (!areaValue) {
+			alert.showError(t('addNewPharmacyModel.required'), t('addNewPharmacyModel.areaRequired'));
+			return;
+		}
+		if (!classificationValue) {
+			alert.showError(t('addNewPharmacyModel.required'), t('addNewPharmacyModel.classificationRequired'));
 			return;
 		}
 
 		setIsLoading(true);
+		
 		try {
+			// ✅ تجهيز البيانات
 			const bodyData = {
-				name: pharmacyName,
-				responsible_pharmacist_name: responsible,
-				phone: phone,
-				activate_status: 1,
+				name: pharmacyName.trim(),
+				responsible_pharmacist_name: responsible.trim(),
+				phone: phone.trim(),
+				email: email.trim(),
+				address: address.trim(),
+				activate_status: "active",  // ✅ إصلاح: استخدم "active" بدلاً من 1
+				status: "active",  // ✅ إضافة status
 				city_id: cityValue,
 				area_id: areaValue,
 				classification: classificationValue,
-				latitude: latitude,
-				longitude: longitude,
-				images: imagesBase64,
+				latitude: latitude || null,
+				longitude: longitude || null,
+				images: imagesBase64.length > 0 ? imagesBase64 : [],
 			};
 			
+			console.log('📋 البيانات المرسلة:', {
+				...bodyData,
+				images: bodyData.images.length > 0 ? `${bodyData.images.length} image(s)` : 'no images'
+			});
+			
+			// ✅ إرسال البيانات
 			const response = await post(Constants.sales.pharmacy, bodyData);
 			
-			if (response) {
+			console.log('📥 Response:', response);
+			
+			if (response && (response.code === 200 || response.message === 'Created succussfully!')) {
+				console.log('✅ تم إضافة الصيدلية بنجاح');
+				
+				// ✅ استخدام Custom Alert للنجاح
+				alert.showSuccess(
+					'تم بنجاح! 🎉',
+					'تم إضافة الصيدلية بنجاح',
+					{
+						duration: 3000,
+						showCloseButton: false,
+						animationType: 'slide',
+						position: 'top'
+					}
+				);
+				
 				resetForm();
 				hide();
-				submit(true); // إشعار بالنجاح
+				submit(true);
+			} else {
+				throw new Error(response?.message || 'Failed to add pharmacy');
 			}
+			
+			console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+			
 		} catch (err) {
-			console.log("Error submitting pharmacy:", err);
-			Alert.alert("Error", "Failed to add pharmacy. Please try again.");
+			console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+			console.error('❌ خطأ في إضافة الصيدلية:');
+			console.error('Error:', err);
+			console.error('Message:', err.message);
+			console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+			
+			// ✅ معالجة أفضل للأخطاء
+			let errorMessage = t('addNewPharmacyModel.errorMessage');
+			
+			if (err.message) {
+				if (err.message.includes('401') || err.message.includes('Unauthorized')) {
+					errorMessage = 'انتهت صلاحية الجلسة، يرجى تسجيل الدخول مرة أخرى';
+				} else if (err.message.includes('422') || err.message.includes('validation')) {
+					errorMessage = 'البيانات المدخلة غير صحيحة';
+				} else if (err.message.includes('network') || err.message.includes('Network')) {
+					errorMessage = 'تحقق من اتصال الإنترنت';
+				} else if (err.message.includes('timeout')) {
+					errorMessage = 'انتهت مهلة الاتصال، حاول مرة أخرى';
+				} else {
+					errorMessage = err.message;
+				}
+			}
+			
+			// ✅ استخدام Custom Alert للأخطاء
+			alert.showError(
+				t('addNewPharmacyModel.error'), 
+				errorMessage,
+				{
+					duration: 4000,
+					showCloseButton: true,
+					animationType: 'slide',
+					position: 'top'
+				}
+			);
 			submit(false);
 		} finally {
 			setIsLoading(false);
@@ -101,28 +196,36 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 			timeout: 60000,
 		})
 			.then(location => {
+				console.log('📍 تم الحصول على الموقع:', {
+					lat: location.latitude,
+					lng: location.longitude
+				});
 				setLatitude(location.latitude);
 				setLongitude(location.longitude);
 				setIsLoading(false);
 			})
 			.catch(error => {
 				setIsLoading(false);
-				Alert.alert("Location Error", "Could not get current location");
-				console.log(error);
+				// ✅ استخدام Custom Alert لخطأ الموقع
+				alert.showError("خطأ في الموقع", "لا يمكن الحصول على الموقع الحالي");
+				console.error('❌ Location Error:', error);
 			});
 	};
 
 	const onPicker = async () => {
 		try {
-			const singleSelectedMode = true;
+			console.log('📸 فتح محدد الصور...');
+			
 			const response = await openPicker({
 				selectedAssets: images,
 				isExportThumbnail: true,
 				maxVideo: 1,
 				doneTitle: "Done",
-				singleSelectedMode,
+				singleSelectedMode: true,
 				isCrop: false,
 			});
+			
+			console.log('✅ تم اختيار الصورة:', response.path);
 			
 			const crop = response.crop;
 			if (crop) {
@@ -132,39 +235,72 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 			}
 
 			setImages([response]);
-			let arr = [response];
 
 			if (Platform.OS === "ios") {
-				const base = await Promise.all(arr.map(async (img) => {
-					const data = await fetch(arr[0].path);
+				try {
+					const data = await fetch(response.path);
 					const blob = await data.blob();
-					return new Promise((resolve) => {
+					const base64data = await new Promise((resolve, reject) => {
 						const reader = new FileReader();
 						reader.readAsDataURL(blob);
 						reader.onloadend = () => {
-							const base64data = reader.result;
-							resolve(base64data);
+							resolve(reader.result);
 						};
+						reader.onerror = reject;
 					});
-				}));
-				setImagesBase64([base]);
+					setImagesBase64([base64data]);
+					console.log('✅ iOS: تم تحويل الصورة إلى base64');
+				} catch (iosError) {
+					console.error('❌ iOS Base64 conversion error:', iosError);
+					alert.showError('خطأ', 'فشل في تحويل الصورة');
+				}
 			} else {
-				const base64Image = await getImageBaser64ToAndroid(arr[0].realPath);
-				if (base64Image) {
-					setImagesBase64([base64Image]);
+				try {
+					const base64Image = await getImageBaser64ToAndroid(response.realPath);
+					if (base64Image) {
+						// ✅ إضافة data:image prefix للصورة
+						const fullBase64 = `data:image/jpeg;base64,${base64Image}`;
+						setImagesBase64([fullBase64]);
+						console.log('✅ Android: تم تحويل الصورة إلى base64');
+					} else {
+						alert.showError('خطأ', 'فشل في تحويل الصورة');
+					}
+				} catch (androidError) {
+					console.error('❌ Android Base64 conversion error:', androidError);
+					alert.showError('خطأ', 'فشل في تحويل الصورة');
 				}
 			}
 		} catch (e) {
-			console.log("Image picker error:", e);
+			console.error('❌ Image picker error:', e);
+			// ✅ إضافة معالجة أفضل للأخطاء
+			if (e.message && e.message.includes('User cancelled')) {
+				console.log('👤 المستخدم ألغى اختيار الصورة');
+			} else if (e.message && e.message.includes('Permission')) {
+				alert.showError('خطأ', 'يجب السماح بالوصول إلى الصور');
+			} else {
+				alert.showError('خطأ', 'فشل في اختيار الصورة');
+			}
 		}
 	};
 
 	const getImageBaser64ToAndroid = async (imagePath) => {
 		try {
+			console.log('🔄 تحويل الصورة إلى base64:', imagePath);
+			
+			// ✅ التحقق من وجود الملف
+			const fileExists = await RNFetchBlob.fs.exists(imagePath);
+			if (!fileExists) {
+				console.error('❌ الملف غير موجود:', imagePath);
+				return null;
+			}
+			
 			const base64Data = await RNFetchBlob.fs.readFile(imagePath, "base64");
+			console.log('✅ تم تحويل الصورة بنجاح، الحجم:', base64Data.length);
+			
 			return base64Data;
 		} catch (error) {
-			console.error("Error converting image to base64:", error);
+			console.error("❌ Error converting image to base64:", error);
+			console.error("❌ Image path:", imagePath);
 			return null;
 		}
 	};
@@ -173,6 +309,8 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 		setPharmacyName("");
 		setResponsible("");
 		setPhone("");
+		setEmail("");
+		setAddress("");
 		setClassificationValue(null);
 		setCityValue(null);
 		setAreaValue(null);
@@ -194,22 +332,10 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 		placeholderStyle: { fontSize: 14, color: "#999" },
 		maxHeight: 200,
 	};
-  const getClassification = () => {
-		const data = ["A", "B", "C", "D"];
-		var count = Object.keys(data).length;
-		let classificationArray = [];
-		for (var i = 0; i < count; i++) {
-			classificationArray.push({
-				value: data[i],
-				label: data[i],
-			});
-		}
-		setClassificationData(classificationArray);
-	};
 
 	return (
 		<Modal
-			animationType="fade"
+			animationType="slide"
 			transparent={true}
 			visible={show}
 			onRequestClose={handleClose}
@@ -218,26 +344,44 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 				behavior={Platform.OS === "ios" ? "padding" : "height"}
 				style={styles.modalOverlay}
 			>
-				<View style={styles.modalContainer}>
-					<ScrollView showsVerticalScrollIndicator={false}>
-						{/* Header */}
-						<View style={styles.modalHeader}>
-							<Text style={styles.modalTitle}>Add New Pharmacy</Text>
-							<TouchableOpacity onPress={handleClose}>
-								<AntDesign name="close" size={24} color="#555" />
-							</TouchableOpacity>
+				<TouchableOpacity 
+					style={styles.backdrop} 
+					activeOpacity={1} 
+					onPress={handleClose}
+				/>
+				
+				<View style={styles.bottomSheet}>
+					{/* Drag Indicator */}
+					<View style={styles.dragIndicatorContainer}>
+						<View style={styles.dragIndicator} />
+					</View>
+
+					{/* Header */}
+					<View style={styles.modalHeader}>
+						<View style={styles.headerContent}>
+							<AntDesign name="medicinebox" size={24} color="#183E9F" />
+							<Text style={styles.modalTitle}>{t('addNewPharmacyModel.title')}</Text>
 						</View>
+						<TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+							<AntDesign name="close" size={22} color="#666" />
+						</TouchableOpacity>
+					</View>
+
+					<ScrollView 
+						showsVerticalScrollIndicator={false}
+						contentContainerStyle={styles.scrollContent}
+					>
 
 						{/* Body */}
 						<View style={styles.modalBody}>
 							{/* Pharmacy Name */}
 							<View style={styles.inputGroup}>
 								<Text style={styles.inputLabel}>
-									Pharmacy Name <Text style={styles.requiredStar}>*</Text>
+									{t('addNewPharmacyModel.pharmacyName')} <Text style={styles.requiredStar}>*</Text>
 								</Text>
 								<TextInput
 									style={styles.modalInput}
-									placeholder="Enter pharmacy name"
+									placeholder={t('addNewPharmacyModel.pharmacyNamePlaceholder')}
 									value={pharmacyName}
 									onChangeText={setPharmacyName}
 									placeholderTextColor="#999"
@@ -247,11 +391,11 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 							{/* Responsible */}
 							<View style={styles.inputGroup}>
 								<Text style={styles.inputLabel}>
-									Responsible <Text style={styles.requiredStar}>*</Text>
+									{t('addNewPharmacyModel.responsible')} <Text style={styles.requiredStar}>*</Text>
 								</Text>
 								<TextInput
 									style={styles.modalInput}
-									placeholder="Enter responsible person name"
+									placeholder={t('addNewPharmacyModel.responsiblePlaceholder')}
 									value={responsible}
 									onChangeText={setResponsible}
 									placeholderTextColor="#999"
@@ -261,11 +405,11 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 							{/* Phone */}
 							<View style={styles.inputGroup}>
 								<Text style={styles.inputLabel}>
-									Phone <Text style={styles.requiredStar}>*</Text>
+									{t('addNewPharmacyModel.phone')} <Text style={styles.requiredStar}>*</Text>
 								</Text>
 								<TextInput
 									style={styles.modalInput}
-									placeholder="Enter phone number"
+									placeholder={t('addNewPharmacyModel.phonePlaceholder')}
 									value={phone}
 									onChangeText={setPhone}
 									placeholderTextColor="#999"
@@ -273,85 +417,128 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 								/>
 							</View>
 
-							{/* Classification Dropdown */}
+							{/* Email */}
 							<View style={styles.inputGroup}>
 								<Text style={styles.inputLabel}>
-									Classification <Text style={styles.requiredStar}>*</Text>
+									{t('addNewPharmacyModel.email')}
 								</Text>
-								<Dropdown
-									style={styles.dropdown}
-									data={classificationData || []}
-									labelField="label"
-									valueField="value"
-									placeholder="Select Classification"
-									searchPlaceholder="Search..."
-									value={classificationValue}
-									search
-									onChange={item => {
-										setClassificationValue(item.value);
-									}}
-									{...dropdownStyles}
+								<TextInput
+									style={styles.modalInput}
+									placeholder={t('addNewPharmacyModel.emailPlaceholder')}
+									value={email}
+									onChangeText={setEmail}
+									placeholderTextColor="#999"
+									keyboardType="email-address"
+									autoCapitalize="none"
 								/>
 							</View>
 
-							{/* City Dropdown */}
+							{/* Address */}
 							<View style={styles.inputGroup}>
 								<Text style={styles.inputLabel}>
-									City <Text style={styles.requiredStar}>*</Text>
+									{t('addNewPharmacyModel.address')}
 								</Text>
-								<Dropdown
-									style={styles.dropdown}
-									data={cities || []}
-									labelField="label"
-									valueField="value"
-									placeholder="Select City"
-									searchPlaceholder="Search..."
-									value={cityValue}
-									search
-									onChange={item => {
-										setCityValue(item.value);
-									}}
-									{...dropdownStyles}
+								<TextInput
+									style={[styles.modalInput, styles.textArea]}
+									placeholder={t('addNewPharmacyModel.addressPlaceholder')}
+									value={address}
+									onChangeText={setAddress}
+									placeholderTextColor="#999"
+									multiline
+									numberOfLines={3}
+									textAlignVertical="top"
 								/>
 							</View>
 
-							{/* Area Dropdown */}
+							{/* Classification */}
 							<View style={styles.inputGroup}>
 								<Text style={styles.inputLabel}>
-									Area <Text style={styles.requiredStar}>*</Text>
+									{t('addNewPharmacyModel.classification')} <Text style={styles.requiredStar}>*</Text>
 								</Text>
-								<Dropdown
-									style={styles.dropdown}
-									data={availableAreas}
-									labelField="label"
-									valueField="value"
-									placeholder={
-										!cityValue
-											? "Select City First"
-											: availableAreas.length === 0
-											? "No areas available"
-											: "Select Area"
-									}
-									searchPlaceholder="Search..."
-									value={areaValue}
-									search
-									disable={!cityValue || availableAreas.length === 0}
-									onChange={item => {
-										setAreaValue(item.value);
-									}}
-									{...dropdownStyles}
-								/>
+							<Dropdown
+								style={styles.dropdown}
+								data={classificationData}
+								labelField="label"
+								valueField="value"
+								placeholder={t('addNewPharmacyModel.selectClassification')}
+								value={classificationValue}
+								onChange={item => setClassificationValue(item.value)}
+								itemTextStyle={dropdownStyles.itemTextStyle}
+								selectedTextStyle={dropdownStyles.selectedTextStyle}
+								placeholderStyle={dropdownStyles.placeholderStyle}
+								maxHeight={dropdownStyles.maxHeight}
+							/>
 							</View>
 
-							{/* Location Button */}
+							{/* City */}
 							<View style={styles.inputGroup}>
-								<Text style={styles.inputLabel}>Location</Text>
+								<Text style={styles.inputLabel}>
+									{t('addNewPharmacyModel.city')} <Text style={styles.requiredStar}>*</Text>
+								</Text>
+							<Dropdown
+								style={styles.dropdown}
+								data={cities || []}
+								labelField="label"
+								valueField="value"
+								placeholder={t('addNewPharmacyModel.selectCity')}
+								search
+								searchPlaceholder={t('addNewPharmacyModel.search')}
+								value={cityValue}
+								onChange={item => setCityValue(item.value)}
+								itemTextStyle={dropdownStyles.itemTextStyle}
+								selectedTextStyle={dropdownStyles.selectedTextStyle}
+								placeholderStyle={dropdownStyles.placeholderStyle}
+								maxHeight={dropdownStyles.maxHeight}
+							/>
+							</View>
+
+							{/* Area */}
+							<View style={styles.inputGroup}>
+								<Text style={styles.inputLabel}>
+									{t('addNewPharmacyModel.area')} <Text style={styles.requiredStar}>*</Text>
+								</Text>
+							<Dropdown
+								style={[
+									styles.dropdown,
+									(!cityValue || availableAreas.length === 0) && styles.dropdownDisabled
+								]}
+								data={availableAreas}
+								labelField="label"
+								valueField="value"
+								placeholder={
+									!cityValue
+										? t('addNewPharmacyModel.selectCityFirst')
+										: availableAreas.length === 0
+										? t('addNewPharmacyModel.noAreas')
+										: t('addNewPharmacyModel.selectArea')
+								}
+								search
+								searchPlaceholder={t('addNewPharmacyModel.search')}
+								value={areaValue}
+								disable={!cityValue || availableAreas.length === 0}
+								onChange={item => setAreaValue(item.value)}
+								itemTextStyle={dropdownStyles.itemTextStyle}
+								selectedTextStyle={dropdownStyles.selectedTextStyle}
+								placeholderStyle={dropdownStyles.placeholderStyle}
+								maxHeight={dropdownStyles.maxHeight}
+							/>
+								{cityValue && availableAreas.length > 0 && (
+									<Text style={styles.helperText}>
+										{availableAreas.length} {t('addNewPharmacyModel.areasAvailable')}
+									</Text>
+								)}
+							</View>
+
+							{/* Location */}
+							<View style={styles.inputGroup}>
+								<Text style={styles.inputLabel}>{t('addNewPharmacyModel.location')}</Text>
 								<TouchableOpacity
 									style={[
 										styles.locationButton,
 										latitude && styles.locationButtonActive
 									]}
 									onPress={getCurrentLocation}
+									disabled={isLoading}
 								>
 									<AntDesign
 										name="enviromento"
@@ -363,9 +550,19 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 										styles.locationButtonText,
 										latitude && styles.locationButtonTextActive
 									]}>
-										{latitude ? "Location Added ✓" : "Get Current Location"}
+										{latitude 
+											? t('addNewPharmacyModel.locationAdded')
+											: isLoading 
+												? t('addNewPharmacyModel.gettingLocation')
+												: t('addNewPharmacyModel.getLocation')
+										}
 									</Text>
 								</TouchableOpacity>
+								{latitude && longitude && (
+									<Text style={styles.coordinatesText}>
+										📍 Lat: {latitude.toFixed(5)}, Lng: {longitude.toFixed(5)}
+									</Text>
+								)}
 							</View>
 
 							{/* Map View */}
@@ -383,6 +580,7 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 									>
 										<Marker
 											coordinate={{ latitude: latitude, longitude: longitude }}
+											title={pharmacyName || "New Pharmacy"}
 										/>
 									</MapView>
 								</View>
@@ -390,13 +588,13 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 
 							{/* Attachments */}
 							<View style={styles.inputGroup}>
-								<Text style={styles.inputLabel}>Attachments (Optional)</Text>
+								<Text style={styles.inputLabel}>{t('addNewPharmacyModel.image')}</Text>
 								<TouchableOpacity
 									style={styles.attachmentButton}
 									onPress={onPicker}
 								>
 									<Text style={styles.attachmentButtonText}>
-										{images.length > 0 ? "Change Image" : "Add Image"}
+										{images.length > 0 ? t('addNewPharmacyModel.changeImage') : t('addNewPharmacyModel.addImage')}
 									</Text>
 									<AntDesign
 										name="camerao"
@@ -436,17 +634,35 @@ const AddNewPharmacyModel = ({ show, hide, submit, cities, allAreas, specialties
 						{/* Footer */}
 						<View style={styles.modalFooter}>
 							<TouchableOpacity
-								style={[styles.modalButton, styles.submitButton]}
+								style={[
+									styles.modalButton, 
+									styles.submitButton,
+									isLoading && styles.submitButtonDisabled
+								]}
 								onPress={submitData}
+								disabled={isLoading}
+								activeOpacity={0.8}
 							>
-								<Text style={styles.modalButtonText}>Submit</Text>
+								{isLoading ? (
+									<View style={styles.loadingContainer}>
+										<Text style={styles.modalButtonText}>{t('addNewPharmacyModel.adding')}</Text>
+									</View>
+								) : (
+									<View style={styles.loadingContainer}>
+										<AntDesign name="check" size={20} color="#FFF" />
+										<Text style={styles.modalButtonText}>{t('addNewPharmacyModel.submit')}</Text>
+									</View>
+								)}
 							</TouchableOpacity>
 							<TouchableOpacity
 								style={[styles.modalButton, styles.cancelButton]}
 								onPress={handleClose}
+								disabled={isLoading}
+								activeOpacity={0.7}
 							>
-								<Text style={[styles.modalButtonText, { color: "#333" }]}>
-									Cancel
+								<AntDesign name="close" size={18} color="#333" />
+								<Text style={[styles.modalButtonText, { color: "#333", marginLeft: 6 }]}>
+									{t('addNewPharmacyModel.cancel')}
 								</Text>
 							</TouchableOpacity>
 						</View>
@@ -463,85 +679,152 @@ export default AddNewPharmacyModel;
 const styles = StyleSheet.create({
 	modalOverlay: {
 		flex: 1,
-		backgroundColor: "rgba(0, 0, 0, 0.5)",
-		justifyContent: "center",
-		alignItems: "center",
-		padding: 20,
+		justifyContent: "flex-end",
 	},
-	modalContainer: {
-		width: "100%",
-		maxHeight: "85%",
+	backdrop: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		backgroundColor: "rgba(0, 0, 0, 0.6)",
+	},
+	bottomSheet: {
 		backgroundColor: "white",
-		borderRadius: 15,
-		padding: 20,
-		elevation: 10,
+		borderTopLeftRadius: 25,
+		borderTopRightRadius: 25,
+		maxHeight: "92%",
 		shadowColor: "#000",
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.25,
-		shadowRadius: 3.84,
+		shadowOffset: { width: 0, height: -4 },
+		shadowOpacity: 0.15,
+		shadowRadius: 12,
+		elevation: 10,
+	},
+	dragIndicatorContainer: {
+		alignItems: "center",
+		paddingTop: 12,
+		paddingBottom: 8,
+	},
+	dragIndicator: {
+		width: 40,
+		height: 4,
+		backgroundColor: "#D1D5DB",
+		borderRadius: 2,
 	},
 	modalHeader: {
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
+		paddingHorizontal: 20,
+		paddingVertical: 16,
 		borderBottomWidth: 1,
-		borderBottomColor: "#eee",
-		paddingBottom: 15,
-		marginBottom: 20,
+		borderBottomColor: "#F3F4F6",
+	},
+	headerContent: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 12,
 	},
 	modalTitle: {
 		fontSize: 20,
-		fontWeight: "bold",
+		fontWeight: "700",
 		color: "#183E9F",
-		flex: 1,
+	},
+	closeButton: {
+		width: 36,
+		height: 36,
+		borderRadius: 18,
+		backgroundColor: "#F3F4F6",
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	scrollContent: {
+		paddingBottom: 30,
 	},
 	modalBody: {
-		marginBottom: 20,
+		paddingHorizontal: 20,
+		paddingTop: 10,
 	},
 	inputGroup: {
-		marginBottom: 20,
+		marginBottom: 18,
 	},
 	inputLabel: {
-		fontSize: 16,
-		color: "#555",
+		fontSize: 14,
+		color: "#374151",
 		marginBottom: 8,
 		fontWeight: "600",
+		letterSpacing: 0.3,
+	},
+	requiredStar: {
+		color: "#EF4444",
+		fontSize: 14,
+		fontWeight: "bold",
+		marginLeft: 2,
 	},
 	modalInput: {
 		height: 50,
-		borderColor: "#E0E0E0",
-		borderWidth: 1,
-		borderRadius: 8,
-		paddingHorizontal: 12,
-		backgroundColor: "#F8F9FA",
-		fontSize: 16,
-		color: "#000",
+		borderColor: "#E5E7EB",
+		borderWidth: 1.5,
+		borderRadius: 12,
+		paddingHorizontal: 16,
+		backgroundColor: "#F9FAFB",
+		fontSize: 15,
+		color: "#111827",
+		fontWeight: "500",
+	},
+	textArea: {
+		height: 90,
+		paddingTop: 14,
+		paddingBottom: 14,
+		textAlignVertical: "top",
 	},
 	dropdown: {
 		height: 50,
-		borderColor: "#E0E0E0",
-		borderWidth: 1,
-		borderRadius: 8,
-		paddingHorizontal: 12,
+		borderColor: "#E5E7EB",
+		borderWidth: 1.5,
+		borderRadius: 12,
+		paddingHorizontal: 16,
+		backgroundColor: "#F9FAFB",
+	},
+	dropdownDisabled: {
+		backgroundColor: "#F3F4F6",
+		opacity: 0.7,
+		borderColor: "#D1D5DB",
+	},
+	helperText: {
+		fontSize: 12,
+		color: "#6B7280",
+		marginTop: 6,
+		fontWeight: "500",
+	},
+	coordinatesText: {
+		fontSize: 12,
+		color: "#666",
+		marginTop: 8,
 		backgroundColor: "#F8F9FA",
+		padding: 8,
+		borderRadius: 6,
+		fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
 	},
 	locationButton: {
 		height: 50,
-		borderWidth: 1,
+		borderWidth: 1.5,
 		borderColor: "#183E9F",
-		borderRadius: 8,
-		backgroundColor: "#FFF",
+		borderRadius: 12,
+		backgroundColor: "#F9FAFB",
 		flexDirection: "row",
 		justifyContent: "center",
 		alignItems: "center",
 	},
 	locationButtonActive: {
 		backgroundColor: "#183E9F",
+		borderColor: "#183E9F",
 	},
 	locationButtonText: {
-		fontSize: 16,
+		fontSize: 15,
 		color: "#183E9F",
 		fontWeight: "600",
+		marginLeft: 8,
 	},
 	locationButtonTextActive: {
 		color: "#FFF",
@@ -586,17 +869,45 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 	},
 	modalFooter: {
+		flexDirection: "row",
+		gap: 12,
+		paddingHorizontal: 20,
+		paddingTop: 20,
+		paddingBottom: 10,
+		borderTopWidth: 1,
+		borderTopColor: "#F3F4F6",
 		marginTop: 10,
 	},
 	modalButton: {
-		height: 50,
-		borderRadius: 8,
+		flex: 1,
+		height: 54,
+		borderRadius: 14,
 		justifyContent: "center",
 		alignItems: "center",
-		marginBottom: 10,
+		flexDirection: "row",
 	},
 	submitButton: {
 		backgroundColor: "#183E9F",
+		shadowColor: "#183E9F",
+		shadowOffset: { width: 0, height: 4 },
+		shadowOpacity: 0.3,
+		shadowRadius: 8,
+		elevation: 6,
+	},
+	submitButtonDisabled: {
+		backgroundColor: "#9CA3AF",
+		opacity: 0.7,
+		shadowOpacity: 0,
+		elevation: 0,
+	},
+	loadingContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	buttonDisabled: {
+		backgroundColor: "#B0BEC5",
+		opacity: 0.6,
 	},
 	cancelButton: {
 		backgroundColor: "#E9ECEF",
@@ -607,10 +918,6 @@ const styles = StyleSheet.create({
 		color: "#FFF",
 		fontSize: 16,
 		fontWeight: "bold",
-	},
-	requiredStar: {
-		color: "#DC3545",
-		fontSize: 16,
-		fontWeight: "bold",
+		marginLeft: 8,
 	},
 });

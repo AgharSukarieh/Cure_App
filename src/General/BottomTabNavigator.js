@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next';
 // --- استيراد الشاشات الخاصة بك ---
 
 
-import HomePage from '../screens/Medical/HometPage';
+import HomePage from '../screens/HometPage';
 import Reports from '../screens/Reports';
-import MoreScreen from '../screens/MoreScreen';
+import MoreScreen from '../screens/More/MoreScreen';
 
 import ChatsScreen from '../screens/ChatPages/ChatsScreen';
 

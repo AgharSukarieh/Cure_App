@@ -48,6 +48,19 @@ const AddGroup = ({ navigation }) => {
   const [groupAvatar, setGroupAvatar] = useState(null);
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [searchText, setSearchText] = useState('');
+
+  // ✅ تحقق من القيمة
+  console.log('📡 Group Chat Endpoints Check:', {
+    create_group: globalConstants.group_chat?.create_group,
+    add_member: globalConstants.group_chat?.add_member,
+    remove_member: globalConstants.group_chat?.remove_member,
+    leave_group: globalConstants.group_chat?.leave_group
+  });
+  
+  // إذا طلع undefined، يعني الملف مش محدث
+  if (!globalConstants.group_chat?.create_group) {
+    console.error('❌ globalConstants.group_chat.create_group is undefined!');
+  }
   const [allUsers, setAllUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -155,11 +168,19 @@ const AddGroup = ({ navigation }) => {
         });
       }
       
-      // إضافة معرفات المستخدمين
+      // إضافة معرفات المستخدمين - استخدام users_ids[] format
       list_of_user_ids.forEach(userId => {
         formData.append('users_ids[]', userId);
       });
 
+      console.log('🔍 Creating group with endpoint:', globalConstants.group_chat.create_group);
+      console.log('📡 FormData contents:', {
+        name: groupName,
+        description: groupDescription,
+        users_ids: list_of_user_ids,
+        users_count: list_of_user_ids.length
+      });
+      
       const res = await post(globalConstants.group_chat.create_group, formData, {
         'Content-Type': 'multipart/form-data'
       });

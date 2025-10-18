@@ -16,7 +16,7 @@ const GoBack = ({ text, addButton = false, addButtonFunc, isIcon }) => {
   return (
     <View style={[
       { 
-        flexDirection: isRTL ? 'row-reverse' : 'row', 
+        flexDirection: isRTL ? 'row' : 'row', 
         alignItems: 'center', 
         paddingVertical: 8, 
         justifyContent: 'center', 
@@ -28,10 +28,13 @@ const GoBack = ({ text, addButton = false, addButtonFunc, isIcon }) => {
 
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <Icon
-          name={isRTL ? "arrow-back-ios" : "arrow-back-ios"}
+          name={isRTL ? "arrow-forward-ios" : "arrow-back-ios"}
           size={20}
           color="#0D38AC"
-          style={styles.arrowBack}
+          style={[
+            styles.arrowBack,
+            isRTL ? { marginRight: 20, marginLeft: 0 } : { marginLeft: 20 }
+          ]}
         />
       </TouchableOpacity>
       <View style={{ 
@@ -42,7 +45,7 @@ const GoBack = ({ text, addButton = false, addButtonFunc, isIcon }) => {
       }}>
         <Text style={[
           styles.textRightStyle,
-          isRTL && { textAlign: 'right', writingDirection: 'rtl' }
+          isRTL && { textAlign: 'left', writingDirection: 'rtl' }
         ]}>
           {t(text)}
         </Text>

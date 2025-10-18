@@ -9,7 +9,6 @@ const AnimatedView = Animated.createAnimatedComponent(View);
 
 const { width, height } = Dimensions.get('window');
 
-// --- Logo Component ---
 const Logo = ({ iconSize = width * 0.25, onAnimationEnd, triggerAnimation }) => {
   const strokeDashoffset = useRef(new Animated.Value(3000)).current;
   const fillOpacity = useRef(new Animated.Value(0)).current;
@@ -103,13 +102,12 @@ const Logo = ({ iconSize = width * 0.25, onAnimationEnd, triggerAnimation }) => 
   );
 };
 
-// --- SplashScreen Component ---
 const SplashScreen = ({ onFinish, navigation }) => {
   const [showTitle, setShowTitle] = useState(false);
   const [triggerLogoAnimation, setTriggerLogoAnimation] = useState(false);
-  const { isLoggedIn, token } = useAuth();
+  const [showStatusBar, setShowStatusBar] = useState(false);
+  const { isAuthenticated, token, loading } = useAuth();
 
-  // Background animation refs
   const circleScales = [
     useRef(new Animated.Value(0)).current,
     useRef(new Animated.Value(0)).current,
@@ -117,7 +115,6 @@ const SplashScreen = ({ onFinish, navigation }) => {
   ];
   const logoOpacity = useRef(new Animated.Value(0)).current;
 
-  // مواقع الدوائر (نسبية للشاشة)
   const circlePositions = [
     { left: width * 0.3, top: height * 0.2 },
     { left: width * 0.5, top: height * 0.4 },
@@ -125,11 +122,14 @@ const SplashScreen = ({ onFinish, navigation }) => {
   ];
 
   useEffect(() => {
-    // انيميشن الخلفية أولاً
+    const statusBarTimer = setTimeout(() => {
+      setShowStatusBar(true);
+    }, 1000);
+
     const circleAnimations = circleScales.map((scale, index) =>
       Animated.timing(scale, {
         toValue: 1,
-        duration: 1500 + (index * 200), // تأخير متدرج لكل دائرة
+        duration: 1500 + (index * 200), 
         useNativeDriver: true,
       })
     );
@@ -142,33 +142,50 @@ const SplashScreen = ({ onFinish, navigation }) => {
 
     // تسلسل الانيميشن
     Animated.sequence([
-      Animated.stagger(300, circleAnimations), // تشغيل الدوائر مع تأخير متدرج
-      Animated.delay(500), // تأخير قبل إظهار الشعار
-      logoFadeIn, // إظهار الشعار
+      Animated.stagger(300, circleAnimations),
+      Animated.delay(500),
+      logoFadeIn, 
     ]).start(() => {
-      // بعد اكتمال انيميشن الخلفية، نبدأ انيميشن الشعار
+    
       setTriggerLogoAnimation(true);
     });
+
+    return () => clearTimeout(statusBarTimer);
   }, []);
 
-  // دالة تتم استدعاؤها عند اكتمال انيميشن الشعار
+  // التحقق من حالة المصادقة عند انتهاء التحميل
+  useEffect(() => {
+    if (!loading) {
+      // إذا انتهى التحميل، تحقق من حالة المصادقة
+      console.log('🔍 Auth Status Check:', { isAuthenticated, token: !!token, loading });
+      
+      if (isAuthenticated && token) {
+        // المستخدم مسجل دخول، انتقل للشاشة الرئيسية
+        console.log('✅ User is authenticated, navigating to BottomTabs');
+        setTimeout(() => {
+          navigation.replace('BottomTabs');
+        }, 8000); // انتظر انتهاء الانيميشن
+      } else {
+        // المستخدم غير مسجل دخول، انتقل لشاشة التعريف
+        console.log('❌ User is not authenticated, navigating to OnboardingScreen');
+        setTimeout(() => {
+          navigation.replace('OnboardingScreen');
+        }, 8000); // انتظر انتهاء الانيميشن
+      }
+    }
+  }, [loading, isAuthenticated, token, navigation]);
+
+ 
   const handleLogoAnimationEnd = () => {
     setShowTitle(true);
-    setTimeout(() => {
-      if (onFinish) onFinish();
-      if (isLoggedIn && token) {
-        navigation.replace('BottomTabs');
-      } else {
-        navigation.replace('OnboardingScreen');
-      }
-    }, 1200); // وقت إضافي لعرض العنوان
+    if (onFinish) onFinish();
   };
 
   return (
     <View style={styles.container}>
-      <StatusBar hidden />
+      {showStatusBar && <StatusBar backgroundColor="#3283B0" barStyle="dark-content" />}
       
-      {/* Background Circles Animation */}
+
       {circleScales.map((scale, index) => (
         <AnimatedView
           key={index}
@@ -194,7 +211,7 @@ const SplashScreen = ({ onFinish, navigation }) => {
         />
       ))}
 
-      {/* Logo Container */}
+ 
       <AnimatedView style={[styles.logoContainer, { opacity: logoOpacity }]}>
         <Logo 
           triggerAnimation={triggerLogoAnimation}
@@ -202,7 +219,7 @@ const SplashScreen = ({ onFinish, navigation }) => {
         />
       </AnimatedView>
 
-      {/* Title */}
+  
       {showTitle && (
         <Animatable.Text
           animation="fadeInUp"
@@ -216,7 +233,7 @@ const SplashScreen = ({ onFinish, navigation }) => {
   );
 };
 
-// --- Styles ---
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -238,15 +255,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#ffffff',
-    elevation: 8, // للأندرويد
-    shadowColor: '#000000', // للآيفون
+    elevation: 8, 
+    shadowColor: '#000000', 
     shadowOffset: {
       width: 0,
       height: 4,
     },
     shadowOpacity: 0.15,
     shadowRadius: 10,
-    zIndex: 10, // للتأكد من ظهور الشعار فوق الدوائر
+    zIndex: 10, 
   },
   logoInnerContainer: {
     flex: 1,

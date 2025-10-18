@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -11,15 +11,19 @@ import {
   Image,
   Animated,
   I18nManager,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useTranslation } from 'react-i18next';
+import { put } from '../../WebService/RequestBuilder';
+import Constants from '../../config/globalConstants';
+import GetLocation from 'react-native-get-location';
 
 const getMenuItems = (t) => [
   { id: '1', title: t('salesReportPharm.paymentHistory'), icon: require('../../../assets/images/history_order.png'), screen: 'AccountInfo' },
   { id: '2', title: t('salesReportPharm.returns'), icon: require('../../../assets/icons/return-box.png'), screen: 'Return' },
   { id: '3', title: t('salesReportPharm.inventory'), icon: require('../../../assets/icons/inventory.png'), screen: 'Inventory' },
-  { id: '4', title: t('salesReportPharm.monthlyPlan'), icon: require('../../../assets/icons/report.png'), screen: 'MonthlyPlanSales' },
   { id: '5', title: t('salesReportPharm.orders'), icon: require('../../../assets/icons/booking.png'), screen: 'OrderScreen' },
 ];
 
@@ -99,24 +103,28 @@ const AnimatedHeader = ({ title, onBackPress, showStars = true }) => {
   );
 };
 
-const SalRepSpharm = ({ navigation }) => {
+const SalRepSpharm = ({ navigation, route }) => {
+  const [isReady, setIsReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
   if (!navigation) {
     console.log('Navigation not available');
-    return null;
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Navigation not available</Text>
+        </View>
+      </SafeAreaView>
+    );
   }
+  
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
   
-  if (!t) {
-    console.log('Translation not available');
-    return null;
-  }
-  
-  if (!I18nManager) {
-    console.log('I18nManager not available');
-    return null;
-  }
-  
+ 
+  const visitData = route?.params?.item;
+  const visitId = route?.params?.visit_id;
+
   const menuItems = React.useMemo(() => {
     try {
       return getMenuItems(t);
@@ -126,18 +134,157 @@ const SalRepSpharm = ({ navigation }) => {
         { id: '1', title: 'سجل المدفوعات', icon: require('../../../assets/images/history_order.png'), screen: 'AccountInfo' },
         { id: '2', title: 'المرتجعات', icon: require('../../../assets/icons/return-box.png'), screen: 'Return' },
         { id: '3', title: 'المخزون', icon: require('../../../assets/icons/inventory.png'), screen: 'Inventory' },
-        { id: '4', title: 'الخطة الشهرية', icon: require('../../../assets/icons/monthly-plan.png'), screen: 'MonthlyPlanSales' },
-        { id: '5', title: 'الطلبات', icon: require('../../../assets/icons/booking.png'), screen: 'OrderScreen' },
+        { id: '4', title: 'الطلبات', icon: require('../../../assets/icons/booking.png'), screen: 'OrderScreen' },
       ];
     }
   }, [t]);
+  
+
+  useEffect(() => {
+    const initializeScreen = async () => {
+      try {
+        setIsLoading(true);
+        
+       
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        setIsReady(true);
+        setIsLoading(false);
+        
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('🏥 SalRepSpharm - البيانات الواردة:');
+        console.log('   - pharmacy_id:', visitData?.pharmacy_id);
+        console.log('   - pharmacy_name:', visitData?.pharmacy_name || visitData?.name);
+        console.log('   - visit_id:', visitId);
+        console.log('   - isRTL:', isRTL);
+        console.log('   - t available:', !!t);
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      } catch (error) {
+        console.error('❌ خطأ في تحميل الصفحة:', error);
+        setIsLoading(false);
+      }
+    };
+    
+    initializeScreen();
+  }, [visitData, visitId, isRTL, t]);
+  
+  
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+<StatusBar 
+  barStyle={'light-content'} 
+  backgroundColor={"#3498db"}  
+/>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2197dcc7" />
+          <Text style={styles.loadingText}>جاري التحميل...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+  
+
+  if (!visitData) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+      <StatusBar 
+  barStyle={'light-content'} 
+  backgroundColor={"#3498db"}  
+/>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>لا توجد بيانات للصيدلية</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const handlePress = (screenName) => {
     try {
-      navigation.navigate(screenName);
+      console.log('🚀 الانتقال إلى:', screenName);
+      console.log('📦 تمرير البيانات:', {
+        pharmacy_id: visitData?.pharmacy_id,
+        visit_id: visitId
+      });
+      
+    
+      navigation.navigate(screenName, { 
+        item: visitData,
+        visit_id: visitId
+      });
     } catch (error) {
       console.log('Navigation error:', error);
     }
+  };
+
+
+  const handleEndVisit = async () => {
+    if (!visitId) {
+      Alert.alert(
+        t('salesReportPharm.error') || 'خطأ',
+        t('salesReportPharm.noVisitId') || 'معرف الزيارة مفقود'
+      );
+      return;
+    }
+
+    Alert.alert(
+      t('salesReportPharm.confirmEndVisit') || 'تأكيد إنهاء الزيارة',
+      t('salesReportPharm.confirmEndVisitMessage') || `هل أنت متأكد من إنهاء زيارة ${visitData?.pharmacy_name || visitData?.name}؟`,
+      [
+        {
+          text: t('salesReportPharm.cancel') || 'إلغاء',
+          style: 'cancel'
+        },
+        {
+          text: t('salesReportPharm.confirm') || 'تأكيد',
+          onPress: async () => {
+            try {
+              console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+              console.log('📍 جلب الموقع لإنهاء الزيارة...');
+              
+              const location = await GetLocation.getCurrentPosition({
+                enableHighAccuracy: true,
+                timeout: 15000,
+              });
+
+              console.log('✅ تم الحصول على الموقع:', location);
+              console.log('🔚 إنهاء الزيارة:', visitId);
+
+              const response = await put(
+                `${Constants.visit.sales}/${visitId}`,
+                {
+                  longitude: location.longitude,
+                  latitude: location.latitude
+                },
+                null
+              );
+
+              console.log('✅ Response:', response);
+              console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+              if (response?.code === 200) {
+                console.log('✅ تم إنهاء الزيارة بنجاح - الرجوع للصفحة السابقة');
+                
+             
+                if (route?.params?.onVisitEnd) {
+                  route.params.onVisitEnd();
+                }
+                
+                navigation.goBack();
+              } else {
+                throw new Error(response?.message || 'Failed to end visit');
+              }
+            } catch (error) {
+              console.error('❌ خطأ في إنهاء الزيارة:', error);
+              Alert.alert(
+                t('salesReportPharm.error') || 'خطأ',
+                error.message || t('salesReportPharm.endVisitError') || 'حدث خطأ في إنهاء الزيارة'
+              );
+            }
+          }
+        }
+      ]
+    );
   };
 
   const renderItem = ({ item }) => (
@@ -159,22 +306,46 @@ const SalRepSpharm = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle={'light-content'} backgroundColor={"#39a5e4"} />
+   <StatusBar 
+  barStyle={'light-content'} 
+  backgroundColor={"#3498db"}  translucent={false}
+/>
       <View style={styles.header}>
         <AnimatedHeader
-          title={t('salesReportPharm.headerTitle') || 'تقرير المبيعات'}
+          title={visitData?.pharmacy_name || visitData?.name || t('salesReportPharm.headerTitle') || 'تقرير المبيعات'}
           onBackPress={() => navigation.goBack()}
         />
       </View>
 
-      <FlatList
-        data={menuItems}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        numColumns={numColumns}
-        contentContainerStyle={styles.listContentContainer}
-        columnWrapperStyle={styles.row}
-      />
+      <View style={styles.contentContainer}>
+        <FlatList
+          data={menuItems}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          numColumns={numColumns}
+          contentContainerStyle={styles.listContentContainer}
+          columnWrapperStyle={styles.row}
+          initialNumToRender={4}
+          maxToRenderPerBatch={4}
+          windowSize={5}
+          removeClippedSubviews={true}
+          showsVerticalScrollIndicator={false}
+          ListFooterComponent={() => (
+            <View style={styles.endVisitContainer}>
+              <TouchableOpacity
+                style={styles.endVisitButton}
+                onPress={handleEndVisit}
+                activeOpacity={0.8}
+              >
+                <Feather name="check-circle" size={20} color="#FFF" />
+                <Text style={styles.endVisitButtonText}>
+                  {t('salesReportPharm.endVisit') || 'إنهاء الزيارة'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -230,11 +401,11 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
     overflow: 'hidden',
-    backgroundColor: '#39a5e4',
+    backgroundColor: '#2197dcc7',
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#39a5e4',
+    backgroundColor: '#2197dcc7',
   },
   star: {
     position: 'absolute',
@@ -271,6 +442,59 @@ const styles = StyleSheet.create({
   rtlText: {
     textAlign: 'right',
     writingDirection: 'rtl',
+  },
+  endVisitContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    marginTop: 10,
+  },
+  endVisitButton: {
+    backgroundColor: '#FF6B6B',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderRadius: 12,
+    elevation: 4,
+    shadowColor: '#FF6B6B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  endVisitButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#2197dcc7',
+    fontWeight: '600',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#EF4444',
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  contentContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
   },
 });
 

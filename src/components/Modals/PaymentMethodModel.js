@@ -23,7 +23,7 @@ import CustomDatePicker from '../CustomPicker'; // Assume this is a custom date 
 const { width, height } = Dimensions.get('window');
 
 
-const PaymentMethodModel = ({ show, hide, submit }) => {
+const PaymentMethodModel = ({ show, hide, submit, pharmacyId, loading, visitDate }) => {
   const { t } = useTranslation();
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [animatedValue] = useState(new Animated.Value(0));
@@ -63,31 +63,95 @@ const PaymentMethodModel = ({ show, hide, submit }) => {
     return isValid;
   };
 
-  const fakeSubmit = async (type) => {
-    if (!validateForm()) return;
+  // ✅ دالة الإرسال الحقيقية
+  const handleSubmit = async () => {
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('📝 handleSubmit - التحقق من البيانات:');
+    console.log('   - selectedMethod:', selectedMethod);
+    console.log('   - paymentValue:', paymentValue);
+    console.log('   - pharmacyId:', pharmacyId);
+    console.log('   - checkNumber:', checkNumber);
+    console.log('   - checkDate:', checkDate);
+    console.log('   - dueDate:', dueDate);
+    
+    if (!validateForm()) {
+      console.log('❌ فشل التحقق من النموذج');
+      return;
+    }
 
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
-    hide();
+    if (!pharmacyId) {
+      Alert.alert('خطأ', 'معرف الصيدلية مفقود');
+      console.log('❌ pharmacy_id مفقود');
+      return;
+    }
+
+    const data = {
+      payment: parseFloat(paymentValue),
+      payment_method: selectedMethod === 1 ? 'cash' : 'check',
+      pharmacy_id: pharmacyId,
+    };
+
+    // ✅ إضافة تاريخ للدفعة النقدية
+    if (selectedMethod === 1) {
+      // إذا كانت cash، أضف received_at من visitDate
+      if (visitDate) {
+        data.received_at = visitDate;
+        console.log('💵 بيانات الدفعة النقدية:');
+        console.log('   - received_at (تاريخ الزيارة):', data.received_at);
+      }
+    }
+
+    // إضافة بيانات الشيك إذا كانت الطريقة شيك
+    if (selectedMethod === 2) {
+      if (!checkNumber || checkNumber.trim() === '') {
+        Alert.alert('خطأ', 'يرجى إدخال رقم الشيك');
+        console.log('❌ check_number فارغ');
+        return;
+      }
+      
+      if (!checkDate) {
+        Alert.alert('خطأ', 'يرجى اختيار تاريخ الشيك');
+        console.log('❌ checkDate فارغ');
+        return;
+      }
+      
+      if (!dueDate) {
+        Alert.alert('خطأ', 'يرجى اختيار تاريخ الاستحقاق');
+        console.log('❌ dueDate فارغ');
+        return;
+      }
+      
+      data.check_number = checkNumber.trim();
+      data.settlement = checkDate.toISOString().split('T')[0];
+      data.received_at = dueDate.toISOString().split('T')[0];
+      
+      console.log('📄 بيانات الشيك:');
+      console.log('   - check_number:', data.check_number);
+      console.log('   - settlement (Check Date):', data.settlement);
+      console.log('   - received_at (Due Date):', data.received_at);
+    }
+
+    console.log('📤 البيانات النهائية المُرسلة:', JSON.stringify(data, null, 2));
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+    // استدعاء دالة submit من props
+    await submit(data);
+    
+    // مسح النموذج
     resetForm();
-    Alert.alert(t('accountInfo.success'), t('accountInfo.paymentSubmitted'), [
-      { text: 'OK', onPress: () => submit(type) },
-    ]);
   };
 
   const handleClose = () => {
     if (paymentValue || checkNumber) {
       Alert.alert(
-        t('paymentMethod.confirmCloseTitle'),
-        t('paymentMethod.confirmCloseMessage'),
+        t('paymentMethod.confirmCloseTitle') || 'تأكيد الإغلاق',
+        t('paymentMethod.confirmCloseMessage') || 'هل تريد إلغاء العملية؟',
         [
-          { text: t('paymentMethod.cancel'), style: 'cancel' },
+          { text: t('paymentMethod.cancel') || 'لا', style: 'cancel' },
           {
-            text: t('paymentMethod.discard'),
+            text: t('paymentMethod.discard') || 'نعم',
             style: 'destructive',
             onPress: () => {
-              submit(null);
               hide();
               resetForm();
             },
@@ -95,7 +159,6 @@ const PaymentMethodModel = ({ show, hide, submit }) => {
         ]
       );
     } else {
-      submit(null);
       hide();
       resetForm();
     }
@@ -278,9 +341,9 @@ const PaymentMethodModel = ({ show, hide, submit }) => {
                     </View>
                     <ButtonWithIndicator
                       text={t('accountInfo.modalSubmit')}
-                      clickable={isCashFormValid && !isSubmitting}
-                      isLoading={isSubmitting}
-                      onClick={() => fakeSubmit('cash')}
+                      clickable={isCashFormValid && !isSubmitting && !loading}
+                      isLoading={isSubmitting || loading}
+                      onClick={handleSubmit}
                       style={styles.submitButton}
                       accessibilityLabel={t('accountInfo.modalSubmit')}
                     />
@@ -334,9 +397,9 @@ const PaymentMethodModel = ({ show, hide, submit }) => {
                     </View>
                     <ButtonWithIndicator
                       text={t('accountInfo.modalSubmit')}
-                      clickable={isCheckFormValid && !isSubmitting}
-                      isLoading={isSubmitting}
-                      onClick={() => fakeSubmit('check')}
+                      clickable={isCheckFormValid && !isSubmitting && !loading}
+                      isLoading={isSubmitting || loading}
+                      onClick={handleSubmit}
                       style={styles.submitButton}
                       accessibilityLabel={t('accountInfo.modalSubmit')}
                     />

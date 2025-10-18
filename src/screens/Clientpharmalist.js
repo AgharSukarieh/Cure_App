@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   View,
   SafeAreaView,
@@ -9,254 +9,143 @@ import {
   ScrollView,
   Dimensions,
   I18nManager,
-  Modal,
-  KeyboardAvoidingView,
-  Platform,
   RefreshControl,
+  StatusBar,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Feather from "react-native-vector-icons/Feather";
 import { Dropdown } from "react-native-element-dropdown";
-import globalConstants from "../config/globalConstants";
 import { useAuth } from "../contexts/AuthContext";
-import { get, post } from "../WebService/RequestBuilder";
-import Constants from "../config/globalConstants";
+import { get } from "../WebService/RequestBuilder";
 import SuccessfullyModel from "../components/Modals/SuccessfullyModel";
 import AddNewPharmacyModel from "../components/Modals/AddNewPharmacyModel";
 import GoBack from "../components/GoBack";
-const { width, height } = Dimensions.get("window");
+import { useDispatch, useSelector } from 'react-redux';
+import SkuModel from "../components/Modals/skuModel";
 
-// const GoBack = ({ text }) => (
-//   <View style={styles.header}>
-//     <Text style={styles.headerText}>{text}</Text>
-//   </View>
-// );
+const { width } = Dimensions.get("window");
+const FIXED_COLUMN_WIDTH = width * 0.4;
+const SCROLLABLE_COLUMN_WIDTH = width * 0.35;
+const ROW_HEIGHT = 60;
 
-const ClientPharmacyList = ({ header = true }) => {
+const ClientPharmacyList = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const isRTL = I18nManager.isRTL;
+  const dispatch = useDispatch();
+  const userLocationData = useSelector(state => state.cities.userLocationData);
   
   const [allPharmacies, setAllPharmacies] = useState([]);
-  const [cachedPharmacies, setCachedPharmacies] = useState([]);
-  const [cityArea, setCityArea] = useState(null);
-  
   const [cities, setCities] = useState([]);
   const [areas, setAreas] = useState([]);
-  const [specialties, setSpecialties] = useState([]);
   const [allAreas, setAllAreas] = useState([]);
   
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
   const [addPharmacyModalVisible, setAddPharmacyModalVisible] = useState(false);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [detailsModalVisible, setDetailsModalVisible] = useState(false);
+  const [selectedPharmacy, setSelectedPharmacy] = useState(null);
   const scrollViewRef = useRef(null);
-
-  const user_id = user.id;
-  const getPharmaciesEndpoint = globalConstants.baseURL + globalConstants.sales.pharmacy;
-  const getCityAreaEndpoint = globalConstants.users.cityArea;
 
   const [filters, setFilters] = useState({
     city_id: null,
     area_id: null,
-    category_id: null,
+    classification: null,
     searchTerm: "",
   });
 
-  
-  const loadFilterData = useCallback(async () => {
-    try {
-      console.log('🗺️ جلب بيانات المدن والمناطق...');
-      const response = await get(`${getCityAreaEndpoint}${user_id}`);
-      const cityArea = response.data;
-      
-      const cityArray = cityArea.cities.map(c => ({
-        value: c.id,
-        label: c.name
-      }));
-      setCities(cityArray);
+  const classifications = [
+    { value: 'A', label: 'A' },
+    { value: 'B', label: 'B' },
+    { value: 'C', label: 'C' },
+    { value: 'D', label: 'D' },
+  ];
 
-      const areaArray = cityArea.areas.map(a => ({
-        value: a.id,
-        label: a.name,
-        city_id: a.city_id
-      }));
-      setAllAreas(areaArray);
-      
-      console.log('✅ تم تحميل المدن:', cityArray.length);
-      console.log('✅ تم تحميل المناطق:', areaArray.length);
-      
-    } catch (error) {
-      console.error('❌ خطأ في جلب بيانات المدن والمناطق:', error);
-    }
-  }, [user_id, getCityAreaEndpoint]);
-
-  const fetchData = useCallback(async (currentPage = 1, isRefresh = false) => {
-    console.log('🔄 جلب البيانات - الصفحة:', currentPage, 'التحديث:', isRefresh);
-    
-    if (currentPage === 1) {
+  const fetchPharmacies = useCallback(async (pageNum = 1, isRefresh = false) => {
+    if (pageNum === 1) {
       setIsLoading(true);
     } else {
       setIsLoadingMore(true);
     }
     
     try {
-      if (currentPage === 1 || isRefresh) {
-        await loadFilterData();
-      }
+      console.log(`🔄 جلب الصيدليات - الصفحة: ${pageNum}`);
       
-      const response = await get(`${getPharmaciesEndpoint}?page=${currentPage}&limit=5&user_id=${user?.id}`);
-      console.log('📊 استجابة البيانات:', response);
+      const params = {
+        user_id: user.id,
+        page: pageNum,
+        limit: 10,
+      };
       
-      const newPharmacies = response.data || [];
+      if (filters.city_id) params.city_id = filters.city_id;
+      if (filters.area_id) params.area_id = filters.area_id;
+      if (filters.classification) params.classification = filters.classification;
+      if (filters.searchTerm) params.search_term = filters.searchTerm;
       
-      if (newPharmacies.length === 0) {
-        setHasMoreData(false);
-      } else {
-        if (isRefresh || currentPage === 1) {
-          setAllPharmacies(newPharmacies);
-          setCachedPharmacies(newPharmacies);
-          setHasMoreData(true);
+      const res = await get('sales/pharamcy', null, params);
+      
+      if (res?.data) {
+        const newPharmacies = res.data;
+        
+        if (newPharmacies.length === 0) {
+          setHasMoreData(false);
         } else {
-          setAllPharmacies(prevPharmacies => {
-            const existingIds = new Set(prevPharmacies.map(p => p.id));
-            const filteredNewPharmacies = newPharmacies.filter(p => !existingIds.has(p.id));
-            const updatedPharmacies = [...prevPharmacies, ...filteredNewPharmacies];
-            setCachedPharmacies(updatedPharmacies);
-            return updatedPharmacies;
-          });
+          if (isRefresh || pageNum === 1) {
+            setAllPharmacies(newPharmacies);
+            setHasMoreData(true);
+          } else {
+            setAllPharmacies(prev => {
+              const existingIds = new Set(prev.map(p => p.id));
+              const filtered = newPharmacies.filter(p => !existingIds.has(p.id));
+              return [...prev, ...filtered];
+            });
+          }
         }
+        
+        console.log(`✅ تم جلب ${newPharmacies.length} صيدلية`);
+      } else {
+        setAllPharmacies([]);
       }
       
-    } catch (error) {
-      console.error('❌ خطأ في جلب البيانات:', error);
-      if (currentPage === 1) {
+    } catch (err) {
+      console.error('❌ خطأ في جلب الصيدليات:', err);
+      if (pageNum === 1) {
         setAllPharmacies([]);
       }
     } finally {
-      if (currentPage === 1) {
+      if (pageNum === 1) {
         setIsLoading(false);
       } else {
         setIsLoadingMore(false);
       }
     }
-  }, [user?.id, getPharmaciesEndpoint, loadFilterData]);
+  }, [user?.id, filters]);
 
   useEffect(() => {
-    const loadInitialData = async () => {
-      if (user?.id) {
-        console.log('🚀 بدء تحميل البيانات الأولية...');
-        console.log('👤 معرف المستخدم:', user.id);
-        
-        if (cachedPharmacies.length > 0) {
-          console.log('♻️ استخدام البيانات المخبأة');
-          setAllPharmacies(cachedPharmacies);
-          setIsLoading(false);
-        } else {
-          console.log('🔄 تحميل بيانات جديدة');
-          
-          await loadFilterData();
-          
-          setPage(1);
-          setHasMoreData(true);
-          
-          await fetchData(1, true);
-          
-          setTimeout(async () => {
-            await fetchData(2, false);
-            setPage(2);
-          }, 300);
-        }
-      } else {
-        console.warn('⚠️ لا يوجد معرف مستخدم');
-      }
-    };
-    
-    loadInitialData();
+    if (user?.id) {
+      fetchPharmacies(1, true);
+    }
   }, [user?.id]);
 
   useEffect(() => {
-    const retryTimer = setTimeout(() => {
-      if (isLoading && allPharmacies.length === 0) {
-        console.log('⏳ إعادة محاولة جلب البيانات...');
-        fetchData(1, true);
-      }
-    }, 10000);
-
-    return () => clearTimeout(retryTimer);
-  }, [isLoading, allPharmacies.length, fetchData]);
-
-  const loadMoreData = useCallback(() => {
-    if (!isLoadingMore && hasMoreData && !isLoading) {
-      console.log('⬇️ تحميل المزيد من البيانات');
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchData(nextPage, false);
+    if (userLocationData.cities.length > 0) {
+      console.log('🏙️ تحميل البيانات من Redux...');
+      setCities(userLocationData.citiesFormatted || []);
+      setAllAreas(userLocationData.areas.map(a => ({
+        value: a.id,
+        label: a.name,
+        city_id: a.city_id
+      })));
+      
+      console.log(`✅ ${userLocationData.cities.length} مدن، ${userLocationData.areas.length} مناطق`);
     }
-  }, [page, isLoadingMore, hasMoreData, isLoading, fetchData]);
-
-  const handleScroll = useCallback((event) => {
-    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-    const paddingToBottom = 50; 
-    
-    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom) {
-      loadMoreData();
-    }
-    
-    if (contentOffset.y > 200) {
-      setIsScrolled(true); 
-    } else {
-      setIsScrolled(false); 
-    }
-  }, [loadMoreData]);
-
-  const onRefresh = useCallback(async () => {
-    console.log('🔄 السحب للتحديث');
-    setRefreshing(true);
-    setPage(1);
-    setHasMoreData(true);
-    setCachedPharmacies([]); 
-    
-    await fetchData(1, true);
-    setTimeout(async () => {
-      await fetchData(2, false);
-      setPage(2);
-      setRefreshing(false);
-    }, 400);
-  }, [fetchData]);
-
-  const filteredPharmacies = useMemo(() => {
-    if (isLoading && allPharmacies.length === 0) return [];
-    
-    console.log('🔍 === فلترة البيانات ===');
-    console.log('الفلاتر الحالية:', filters);
-    console.log('إجمالي الصيدليات:', allPharmacies.length);
-    
-    return allPharmacies.filter(pharmacy => {
-      const searchTermLower = filters.searchTerm.toLowerCase();
-      const nameMatch = (pharmacy.name || '').toLowerCase().includes(searchTermLower);
-      
-      const cityMatch = !filters.city_id || pharmacy.city_id == filters.city_id;
-      
-      const areaMatch = !filters.area_id || pharmacy.area_id == filters.area_id;
-      
-      const categoryMatch = !filters.category_id || pharmacy.category_id == filters.category_id;
-      
-      console.log(`صيدلية: ${pharmacy.name}`);
-      console.log(`- البحث: ${nameMatch}`);
-      console.log(`- المدينة: ${pharmacy.city_id} === ${filters.city_id} ? ${cityMatch}`);
-      console.log(`- المنطقة: ${pharmacy.area_id} === ${filters.area_id} ? ${areaMatch}`);
-      console.log(`- التصنيف: ${pharmacy.category_id} === ${filters.category_id} ? ${categoryMatch}`);
-      console.log(`- النتيجة النهائية: ${nameMatch && cityMatch && areaMatch && categoryMatch}`);
-      
-      return nameMatch && cityMatch && areaMatch && categoryMatch;
-    });
-  }, [allPharmacies, filters, isLoading]);
+  }, [userLocationData.cities, userLocationData.citiesFormatted, userLocationData.areas]);
 
   const handleFilterChange = useCallback((key, value) => {
     console.log(`🔧 تغيير الفلتر: ${key} = ${value}`);
@@ -267,328 +156,428 @@ const ClientPharmacyList = ({ header = true }) => {
       if (key === 'city_id') {
         newFilters.area_id = null;
         
-        const filteredAreas = allAreas.filter(area => area.city_id == value);
-        console.log('🗺️ المناطق المفلترة:', filteredAreas);
-        setAreas(filteredAreas);
+        if (value) {
+          const filteredAreas = allAreas.filter(area => 
+            String(area.city_id) === String(value)
+          );
+          setAreas(filteredAreas);
+          console.log(`📍 ${filteredAreas.length} منطقة للمدينة ${value}`);
+        } else {
+          setAreas([]);
+        }
       }
       
-      console.log('📊 الفلاتر الجديدة:', newFilters);
       return newFilters;
     });
   }, [allAreas]);
 
+
+  useEffect(() => {
+    if (user?.id) {
+      setPage(1);
+      setHasMoreData(true);
+      fetchPharmacies(1, true);
+    }
+  }, [filters.city_id, filters.area_id, filters.classification, filters.searchTerm]);
+
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    setPage(1);
+    setHasMoreData(true);
+    await fetchPharmacies(1, true);
+    setRefreshing(false);
+  }, [fetchPharmacies]);
+
+
   const clearFilters = useCallback(() => {
-    console.log('🗑️ مسح جميع الفلاتر');
+    console.log('🗑️ مسح الفلاتر');
     setFilters({ 
       searchTerm: "", 
       city_id: null, 
-      area_id: null, 
-      category_id: null 
+      area_id: null,
+      classification: null,
     });
     setAreas([]);
   }, []);
 
-  const onPharmacyAdded = useCallback((success) => {
-    setAddPharmacyModalVisible(false);
-    if (success) {
-      setSuccessModalVisible(true);
-      
-      setPage(1);
-      setHasMoreData(true);
-      setCachedPharmacies([]);
-      
-      const reloadData = async () => {
-        await fetchData(1, true);
-        setTimeout(async () => {
-          await fetchData(2, false);
-          setPage(2);
-        }, 300);
-      };
-      
-      reloadData();
-      setTimeout(() => setSuccessModalVisible(false), 2000);
+ 
+  const loadMoreData = useCallback(() => {
+    if (!isLoadingMore && hasMoreData && !isLoading) {
+      console.log('⬇️ تحميل المزيد من البيانات');
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchPharmacies(nextPage, false);
     }
-  }, [fetchData]);
+  }, [page, isLoadingMore, hasMoreData, isLoading, fetchPharmacies]);
 
-  const scrollToTop = useCallback(() => {
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({ y: 0, animated: true });
-      setIsScrolled(false);
+  
+  const handleScroll = useCallback((event) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const paddingToBottom = 50;
+    
+    
+    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom) {
+      loadMoreData();
     }
+    
+   
+    if (contentOffset.y > 200) {
+      setShowScrollToTop(true);
+    } else {
+      setShowScrollToTop(false);
+    }
+  }, [loadMoreData]);
+
+  
+  const scrollToTop = useCallback(() => {
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    setShowScrollToTop(false);
+  }, []);
+
+  
+  const openDetailsModal = useCallback((pharmacy) => {
+    console.log('📋 فتح تفاصيل الصيدلية:', pharmacy);
+    setSelectedPharmacy(pharmacy);
+    setDetailsModalVisible(true);
   }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
-       <GoBack text={t('clientPharmacyList.headerTitle')}/>
+      <StatusBar 
+        barStyle={'dark-content'} 
+        backgroundColor={"#F8F9FA"} 
+      />
+      <GoBack text="قائمة الصيدليات" />
     
       <ScrollView
-        style={styles.container}
         ref={scrollViewRef}
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
         onScroll={handleScroll}
-        scrollEventThrottle={16}
+        scrollEventThrottle={400}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
             colors={['#183E9F']}
             tintColor="#183E9F"
-            title={t('clientPharmacyList.pullToRefresh')}
           />
         }
       >
+      
         <View style={styles.filtersContainer}>
-          <View style={styles.searchContainer}>
+      
+          <View style={[styles.searchContainer, isRTL && styles.rtlSearchContainer]}>
             <TextInput
               style={[styles.searchInput, isRTL && styles.rtlText]}
-              placeholder={t('clientPharmacyList.searchPlaceholder') || "ابحث عن صيدلية..."}
+              placeholder="ابحث عن صيدلية..."
               placeholderTextColor="#888"
               value={filters.searchTerm}
               onChangeText={(text) => handleFilterChange("searchTerm", text)}
             />
-            <TouchableOpacity onPress={clearFilters}>
-              <Feather name="x" color="#888" size={20} />
-            </TouchableOpacity>
+            <Feather name="search" size={20} color="#888" />
           </View>
           
-          {isLoading && cities.length === 0 ? (
-            <View style={styles.filterLoadingContainer}>
-              <Text style={[styles.filterLoadingText, isRTL && styles.rtlText]}>
-                جاري تحميل الفلاتر...
+        
+          <View style={styles.filterRow}>
+            <View style={styles.filterBox}>
+              <Text style={[styles.filterLabel, isRTL && styles.rtlText]}>
+                المدينة
               </Text>
-            </View>
-          ) : (
-            <>
-              <View style={styles.filterRow}>
-                <View style={styles.filterBox}>
-                  <Text style={[styles.filterLabel, isRTL && styles.rtlText]}>
-                    {t('clientPharmacyList.filterByCity') || "المدينة"}
-                  </Text>
-                  <Dropdown
-                    style={styles.dropdown}
-                    data={cities}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={t('clientPharmacyList.allCities') || "جميع المدن"}
-                    value={filters.city_id}
-                    onChange={(item) => handleFilterChange("city_id", item.value)}
-                    {...dropdownStyles}
-                  />
-                </View>
-                
-                <View style={styles.filterBox}>
-                  <Text style={[styles.filterLabel, isRTL && styles.rtlText]}>
-                    {t('clientPharmacyList.filterByArea') || "المنطقة"}
-                  </Text>
-                  <Dropdown
-                    style={styles.dropdown}
-                    data={areas}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={
-                      !filters.city_id 
-                        ? (t('clientPharmacyList.selectCityFirst') || "اختر المدينة أولاً")
-                        : (t('clientPharmacyList.allAreas') || "جميع المناطق")
-                    }
-                    value={filters.area_id}
-                    onChange={(item) => handleFilterChange("area_id", item.value)}
-                    disable={!filters.city_id}
-                    {...dropdownStyles}
-                  />
-                </View>
-              </View>
-              
-              {/* <View style={styles.filterBoxFullWidth}>
-                <Text style={[styles.filterLabel, isRTL && styles.rtlText]}>
-                  {t('clientPharmacyList.filterByCategory') || "التصنيف"}
-                </Text>
-                <Dropdown
-                  style={styles.dropdown}
-                  data={specialties}
-                  labelField="label"
-                  valueField="value"
-                  placeholder={t('clientPharmacyList.allCategories') || "جميع التصنيفات"}
-                  value={filters.category_id}
-                  onChange={(item) => handleFilterChange("category_id", item.value)}
-                  {...dropdownStyles}
-                />
-              </View> */}
-            </>
-          )}
-        </View>
-
-        <View style={styles.tableContainer}>
-          <View style={styles.tableWrapper}>
-            <View style={styles.fixedColumn}>
-              <View style={[styles.fixedHeaderCell, styles.tableHeader]}>
-                <Text style={[styles.fixedHeaderText, isRTL && styles.rtlText]}>
-                  {t('clientPharmacyList.pharmacyName')}
-                </Text>
-              </View>
-              
-              {isLoading && allPharmacies.length === 0 ? (
-                <View style={styles.fixedCell}>
-                  <Text style={[styles.emptyText, isRTL && styles.rtlText]}>
-                    {t('clientPharmacyList.loading')}
-                  </Text>
-                </View>
-              ) : (
-                filteredPharmacies.map((item, index) => (
-                  <View
-                    key={item.id}
-                    style={[styles.fixedCell, index % 2 === 1 && styles.oddRow]}
-                  >
-                    <Text style={styles.fixedCellText} numberOfLines={1}>
-                      {item.name}
-                    </Text>
-                  </View>
-                ))
-              )}
+              <Dropdown
+                style={styles.dropdown}
+                data={cities}
+                labelField="label"
+                valueField="value"
+                placeholder="جميع المدن"
+                value={filters.city_id}
+                onChange={(item) => handleFilterChange("city_id", item.value)}
+                itemTextStyle={{ color: "#333", fontSize: 14 }}
+                selectedTextStyle={{ fontSize: 14, color: "#333" }}
+                placeholderStyle={{ fontSize: 14, color: "#999" }}
+              />
             </View>
             
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={true}
-              style={styles.scrollableContent}
+            <View style={styles.filterBox}>
+              <Text style={[styles.filterLabel, isRTL && styles.rtlText]}>
+                المنطقة
+              </Text>
+              <Dropdown
+                style={styles.dropdown}
+                data={areas}
+                labelField="label"
+                valueField="value"
+                placeholder={!filters.city_id ? "اختر المدينة أولاً" : "جميع المناطق"}
+                value={filters.area_id}
+                onChange={(item) => handleFilterChange("area_id", item.value)}
+                disable={!filters.city_id}
+                itemTextStyle={{ color: "#333", fontSize: 14 }}
+                selectedTextStyle={{ fontSize: 14, color: "#333" }}
+                placeholderStyle={{ fontSize: 14, color: "#999" }}
+              />
+            </View>
+          </View>
+
+         
+          <View style={styles.filterBoxFullWidth}>
+            <Text style={[styles.filterLabel, isRTL && styles.rtlText]}>
+              التصنيف
+            </Text>
+            <Dropdown
+              style={styles.dropdown}
+              data={classifications}
+              labelField="label"
+              valueField="value"
+              placeholder="جميع التصنيفات"
+              value={filters.classification}
+              onChange={(item) => handleFilterChange("classification", item.value)}
+              itemTextStyle={{ color: "#333", fontSize: 14 }}
+              selectedTextStyle={{ fontSize: 14, color: "#333" }}
+              placeholderStyle={{ fontSize: 14, color: "#999" }}
+            />
+          </View>
+
+        
+          <View style={styles.resetFiltersContainer}>
+            <TouchableOpacity 
+              style={styles.resetFiltersButton}
+              onPress={clearFilters}
             >
-              <View>
-                <View style={[styles.scrollableHeaderRow, styles.tableHeader]}>
-                  <View style={styles.scrollableHeaderCell}>
-                    <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
-                      Address
-                    </Text>
-                  </View>
-                  <View style={styles.scrollableHeaderCell}>
-                    <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
-                      Area
-                    </Text>
-                  </View>
-                  <View style={styles.scrollableHeaderCell}>
-                    <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
-                      Class
-                    </Text>
-                  </View>
-                  <View style={styles.scrollableHeaderCell}>
-                    <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
-                      Phone
-                    </Text>
-                  </View>
-                  <View style={styles.scrollableHeaderCell}>
-                    <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
-                      Responsible
-                    </Text>
-                  </View>
+              <AntDesign name="reload1" size={16} color="#183E9F" />
+              <Text style={[styles.resetFiltersText, isRTL && styles.rtlText]}>
+                إعادة تعيين الفلاتر
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+      
+        <View style={styles.tableContainer}>
+          {isLoading && allPharmacies.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={[styles.emptyText, isRTL && styles.rtlText]}>
+                جاري التحميل...
+              </Text>
+            </View>
+          ) : allPharmacies.length > 0 ? (
+            <View style={styles.table}>
+           
+              <View style={styles.fixedColumn}>
+                <View style={styles.fixedHeaderCell}>
+                  <Text style={[styles.fixedHeaderText, isRTL && styles.rtlText]}>
+                    اسم الصيدلية
+                  </Text>
                 </View>
-                
-                {!isLoading && filteredPharmacies.map((item, index) => (
+                {allPharmacies.map((item, index) => (
                   <View
-                    key={item.id}
-                    style={[styles.scrollableRow, index % 2 === 1 && styles.oddRow]}
+                    key={`pharmacy-fixed-${item.id}-${index}`}
+                    style={[
+                      styles.fixedCell,
+                      index % 2 === 1 ? styles.oddRow : styles.evenRow,
+                    ]}
                   >
-                    <View style={styles.scrollableCell}>
-                      <Text style={styles.scrollableCellText}>
-                        {item.city} 
-                      </Text>
-                    </View>
-                    <View style={styles.scrollableCell}>
-                      <Text style={styles.scrollableCellText}>
-                        {item.area} 
-                      </Text>
-                    </View>
-                    <View style={styles.scrollableCell}>
-                      <Text style={styles.scrollableCellText}>
-                        {item.classification}
-                      </Text>
-                    </View>
-                    <View style={styles.scrollableCell}>
-                      <Text style={styles.scrollableCellText}>
-                        {item.phone}
-                      </Text>
-                    </View>
-                    <View style={styles.scrollableCell}>
-                      <Text style={styles.scrollableCellText} numberOfLines={2}>
-                        {item.responsible_pharmacist_name}
-                      </Text>
-                    </View>
+                    <Text style={styles.fixedCellText}>{item.name}</Text>
+                    <Text style={[styles.fixedCellText, { fontSize: 12, color: '#666' }]}>
+                      {item.owner_name}
+                    </Text>
                   </View>
                 ))}
               </View>
-            </ScrollView>
-          </View>
-          
-          {!isLoading && filteredPharmacies.length === 0 && (
-            <View style={styles.emptyState}>
+
+             
+              <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+                <View style={styles.scrollablePart}>
+                 
+                  <View style={styles.scrollableHeaderRow}>
+                    <View style={styles.scrollableHeaderCell}>
+                      <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                        العنوان
+                      </Text>
+                    </View>
+                    <View style={styles.scrollableHeaderCell}>
+                      <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                        المدينة
+                      </Text>
+                    </View>
+                    <View style={styles.scrollableHeaderCell}>
+                      <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                        المنطقة
+                      </Text>
+                    </View>
+                    <View style={styles.scrollableHeaderCell}>
+                      <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                        الهاتف
+                      </Text>
+                    </View>
+                    <View style={styles.scrollableHeaderCell}>
+                      <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                        الصيدلي المسؤول
+                      </Text>
+                    </View>
+                    <View style={styles.scrollableHeaderCell}>
+                      <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                        التصنيف
+                      </Text>
+                    </View>
+                    <View style={styles.scrollableHeaderCell}>
+                      <Text style={[styles.scrollableHeaderText, isRTL && styles.rtlText]}>
+                        التفاصيل
+                      </Text>
+                    </View>
+                  </View>
+
+                
+                  {allPharmacies.map((item, index) => (
+                    <View
+                      key={`pharmacy-${item.id}-${index}`}
+                      style={[
+                        styles.scrollableDataRow,
+                        index % 2 === 1 ? styles.oddRow : styles.evenRow,
+                      ]}
+                    >
+                      <View style={styles.scrollableCell}>
+                        <Text style={styles.scrollableCellText} numberOfLines={2} ellipsizeMode="tail">
+                          {item.address}
+                        </Text>
+                      </View>
+                      <View style={styles.scrollableCell}>
+                        <Text style={styles.scrollableCellText}>
+                          {item.city}
+                        </Text>
+                      </View>
+                      <View style={styles.scrollableCell}>
+                        <Text style={styles.scrollableCellText}>
+                          {item.area}
+                        </Text>
+                      </View>
+                      <View style={styles.scrollableCell}>
+                        <Text style={styles.scrollableCellText}>
+                          {item.phone}
+                        </Text>
+                      </View>
+                      <View style={styles.scrollableCell}>
+                        <Text style={styles.scrollableCellText}>
+                          {item.responsible_pharmacist_name}
+                        </Text>
+                      </View>
+                      <View style={styles.scrollableCell}>
+                        <Text style={styles.scrollableCellText}>
+                          {item.classification}
+                        </Text>
+                      </View>
+                      <View style={styles.scrollableCell}>
+                        <TouchableOpacity 
+                          style={styles.detailsButton}
+                          onPress={() => openDetailsModal(item)}
+                        >
+                          <AntDesign name="infocirlceo" size={20} color="#183E9F" />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+          ) : (
+            <View style={styles.emptyContainer}>
               <Text style={[styles.emptyText, isRTL && styles.rtlText]}>
-                {t('clientPharmacyList.noData')}
+                لا توجد بيانات
               </Text>
             </View>
           )}
         </View>
 
+     
         {isLoadingMore && (
           <View style={styles.loadingMoreContainer}>
+            <AntDesign name="downcircleo" size={24} color="#183E9F" />
             <Text style={[styles.loadingText, isRTL && styles.rtlText]}>
-              {t('clientPharmacyList.loadingMore') || 'جاري تحميل المزيد...'}
+              جاري تحميل المزيد...
             </Text>
           </View>
         )}
 
+      
         {!hasMoreData && allPharmacies.length > 0 && (
           <View style={styles.loadingMoreContainer}>
             <Text style={[styles.noMoreDataText, isRTL && styles.rtlText]}>
-              {t('clientPharmacyList.noMoreData') || 'لا توجد بيانات أخرى'}
+              لا توجد بيانات أخرى
             </Text>
           </View>
         )}
       </ScrollView>
 
+    
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => (isScrolled ? scrollToTop() : setAddPharmacyModalVisible(true))}
+        onPress={() => setAddPharmacyModalVisible(true)}
       >
-        <AntDesign name={isScrolled ? "up" : "plus"} size={24} color="#FFF" />   
+        <AntDesign name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
+
+     
+      {showScrollToTop && (
+        <TouchableOpacity
+          style={styles.scrollButton}
+          onPress={scrollToTop}
+        >
+          <AntDesign name="upcircleo" size={24} color="#FFF" />
+        </TouchableOpacity>
+      )}
 
       <AddNewPharmacyModel
         show={addPharmacyModalVisible}
         hide={() => setAddPharmacyModalVisible(false)}
-        submit={onPharmacyAdded}
+        submit={(success) => {
+          setAddPharmacyModalVisible(false);
+          if (success) {
+            setSuccessModalVisible(true);
+            setPage(1);
+            setHasMoreData(true);
+            fetchPharmacies(1, true);
+            setTimeout(() => setSuccessModalVisible(false), 2000);
+          }
+        }}
         cities={cities}
         allAreas={allAreas}
-        specialties={specialties}
       />
 
-       <SuccessfullyModel
-        show={successModalVisible}
-        message={t('clientPharmacyList.addNewPharmacyModal.successMessage')}
-      /> 
+    
 
+      <SkuModel
+        show={detailsModalVisible}
+        hide={() => setDetailsModalVisible(false)}
+        data={{
+          doctorName: selectedPharmacy?.name,
+          doctorPhone: selectedPharmacy?.phone,
+          doctorEmail: selectedPharmacy?.email || selectedPharmacy?.owner_email,
+          doctorAddress: selectedPharmacy?.address,
+          specialty: 'صيدلية', // Pharmacy type
+          classification: selectedPharmacy?.classification,
+          city_id: selectedPharmacy?.city_id,
+          area_id: selectedPharmacy?.area_id,
+          cityName: selectedPharmacy?.city,
+          areaName: selectedPharmacy?.area,
+          status: selectedPharmacy?.status,
+          notes: `المالك: ${selectedPharmacy?.owner_name || 'N/A'}\nالصيدلي المسؤول: ${selectedPharmacy?.responsible_pharmacist_name || 'N/A'}\nموقع الويب: ${selectedPharmacy?.website || 'N/A'}\nالبلد: ${selectedPharmacy?.country || 'N/A'}`,
+        }}
+      />
     </SafeAreaView>
   );
 };
 
-const dropdownStyles = {
-  itemTextStyle: { color: "#333", fontSize: 14, textAlign: "left" },
-  selectedTextStyle: { fontSize: 14, color: "#333" },
-  placeholderStyle: { fontSize: 14, color: "#999" },
-  containerStyle: { borderRadius: 8 },
-  maxHeight: 200,
-};
-
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#F8F9FA" },
-  container: { flex: 1 },
-  header: {
-    padding: 15,
-    backgroundColor: "#FFF",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderColor: "#EEE",
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#F8F9FA",
   },
-  headerText: { fontSize: 18, fontWeight: "bold", color: "#183E9F" },
-  
+  container: {
+    flex: 1,
+  },
   filtersContainer: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
     paddingVertical: 15,
     backgroundColor: "#FFFFFF",
     margin: 15,
@@ -610,10 +599,24 @@ const styles = StyleSheet.create({
     borderColor: "#E0E0E0",
     height: 45,
   },
-  searchInput: { flex: 1, fontSize: 16, color: "#333", paddingHorizontal: 5 },
-  filterRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 15 },
-  filterBox: { flex: 1, marginHorizontal: 5 },
-  filterBoxFullWidth: { marginHorizontal: 5 },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: "#333",
+    paddingHorizontal: 5,
+  },
+  filterRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 15,
+  },
+  filterBox: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  filterBoxFullWidth: {
+    marginHorizontal: 5,
+  },
   filterLabel: {
     fontSize: 14,
     color: "#555",
@@ -628,17 +631,50 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: "#FFF",
   },
-  
-  tableContainer: { flex: 1, marginHorizontal: 15, minHeight: 300 },
-  tableWrapper: { flexDirection: "row", minHeight: 200 },
-  fixedColumn: { width: width * 0.4 },
-  scrollableContent: { flex: 1 },
-  
-  tableHeader: { backgroundColor: "#F1F3F5" },
+  resetFiltersContainer: {
+    marginTop: 15,
+    alignItems: "center",
+  },
+  resetFiltersButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f8f9fa",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#183E9F",
+  },
+  resetFiltersText: {
+    marginLeft: 8,
+    color: "#183E9F",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  tableContainer: {
+    marginHorizontal: 15,
+  },
+  table: {
+    flexDirection: "row",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  fixedColumn: {
+    width: FIXED_COLUMN_WIDTH,
+    backgroundColor: "#FFFFFF",
+    borderRightWidth: 1,
+    borderRightColor: "#E0E0E0",
+  },
+  scrollablePart: {
+    flex: 1,
+  },
   fixedHeaderCell: {
-    paddingVertical: 15,
-    paddingHorizontal: 10,
+    height: ROW_HEIGHT,
     justifyContent: "center",
+    paddingHorizontal: 10,
+    backgroundColor: "#F1F3F5",
     borderBottomWidth: 1,
     borderBottomColor: "#E0E0E0",
   },
@@ -646,17 +682,38 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#183E9F",
-    textAlign: "center",
+    textAlign: "left",
   },
-  scrollableHeaderRow: { flexDirection: "row" },
-  scrollableHeaderCell: {
-    width: width * 0.4,
-    paddingVertical: 16.1,
-    paddingHorizontal: 10,
+  fixedCell: {
+    height: ROW_HEIGHT,
     justifyContent: "center",
-    alignItems: "center",
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
+  },
+  fixedCellText: {
+    fontSize: 14,
+    color: "#333",
+    textAlign: "left",
+  },
+  scrollableHeaderRow: {
+    flexDirection: "row",
+    height: ROW_HEIGHT,
+    backgroundColor: "#F1F3F5",
     borderBottomWidth: 1,
     borderBottomColor: "#E0E0E0",
+  },
+  scrollableDataRow: {
+    flexDirection: "row",
+    height: ROW_HEIGHT,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
+  },
+  scrollableHeaderCell: {
+    width: SCROLLABLE_COLUMN_WIDTH,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 10,
   },
   scrollableHeaderText: {
     fontSize: 12,
@@ -664,57 +721,43 @@ const styles = StyleSheet.create({
     color: "#1A46BE",
     textAlign: "center",
   },
-  
-  fixedCell: {
-    width: width * 0.4,
-    paddingVertical: 15,
-    paddingHorizontal: 10,
+  scrollableCell: {
+    width: SCROLLABLE_COLUMN_WIDTH,
     justifyContent: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
-    backgroundColor: "#FFF",
+    alignItems: "center",
+    paddingHorizontal: 10,
   },
-  fixedCellText: {
+  scrollableCellText: {
     fontSize: 14,
     color: "#333",
     textAlign: "center",
-    writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
   },
-  scrollableRow: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
-    backgroundColor: "#FFF",
+  evenRow: {
+    backgroundColor: "#FFFFFF",
   },
-  scrollableCell: {
-    width: width * 0.4,
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    justifyContent: "center",
+  oddRow: {
+    backgroundColor: "#FAFAFA",
+  },
+  emptyContainer: {
+    height: 200,
     alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 8,
   },
-  scrollableCellText: { 
-    fontSize: 14, 
-    color: "#333", 
+  emptyText: {
+    fontSize: 16,
+    color: "#888",
     textAlign: "center",
-    writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
-  },
-  oddRow: { backgroundColor: "#FAFAFA" },
-  
-  emptyState: { 
-    padding: 40, 
-    alignItems: "center", 
-    justifyContent: "center" 
-  },
-  emptyText: { 
-    fontSize: 16, 
-    color: "#888", 
-    textAlign: "center" 
   },
   loadingMoreContainer: {
     padding: 20,
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "row",
+    gap: 10,
   },
   loadingText: {
     fontSize: 14,
@@ -728,7 +771,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontStyle: "italic",
   },
-  
   addButton: {
     position: "absolute",
     bottom: 30,
@@ -739,27 +781,40 @@ const styles = StyleSheet.create({
     backgroundColor: "#183E9F",
     justifyContent: "center",
     alignItems: "center",
-    elevation: 8,
+    elevation: 5,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  
-  rtlText: {
-    textAlign: "right",
+  scrollButton: {
+    position: "absolute",
+    bottom: 100,
+    right: 30,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#28A745",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  
-  filterLoadingContainer: {
-    padding: 20,
+  detailsButton: {
+    backgroundColor: "#E3F2FD",
+    padding: 8,
+    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
   },
-  
-  filterLoadingText: {
-    fontSize: 14,
-    color: "#666",
-    textAlign: "center",
+  rtlText: {
+    textAlign: "right",
+  },
+  rtlSearchContainer: {
+    flexDirection: "row-reverse",
   },
 });
 

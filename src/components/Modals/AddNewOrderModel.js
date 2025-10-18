@@ -7,8 +7,12 @@ import {
   ScrollView,
   TextInput,
   Alert,
+  Animated,
+  Easing,
+  I18nManager,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { styles } from '../styles';
 import moment from 'moment';
@@ -19,6 +23,9 @@ import Constants from '../../config/globalConstants';
 import { get, post } from '../../WebService/RequestBuilder';
 
 const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
+  const { t } = useTranslation();
+  const isRTL = I18nManager.isRTL;
+  
   const [productsData, setProductsData] = useState([])
   const [productValue, setProductValue] = useState(null)
   const [productLabel, setProductLabel] = useState(null)
@@ -29,41 +36,41 @@ const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
   const [total_price, set_total_price] = useState(0);
   const [total_price_product, set_total_price_product] = useState(0);
   const [orderData, setOrderData] = useState([]);
-
-  const submitBtn = () => {
-    if (orderData.length > 0) {
-      const data = {
-        pharmacy_id: item.pharmacy_id,
-        payment_method: 0,
-        // total_price: total_price,
-        products: orderData
-      }
-      post(Constants.orders.add_order, data).then((res) => {  
-        Alert.alert(res?.message ?? '')
-        func()
-      }).catch((err) => {}).finally(() => { })
-      hide();
-      setOrderData([])
-      set_total_price(0)
-    }
-  };
+  
+  // Animation values
+  const [slideAnim] = useState(new Animated.Value(300));
+  const [fadeAnim] = useState(new Animated.Value(0));
 
   const getProducts = async () => {
-    get(Constants.product.products, null, { limit: 10000 })
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('📦 جلب المنتجات...');
+    
+    get('all-products', null, null)
       .then((res) => {
-        setProductsArray(res.data);
-        var count = Object.keys(res.data).length
-        let productsArray = []
-        for (var i = 0; i < count; i++) {
-          productsArray.push({
-            value: res.data[i].id,
-            label: res.data[i].name
-          })
+        console.log('✅ استجابة API:');
+        console.log('   - عدد المنتجات:', res?.length || res.data?.length || 0);
+        
+        const products = Array.isArray(res) ? res : res.data;
+        
+        if (products && products.length > 0) {
+          setProductsArray(products);
+          
+          const productsArray = products.map((product) => ({
+            value: product.id,
+            label: product.name
+          }));
+          
+          setProductsData(productsArray);
+          console.log('   - تم تحويل:', productsArray.length, 'منتج');
+          console.log('   - أول 3 منتجات:', productsArray.slice(0, 3).map(p => p.label));
+        } else {
+          console.log('⚠️ لا توجد منتجات');
         }
-        setProductsData(productsArray);
+        
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       })
-      .catch((err) => { })
-      .finally(() => {
+      .catch((err) => {
+        console.error('❌ خطأ في جلب المنتجات:', err);
       })
   }
 
@@ -80,7 +87,6 @@ const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
           bonuse = (parseFloat(amount) / product?.bonuse?.quantity_required) * product?.bonuse?.bonuse
           setBouns(bonuse.toFixed(3));
           price = parseFloat(product?.price_tax) * parseFloat(amount);
-          console.log(price);
           set_total_price_product(price)
           break;
         case 'Percentage':
@@ -103,10 +109,8 @@ const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
     } else {
       var price = 0.0;
       price = parseFloat(product?.price_tax) * parseFloat(amount);
-      console.log(price);
       set_total_price_product(price)
     }
-
   }
 
   const addBtn = () => {
@@ -129,146 +133,233 @@ const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
     }
   }
 
+  const submitBtn = () => {
+    if (orderData.length > 0) {
+      const data = {
+        pharmacy_id: item.pharmacy_id,
+        payment_method: 0,
+        products: orderData
+      }
+      
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('📤 Sending Order...');
+      console.log('Data:', data);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      
+      post(Constants.orders.add_order, data).then((res) => {
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('✅ API Response:');
+        console.log('Message:', res?.message);
+        console.log('Order Data:', res?.data);
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        
+        // Alert.alert(res?.message ?? '');
+        
+        if (submit && res?.data) {
+          submit(res.data);
+        }
+        
+        func();
+      }).catch((err) => {
+        console.error('❌ Error submitting order:', err);
+        
+        // ✅ معالجة مخصصة لخطأ سقف السعر
+        if (err.message && err.message.includes('ceiling price being less than the order amount')) {
+          Alert.alert(
+            'سقف السعر غير كافي',
+            'عذراً، لا يمكن تنفيذ الطلب لأن سقف السعر أقل من مبلغ الطلب.\n\nيرجى التواصل مع المسؤول لزيادة سقف الدين لهذه الصيدلية.',
+            [
+              {
+                text: 'موافق',
+                style: 'default'
+              }
+            ]
+          );
+        } else {
+          // معالجة الأخطاء الأخرى
+          Alert.alert(
+            'خطأ في إرسال الطلب',
+            err.message || 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.',
+            [
+              {
+                text: 'موافق',
+                style: 'default'
+              }
+            ]
+          );
+        }
+      });
+      
+      hide();
+      setOrderData([]);
+      set_total_price(0);
+    }
+  };
+
+  // Animation effects
+  useEffect(() => {
+    if (show) {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 400,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 300,
+          duration: 300,
+          easing: Easing.in(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [show]);
+
   useEffect(() => {
     getProducts();
   }, []);
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={show}
-      coverScreen={false}
-      onSwipeComplete={() => setModalVisible2(false)}>
-      <View style={style.ModalContainer}>
-        <View style={style.ModalView}>
+      onRequestClose={hide}
+      statusBarTranslucent={true}>
+      <Animated.View 
+        style={[
+          style.modalContainer,
+          { opacity: fadeAnim }
+        ]}>
+        <Animated.View 
+          style={[
+            style.modalView,
+            { 
+              transform: [{ translateY: slideAnim }],
+              shadowOpacity: fadeAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 0.3]
+              })
+            }
+          ]}>
+          
+          {/* Header */}
+          <View style={style.header}>
+            <Text style={[style.mainTitle, isRTL && style.rtlText]}>
+              {t('order.title')}
+            </Text>
+            <TouchableOpacity
+              onPress={hide}
+              style={style.closeButton}>
+              <AntDesign
+                name="close"
+                color="#183E9F"
+                size={24}
+              />
+            </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity
-            onPress={() => {
-              hide();
-            }}>
-            <AntDesign
-              name="close"
-              color="#469ED8"
-              size={35}
-              style={{ alignSelf: 'flex-end' }}
-            />
-          </TouchableOpacity>
-          <Text style={{ ...style.maintitle, paddingHorizontal: 10 }}>Add new </Text>
+          <ScrollView 
+            showsVerticalScrollIndicator={false}
+            style={style.scrollView}>
+            
+            {/* Product Selection Card */}
+            <View style={style.card}>
+              <Text style={[style.cardTitle, isRTL && style.rtlText]}>
+                {t('order.productDetails')}
+              </Text>
+              
+              <Dropdown
+                itemTextStyle={style.dropdownItemText}
+                style={style.dropdown}
+                placeholderStyle={style.placeholderStyle}
+                selectedTextStyle={style.selectedTextStyle}
+                inputSearchStyle={style.inputSearchStyle}
+                iconStyle={style.iconStyle}
+                data={productsData}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={!productValue ? t('order.selectProduct') : '...'}
+                searchPlaceholder={t('order.search')}
+                value={productValue}
+                onBlur={() => { }}
+                onChange={item => {
+                  setProductValue(item.value);
+                  setProductLabel(item.label)
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign
+                    style={styles.icon}
+                    color={productValue ? '#183E9F' : '#666'}
+                    name="Safety"
+                    size={20}
+                  />
+                )}
+              />
 
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={{ marginVertical: 0, paddingHorizontal: 10 }}>
-              <View style={style.card}>
+              <Input
+                lable={t('order.quantity')}
+                setData={setAmount}
+                onEndEditing={afterAddAmount}
+                style={styles.inputModel}
+                value={amount}
+                isNumeric
+              />
 
-                <Dropdown
-                  itemTextStyle={{color:'#000000'}}
-                  style={style.dropdown}
-                  placeholderStyle={style.placeholderStyle}
-                  selectedTextStyle={style.selectedTextStyle}
-                  inputSearchStyle={style.inputSearchStyle}
-                  iconStyle={style.iconStyle}
-                  data={productsData}
-                  search
-                  maxHeight={300}
-                  labelField="label"
-                  valueField="value"
-                  placeholder={!productValue ? 'Select Product' : '...'}
-                  searchPlaceholder="Search..."
-                  value={productValue}
-                  onBlur={() => { }}
-                  onChange={item => {
-                    setProductValue(item.value);
-                    setProductLabel(item.label)
-                  }}
-                  renderLeftIcon={() => (
-                    <AntDesign
-                      style={styles.icon}
-                      color={productValue ? 'blue' : 'black'}
-                      name="Safety"
-                      size={20}
-                    />
-                  )}
-                />
-
-                <Input
-                  lable={'Amount'}
-                  setData={setAmount}
-                  onEndEditing={afterAddAmount}
-                  style={styles.inputModel}
-                  value={amount}
-                  isNumeric
-                />
-
-
-                <View style={{ marginHorizontal: 10, marginTop: 20 }}>
-                  <Text style={{
-                    marginBottom: 5,
-                    color: '#253274',
-                    fontSize: 11,
-                  }}>Bouns
-                  </Text>
-                  <View style={{ height: 40, borderWidth: 1, justifyContent: 'center', padding: 10, borderRadius: 5, borderColor: '#000' }}>
-                    <Text style={{ color: '#000000' }}>{bouns}</Text>
-                  </View>
+              <View style={style.bonusContainer}>
+                <Text style={[style.bonusLabel, isRTL && style.rtlText]}>
+                  {t('order.bonus')}
+                </Text>
+                <View style={style.bonusDisplay}>
+                  <Text style={style.bonusText}>{bouns}</Text>
                 </View>
-
-              </View>
-
-              <View style={style.btnContainer}>
-
-                <TouchableOpacity
-                  style={{
-                    ...style.btn,
-                    backgroundColor: '#469ED8',
-                    height: 45,
-                    marginRight: 40,
-                  }}
-                  onPress={() => {
-                    submitBtn();
-                  }}>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      fontWeight: '700',
-                      textTransform: 'capitalize',
-                      color: '#fff',
-                    }}>
-                    submit
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={{
-                    ...style.btn,
-                    backgroundColor: '#469ED8',
-                    height: 45,
-                    paddingHorizontal: 25,
-                  }}
-                  onPress={() => {
-                    addBtn();
-                  }}>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      fontWeight: '700',
-                      textTransform: 'capitalize',
-                      color: '#fff',
-                    }}>
-                    Add
-                  </Text>
-                </TouchableOpacity>
-
               </View>
 
             </View>
 
-            <View>
+            {/* Action Buttons */}
+            <View style={style.btnContainer}>
+              <TouchableOpacity
+                style={style.primaryButton}
+                onPress={submitBtn}>
+                <Text style={[style.buttonText, isRTL && style.rtlText]}>
+                  {t('order.submitOrder')}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={style.secondaryButton}
+                onPress={addBtn}>
+                <Text style={[style.buttonText, isRTL && style.rtlText]}>
+                  {t('order.add')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Orders Table */}
+            <View style={style.tableContainer}>
               <OrdersAfterAddTable data={orderData} />
             </View>
 
           </ScrollView>
-        </View>
-      </View>
+        </Animated.View>
+      </Animated.View>
     </Modal>
   );
 };
@@ -276,86 +367,91 @@ const AddNewOrderModel = ({ show, hide, submit, item, func }) => {
 export default AddNewOrderModel;
 
 const style = StyleSheet.create({
-  ModalContainer: {
+  modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0707078c',
+    backgroundColor: 'rgba(7, 7, 7, 0.7)',
+    padding: 20,
   },
-  ModalView: {
+  modalView: {
     backgroundColor: '#fff',
-    borderRadius: 10,
-    width: '95%',
-    height: '70%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    padding: 10,
-  },
-  btnContainer: {
-    flexDirection: 'row',
+    borderRadius: 16,
     width: '100%',
-    justifyContent: 'center',
-    paddingHorizontal: 8,
+    maxHeight: '85%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowRadius: 20,
+    elevation: 10,
+    overflow: 'hidden',
   },
-  btn: {
-    backgroundColor: '#469ED8',
-    alignSelf: 'center',
-    borderRadius: 7,
-    padding: 7,
-    paddingHorizontal: 14,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 40,
-    // width:'47%'
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+    backgroundColor: '#f8f9fa',
   },
-  maintitle: {
-    fontSize: 25,
-    textTransform: 'capitalize',
-    color: '#469ED8',
+  mainTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#183E9F',
+    textAlign: 'right',
   },
-  newbtn: {
-    backgroundColor: '#469ED8',
-    paddingVertical: 5,
-    paddingHorizontal: 8,
-    borderRadius: 7,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    marginBottom: 10,
+  closeButton: {
+    padding: 5,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+  },
+  scrollView: {
+    paddingHorizontal: 15,
   },
   card: {
-    // marginVertical: 10,
-    width: '100%',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    marginVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#f0f0f0',
   },
-  lable: {
-    marginBottom: 5,
-    fontSize: 16,
-    color: '#000',
-    textTransform: 'capitalize',
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#183E9F',
+    marginBottom: 15,
+    textAlign: 'right',
   },
   dropdown: {
-    height: 42,
-    borderColor: '#000',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 8,
-    marginLeft: 10,
-    marginRight: 10,
-    marginTop: 20,
+    height: 50,
+    borderColor: '#e0e0e0',
+    borderWidth: 1.5,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    marginBottom: 15,
+    backgroundColor: '#fafafa',
   },
-  icon: {
-    marginRight: 5,
+  dropdownItemText: {
+    color: '#183E9F',
+    textAlign: 'right',
   },
   placeholderStyle: {
     fontSize: 16,
-    color:'#808080'
+    color: '#9e9e9e',
+    textAlign: 'right',
   },
   selectedTextStyle: {
     fontSize: 16,
-    color:'#000000'
+    color: '#183E9F',
+    fontWeight: '500',
+    textAlign: 'right',
   },
   iconStyle: {
     width: 20,
@@ -364,13 +460,80 @@ const style = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
-    color:'#000000'
+    color: '#183E9F',
+    textAlign: 'right',
   },
-  textinput: {
-    height: 60,
-    borderColor: 'rgba(37, 50, 116, 0.28)',
-    borderWidth: 1,
-    paddingLeft: 10,
-    borderRadius: 5,
-  }
+  bonusContainer: {
+    marginTop: 15,
+  },
+  bonusLabel: {
+    marginBottom: 8,
+    color: '#183E9F',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'right',
+  },
+  bonusDisplay: {
+    height: 50,
+    borderWidth: 1.5,
+    justifyContent: 'center',
+    padding: 12,
+    borderRadius: 10,
+    borderColor: '#e0e0e0',
+    backgroundColor: '#f8f9fa',
+  },
+  bonusText: {
+    color: '#183E9F',
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'right',
+  },
+  btnContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    marginVertical: 20,
+  },
+  primaryButton: {
+    backgroundColor: '#183E9F',
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 0.48,
+    shadowColor: '#183E9F',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  secondaryButton: {
+    backgroundColor: '#183E9F',
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 0.48,
+    shadowColor: '#183E9E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#fff',
+    textAlign: 'center',
+  },
+  rtlText: {
+    textAlign: 'right',
+    writingDirection: 'rtl',
+  },
+  tableContainer: {
+    marginBottom: 20,
+  },
 });

@@ -14,9 +14,8 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { Dropdown } from "react-native-element-dropdown";
 import Input from "../Input";
 import GetLocation from "react-native-get-location";
-import { get, post } from "../../WebService/RequestBuilder";
+import { get, post, setAuthToken } from "../../WebService/RequestBuilder";
 import { fetchSpecialties } from "../../services/specialtyService";
-import { fetchClassifications } from "../../services/classificationService";
 import Constants from "../../config/globalConstants";
 import { BASE_URL } from "../../config/apiConfig";
 import MapView, { Marker } from "react-native-maps";
@@ -25,27 +24,32 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../contexts/AuthContext";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCitiesAndAreas, updateAreasForCity } from '../../store/apps/cities';
+import { useCurrentUser } from '../../hooks/useCurrentUser';
 
 const { width, height } = Dimensions.get('window');
 
 // دالة إنشاء طبيب جديدة
 async function createDoctor(token, payload) {
+  // Ensure Authorization header
+  if (token) setAuthToken(token);
+
   const payloadBody = {
-    name: payload.name,
-    activate_status: payload.activate_status,
+    name: (payload.name || '').trim(),
+    activate_status: payload.activate_status ?? 1,
     city_id: payload.city_id,
     area_id: payload.area_id,
     speciality_id: payload.speciality_id,
-    address: payload.address ?? '',
+    address: (payload.address || '').trim(),
     classification: payload.classification ?? '',
-    country: payload.country ?? '',
-    email: payload.email ?? '',
-    phone: payload.phone ?? '',
-    availablity_for_visit: payload.availablity_for_visit ?? '',
-    longitude: payload.longitude != null && payload.longitude !== '' ? Number(payload.longitude) : '',
-    latitude: payload.latitude != null && payload.latitude !== '' ? Number(payload.latitude) : '',
-    status: payload.status ?? '',
-    website: payload.website ?? '',
+    country: (payload.country || '').trim(),
+    email: (payload.email || '').trim(),
+    phone: (payload.phone || '').trim(),
+    availablity_for_visit: (payload.availablity_for_visit || '').trim(),
+    // Send coordinates as strings to avoid type issues on backend
+    longitude: payload.longitude != null && payload.longitude !== '' ? String(payload.longitude) : '',
+    latitude: payload.latitude != null && payload.latitude !== '' ? String(payload.latitude) : '',
+    status: payload.status || 'active',
+    website: (payload.website || '').trim(),
   };
 
   const data = await post('sales/doctor', payloadBody);
@@ -55,14 +59,20 @@ async function createDoctor(token, payload) {
 const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 	const { t } = useTranslation();
 	const isRTL = I18nManager.isRTL;
-	const { user, token } = useAuth();
+	const { user: currentUser } = useCurrentUser();
+	const { token } = useAuth();
 	
 	// Redux
 	const dispatch = useDispatch();
 	const userLocationData = useSelector(state => state.cities.userLocationData);
 	
 	const [doctorName, setDoctorName] = useState("");
-	const [classificationData, setClassificationData] = useState([]);
+	const [classificationData, setClassificationData] = useState([
+		{ value: 'A', label: 'A' },
+		{ value: 'B', label: 'B' },
+		{ value: 'C', label: 'C' },
+		{ value: 'D', label: 'D' }
+	]);
 	const [classificationValue, setClassificationValue] = useState(null);
 	const [address, setAddress] = useState("");
 	const [latitude, setLatitude] = useState("");
@@ -101,44 +111,94 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 		}
 
 		// التحقق من الحقول المطلوبة
-		if (!doctorName || !cityValue || !areaValue || !specialtyValue) {
-			Alert.alert(t('addNewDoctorModel.error'), "يرجى ملء جميع الحقول المطلوبة");
+		if (!doctorName?.trim()) {
+			Alert.alert(t('addNewDoctorModel.error'), "يرجى إدخال اسم الطبيب");
+			return;
+		}
+		if (!cityValue) {
+			Alert.alert(t('addNewDoctorModel.error'), "يرجى اختيار المدينة");
+			return;
+		}
+		if (!areaValue) {
+			Alert.alert(t('addNewDoctorModel.error'), "يرجى اختيار المنطقة");
+			return;
+		}
+		if (!specialtyValue) {
+			Alert.alert(t('addNewDoctorModel.error'), "يرجى اختيار التخصص");
+			return;
+		}
+
+		// Validations for optional fields
+		const validateEmail = (val) => {
+			if (!val) return true;
+			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			return emailRegex.test(val);
+		};
+		const validatePhone = (val) => {
+			if (!val) return true;
+			const digits = String(val).replace(/[^0-9]/g, '');
+			return digits.length >= 9 && digits.length <= 15;
+		};
+
+		if (email && !validateEmail(email)) {
+			Alert.alert("خطأ", "البريد الإلكتروني غير صحيح");
+			return;
+		}
+		if (phone && !validatePhone(phone)) {
+			Alert.alert("خطأ", "رقم الهاتف غير صحيح (يجب أن يكون 9-15 رقم)");
 			return;
 		}
 
 		setIsLoading(true);
 		
+		const normalizedPhone = phone ? String(phone).replace(/[^0-9]/g, '') : '';
 		const payload = {
-			name: doctorName,
+			name: doctorName.trim(),
 			activate_status: 1,
 			city_id: cityValue,
 			area_id: areaValue,
 			speciality_id: specialtyValue,
-			address: address,
-			classification: classificationValue,
+			address: (address || '').trim(),
+			classification: classificationValue || '',
 			longitude: longitude,
 			latitude: latitude,
-			phone: phone,
-			email: email,
-			country: country,
+			phone: normalizedPhone,
+			email: (email || '').trim(),
+			country: (country || '').trim(),
 			status: "active",
-			website: website,
-			availablity_for_visit: availablity_for_visit,
+			website: (website || '').trim(),
+			availablity_for_visit: (availablity_for_visit || '').trim(),
 		};
 
 		try {
 			const result = await createDoctor(token, payload);
-			console.log("✅ تم إنشاء الطبيب بنجاح:", result);
+			const isOk = (result && (result.code === 200 || result.status === true || result.message === "Created succussfully!"));
+			if (isOk) {
+				console.log("✅ تم إنشاء الطبيب بنجاح:", result);
 			
-			submit(true);
-			hide();
+				resetForm();
+				submit(true);
+				hide();
+			} else {
+				throw new Error(result?.message || "فشل في إضافة الطبيب");
+			}
 		} catch (error) {
 			console.error("❌ خطأ في إنشاء الطبيب:", error);
-			Alert.alert(t('addNewDoctorModel.error'), error.message || "فشل في إضافة الطبيب");
+			let errorMessage = "فشل في إضافة الطبيب";
+			const messageText = error?.message || '';
+			if (messageText.includes('401')) {
+				errorMessage = "انتهت صلاحية الجلسة، يرجى تسجيل الدخول مرة أخرى";
+			} else if (messageText.includes('422')) {
+				errorMessage = "البيانات المدخلة غير صحيحة";
+			} else if (messageText.toLowerCase().includes('network')) {
+				errorMessage = "تحقق من اتصال الإنترنت";
+			} else if (messageText) {
+				errorMessage = messageText;
+			}
+			Alert.alert(t('addNewDoctorModel.error'), errorMessage);
 			submit(false);
 		} finally {
 			setIsLoading(false);
-			resetForm();
 		}
 	};
 
@@ -157,6 +217,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 		setCityValue(null);
 		setAreaValue(null);
 		setSpecialtyValue(null);
+		setAreasData([]);
 	};
 
 	const getCurrentLocation = () => {
@@ -195,19 +256,10 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 				console.error('❌ خطأ في جلب التخصصات:', error?.message || error);
 			}
 		};
-		const loadClassifications = async () => {
-			try {
-				const list = await fetchClassifications();
-				setClassificationData(list);
-			} catch (error) {
-				console.error('❌ خطأ في جلب التصنيفات:', error?.message || error);
-			}
-		};
 		
 		loadUserLocationData();
 		loadSpecialties();
-		loadClassifications();
-	}, [user?.token, userLocationData.cities.length, dispatch]);
+	}, [token, userLocationData.cities.length, dispatch]);
 
 	useEffect(() => {
 		if (userLocationData.citiesFormatted.length > 0) {
@@ -234,7 +286,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 					{/* Header */}
 					<View style={styles.header}>
 						<View style={styles.headerDragHandle} />
-						<Text style={styles.headerTitle}>إضافة طبيب جديد</Text>
+						<Text style={styles.headerTitle}>{t('clientDoctorList.addNewDoctorModal.title')}</Text>
 						<TouchableOpacity 
 							style={styles.closeButton}
 							onPress={() => {
@@ -254,7 +306,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 							
 							{/* الحقول الأساسية المطلوبة */}
 							<View style={styles.section}>
-								<Text style={styles.sectionTitle}>المعلومات الأساسية</Text>
+								<Text style={styles.sectionTitle}>{t('addNewDoctorModel.basicInfo') || t('clientDoctorList.addNewDoctorModal.title')}</Text>
 								
 								<Input
 									lable={t('addNewDoctorModel.doctorName')}
@@ -268,7 +320,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 								/>
 
 								<View style={styles.dropdownContainer}>
-									<Text style={styles.dropdownLabel}>المدينة *</Text>
+									<Text style={styles.dropdownLabel}>{t('clientDoctorList.addNewDoctorModal.city')} *</Text>
 									<Dropdown
 										style={styles.dropdown}
 										placeholderStyle={styles.placeholder}
@@ -280,8 +332,8 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 										maxHeight={height * 0.2}
 										labelField="label"
 										valueField="value"
-										placeholder="اختر المدينة"
-										searchPlaceholder="ابحث عن المدينة"
+										placeholder={t('clientDoctorList.addNewDoctorModal.chooseCity')}
+										searchPlaceholder={t('addNewDoctorModel.search')}
 										value={cityValue}
 										onChange={item => {
 											setCityValue(item.value);
@@ -300,7 +352,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 								</View>
 
 								<View style={styles.dropdownContainer}>
-									<Text style={styles.dropdownLabel}>المنطقة *</Text>
+									<Text style={styles.dropdownLabel}>{t('clientDoctorList.addNewDoctorModal.area')} *</Text>
 									<Dropdown
 										style={[styles.dropdown, !cityValue && styles.dropdownDisabled]}
 										placeholderStyle={styles.placeholder}
@@ -312,8 +364,8 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 										maxHeight={height * 0.2}
 										labelField="label"
 										valueField="value"
-										placeholder={cityValue ? "اختر المنطقة" : "اختر المدينة أولاً"}
-										searchPlaceholder="ابحث عن المنطقة"
+										placeholder={cityValue ? t('clientDoctorList.addNewDoctorModal.chooseArea') : t('clientDoctorList.selectCityFirst')}
+										searchPlaceholder={t('addNewDoctorModel.search')}
 										value={areaValue}
 										onChange={item => setAreaValue(item.value)}
 										disabled={!cityValue}
@@ -329,7 +381,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 								</View>
 
 								<View style={styles.dropdownContainer}>
-									<Text style={styles.dropdownLabel}>التخصص *</Text>
+									<Text style={styles.dropdownLabel}>{t('clientDoctorList.addNewDoctorModal.specialty')} *</Text>
 									<Dropdown
 										style={styles.dropdown}
 										placeholderStyle={styles.placeholder}
@@ -341,8 +393,8 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 										maxHeight={height * 0.2}
 										labelField="label"
 										valueField="value"
-										placeholder="اختر التخصص"
-										searchPlaceholder="ابحث عن التخصص"
+										placeholder={t('clientDoctorList.addNewDoctorModal.chooseSpecialty')}
+										searchPlaceholder={t('addNewDoctorModel.search')}
 										value={specialtyValue}
 										onChange={item => setSpecialtyValue(item.value)}
 										renderLeftIcon={() => (
@@ -357,7 +409,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 								</View>
 
 								<View style={styles.dropdownContainer}>
-									<Text style={styles.dropdownLabel}>التصنيف</Text>
+									<Text style={styles.dropdownLabel}>{t('clientDoctorList.classification')}</Text>
 									<Dropdown
 										style={styles.dropdown}
 										placeholderStyle={styles.placeholder}
@@ -387,11 +439,11 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 
 							{/* معلومات الاتصال */}
 							<View style={styles.section}>
-								<Text style={styles.sectionTitle}>معلومات الاتصال</Text>
+								<Text style={styles.sectionTitle}>{t('profile.phone') || 'معلومات الاتصال'}</Text>
 								
 								<Input
-    lable="رقم الهاتف"
-    placeholder="أدخل رقم الهاتف"
+									lable={t('clientDoctorList.addNewDoctorModal.phoneNumber')}
+									placeholder={t('clientDoctorList.addNewDoctorModal.phoneNumberPlaceholder')}
     setData={setPhone}
     placeholderStyle={styles.placeholder}
     style={styles.input}
@@ -400,8 +452,8 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
     keyboardType="phone-pad"
 />
 								<Input
-									lable="البريد الإلكتروني"
-									placeholder="أدخل البريد الإلكتروني"
+									lable={t('auth.email')}
+									placeholder={t('contactUs.form.emailPlaceholder')}
 									setData={setEmail}
 									placeholderStyle={styles.placeholder}
 									style={styles.input}
@@ -411,8 +463,8 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 								/>
 
 								<Input
-									lable="العنوان"
-									placeholder="أدخل العنوان التفصيلي"
+									lable={t('clientDoctorList.address')}
+									placeholder={t('addNewDoctorModel.addressPlaceholder')}
 									setData={setAddress}
 									placeholderStyle={styles.placeholder}
 									style={[styles.input, styles.textArea]}
@@ -425,7 +477,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 
 							{/* الموقع الجغرافي */}
 							<View style={styles.section}>
-								<Text style={styles.sectionTitle}>الموقع الجغرافي</Text>
+								<Text style={styles.sectionTitle}>{t('addNewDoctorModel.location')}</Text>
 								
 								<TouchableOpacity 
 									style={[styles.locationButton, latitude && styles.locationButtonActive]} 
@@ -436,7 +488,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 										color={latitude ? "#fff" : "#183E9F"} 
 									/>
 									<Text style={[styles.locationButtonText, latitude && styles.locationButtonTextActive]}>
-										{latitude ? "تم تحديد الموقع" : "تحديد الموقع الحالي"}
+										{latitude ? t('locationMessage.locationShared', { defaultValue: 'تم تحديد الموقع' }) : t('addNewDoctorModel.getLocation')}
 									</Text>
 								</TouchableOpacity>
 
@@ -490,7 +542,7 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 								<TouchableOpacity 
 									style={[styles.button, styles.cancelButton]} 
 									onPress={hide}>
-									<Text style={styles.cancelButtonText}>إلغاء</Text>
+								<Text style={styles.cancelButtonText}>{t('clientDoctorList.addNewDoctorModal.cancel')}</Text>
 								</TouchableOpacity>
 								
 								<TouchableOpacity 
@@ -498,9 +550,9 @@ const AddNewDoctorModel = ({ show, hide, submit, cityArea }) => {
 									onPress={submitData}
 									disabled={isLoading}>
 									{isLoading ? (
-										<Text style={styles.submitButtonText}>جاري الإضافة...</Text>
+									<Text style={styles.submitButtonText}>{t('common.loading') || 'جاري الإضافة...'}</Text>
 									) : (
-										<Text style={styles.submitButtonText}>إضافة الطبيب</Text>
+									<Text style={styles.submitButtonText}>{t('clientDoctorList.addNewDoctor')}</Text>
 									)}
 								</TouchableOpacity>
 							</View>

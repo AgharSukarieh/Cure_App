@@ -26,7 +26,6 @@ import globalConstants from "../../config/globalConstants";
 const getSingleConvEndpoint = globalConstants.single_chat.get_conv;
 const getGroupConvEndpoint = globalConstants.group_chat.get_conv;
 
-// Format time function
 const formatTime = (dateString) => {
   if (!dateString) return 'Now';
   
@@ -45,19 +44,30 @@ const formatTime = (dateString) => {
   });
 };
 
-const ChatItem = ({ chat, navigation }) => (
+const ChatItem = ({ chat, navigation }) => {
+  console.log('🖼️ Chat Image Info:', {
+    chatId: chat.id,
+    chatName: chat.name,
+    isGroup: chat.isGroup,
+    avatar: chat.avatar,
+    profile_image: chat.profile_image,
+    group_avatar: chat.group_avatar,
+    senderProfileImage: chat.sender?.medicals?.profile_image,
+    lastMessageSenderProfileImage: chat.last_message?.sender?.medicals?.profile_image,
+    messageSenderProfileImage: chat.message?.sender?.medicals?.profile_image
+  });
+
+  return (
   <TouchableOpacity style={styles_chat.chatItem} onPress={() => {
     if (chat.isGroup) {
-      // الانتقال إلى شاشة المجموعة
       navigation.navigate("ChatScreen", { 
         id: chat.id,
         name: chat.name || chat.title,
-        user_id: chat.id, // استخدام chat.id كـ user_id للمجموعات
+        user_id: chat.id, 
         isGroup: true,
         chatData: chat
       });
     } else {
-      // الانتقال إلى شاشة المحادثة الفردية
       navigation.navigate("ChatScreen", { 
         id: chat.id,
         name: chat.name || chat.title,
@@ -69,9 +79,14 @@ const ChatItem = ({ chat, navigation }) => (
   }}>
     <View style={styles_chat.avatarContainer}>
       <Image 
-        source={{ uri: chat.avatar || chat.profile_image || chat.group_avatar }} 
+        source={
+          chat.profile_image_url && chat.profile_image_url !== null
+            ? { uri: chat.profile_image_url }
+            : chat.isGroup 
+              ? require("../../../assets/images/avatar.png")
+              : require("../../../assets/user.png")
+        } 
         style={styles_chat.avatar} 
-        defaultSource={require("../../../assets/images/avatar.png")}
       />
       {chat.isGroup ? (
         <View style={styles_chat.groupIndicator}>
@@ -108,7 +123,8 @@ const ChatItem = ({ chat, navigation }) => (
       </View>
     </View>
   </TouchableOpacity>
-);
+  );
+};
 
 const ChatsScreen = () => {
   const [searchText, setSearchText] = useState("");
@@ -132,10 +148,19 @@ const ChatsScreen = () => {
 
   const [isAddFriendModalVisible, setAddFriendModalVisible] = useState(false);
 
-  // دالة لجلب المحادثات الفردية
+ 
   const getSingleChats = useCallback(async (pageNum = 1) => {
     try {
+      console.log('🔍 جلب المحادثات الفردية - الصفحة:', pageNum);
       const res = await get(getSingleConvEndpoint, null, { page: pageNum });
+      
+      
+      console.log('📊 Single Chats Response:');
+      console.log('Full Response:', JSON.stringify(res, null, 2));
+      console.log('Response Data:', res?.data);
+      console.log('Data Type:', typeof res?.data);
+      console.log('Is Array:', Array.isArray(res?.data));
+      console.log('Data Length:', res?.data?.length);
       
       if (res && res.data && Array.isArray(res.data)) {
         const formattedChats = res.data
@@ -148,7 +173,7 @@ const ChatsScreen = () => {
             last_message: chat.last_message,
             time: formatTime(chat.last_message_time || chat.updated_at),
             last_message_time: chat.last_message_time || chat.updated_at,
-            avatar: chat.avatar || chat.profile_image || chat.partner_avatar,
+            avatar:  chat.profile_image || chat.partner_avatar,
             unread: chat.unread_count || 0,
             unread_count: chat.unread_count || 0,
             online: chat.is_online || chat.status === 'online',
@@ -160,6 +185,12 @@ const ChatsScreen = () => {
             ...chat
           }));
 
+       
+        console.log('📋 Formatted Single Chats:');
+        console.log('Formatted Chats:', JSON.stringify(formattedChats, null, 2));
+        console.log('Formatted Chats Count:', formattedChats.length);
+        console.log('First Chat:', formattedChats[0]);
+
         return formattedChats;
       }
     } catch (err) {
@@ -168,10 +199,19 @@ const ChatsScreen = () => {
     return [];
   }, []);
 
-  // دالة لجلب المحادثات الجماعية
+  
   const getGroupChats = useCallback(async (pageNum = 1) => {
     try {
+      console.log('🔍 جلب المحادثات الجماعية - الصفحة:', pageNum);
       const res = await get(getGroupConvEndpoint, null, { page: pageNum });
+      
+    
+      console.log('📊 Group Chats Response:');
+      console.log('Full Response:', JSON.stringify(res, null, 2));
+      console.log('Response Data:', res?.data);
+      console.log('Data Type:', typeof res?.data);
+      console.log('Is Array:', Array.isArray(res?.data));
+      console.log('Data Length:', res?.data?.length);
       
       if (res && res.data && Array.isArray(res.data)) {
         const formattedChats = res.data
@@ -187,7 +227,7 @@ const ChatsScreen = () => {
             avatar: chat.avatar || chat.group_avatar || chat.profile_image,
             unread: chat.unread_count || 0,
             unread_count: chat.unread_count || 0,
-            online: true, // Groups are always considered "online"
+            online: true, 
             isOnline: true,
             status: 'online',
             user_id: chat.created_by || chat.admin_id,
@@ -195,6 +235,12 @@ const ChatsScreen = () => {
             members_count: chat.members_count || chat.participants_count,
             ...chat
           }));
+
+     
+        console.log('📋 Formatted Group Chats:');
+        console.log('Formatted Chats:', JSON.stringify(formattedChats, null, 2));
+        console.log('Formatted Chats Count:', formattedChats.length);
+        console.log('First Chat:', formattedChats[0]);
 
         return formattedChats;
       }
@@ -204,7 +250,7 @@ const ChatsScreen = () => {
     return [];
   }, []);
 
-  // الدالة الرئيسية لجلب جميع المحادثات
+ 
   const getAllChats = useCallback(async (pageNum = 1, isLoadMore = false) => {
     if (isLoadMore) {
       if ((!hasMore && !hasMoreGroups) || isLoadingMore) return;
@@ -214,15 +260,28 @@ const ChatsScreen = () => {
     }
 
     try {
-      // جلب المحادثات الفردية والجماعية بشكل متوازي
+      console.log('🚀 جلب جميع المحادثات - الصفحة:', pageNum, 'Load More:', isLoadMore);
+      
+     
       const [singleChats, groupChats] = await Promise.all([
         getSingleChats(pageNum),
         getGroupChats(pageNum)
       ]);
 
-      const allChats = [...singleChats, ...groupChats];
+     
+      console.log('📊 Final Results:');
+      console.log('Single Chats:', singleChats);
+      console.log('Group Chats:', groupChats);
+      console.log('Single Chats Count:', singleChats?.length);
+      console.log('Group Chats Count:', groupChats?.length);
 
-      // ترتيب المحادثات حسب الوقت
+      const allChats = [...singleChats, ...groupChats];
+      
+      console.log('📋 All Chats Combined:');
+      console.log('All Chats:', JSON.stringify(allChats, null, 2));
+      console.log('All Chats Count:', allChats.length);
+
+     
       const sortedChats = allChats.sort((a, b) => {
         const timeA = new Date(a.last_message_time || a.time || 0);
         const timeB = new Date(b.last_message_time || b.time || 0);
@@ -235,7 +294,7 @@ const ChatsScreen = () => {
         setChats(prev => [...prev, ...sortedChats]);
       }
       
-      // التحقق إذا كان هناك المزيد من المحادثات
+     
       const hasMoreSingle = singleChats.length >= 10;
       const hasMoreGroup = groupChats.length >= 10;
       setHasMore(hasMoreSingle);
@@ -294,7 +353,7 @@ const ChatsScreen = () => {
     );
   };
 
-  // تحديث المحادثات عند تغيير بيانات Pusher
+
   useEffect(() => {
     if (data || dataForGroup) {
       console.log('🔄 تحديث المحادثات من Pusher:', { data, dataForGroup });
@@ -304,14 +363,14 @@ const ChatsScreen = () => {
     }
   }, [data, dataForGroup]);
 
-  // تحميل المحادثات عند التركيز على الشاشة
+ 
   useFocusEffect(
     useCallback(() => {
       getAllChats(1);
     }, [getAllChats])
   );
 
-  // معالجة المجموعة الجديدة من route params
+  
   useEffect(() => {
     if (route.params?.newGroup) {
       const newGroup = route.params.newGroup;
@@ -393,7 +452,7 @@ const ChatsScreen = () => {
             style={[styles_chat.optiones]}
             onPress={() => {
               setShowDropdown(false);
-              navigation.navigate("ContactsScreen");
+              navigation.navigate("ContactChat");
             }}
           >
             <Image

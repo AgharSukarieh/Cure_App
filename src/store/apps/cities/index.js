@@ -1,251 +1,219 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {get, post, put, del, getPage } from '../../../WebService/RequestBuilder';
-import { BASE_URL } from '../../../config/apiConfig';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import {
+  fetchCitiesAndAreas as serviceFetchCitiesAndAreas,
+  getCachedCitiesAndAreas
+} from '../../../services/locationService'
+import { apiClient } from '../../../config/apiConfig'
 
-export const fetchData = createAsyncThunk('appCities/fetchData', async () => {
-  const response = await get('/data');
-  return response;
-});
-
-// جلب المدن والمناطق الخاصة بالمستخدم (يعتمد على المستخدم المصادق)
+// Thunk to fetch cities and areas from API (or cache fallback)
 export const fetchCitiesAndAreas = createAsyncThunk(
-  'appCities/fetchCitiesAndAreas',
-  async ({ token }, { rejectWithValue }) => {
+  'cities/fetchCitiesAndAreas',
+  async (token, { rejectWithValue }) => {
     try {
-      if (!token) {
-        throw new Error('Missing token');
+      const result = await serviceFetchCitiesAndAreas(token)
+      if (result.success) {
+        return result.data
       }
-
-      console.log('🌐 Redux Store: بدء جلب المدن والمناطق...');
-      console.log('🔑 Token:', token ? 'موجود' : 'غير موجود');
-      console.log('🔑 Token Value:', token);
-      
-      // استخدام RequestBuilder الذي يضيف Authorization تلقائياً من AsyncStorage/RequestBuilder
-      const response = await get('user/cities-areas');
-
-      console.log('📥 Response Data:', response);
-      
-      // RequestBuilder يعيد response.data مباشرة. بعض الـ endpoints تعود مباشرة بدون success
-      const data = response?.data ?? response;
-
-      // دعم شكلين: { success: true, data: {...} } أو { cities: [...], areas: [...], block_id }
-      const payload = (data && data.data) ? data.data : data;
-
-      if (payload && (Array.isArray(payload.cities) || Array.isArray(payload.areas))) {
-        console.log('✅ تم جلب البيانات بنجاح من API');
-        console.log('🆔 Block ID:', payload.block_id);
-        console.log('🏙️ عدد المدن:', payload.cities?.length || 0);
-        console.log('📍 عدد المناطق:', payload.areas?.length || 0);
-        return payload; // يحتوي على block_id, cities, areas
-      }
-
-      const message = data?.message || 'Failed to fetch user cities/areas';
-      console.log('❌ فشل في جلب البيانات:', message);
-      return rejectWithValue(message);
+      return rejectWithValue(result.error || 'Failed to fetch cities and areas')
     } catch (error) {
-      console.error('❌ خطأ في جلب البيانات:', error.message);
-      return rejectWithValue(error.message || 'Unknown error');
+      // fallback to cache
+      const cached = await getCachedCitiesAndAreas()
+      if (cached) return cached
+      return rejectWithValue(error.message || 'Unexpected error fetching cities and areas')
     }
   }
-);
+)
 
-// Fetch data with pagination
-export const fetchPaginationData = createAsyncThunk('appCities/fetchPaginationData', async (page) => {
-  const response = await getPage('/data', page);
-  return response;
-});
+// Thunk to fetch public cities from /getcity
+export const fetchCitiesPublic = createAsyncThunk(
+  'cities/fetchCitiesPublic',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get('getcity')
+      const payload = response?.data
+      if (payload && (payload.status === true || payload.success === true) && Array.isArray(payload.data)) {
+        const cities = payload.data.map(item => ({ id: item.id, name: item.name }))
+        return { cities }
+      }
+      return rejectWithValue(payload?.message || 'Failed to fetch cities')
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message || 'Unexpected error fetching cities')
+    }
+  }
+)
 
-// Create data
-export const createData = createAsyncThunk('api/createData', async (data) => {
-  const response = await post('/data', data);
-  return response;
-});
+// Thunk to fetch areas for a given city id from /getAreas/{city_id}
+export const fetchAreasByCity = createAsyncThunk(
+  'cities/fetchAreasByCity',
+  async (cityId, { rejectWithValue }) => {
+    try {
+      if (cityId == null) return rejectWithValue('cityId is required')
+      const response = await apiClient.get(`getAreas/${cityId}`)
+      const payload = response?.data
+      // Accept both raw array and wrapped {status,data}
+      let list = []
+      if (Array.isArray(payload)) {
+        list = payload
+      } else if (payload && (payload.status === true || payload.success === true) && Array.isArray(payload.data)) {
+        list = payload.data
+      }
+      if (Array.isArray(list)) {
+        const areas = list.map(item => ({ id: item.id, name: item.name, city_id: String(item.city_id ?? cityId) }))
+        return { cityId, areas }
+      }
+      return rejectWithValue(payload?.message || 'Failed to fetch areas')
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message || 'Unexpected error fetching areas')
+    }
+  }
+)
 
-// Update data
-export const updateData = createAsyncThunk('api/updateData', async ({ id, data }) => {
-  const response = await put(`/data/${id}`, data);
-  return response;
-});
-
-// Delete data
-export const deleteData = createAsyncThunk('api/deleteData', async (id) => {
-  const response = await del(`/data/${id}`);
-  return response;
-});
-
-export const appCitySlice = createSlice({
-  name: 'appCities',
-  initialState: {
-    data: [],
-    pagination: {
-      current_page: 1,
-      items_per_page: 10,
-      total_items: 1,
-      total_pages: 1,
-    },
-    params: {},
-    loading: false,
-    error: null,
-    // بيانات المدن والمناطق الخاصة بالمستخدم
-    userLocationData: {
-      block_id: null,
-      cities: [],
-      areas: [],
-      citiesFormatted: [], // للفلترة
-      areasFormatted: [], // للفلترة
-      // خرائط تسريع الوصول حسب المعرف
-      citiesMap: {},
-      areasMap: {},
-      loading: false,
-      error: null,
-      lastUpdated: null,
-    },
+const initialState = {
+  userLocationData: {
+    block_id: null,
+    cities: [],
+    areas: [],
+    citiesFormatted: [], // [{value,label,areas}]
+    citiesMap: {}, // { [cityId]: city }
+    areasMap: {} // { [areaId]: area }
   },
+  loading: false,
+  error: null,
+  // derived UI helpers
+  filteredAreasByCityId: []
+}
+
+const citiesSlice = createSlice({
+  name: 'cities',
+  initialState,
   reducers: {
-    // مسح بيانات المدن والمناطق
-    clearUserLocationData: (state) => {
-      state.userLocationData = {
-        block_id: null,
-        cities: [],
-        areas: [],
-        citiesFormatted: [],
-        areasFormatted: [],
-        citiesMap: {},
-        areasMap: {},
-        loading: false,
-        error: null,
-        lastUpdated: null,
-      };
-    },
-    // تحديث المناطق عند اختيار مدينة
-    updateAreasForCity: (state, action) => {
-      const cityId = action.payload;
-      const cityAreas = state.userLocationData.areas.filter(area => area.city_id === cityId);
-      state.userLocationData.areasFormatted = cityAreas.map(area => ({
-        value: area.id,
-        label: area.name,
-      }));
-    },
+    updateAreasForCity(state, action) {
+      const cityId = action.payload
+      const cityIdStr = cityId != null ? String(cityId) : ''
+      state.filteredAreasByCityId = (state.userLocationData.areas || []).filter(
+        a => String(a.city_id) === cityIdStr
+      )
+    }
   },
   extraReducers: builder => {
     builder
-      .addCase(fetchData.pending, state => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchData.fulfilled, (state, action) => {
-        state.loading = false;
-        if (action.payload.status) {
-          state.data = action.payload.data;
-          state.pagination = action.payload.pagination;
-        } else {
-          state.data = [];
-        }
-      })
-      .addCase(fetchData.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      /////////////////////////////////////////////////
-      .addCase(fetchPaginationData.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchPaginationData.fulfilled, (state, action) => {
-        state.loading = false;
-        state.data = action.payload;
-      })
-      .addCase(fetchPaginationData.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(createData.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(createData.fulfilled, (state) => {
-        state.loading = false;
-      })
-      .addCase(createData.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(updateData.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(updateData.fulfilled, (state) => {
-        state.loading = false;
-      })
-      .addCase(updateData.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(deleteData.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(deleteData.fulfilled, (state) => {
-        state.loading = false;
-      })
-      .addCase(deleteData.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      /////////////////////////////////////////////////
-      // جلب المدن والمناطق الخاصة بالمستخدم
-      .addCase(fetchCitiesAndAreas.pending, (state) => {
-        console.log('⏳ Redux: fetchCitiesAndAreas.pending');
-        state.userLocationData.loading = true;
-        state.userLocationData.error = null;
+      .addCase(fetchCitiesAndAreas.pending, state => {
+        state.loading = true
+        state.error = null
       })
       .addCase(fetchCitiesAndAreas.fulfilled, (state, action) => {
-        console.log('✅ Redux: fetchCitiesAndAreas.fulfilled');
-        console.log('📦 Payload:', action.payload);
-        
-        state.userLocationData.loading = false;
-        state.userLocationData.block_id = action.payload.block_id || null;
-        state.userLocationData.cities = Array.isArray(action.payload.cities) ? action.payload.cities : [];
-        state.userLocationData.areas = Array.isArray(action.payload.areas) ? action.payload.areas : [];
-        
-        // تحضير البيانات للفلترة
-        state.userLocationData.citiesFormatted = state.userLocationData.cities.map(city => ({
-          value: city.id,
-          label: city.name,
-        }));
-        
-        // إنشاء خرائط للوصول السريع حسب المعرّف
-        const citiesMap = {};
-        for (const city of state.userLocationData.cities) {
-          if (city && city.id != null) {
-            citiesMap[city.id] = city;
+        const { cities = [], areas = [], block_id = null } = action.payload || {}
+
+        const citiesMap = {}
+        const areasMap = {}
+        const citiesFormatted = cities.map(city => {
+          citiesMap[city?.id] = city
+          const areasForCity = areas.filter(a => String(a?.city_id) === String(city?.id))
+          areasForCity.forEach(a => {
+            areasMap[a?.id] = a
+          })
+          return {
+            value: city?.id,
+            label: city?.name,
+            areas: areasForCity
           }
+        })
+
+        state.userLocationData = {
+          block_id,
+          cities,
+          areas,
+          citiesFormatted,
+          citiesMap,
+          areasMap
         }
-        // إنشاء خريطة للمناطق
-        const areasMap = {};
-        for (const area of state.userLocationData.areas) {
-          if (area && area.id != null) {
-            areasMap[area.id] = area;
-          }
-        }
-        state.userLocationData.citiesMap = citiesMap;
-        state.userLocationData.areasMap = areasMap;
-        // إبقاء تنسيق المناطق كما هو (سيتم تحديثه عند اختيار مدينة)
-        
-        state.userLocationData.lastUpdated = new Date().toISOString();
-        
-        console.log('💾 Redux: تم حفظ البيانات في Store');
-        console.log('🏙️ المدن المحفوظة:', state.userLocationData.cities.length);
-        console.log('📍 المناطق المحفوظة:', state.userLocationData.areas.length);
+        state.loading = false
+        state.error = null
       })
       .addCase(fetchCitiesAndAreas.rejected, (state, action) => {
-        console.log('❌ Redux: fetchCitiesAndAreas.rejected');
-        console.log('❌ Error:', action.payload);
-        state.userLocationData.loading = false;
-        state.userLocationData.error = action.payload || 'Failed to fetch user cities/areas';
-      });
-  },
-});
+        state.loading = false
+        state.error = action.payload || 'Failed to fetch cities and areas'
+      })
+      // Handle public cities fetch
+      .addCase(fetchCitiesPublic.pending, state => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchCitiesPublic.fulfilled, (state, action) => {
+        const { cities = [] } = action.payload || {}
 
-export const { clearUserLocationData, updateAreasForCity } = appCitySlice.actions;
-export default appCitySlice.reducer;
+        const citiesMap = {}
+        const citiesFormatted = cities.map(city => {
+          citiesMap[city?.id] = city
+          return {
+            value: city?.id,
+            label: city?.name,
+            areas: []
+          }
+        })
+
+        state.userLocationData.cities = cities
+        state.userLocationData.citiesFormatted = citiesFormatted
+        state.userLocationData.citiesMap = citiesMap
+        // keep existing areas/areasMap/block_id as-is
+        state.loading = false
+        state.error = null
+      })
+      .addCase(fetchCitiesPublic.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload || 'Failed to fetch cities'
+      })
+      // Handle areas per city fetch and merge
+      .addCase(fetchAreasByCity.pending, state => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchAreasByCity.fulfilled, (state, action) => {
+        const { areas = [], cityId } = action.payload || {}
+        // merge unique areas
+        const existing = state.userLocationData.areas || []
+        const mergedMap = {}
+        existing.forEach(a => {
+          if (a?.id != null) mergedMap[a.id] = a
+        })
+        areas.forEach(a => {
+          if (a?.id != null) mergedMap[a.id] = a
+        })
+        const merged = Object.values(mergedMap)
+
+        // rebuild areasMap
+        const areasMap = {}
+        merged.forEach(a => {
+          areasMap[a?.id] = a
+        })
+
+        // update citiesFormatted to include areas for this city
+        const citiesFormatted = (state.userLocationData.cities || []).map(city => {
+          if (String(city?.id) === String(cityId)) {
+            const cityAreas = merged.filter(a => String(a?.city_id) === String(city?.id))
+            return { value: city?.id, label: city?.name, areas: cityAreas }
+          }
+          const otherAreas = merged.filter(a => String(a?.city_id) === String(city?.id))
+          return { value: city?.id, label: city?.name, areas: otherAreas }
+        })
+
+        state.userLocationData.areas = merged
+        state.userLocationData.areasMap = areasMap
+        state.userLocationData.citiesFormatted = citiesFormatted
+        state.loading = false
+        state.error = null
+      })
+      .addCase(fetchAreasByCity.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload || 'Failed to fetch areas'
+      })
+  }
+})
+
+export const { updateAreasForCity } = citiesSlice.actions
+export default citiesSlice.reducer
+export const selectUserLocationData = state => state.cities.userLocationData
+export const selectCitiesLoading = state => state.cities.loading
+export const selectCitiesError = state => state.cities.error
+export const selectFilteredAreas = state => state.cities.filteredAreasByCityId
+

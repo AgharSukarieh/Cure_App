@@ -29,19 +29,19 @@ const SuccessfullyModel = ({show, hide, message}) => {
       >
       <View style={styles.ModalContainer}>
         <View style={styles.ModalView}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => {
               hide();
             }}>
             <AntDesign
               name="close"
-              color="#469ED8"
+              color="#183E9F"
               size={35}
               style={{alignSelf: 'flex-end'}}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <View style={{marginVertical: 10}}>
-           <Text style={{textAlign: 'center', marginTop: 15, fontSize: 20, fontWeight: 'bold',color: '#469ED8'}}>{message}</Text>
+           <Text style={{textAlign: 'center', marginTop: 15, fontSize: 20, fontWeight: 'bold',color: '#183E9F'}}>{message}</Text>
           </View>
         </View>
       </View>
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     height: 50,
-    borderColor: '#469ED8',
+    borderColor: '#183E9F',
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   card: {
-    shadowColor: '#469ED8',
+    shadowColor: '#183E9F',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   phname: {
     fontSize: 25,
     textTransform: 'capitalize',
-    color: '#469ED8',
+    color: '#183E9F',
   },
   phlocation: {
     marginHorizontal: 15,
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   item_name: {
     fontSize: 20,
     textTransform: 'capitalize',
-    color: '#469ED8',
+    color: '#183E9F',
   },
   item_info: {
     justifyContent: 'center',
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   newbtn: {
-    backgroundColor: '#469ED8',
+    backgroundColor: '#183E9F',
     height: 50,
     paddingVertical: 5,
     paddingHorizontal: 4,
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   inputModel: {
     height: 40,
-    borderColor: '#469ED8',
+    borderColor: '#183E9F',
     borderWidth: 1,
     paddingLeft: 10,
     borderRadius: 5,

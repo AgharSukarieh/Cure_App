@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -13,227 +13,31 @@ import {
   Dimensions,
   I18nManager,
 } from "react-native";
+import moment from "moment";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Feather from "react-native-vector-icons/Feather";
 import SelectDropdown from "react-native-select-dropdown";
 import { useTranslation } from "react-i18next";
+import { useAlert } from "../../components/Alert";
+import Constants from "../../config/globalConstants";
+import { get } from "../../WebService/RequestBuilder";
+import { useAuth } from "../../contexts/AuthContext";
+import AddNewOrderModel from "../../components/Modals/AddNewOrderModel";
 
 AntDesign.loadFont();
 Feather.loadFont();
 
 const { width, height } = Dimensions.get('window');
+const FIXED_COLUMN_WIDTH = width * 0.35;
+const SCROLLABLE_COLUMN_WIDTH = width * 0.25;
+const ROW_HEIGHT = 70;
 
 
-const getFakeOrdersList = (t) => [
-  {
-    id: "1",
-    order_status: "Delivered",
-    pharmacy: t('order.pharmacies.alNahdi'),
-    city: t('order.cities.riyadh'),
-    total_price: "350.75",
-    order_date: "2023-10-15",
-    order_details: [
-      {
-        product: {
-          name: t('order.products.aspirin'),
-          barcode: "123456789012",
-          price: "10.00",
-          price_tax: "11.50",
-          expiry_date: "2026-12-31",
-        },
-        units: "10",
-        bonus: "2",
-      },
-      {
-        product: {
-          name: t('order.products.panadol'),
-          barcode: "234567890123",
-          price: "15.50",
-          price_tax: "17.83",
-          expiry_date: "2025-10-20",
-        },
-        units: "5",
-        bonus: "1",
-      },
-    ],
-  },
-  {
-    id: "2",
-    order_status: "Pending",
-    pharmacy: t('order.pharmacies.alDawa'),
-    city: t('order.cities.jeddah'),
-    total_price: "180.50",
-    order_date: "2023-10-16",
-    order_details: [
-      {
-        product: {
-          name: t('order.products.vitaminC'),
-          barcode: "345678901234",
-          price: "25.00",
-          price_tax: "28.75",
-          expiry_date: "2027-01-15",
-        },
-        units: "4",
-        bonus: "0",
-      },
-    ],
-  },
-  {
-    id: "3",
-    order_status: "Canceled",
-    pharmacy: t('order.pharmacies.alMuttahida'),
-    city: t('order.cities.dammam'),
-    total_price: "95.00",
-    order_date: "2023-10-14",
-    order_details: [
-      {
-        product: {
-          name: t('order.products.ibuprofen'),
-          barcode: "456789012345",
-          price: "18.20",
-          price_tax: "20.93",
-          expiry_date: "2026-05-01",
-        },
-        units: "3",
-        bonus: "0",
-      },
-    ],
-  },
-];
-
-const getFakeItemsDropdown = (t) => [
-  { name: t('order.products.aspirin') },
-  { name: t('order.products.panadol') },
-  { name: t('order.products.vitaminC') },
-];
-const getFakeOffers = (t) => [
-  { Offer: t('order.offers.discount10') },
-  { Offer: t('order.offers.buy1Get1') },
-  { Offer: t('order.offers.freeShipping') },
-];
-
-const AddNewOrderPopup = ({ show, hide, submit }) => {
-  const { t } = useTranslation();
-  const isRTL = I18nManager.isRTL;
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedOffer, setSelectedOffer] = useState(null);
-  const [cost, setCost] = useState("");
-
-  const handleSave = () => {
-    if (!selectedItem || !cost) {
-      alert(t('order.selectProductAndPrice'));
-      return;
-    }
-    const newOrderData = {
-      item: selectedItem,
-      offer: selectedOffer,
-      cost: cost,
-    };
-    submit(newOrderData);
-    setSelectedItem(null);
-    setSelectedOffer(null);
-    setCost("");
-    hide();
-  };
-
-  return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={show}
-      onRequestClose={hide}
-    >
-      <View style={popupStyles.modalOverlay}>
-        <View style={popupStyles.modalContainer}>
-          <View style={popupStyles.modalHeader}>
-            <Text style={[popupStyles.title, isRTL && popupStyles.rtlText]}>{t('order.addNewOrder')}</Text>
-            <TouchableOpacity onPress={hide} style={popupStyles.closeButton}>
-              <AntDesign name="close" color="#555" size={24} />
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView 
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={popupStyles.scrollContent}
-          >
-            <View style={popupStyles.inputGroup}>
-              <Text style={[popupStyles.label, isRTL && popupStyles.rtlText]}>{t('order.products')}</Text>
-              <SelectDropdown
-                data={getFakeItemsDropdown(t)}
-                onSelect={(item) => setSelectedItem(item.name)}
-                buttonTextAfterSelection={(selectedItem) => selectedItem.name}
-                rowTextForSelection={(item) => item.name}
-                buttonStyle={popupStyles.dropdown}
-                buttonTextStyle={[popupStyles.dropdownText, isRTL && popupStyles.rtlText]}
-                defaultButtonText={t('order.selectProduct')}
-                renderDropdownIcon={(isOpened) => (
-                  <Feather
-                    name={isOpened ? "chevron-up" : "chevron-down"}
-                    color="#555"
-                    size={18}
-                  />
-                )}
-              />
-            </View>
-
-            <View style={popupStyles.inputGroup}>
-              <Text style={[popupStyles.label, isRTL && popupStyles.rtlText]}>{t('order.availableOffers')}</Text>
-              <View style={popupStyles.offersContainer}>
-                {getFakeOffers(t).map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      popupStyles.offerButton,
-                      selectedOffer === item.Offer && popupStyles.selectedOffer,
-                    ]}
-                    onPress={() => setSelectedOffer(item.Offer)}
-                  >
-                    <Text
-                      style={[
-                        popupStyles.offerText,
-                        selectedOffer === item.Offer && { color: "#fff" },
-                      ]}
-                    >
-                      {item.Offer}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-
-            <View style={popupStyles.inputGroup}>
-              <Text style={[popupStyles.label, isRTL && popupStyles.rtlText]}>{t('order.costAndPrice')}</Text>
-              <TextInput
-                style={[popupStyles.input, isRTL && popupStyles.rtlText]}
-                placeholder={t('order.enterPrice')}
-                keyboardType="numeric"
-                value={cost}
-                onChangeText={setCost}
-              />
-            </View>
-
-            <View style={popupStyles.buttonContainer}>
-              <TouchableOpacity
-                style={[popupStyles.button, popupStyles.cancelButton]}
-                onPress={hide}
-              >
-                <Text style={[popupStyles.cancelButtonText, isRTL && popupStyles.rtlText]}>{t('order.cancel')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[popupStyles.button, popupStyles.saveButton]}
-                onPress={handleSave}
-              >
-                <Text style={[popupStyles.saveButtonText, isRTL && popupStyles.rtlText]}>{t('order.save')}</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </View>
-      </View>
-    </Modal>
-  );
-};
 
 const OrderDetailsPopup = ({ show, hide, data }) => {
+  const { t } = useTranslation();
+  const isRTL = I18nManager.isRTL;
+  
   if (!data) return null; 
 
   return (
@@ -268,22 +72,22 @@ const OrderDetailsPopup = ({ show, hide, data }) => {
                 detailsStyles.statusText,
                 { color: getStatusColor(data.order_status).text }
               ]}>
-                {data.order_status === "Delivered" ? "تم التوصيل" : 
-                 data.order_status === "Pending" ? "قيد المعالجة" : "ملغي"}
+                {data.order_status?.toLowerCase() === "delivered" || data.order_status?.toLowerCase() === "completed" ? t('order.deliveredStatus') : 
+                 data.order_status?.toLowerCase() === "pending" || data.order_status?.toLowerCase() === "processing" ? t('order.pendingStatus') : t('order.canceledStatus')}
               </Text>
             </View>
           </View>
 
           <FlatList
             data={data.order_details || []}
-            keyExtractor={(item, index) => `${item.product.barcode}-${index}`}
+            keyExtractor={(item, index) => `product-${item.id || index}`}
             renderItem={({ item }) => <OrderItemCard item={item} />}
             contentContainerStyle={detailsStyles.listContainer}
           />
 
           <View style={detailsStyles.footer}>
-            <Text style={detailsStyles.totalLabel}>المجموع الكلي</Text>
-            <Text style={detailsStyles.totalPrice}>{data.total_price} ر.س</Text>
+            <Text style={detailsStyles.totalLabel}>{t('order.totalAmount')}</Text>
+            <Text style={detailsStyles.totalPrice}>{data.total_price} {t('order.currency')}</Text>
           </View>
         </View>
       </SafeAreaView>
@@ -291,30 +95,46 @@ const OrderDetailsPopup = ({ show, hide, data }) => {
   );
 };
 
-const OrderItemCard = ({ item }) => (
-  <View style={detailsStyles.card}>
-    <View style={detailsStyles.cardHeader}>
-      <Text style={detailsStyles.itemName}>{item.product.name}</Text>
-      <Text style={detailsStyles.barcode}>{item.product.barcode}</Text>
+const OrderItemCard = ({ item }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <View style={detailsStyles.card}>
+      <View style={detailsStyles.cardHeader}>
+        <Text style={detailsStyles.itemName}>{item.name || item.product?.name || '-'}</Text>
+      </View>
+      <View style={detailsStyles.divider} />
+      <View style={detailsStyles.detailsGrid}>
+        <InfoItem title={t('order.quantity')} value={item.units || '0'} />
+        <InfoItem title={t('order.bonus')} value={item.bonuse || item.bonus || '0'} />
+        <InfoItem title={t('order.price')} value={`${item.price || item.product?.price || '0'} ${t('order.currency')}`} />
+        <InfoItem
+          title={t('order.priceWithTax')}
+          value={`${item.price_tax || item.product?.price_tax || '0'} ${t('order.currency')}`}
+          isHighlight
+        />
+        <InfoItem 
+          title={t('order.publicPrice')} 
+          value={`${item.public_price || item.product?.public_price || '0'} ${t('order.currency')}`} 
+        />
+        {(item.batch_number || item.product?.batch_number) && (
+          <InfoItem 
+            title={t('order.batchNumber')} 
+            value={item.batch_number || item.product?.batch_number} 
+            fullWidth 
+          />
+        )}
+        {(item.expiry_date || item.product?.expiry_date) && (
+          <InfoItem 
+            title={t('order.expiryDate')} 
+            value={item.expiry_date || item.product?.expiry_date} 
+            fullWidth 
+          />
+        )}
+      </View>
     </View>
-    <View style={detailsStyles.divider} />
-    <View style={detailsStyles.detailsGrid}>
-      <InfoItem title="الكمية" value={item.units} />
-      <InfoItem title="بونص" value={item.bonus} />
-      <InfoItem title="السعر" value={`${item.product.price} ر.س`} />
-      <InfoItem
-        title="السعر بالضريبة"
-        value={`${item.product.price_tax} ر.س`}
-        isHighlight
-      />
-      <InfoItem 
-        title="تاريخ الصلاحية" 
-        value={item.product.expiry_date} 
-        fullWidth 
-      />
-    </View>
-  </View>
-);
+  );
+};
 
 const InfoItem = ({ title, value, isHighlight = false, fullWidth = false }) => (
   <View style={[detailsStyles.infoItem, fullWidth && detailsStyles.fullWidth]}>
@@ -333,102 +153,333 @@ const InfoItem = ({ title, value, isHighlight = false, fullWidth = false }) => (
 const OrdersTable = ({ data, onViewDetails }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
+  
   const getStatusStyle = (status) => {
-    switch (status) {
-      case "Delivered":
+    // ✅ تحويل الحالة لحروف صغيرة للمقارنة
+    const normalizedStatus = status?.toLowerCase();
+    
+    switch (normalizedStatus) {
+      case "delivered":
+      case "completed":
         return { backgroundColor: "#D4EDDA", color: "#155724" };
-      case "Pending":
+      case "pending":
+      case "processing":
         return { backgroundColor: "#FFF3CD", color: "#856404" };
-      case "Canceled":
+      case "canceled":
+      case "cancelled":
         return { backgroundColor: "#F8D7DA", color: "#721C24" };
       default:
         return { backgroundColor: "#E2E3E5", color: "#383D41" };
     }
   };
 
-  const renderItem = ({ item, index }) => {
-    const statusStyle = getStatusStyle(item.order_status);
+  if (!data || data.length === 0) {
     return (
-      <View style={tableStyles.row}>
-        <View style={[tableStyles.cell, { flex: 3, alignItems: "flex-start" }]}>
-          <Text style={[tableStyles.pharmacyName, isRTL && tableStyles.rtlText]}>{item.pharmacy}</Text>
-          <Text style={[tableStyles.city, isRTL && tableStyles.rtlText]}>{item.city}</Text>
-          
-          {item.order_details.slice(0, 2).map((detail, i) => (
-            <Text key={i} style={[tableStyles.cellText, isRTL && tableStyles.rtlText]} numberOfLines={1}>
-              • {detail.product.name}
-            </Text>
-          ))}
-          {item.order_details.length > 2 && (
-            <Text style={[tableStyles.moreItemsText, isRTL && tableStyles.rtlText]}>+{item.order_details.length - 2} {t('order.moreProducts')}</Text>
-          )}
-        </View>
-        <View style={[tableStyles.cell, { flex: 2 }]}>
-          <View
-            style={[
-              tableStyles.statusBadge,
-              { backgroundColor: statusStyle.backgroundColor },
-            ]}
-          >
-            <Text
-              style={[tableStyles.statusText, { color: statusStyle.color }, isRTL && tableStyles.rtlText]}
-            >
-              {item.order_status === "Delivered" ? t('order.deliveredStatus') : 
-               item.order_status === "Pending" ? t('order.pendingStatus') : t('order.canceledStatus')}
-            </Text>
-          </View>
-          <Text style={[tableStyles.totalText, isRTL && tableStyles.rtlText]}>{item.total_price} {t('order.currency')}</Text>
-        </View>
-        <View style={[tableStyles.cell, { flex: 1 }]}>
-          <TouchableOpacity 
-            onPress={() => onViewDetails(item)}
-            style={tableStyles.detailsButton}
-          >
-            <AntDesign name="eye" color="#fff" size={18} />
-          </TouchableOpacity>
-        </View>
+      <View style={tableStyles.emptyContainer}>
+        <Text style={[tableStyles.emptyText, isRTL && tableStyles.rtlText]}>
+          {t('order.noOrders')}
+        </Text>
       </View>
     );
-  };
+  }
 
   return (
-    <FlatList
-      data={data}
-      keyExtractor={(item) => item.id}
-      ListHeaderComponent={() => (
-        <View style={tableStyles.header}>
-          <Text
-            style={[tableStyles.headerText, { flex: 3, textAlign: isRTL ? "right" : "left" }]}
-          >
-            {t('order.orders')}
-          </Text>
-          <Text style={[tableStyles.headerText, { flex: 2 }]}>{t('order.status')}</Text>
-          <Text style={[tableStyles.headerText, { flex: 1 }]}>{t('order.details')}</Text>
+    <View>
+      <View style={tableStyles.table}>
+        {/* Fixed Column - Order Info */}
+        <View style={tableStyles.fixedColumn}>
+          <View style={tableStyles.fixedHeaderCell}>
+            <Text style={[tableStyles.fixedHeaderText, isRTL && tableStyles.rtlText]}>
+              {t('order.orderInfo')}
+            </Text>
+          </View>
+          <View>
+            {data.map((item, index) => (
+              <View
+                key={`order-fixed-${item.id}-${index}`}
+                style={[
+                  tableStyles.fixedCell,
+                  index % 2 === 1 ? tableStyles.oddRow : tableStyles.evenRow,
+                ]}
+              >
+                <Text style={tableStyles.fixedCellText}>
+                 {t('order.orderNumber')} #{item.id}
+                </Text>
+              </View>
+            ))}
+          </View>
         </View>
-      )}
-      renderItem={renderItem}
-      contentContainerStyle={tableStyles.container}
-      showsVerticalScrollIndicator={false}
-    />
+
+        {/* Scrollable Columns */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+          <View style={tableStyles.scrollablePart}>
+            {/* Header Row */}
+            <View style={tableStyles.scrollableHeaderRow}>
+              <View style={tableStyles.scrollableHeaderCell}>
+                <Text style={[tableStyles.scrollableHeaderText, isRTL && tableStyles.rtlText]}>
+                  {t('order.status')}
+                </Text>
+              </View>
+              <View style={tableStyles.scrollableHeaderCell}>
+                <Text style={[tableStyles.scrollableHeaderText, isRTL && tableStyles.rtlText]}>
+                  {t('order.products')}
+                </Text>
+              </View>
+              <View style={tableStyles.scrollableHeaderCell}>
+                <Text style={[tableStyles.scrollableHeaderText, isRTL && tableStyles.rtlText]}>
+                  {t('order.totalPrice')}
+                </Text>
+              </View>
+              <View style={tableStyles.scrollableHeaderCell}>
+                <Text style={[tableStyles.scrollableHeaderText, isRTL && tableStyles.rtlText]}>
+                  {t('order.details')}
+                </Text>
+              </View>
+            </View>
+
+            {/* Data Rows */}
+            <View>
+              {data.map((item, index) => {
+                const statusStyle = getStatusStyle(item.order_status);
+                return (
+                  <View
+                    key={`order-data-${item.id}-${index}`}
+                    style={[
+                      tableStyles.scrollableDataRow,
+                      index % 2 === 1 ? tableStyles.oddRow : tableStyles.evenRow,
+                    ]}
+                  >
+                    {/* Status */}
+                    <View style={tableStyles.scrollableCell}>
+                      <View
+                        style={[
+                          tableStyles.statusBadge,
+                          { backgroundColor: statusStyle.backgroundColor },
+                        ]}
+                      >
+                        <Text style={[tableStyles.statusText, { color: statusStyle.color }]}>
+                          {item.order_status?.toLowerCase() === "delivered" || item.order_status?.toLowerCase() === "completed" ? t('order.deliveredStatus') : 
+                           item.order_status?.toLowerCase() === "pending" || item.order_status?.toLowerCase() === "processing" ? t('order.pendingStatus') : t('order.canceledStatus')}
+                        </Text>
+                      </View>
+                    </View>
+                    
+                    {/* Products */}
+                    <View style={tableStyles.scrollableCell}>
+                      <Text style={[tableStyles.scrollableCellText, isRTL && tableStyles.rtlText]}>
+                        {item.order_details_count || item.order_details?.length || 0} {t('order.items')}
+                      </Text>
+                    </View>
+                    
+                    {/* Total Price */}
+                    <View style={tableStyles.scrollableCell}>
+                      <Text style={[tableStyles.scrollableCellText, isRTL && tableStyles.rtlText]}>
+                        {item.total_price || '0'} {t('order.currency')}
+                      </Text>
+                    </View>
+                    
+                    {/* Details Button */}
+                    <View style={tableStyles.scrollableCell}>
+                      <TouchableOpacity
+                        onPress={() => onViewDetails(item)}
+                        style={tableStyles.detailsButton}
+                      >
+                        <Feather name="eye" size={18} color="#007BFF" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        </ScrollView>
+      </View>
+    </View>
   );
 };
 
-const OrderScreen = ({ navigation }) => {
+const OrderScreen = ({ navigation, route, item }) => {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
-  const [orders, setOrders] = useState(getFakeOrdersList(t));
+  const { user } = useAuth();
+  const alert = useAlert();
+  
+  // ✅ استقبال البيانات من route.params أو props (نفس AccountInfo)
+  const visitData = route?.params?.item || item;
+  const visitId = route?.params?.visit_id;
+  
+  // ✅ Console log للتحقق من البيانات الواردة
+  useEffect(() => {
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('📦 OrderScreen - البيانات الواردة:');
+    console.log('   - pharmacy_id:', visitData?.pharmacy_id);
+    console.log('   - pharmacy_name:', visitData?.pharmacy_name || visitData?.name);
+    console.log('   - visit_id:', visitId || visitData?.id);
+    console.log('   - من route.params:', !!route?.params?.item);
+    console.log('   - من props:', !!item);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  }, [visitData, visitId, route, item]);
+  
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [isAddPopupVisible, setAddPopupVisible] = useState(false);
   const [isDetailsPopupVisible, setDetailsPopupVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
+  // ✅ حساب الإحصائيات من البيانات الحقيقية
+  const totalOrders = orders.length;
+  const pendingOrders = orders.filter(order => order.order_status === "Pending").length;
+  const deliveredOrders = orders.filter(order => order.order_status === "Delivered").length;
+
+  // ✅ جلب الطلبات من API
+  const getOrders = () => {
+    if (!visitData?.pharmacy_id) {
+      console.error('❌ pharmacy_id مفقود');
+      alert.showError(
+        t('order.error') || 'خطأ',
+        t('order.errorMissingPharmacy') || 'معرف الصيدلية مفقود'
+      );
+      return;
+    }
+    
+    setLoading(true);
+    
+    // ✅ جلب التاريخ من visitData
+    const dateToUse = visitData?.startVisit || visitData?.start_visit || visitData?.visitDate || visitData?.created_at;
+    const visitDate = dateToUse 
+      ? (typeof dateToUse === 'object' && dateToUse?.date 
+          ? moment(dateToUse.date).format('YYYY-MM-DD')
+          : moment(dateToUse).format('YYYY-MM-DD'))
+      : moment().format('YYYY-MM-DD');
+    
+    const params = {
+      user_id: user?.id,
+      pharmacy_id: visitData.pharmacy_id,
+      date: visitDate,
+    };
+    
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('📤 جلب الطلبات...');
+    console.log('   - user_id:', params.user_id);
+    console.log('   - pharmacy_id:', params.pharmacy_id);
+    console.log('   - date:', params.date);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    
+    get(Constants.orders.get_orders, null, params)
+      .then((res) => {
+        console.log('✅ استجابة API:', res);
+        console.log('   - عدد الطلبات:', res.data?.length || 0);
+        console.log('   - meta:', res.meta);
+        
+        if (res.data && res.data.length > 0) {
+          // عرض أول 3 طلبات
+          console.log('📦 عينة من الطلبات:');
+          res.data.slice(0, 3).forEach((order, idx) => {
+            console.log(`   ${idx + 1}. Order #${order.id}:`);
+            console.log(`      - pharmacy: ${order.pharmacy}`);
+            console.log(`      - status: ${order.order_status}`);
+            console.log(`      - total: ${order.total_price} JOD`);
+            console.log(`      - date: ${order.created_at}`);
+            console.log(`      - products: ${order.order_details_count}`);
+          });
+        }
+        
+        setOrders(res.data || []);
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      })
+      .catch((err) => {
+        console.error('❌ خطأ في جلب الطلبات:', err);
+        console.error('   - Message:', err.message);
+        console.error('   - Response:', err.response?.data);
+        
+        alert.showError(
+          t('order.error') || 'خطأ',
+          err.response?.data?.message || err.message || t('order.errorLoadingOrders') || 'حدث خطأ في تحميل الطلبات'
+        );
+        
+        setOrders([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  // ✅ جلب الطلبات عند فتح الصفحة
+  useEffect(() => {
+    if (visitData?.pharmacy_id) {
+      getOrders();
+    }
+  }, [visitData?.pharmacy_id]);
+
   const handleViewDetails = (order) => {
-    setSelectedOrder(order);
-    setDetailsPopupVisible(true);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('👁️ عرض تفاصيل الطلب #' + order.id);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    
+    // جلب تفاصيل الطلب من API
+    get(`order-details/${order.id}`, null, null)
+      .then((res) => {
+        console.log('✅ تفاصيل الطلب:', res);
+        
+        // معالجة Response
+        const products = Array.isArray(res) ? res : (res?.data || []);
+        
+        console.log('   - عدد المنتجات:', products.length);
+        
+        if (products.length > 0) {
+          console.log('📦 المنتجات:');
+          products.forEach((product, idx) => {
+            console.log(`   ${idx + 1}. ${product.name} - ${product.units} وحدة - ${product.price_tax} دينار`);
+          });
+        }
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        
+        // تحديث الطلب المحدد مع التفاصيل
+        const orderWithDetails = {
+          ...order,
+          order_details: products
+        };
+        
+        setSelectedOrder(orderWithDetails);
+        setDetailsPopupVisible(true);
+      })
+      .catch((err) => {
+        console.error('❌ خطأ في جلب تفاصيل الطلب:', err);
+        console.error('   - Message:', err.message);
+        console.error('   - Response:', err.response?.data);
+        
+        // عرض رسالة خطأ للمستخدم
+        alert.showError(
+          t('order.error') || 'خطأ',
+          t('order.errorLoadingDetails') || 'حدث خطأ في تحميل تفاصيل الطلب',
+          { duration: 4000 }
+        );
+        
+        // في حالة الخطأ، افتح الـ Modal بالبيانات الموجودة
+        setSelectedOrder(order);
+        setDetailsPopupVisible(true);
+      });
   };
 
   const handleAddOrder = (newOrderData) => {
-    console.log("New Order to be added:", newOrderData);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('✅ Order Added Successfully!');
+    console.log('Order ID:', newOrderData?.id);
+    console.log('Order Status:', newOrderData?.order_status);
+    console.log('Payment Method:', newOrderData?.payment_method);
+    console.log('Total Price:', newOrderData?.total_price);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    
+    // ✅ إظهار alert نجاح
+    alert.showSuccess(
+      t('order.success') || 'نجح',
+      t('order.orderAddedSuccess') || 'تم إضافة الطلب بنجاح!'
+    );
+    
     setAddPopupVisible(false);
+    
+    // ✅ إعادة جلب الطلبات لتحديث القائمة وإظهار الطلب الجديد
+    getOrders();
   };
 
   return (
@@ -453,26 +504,38 @@ const OrderScreen = ({ navigation }) => {
         </View>
       </View>
 
-      <View style={screenStyles.statsContainer}>
-        <View style={screenStyles.statCard}>
-          <Text style={screenStyles.statNumber}>3</Text>
-          <Text style={[screenStyles.statLabel, isRTL && screenStyles.rtlText]}>{t('order.totalOrders')}</Text>
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={screenStyles.scrollContent}
+      >
+        <View style={screenStyles.statsContainer}>
+          <View style={screenStyles.statCard}>
+            <Text style={screenStyles.statNumber}>{totalOrders}</Text>
+            <Text style={[screenStyles.statLabel, isRTL && screenStyles.rtlText]}>{t('order.totalOrders')}</Text>
+          </View>
+          <View style={screenStyles.statCard}>
+            <Text style={screenStyles.statNumber}>{pendingOrders}</Text>
+            <Text style={[screenStyles.statLabel, isRTL && screenStyles.rtlText]}>{t('order.pending')}</Text>
+          </View>
+          <View style={screenStyles.statCard}>
+            <Text style={screenStyles.statNumber}>{deliveredOrders}</Text>
+            <Text style={[screenStyles.statLabel, isRTL && screenStyles.rtlText]}>{t('order.delivered')}</Text>
+          </View>
         </View>
-        <View style={screenStyles.statCard}>
-          <Text style={screenStyles.statNumber}>1</Text>
-          <Text style={[screenStyles.statLabel, isRTL && screenStyles.rtlText]}>{t('order.pending')}</Text>
-        </View>
-        <View style={screenStyles.statCard}>
-          <Text style={screenStyles.statNumber}>1</Text>
-          <Text style={[screenStyles.statLabel, isRTL && screenStyles.rtlText]}>{t('order.delivered')}</Text>
-        </View>
-      </View>
 
-      <View style={screenStyles.tableContainer}>
-        <OrdersTable data={orders} onViewDetails={handleViewDetails} />
-      </View>
+        <View style={screenStyles.tableContainer}>
+          {loading && orders.length === 0 ? (
+            <View style={tableStyles.emptyContainer}>
+              <Text style={[tableStyles.emptyText, isRTL && tableStyles.rtlText]}>
+                {t('order.loading')}
+              </Text>
+            </View>
+          ) : (
+            <OrdersTable data={orders} onViewDetails={handleViewDetails} />
+          )}
+        </View>
+      </ScrollView>
 
-    
       <TouchableOpacity
         style={screenStyles.floatingButton}
         onPress={() => setAddPopupVisible(true)}
@@ -483,10 +546,12 @@ const OrderScreen = ({ navigation }) => {
       </TouchableOpacity>
 
   
-      <AddNewOrderPopup
+      <AddNewOrderModel
         show={isAddPopupVisible}
         hide={() => setAddPopupVisible(false)}
         submit={handleAddOrder}
+        item={visitData}
+        func={getOrders}
       />
       <OrderDetailsPopup
         show={isDetailsPopupVisible}
@@ -498,12 +563,18 @@ const OrderScreen = ({ navigation }) => {
 };
 
 const getStatusColor = (status) => {
-  switch (status) {
-    case "Delivered":
+  // ✅ تحويل الحالة لحروف صغيرة للمقارنة
+  const normalizedStatus = status?.toLowerCase();
+  
+  switch (normalizedStatus) {
+    case "delivered":
+    case "completed":
       return { bg: "#D4EDDA", text: "#155724" };
-    case "Pending":
+    case "pending":
+    case "processing":
       return { bg: "#FFF3CD", text: "#856404" };
-    case "Canceled":
+    case "canceled":
+    case "cancelled":
       return { bg: "#F8D7DA", text: "#721C24" };
     default:
       return { bg: "#E2E3E5", text: "#383D41" };
@@ -515,6 +586,9 @@ const screenStyles = StyleSheet.create({
   container: { 
     flex: 1, 
     backgroundColor: "#F8F9FA" 
+  },
+  scrollContent: {
+    paddingBottom: 100,
   },
   header: {
     flexDirection: "row",
@@ -580,14 +654,15 @@ const screenStyles = StyleSheet.create({
     textAlign: "center"
   },
   tableContainer: {
-    flex: 1,
     paddingHorizontal: 15,
+    marginBottom: 20,
   },
   floatingButton: {
     position: "absolute",
     bottom: 30,
     right: 20,
-    backgroundColor: "#FF6B35",
+    backgroundColor: '#183E9F',
+
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 15,
@@ -613,84 +688,120 @@ const screenStyles = StyleSheet.create({
 });
 
 const tableStyles = StyleSheet.create({
-  container: { 
-    paddingBottom: 100, 
-  },
-  header: {
+  table: {
     flexDirection: "row",
-    backgroundColor: "#3498db",
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 8,
+    overflow: "hidden",
+    backgroundColor: "#FFFFFF",
   },
-  headerText: {
+  fixedColumn: {
+    width: FIXED_COLUMN_WIDTH,
+    backgroundColor: "#FFFFFF",
+    borderRightWidth: 1,
+    borderRightColor: "#E0E0E0",
+  },
+  scrollablePart: {
+    flex: 1,
+  },
+  fixedHeaderCell: {
+    height: ROW_HEIGHT,
+    justifyContent: "center",
+    paddingHorizontal: 10,
+    backgroundColor: "#F1F3F5",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+  },
+  fixedHeaderText: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#183E9F",
+    textAlign: "left",
+  },
+  fixedCell: {
+    height: ROW_HEIGHT,
+    justifyContent: "center",
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
+  },
+  fixedCellText: {
+    fontSize: 14,
+    color: "#333",
+    textAlign: "left",
+  },
+  scrollableHeaderRow: {
+    flexDirection: "row",
+    height: ROW_HEIGHT,
+    backgroundColor: "#F1F3F5",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+  },
+  scrollableDataRow: {
+    flexDirection: "row",
+    height: ROW_HEIGHT,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
+  },
+  scrollableHeaderCell: {
+    width: SCROLLABLE_COLUMN_WIDTH,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 10,
+  },
+  scrollableHeaderText: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#1A46BE",
     textAlign: "center",
   },
-  row: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 12,
+  scrollableCell: {
+    width: SCROLLABLE_COLUMN_WIDTH,
+    justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    paddingHorizontal: 10,
   },
-  cell: { 
-    justifyContent: "center", 
-    alignItems: "center" 
-  },
-  pharmacyName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#2c3e50",
-    marginBottom: 4
-  },
-  city: {
-    fontSize: 12,
-    color: "#7f8c8d",
-    marginBottom: 8
-  },
-  cellText: { 
-    fontSize: 13, 
-    color: "#34495e",
-    marginBottom: 2 
-  },
-  moreItemsText: { 
-    fontSize: 12, 
-    color: "#3498db",
-    fontStyle: "italic" 
-  },
-  statusBadge: { 
-    paddingHorizontal: 10, 
-    paddingVertical: 5, 
-    borderRadius: 15,
-    marginBottom: 8
-  },
-  statusText: { 
-    fontSize: 12, 
-    fontWeight: "bold" 
-  },
-  totalText: {
+  scrollableCellText: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#2c3e50"
+    color: "#333",
+    textAlign: "center",
+  },
+  evenRow: {
+    backgroundColor: "#FFFFFF",
+  },
+  oddRow: {
+    backgroundColor: "#FAFAFA",
+  },
+  emptyContainer: {
+    height: 200,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 8,
+    marginHorizontal: 15,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#888",
+    textAlign: "center",
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 15,
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   detailsButton: {
-    backgroundColor: "#3498db",
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: "center",
-    alignItems: "center"
+    padding: 8,
+    borderRadius: 5,
+    backgroundColor: "#F0F8FF",
   },
   rtlText: {
     textAlign: 'right',
