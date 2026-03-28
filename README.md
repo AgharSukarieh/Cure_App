@@ -104,15 +104,3 @@ Pharmacy/
 | `npm run lint` | فحص ESLint |
 
 ---
-
-## الترخيص
-
-يحدد مالك المستودع الترخيص المناسب (مثلاً MIT أو خاص بالمشروع). أضف ملف `LICENSE` عند النشر العلني.
-
----
-
-## للسيرة الذاتية (جملة جاهزة — إنجليزي)
-
-> *Built a React Native pharmacy operations app with Redux, REST integration, real-time chat (Pusher), maps, barcode scanning, i18n, and role-oriented sales/medical reporting flows.*
-
-يمكنك ربط هذا المستودع في CV أو LinkedIn تحت **Projects** مع رابط GitHub.
