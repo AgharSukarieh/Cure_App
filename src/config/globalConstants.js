@@ -3,7 +3,7 @@ import API from './apiConfig';
 
 // Updated global constants using the new API structure
 const base_URL = () => {
-	return "http://10.42.0.1:8003/api/"; // Updated to 8003 as requested
+	return "https://pharmaceuticals.ncitsolutions.com/api/"; 
 };
 
 export default {
