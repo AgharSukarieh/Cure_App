@@ -1,135 +1,118 @@
-# 🏙️ إدارة المدن والمناطق - React Demo
+# CSC Pharmacy — تطبيق موبايل للصيدليات
 
-## 📋 الوصف
-تطبيق React لجلب وعرض بيانات المدن والمناطق من API مع إمكانية التخزين المحلي والتفاعل مع البيانات.
-
-## 🚀 الميزات
-- ✅ جلب البيانات من API
-- ✅ عرض قائمة المدن
-- ✅ عرض المناطق عند اختيار مدينة
-- ✅ حالة تحميل (Loading)
-- ✅ معالجة الأخطاء
-- ✅ حفظ البيانات في localStorage
-- ✅ تصميم متجاوب (Responsive)
-- ✅ إحصائيات البيانات
-- ✅ أزرار التحكم
-
-## 📁 الملفات
-- `CitiesAreasDemo.js` - مكون React كامل
-- `demo.html` - صفحة HTML جاهزة للتشغيل
-- `README.md` - هذا الملف
-
-## 🔧 كيفية الاستخدام
-
-### الطريقة الأولى: فتح الملف HTML مباشرة
-1. افتح ملف `demo.html` في المتصفح
-2. سيتم تشغيل التطبيق تلقائياً
-
-### الطريقة الثانية: استخدام React Component
-```javascript
-import CitiesAreasDemo from './CitiesAreasDemo.js';
-
-// في مكونك الرئيسي
-function App() {
-  return <CitiesAreasDemo />;
-}
-```
-
-## ⚙️ الإعدادات
-
-### تغيير URL API
-```javascript
-// في دالة fetchCitiesAndAreas
-const response = await fetch('YOUR_API_URL', {
-  method: 'GET',
-  headers: {
-    'Accept': 'application/json',
-    'Authorization': 'Bearer YOUR_TOKEN'
-  }
-});
-```
-
-### تغيير مفتاح localStorage
-```javascript
-// تغيير المفتاح من 'citiesAndAreas' إلى أي مفتاح آخر
-localStorage.setItem('your-custom-key', JSON.stringify(data));
-```
-
-## 📊 بنية البيانات المتوقعة
-```json
-{
-  "success": true,
-  "data": {
-    "block_id": 2,
-    "cities": [
-      {
-        "id": 1,
-        "name": "الرياض"
-      }
-    ],
-    "areas": [
-      {
-        "id": 1,
-        "name": "منطقة الرياض الأولى",
-        "city_id": 1,
-        "city_name": "الرياض",
-        "block_id": 2
-      }
-    ]
-  }
-}
-```
-
-## 🎨 التخصيص
-
-### تغيير الألوان
-```css
-/* في ملف CSS أو style tag */
-.cities-section h2 {
-  border-color: #your-color;
-  color: #your-color;
-}
-```
-
-### تغيير التخطيط
-```javascript
-// تغيير من grid إلى flex
-.cities-areas-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-```
-
-## 🔍 استكشاف الأخطاء
-
-### مشاكل شائعة:
-1. **خطأ CORS**: تأكد من إعدادات الخادم
-2. **خطأ 401**: تحقق من صحة التوكن
-3. **خطأ 404**: تحقق من صحة URL
-4. **لا تظهر البيانات**: تحقق من بنية البيانات المرجعة
-
-### رسائل Console:
-- ✅ `تم جلب البيانات بنجاح` - نجح الطلب
-- ❌ `خطأ في جلب البيانات` - فشل الطلب
-- 💾 `تم تحميل البيانات من localStorage` - تم استرداد البيانات المحفوظة
-
-## 📱 التجاوب
-التطبيق متجاوب ويعمل على:
-- 🖥️ أجهزة سطح المكتب
-- 📱 الأجهزة اللوحية
-- 📱 الهواتف الذكية
-
-## 🛠️ التقنيات المستخدمة
-- React 18
-- Hooks (useState, useEffect)
-- Fetch API
-- localStorage
-- CSS Grid & Flexbox
-- Responsive Design
-
-## 📄 الترخيص
-هذا المشروع مفتوح المصدر ومتاح للاستخدام الشخصي والتجاري.
+**React Native mobile app** for pharmacy operations: sales, medical visits, reports, chat, and team workflows connected to a REST API.
 
 ---
-**ملاحظة**: تأكد من تحديث URL API والتوكن قبل التشغيل.
+
+## نظرة عامة
+
+تطبيق **React Native** يخدم مسارَي العمل: **مبيعات الصيدلية** و**الزيارات الطبية**، مع لوحات تقارير، إدارة مخزون وطلبات، محادثات فورية (Pusher)، خرائط، مسح باركود، ودعم لغات متعددة. مناسب لعرضه في **GitHub** أو **السيرة الذاتية** كمشروع عملي يجمع واجهة موبايل، حالة عامة (Redux Toolkit)، ومصادقة مع API.
+
+---
+
+## الميزات الرئيسية
+
+| المجال | الوصف |
+|--------|--------|
+| **المصادقة** | تسجيل دخول/تسجيل صيدلية، استعادة كلمة المرور (خطوات تحقق) |
+| **المبيعات** | مبيعات يومية/أسبوعية/شهرية، تحصيل، مرتجعات، طلبات، مخزون، تقارير مبيعات |
+| **طبي** | تقارير طبية، جدول يومي، تفاصيل رسوم بيانية، قوائم أطباء/عملاء |
+| **تواصل** | شات، مجموعات، جهات، معاينة صور |
+| **عام** | إشعارات، المزيد (لغة، ملف شخصي، FAQ، تواصل، من نحن)، Onboarding |
+| **أخرى** | كاميرا/QR، موقع جغرافي، اختيار مستندات وصور، رسوم بيانية |
+
+---
+
+## التقنيات
+
+- **React Native** `0.71` · **React** `18`
+- **React Navigation** (Stack + Bottom Tabs + Material Top Tabs)
+- **Redux Toolkit** + **React Redux**
+- **Axios** (عميل API مع اعتراض للتوكن ومعالجة أخطاء)
+- **i18next** / **react-i18next** (تعدد اللغات)
+- **Pusher** (WebSockets للشات الفوري)
+- **خرائط، رسوم بيانية، Lottie، Reanimated، Moti** وغيرها من مكتبات الواجهة
+
+---
+
+## المتطلبات
+
+- **Node.js** (يُنصح بإصدار متوافق مع React Native 0.71)
+- **JDK** و **Android Studio** (لتشغيل Android)
+- لـ iOS (على macOS): **Xcode** و **CocoaPods**
+
+---
+
+## التثبيت والتشغيل
+
+```bash
+# استنساخ المستودع
+git clone <repository-url>
+cd Pharmacy
+
+# تثبيت الحزم
+npm install
+
+# تشغيل Metro
+npm start
+
+# في نافذة أخرى — Android
+npm run android
+
+# iOS (على macOS)
+cd ios && pod install && cd ..
+npm run ios
+```
+
+---
+
+## إعداد الـ API
+
+عنوان الخادم مُعرَّف في **`src/config/apiConfig.js`** (`BASE_URL`). غيّره ليتطابق مع بيئتك (مثال: `https://your-domain.com/api/`).  
+التطبيق يخزّن التوكن في **AsyncStorage** ويرسله تلقائياً مع الطلبات عبر **Bearer**.
+
+> لا ترفع مفاتيح أو عناوين إنتاج حساسة إلى GitHub؛ استخدم متغيرات بيئة أو ملفات محلية مستثناة من Git إن لزم.
+
+---
+
+## هيكل المشروع (مختصر)
+
+```
+Pharmacy/
+├── App.js                 # الملاحة الرئيسية والـ Providers
+├── src/
+│   ├── screens/           # الشاشات (Auth, Sales, Medical, Chat, More, ...)
+│   ├── components/        # مكونات مشتركة
+│   ├── contexts/          # سياق المصادقة وغيره
+│   ├── config/            # إعدادات API والثوابت
+│   ├── General/           # شريط التبويب السفلي وما شابه
+│   └── ...
+├── android/
+└── ios/
+```
+
+---
+
+## السكربتات
+
+| الأمر | الوظيفة |
+|--------|---------|
+| `npm start` | تشغيل Metro bundler |
+| `npm run android` | بناء وتشغيل على Android |
+| `npm run ios` | بناء وتشغيل على iOS |
+| `npm test` | تشغيل الاختبارات (Jest) |
+| `npm run lint` | فحص ESLint |
+
+---
+
+## الترخيص
+
+يحدد مالك المستودع الترخيص المناسب (مثلاً MIT أو خاص بالمشروع). أضف ملف `LICENSE` عند النشر العلني.
+
+---
+
+## للسيرة الذاتية (جملة جاهزة — إنجليزي)
+
+> *Built a React Native pharmacy operations app with Redux, REST integration, real-time chat (Pusher), maps, barcode scanning, i18n, and role-oriented sales/medical reporting flows.*
+
+يمكنك ربط هذا المستودع في CV أو LinkedIn تحت **Projects** مع رابط GitHub.
