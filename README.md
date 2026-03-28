@@ -1,4 +1,4 @@
-# CSC Pharmacy — تطبيق موبايل للصيدليات
+#  Pharmacy — تطبيق موبايل للصيدليات
 
 **React Native mobile app** for pharmacy operations: sales, medical visits, reports, chat, and team workflows connected to a REST API.
 
